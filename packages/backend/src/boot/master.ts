@@ -28,7 +28,7 @@ const bootLogger = logger.createSubLogger('boot', 'magenta', false);
 const themeColor = chalk.hex('#86b300');
 
 function greet() {
-	if (!envOption.quiet) {
+	if (!envOption.MK_QUIET) {
 		//#region Misskey logo
 		const v = `v${meta.version}`;
 		console.log(themeColor('  _____ _         _           '));
@@ -71,19 +71,19 @@ export async function masterMain() {
 
 	bootLogger.succ('Misskey initialized');
 
-	if (envOption.disableClustering) {
-		if (envOption.onlyServer) {
+	if (envOption.MK_DISABLE_CLUSTERING) {
+		if (envOption.MK_ONLY_SERVER) {
 			await server();
-		} else if (envOption.onlyQueue) {
+		} else if (envOption.MK_ONLY_QUEUE) {
 			await jobQueue();
 		} else {
 			await server();
 			await jobQueue();
 		}
 	} else {
-		if (envOption.onlyServer) {
+		if (envOption.MK_ONLY_SERVER) {
 			// nop
-		} else if (envOption.onlyQueue) {
+		} else if (envOption.MK_ONLY_QUEUE) {
 			// nop
 		} else {
 			await server();
@@ -92,7 +92,7 @@ export async function masterMain() {
 		await spawnWorkers(config.clusterLimit);
 	}
 
-	if (envOption.onlyQueue) {
+	if (envOption.MK_ONLY_QUEUE) {
 		bootLogger.succ('Queue started', null, true);
 	} else {
 		bootLogger.succ(config.socket ? `Now listening on socket ${config.socket} on ${config.url}` : `Now listening on port ${config.port} on ${config.url}`, null, true);

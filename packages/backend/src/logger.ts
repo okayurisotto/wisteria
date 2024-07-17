@@ -41,7 +41,7 @@ export default class Logger {
 
 	@bindThis
 	private log(level: Level, message: string, data?: Record<string, any> | null, important = false, subContexts: Context[] = [], store = true): void {
-		if (envOption.quiet) return;
+		if (envOption.MK_QUIET) return;
 		if (!this.store) store = false;
 		if (level === 'debug') store = false;
 
@@ -69,7 +69,7 @@ export default class Logger {
 			null;
 
 		let log = `${l} ${worker}\t[${contexts.join(' ')}]\t${m}`;
-		if (envOption.withLogTime) log = chalk.gray(time) + ' ' + log;
+		if (envOption.MK_WITH_LOG_TIME) log = chalk.gray(time) + ' ' + log;
 
 		const args: unknown[] = [important ? chalk.bold(log) : log];
 		if (data != null) {
@@ -103,7 +103,7 @@ export default class Logger {
 
 	@bindThis
 	public debug(message: string, data?: Record<string, any> | null, important = false): void { // デバッグ用に使う(開発者に必要だが利用者に不要な情報)
-		if (process.env.NODE_ENV !== 'production' || envOption.verbose) {
+		if (process.env.NODE_ENV !== 'production' || envOption.MK_VERBOSE) {
 			this.log('debug', message, data, important);
 		}
 	}

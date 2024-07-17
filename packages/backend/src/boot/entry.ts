@@ -48,7 +48,7 @@ cluster.on('exit', worker => {
 });
 
 // Display detail of unhandled promise rejection
-if (!envOption.quiet) {
+if (!envOption.MK_QUIET) {
 	process.on('unhandledRejection', console.dir);
 }
 
@@ -67,7 +67,7 @@ process.on('exit', code => {
 
 //#endregion
 
-if (cluster.isPrimary || envOption.disableClustering) {
+if (cluster.isPrimary || envOption.MK_DISABLE_CLUSTERING) {
 	await masterMain();
 
 	if (cluster.isPrimary) {
@@ -75,7 +75,7 @@ if (cluster.isPrimary || envOption.disableClustering) {
 	}
 }
 
-if (cluster.isWorker || envOption.disableClustering) {
+if (cluster.isWorker || envOption.MK_DISABLE_CLUSTERING) {
 	await workerMain();
 }
 

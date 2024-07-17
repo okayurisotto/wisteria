@@ -4,19 +4,17 @@
  */
 
 const envOption = {
-	onlyQueue: false,
-	onlyServer: false,
-	disableClustering: false,
-	verbose: false,
-	withLogTime: false,
-	quiet: false,
+	MK_DISABLE_CLUSTERING: process.env['MK_DISABLE_CLUSTERING'] !== undefined,
+	MK_ONLY_QUEUE: process.env['MK_ONLY_QUEUE'] !== undefined,
+	MK_ONLY_SERVER: process.env['MK_ONLY_SERVER'] !== undefined,
+	MK_QUIET: process.env['MK_QUIET'] !== undefined,
+	MK_VERBOSE: process.env['MK_VERBOSE'] !== undefined,
+	MK_WITH_LOG_TIME: process.env['MK_WITH_LOG_TIME'] !== undefined,
 };
 
-for (const key of Object.keys(envOption) as (keyof typeof envOption)[]) {
-	if (process.env['MK_' + key.replace(/[A-Z]/g, letter => `_${letter}`).toUpperCase()]) envOption[key] = true;
+if (process.env['NODE_ENV'] === 'test') {
+	envOption.MK_DISABLE_CLUSTERING = true;
+	envOption.MK_QUIET = true;
 }
-
-if (process.env.NODE_ENV === 'test') envOption.disableClustering = true;
-if (process.env.NODE_ENV === 'test') envOption.quiet = true;
 
 export { envOption };

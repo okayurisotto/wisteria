@@ -11,9 +11,9 @@ import { jobQueue, server } from './common.js';
  * Init worker process
  */
 export async function workerMain() {
-	if (envOption.onlyServer) {
+	if (envOption.MK_ONLY_SERVER) {
 		await server();
-	} else if (envOption.onlyQueue) {
+	} else if (envOption.MK_ONLY_QUEUE) {
 		await jobQueue();
 	} else {
 		await jobQueue();
