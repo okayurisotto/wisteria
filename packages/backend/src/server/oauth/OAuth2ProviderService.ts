@@ -4,7 +4,6 @@
  */
 
 import dns from 'node:dns/promises';
-import { fileURLToPath } from 'node:url';
 import { Inject, Injectable } from '@nestjs/common';
 import { JSDOM } from 'jsdom';
 import httpLinkHeader from 'http-link-header';
@@ -34,6 +33,7 @@ import Logger from '@/logger.js';
 import { StatusError } from '@/misc/status-error.js';
 import type { ServerResponse } from 'node:http';
 import type { FastifyInstance } from 'fastify';
+import { PUG_DIR } from '@/path.js';
 
 // TODO: Consider migrating to @node-oauth/oauth2-server once
 // https://github.com/node-oauth/node-oauth2-server/issues/180 is figured out.
@@ -385,7 +385,7 @@ export class OAuth2ProviderService {
 		fastify.post('/decision', async () => { });
 
 		fastify.register(fastifyView, {
-			root: fileURLToPath(new URL('../web/views', import.meta.url)),
+			root: PUG_DIR,
 			engine: { pug },
 			defaultContext: {
 				version: this.config.version,

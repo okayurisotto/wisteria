@@ -4,8 +4,6 @@
  */
 
 import * as fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
 import * as os from 'node:os';
 import chalk from 'chalk';
 import chalkTemplate from 'chalk-template';
@@ -15,11 +13,9 @@ import type { Config } from '@/config.js';
 import { showMachineInfo } from '@/misc/show-machine-info.js';
 import { envOption } from '@/env.js';
 import { jobQueue, server } from './common.js';
+import { META_FILE } from '@/path.js';
 
-const _filename = fileURLToPath(import.meta.url);
-const _dirname = dirname(_filename);
-
-const meta = JSON.parse(fs.readFileSync(`${_dirname}/../../../../built/meta.json`, 'utf-8'));
+const meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
 
 const logger = new Logger('core', 'cyan');
 const bootLogger = logger.createSubLogger('boot', 'magenta', false);

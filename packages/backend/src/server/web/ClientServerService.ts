@@ -4,8 +4,6 @@
  */
 
 import { randomUUID } from 'node:crypto';
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { Inject, Injectable } from '@nestjs/common';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
@@ -43,16 +41,7 @@ import { FeedService } from './FeedService.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
 import { ClientLoggerService } from './ClientLoggerService.js';
 import type { FastifyInstance, FastifyPluginOptions, FastifyReply } from 'fastify';
-
-const _filename = fileURLToPath(import.meta.url);
-const _dirname = dirname(_filename);
-
-const staticAssets = `${_dirname}/../../../assets/`;
-const clientAssets = `${_dirname}/../../../../frontend/assets/`;
-const assets = `${_dirname}/../../../../../built/_frontend_dist_/`;
-const swAssets = `${_dirname}/../../../../../built/_sw_dist_/`;
-const viteOut = `${_dirname}/../../../../../built/_vite_/`;
-const tarball = `${_dirname}/../../../../../built/tarball/`;
+import { FLUENT_EMOJI_DIR, FRONTEND_ASSETS_DIR, FRONTEND_DIST_ASSETS_DIR, PUG_DIR, STATIC_ASSETS_DIR, SW_ASSETS_DIR, TARBALL_DIR, TWEMOJI_DIR, VITE_OUT_DIR } from '@/path.js';
 
 @Injectable()
 export class ClientServerService {
@@ -236,7 +225,7 @@ export class ClientServerService {
 		//#endregion
 
 		fastify.register(fastifyView, {
-			root: _dirname + '/views',
+			root: PUG_DIR,
 			engine: {
 				pug: pug,
 			},
@@ -256,7 +245,7 @@ export class ClientServerService {
 		if (this.config.clientManifestExists) {
 			fastify.register((fastify, options, done) => {
 				fastify.register(fastifyStatic, {
-					root: viteOut,
+					root: VITE_OUT_DIR,
 					prefix: '/vite/',
 					maxAge: ms('30 days'),
 					immutable: true,
@@ -278,21 +267,21 @@ export class ClientServerService {
 		//#region static assets
 
 		fastify.register(fastifyStatic, {
-			root: staticAssets,
+			root: STATIC_ASSETS_DIR,
 			prefix: '/static-assets/',
 			maxAge: ms('7 days'),
 			decorateReply: false,
 		});
 
 		fastify.register(fastifyStatic, {
-			root: clientAssets,
+			root: FRONTEND_ASSETS_DIR,
 			prefix: '/client-assets/',
 			maxAge: ms('7 days'),
 			decorateReply: false,
 		});
 
 		fastify.register(fastifyStatic, {
-			root: assets,
+			root: FRONTEND_DIST_ASSETS_DIR,
 			prefix: '/assets/',
 			maxAge: ms('7 days'),
 			decorateReply: false,
@@ -300,7 +289,7 @@ export class ClientServerService {
 
 		fastify.register((fastify, options, done) => {
 			fastify.register(fastifyStatic, {
-				root: tarball,
+				root: TARBALL_DIR,
 				prefix: '/tarball/',
 				maxAge: ms('30 days'),
 				immutable: true,
@@ -311,11 +300,11 @@ export class ClientServerService {
 		});
 
 		fastify.get('/favicon.ico', async (request, reply) => {
-			return reply.sendFile('/favicon.ico', staticAssets);
+			return reply.sendFile('/favicon.ico', STATIC_ASSETS_DIR);
 		});
 
 		fastify.get('/apple-touch-icon.png', async (request, reply) => {
-			return reply.sendFile('/apple-touch-icon.png', staticAssets);
+			return reply.sendFile('/apple-touch-icon.png', STATIC_ASSETS_DIR);
 		});
 
 		fastify.get<{ Params: { path: string } }>('/fluent-emoji/:path(.*)', async (request, reply) => {
@@ -328,7 +317,7 @@ export class ClientServerService {
 
 			reply.header('Content-Security-Policy', 'default-src \'none\'; style-src \'unsafe-inline\'');
 
-			return await reply.sendFile(path, `${_dirname}/../../../../../fluent-emojis/dist/`, {
+			return await reply.sendFile(path, FLUENT_EMOJI_DIR, {
 				maxAge: ms('30 days'),
 			});
 		});
@@ -343,7 +332,7 @@ export class ClientServerService {
 
 			reply.header('Content-Security-Policy', 'default-src \'none\'; style-src \'unsafe-inline\'');
 
-			return await reply.sendFile(path, `${_dirname}/../../../node_modules/@discordapp/twemoji/dist/svg/`, {
+			return await reply.sendFile(path, TWEMOJI_DIR, {
 				maxAge: ms('30 days'),
 			});
 		});
@@ -357,7 +346,7 @@ export class ClientServerService {
 			}
 
 			const mask = await sharp(
-				`${_dirname}/../../../node_modules/@discordapp/twemoji/dist/svg/${path.replace('.png', '')}.svg`,
+				TWEMOJI_DIR + `/${path.replace('.png', '')}.svg`,
 				{ density: 1000 },
 			)
 				.resize(488, 488)
@@ -393,7 +382,7 @@ export class ClientServerService {
 
 		// ServiceWorker
 		fastify.get('/sw.js', async (request, reply) => {
-			return await reply.sendFile('/sw.js', swAssets, {
+			return await reply.sendFile('/sw.js', SW_ASSETS_DIR, {
 				maxAge: ms('10 minutes'),
 			});
 		});
@@ -402,7 +391,7 @@ export class ClientServerService {
 		fastify.get('/manifest.json', async (request, reply) => await this.manifestHandler(reply));
 
 		fastify.get('/robots.txt', async (request, reply) => {
-			return await reply.sendFile('/robots.txt', staticAssets);
+			return await reply.sendFile('/robots.txt', STATIC_ASSETS_DIR);
 		});
 
 		// OpenSearch XML

@@ -4,8 +4,6 @@
  */
 
 import * as fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
 import { Inject, Injectable } from '@nestjs/common';
 import rename from 'rename';
 import sharp from 'sharp';
@@ -29,11 +27,7 @@ import { isMimeImage } from '@/misc/is-mime-image.js';
 import { correctFilename } from '@/misc/correct-filename.js';
 import { handleRequestRedirectToOmitSearch } from '@/misc/fastify-hook-handlers.js';
 import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginOptions } from 'fastify';
-
-const _filename = fileURLToPath(import.meta.url);
-const _dirname = dirname(_filename);
-
-const assets = `${_dirname}/../../server/file/assets/`;
+import { ASSETS_DIR, DUMMY_PNG_FILE } from '@/path.js';
 
 @Injectable()
 export class FileServerService {
@@ -71,7 +65,7 @@ export class FileServerService {
 		fastify.register((fastify, options, done) => {
 			fastify.addHook('onRequest', handleRequestRedirectToOmitSearch);
 			fastify.get('/files/app-default.jpg', (request, reply) => {
-				const file = fs.createReadStream(`${_dirname}/assets/dummy.png`);
+				const file = fs.createReadStream(DUMMY_PNG_FILE);
 				reply.header('Content-Type', 'image/jpeg');
 				reply.header('Cache-Control', 'max-age=31536000, immutable');
 				return reply.send(file);
@@ -105,7 +99,7 @@ export class FileServerService {
 		reply.header('Cache-Control', 'max-age=300');
 
 		if (request.query && 'fallback' in request.query) {
-			return reply.sendFile('/dummy.png', assets);
+			return reply.sendFile('/dummy.png', ASSETS_DIR);
 		}
 
 		if (err instanceof StatusError && (err.statusCode === 302 || err.isClientError)) {
@@ -125,7 +119,7 @@ export class FileServerService {
 		if (file === '404') {
 			reply.code(404);
 			reply.header('Cache-Control', 'max-age=86400');
-			return reply.sendFile('/dummy.png', assets);
+			return reply.sendFile('/dummy.png', ASSETS_DIR);
 		}
 
 		if (file === '204') {
@@ -321,7 +315,7 @@ export class FileServerService {
 		if (file === '404') {
 			reply.code(404);
 			reply.header('Cache-Control', 'max-age=86400');
-			return reply.sendFile('/dummy.png', assets);
+			return reply.sendFile('/dummy.png', ASSETS_DIR);
 		}
 
 		if (file === '204') {
