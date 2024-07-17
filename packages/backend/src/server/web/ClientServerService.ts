@@ -175,7 +175,7 @@ export class ClientServerService {
 	@bindThis
 	private generateCommonPugData(meta: MiMeta) {
 		return {
-			instanceName: meta.name ?? 'Misskey',
+			instanceName: meta.name ?? 'Wisteria',
 			icon: meta.iconUrl,
 			appleTouchIcon: meta.app512IconUrl,
 			themeColor: meta.themeColor,
@@ -409,7 +409,7 @@ export class ClientServerService {
 		fastify.get('/opensearch.xml', async (request, reply) => {
 			const meta = await this.metaService.fetch();
 
-			const name = meta.name ?? 'Misskey';
+			const name = meta.name ?? 'Wisteria';
 			let content = '';
 			content += '<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">';
 			content += `<ShortName>${name}</ShortName>`;
@@ -431,7 +431,7 @@ export class ClientServerService {
 			return await reply.view('base', {
 				img: meta.bannerUrl,
 				url: this.config.url,
-				title: meta.name ?? 'Misskey',
+				title: meta.name ?? 'Wisteria',
 				desc: meta.description,
 				...this.generateCommonPugData(meta),
 			});
