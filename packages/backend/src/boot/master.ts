@@ -7,7 +7,6 @@ import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import * as os from 'node:os';
-import cluster from 'node:cluster';
 import chalk from 'chalk';
 import chalkTemplate from 'chalk-template';
 import Logger from '@/logger.js';
@@ -70,25 +69,13 @@ export async function masterMain() {
 
 	bootLogger.succ('Misskey initialized');
 
-	if (envOption.MK_DISABLE_CLUSTERING) {
-		if (envOption.MK_ONLY_SERVER) {
-			await server();
-		} else if (envOption.MK_ONLY_QUEUE) {
-			await jobQueue();
-		} else {
-			await server();
-			await jobQueue();
-		}
+	if (envOption.MK_ONLY_SERVER) {
+		await server();
+	} else if (envOption.MK_ONLY_QUEUE) {
+		await jobQueue();
 	} else {
-		if (envOption.MK_ONLY_SERVER) {
-			// nop
-		} else if (envOption.MK_ONLY_QUEUE) {
-			// nop
-		} else {
-			await server();
-		}
-
-		await spawnWorkers(config.clusterLimit);
+		await server();
+		await jobQueue();
 	}
 
 	if (envOption.MK_ONLY_QUEUE) {
@@ -135,25 +122,4 @@ function loadConfigBoot(): Config {
 	configLogger.succ('Loaded');
 
 	return config;
-}
-
-async function spawnWorkers(limit = 1) {
-	const workers = Math.min(limit, os.cpus().length);
-	bootLogger.info(`Starting ${workers} worker${workers === 1 ? '' : 's'}...`);
-	await Promise.all([...Array(workers)].map(spawnWorker));
-	bootLogger.succ('All workers started');
-}
-
-function spawnWorker(): Promise<void> {
-	return new Promise(res => {
-		const worker = cluster.fork();
-		worker.on('message', message => {
-			if (message === 'listenFailed') {
-				bootLogger.error('The server Listen failed due to the previous error.');
-				process.exit(1);
-			}
-			if (message !== 'ready') return;
-			res();
-		});
-	});
 }

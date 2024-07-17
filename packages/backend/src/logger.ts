@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import cluster from 'node:cluster';
 import chalk from 'chalk';
 import { default as convertColor } from 'color-convert';
 import { format as dateFormat } from 'date-fns';
@@ -51,7 +50,6 @@ export default class Logger {
 		}
 
 		const time = dateFormat(new Date(), 'HH:mm:ss');
-		const worker = cluster.isPrimary ? '*' : cluster.worker!.id;
 		const l =
 			level === 'error' ? important ? chalk.bgRed.white('ERR ') : chalk.red('ERR ') :
 			level === 'warning' ? chalk.yellow('WARN') :
@@ -68,7 +66,7 @@ export default class Logger {
 			level === 'info' ? message :
 			null;
 
-		let log = `${l} ${worker}\t[${contexts.join(' ')}]\t${m}`;
+		let log = `${l}\t[${contexts.join(' ')}]\t${m}`;
 		if (envOption.MK_WITH_LOG_TIME) log = chalk.gray(time) + ' ' + log;
 
 		const args: unknown[] = [important ? chalk.bold(log) : log];

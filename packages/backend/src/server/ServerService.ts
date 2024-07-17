@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import cluster from 'node:cluster';
 import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
@@ -233,12 +232,7 @@ export class ServerService implements OnApplicationShutdown {
 					break;
 			}
 
-			if (cluster.isWorker) {
-				process.send!('listenFailed');
-			} else {
-				// disableClustering
-				process.exit(1);
-			}
+			process.exit(1);
 		});
 
 		if (this.config.socket) {

@@ -211,9 +211,6 @@ id: 'aidx'
 # Whether disable HSTS
 #disableHsts: true
 
-# Number of worker processes
-#clusterLimit: 1
-
 # Job concurrency per worker
 #deliverJobConcurrency: 128
 #inboxJobConcurrency: 16
