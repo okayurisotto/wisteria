@@ -646,9 +646,6 @@ importers:
       eslint-plugin-import:
         specifier: 2.29.1
         version: 2.29.1(@typescript-eslint/parser@6.18.1(eslint@8.56.0)(typescript@5.3.3))(eslint@8.56.0)
-      execa:
-        specifier: 8.0.1
-        version: 8.0.1
       fkill:
         specifier: ^9.0.0
         version: 9.0.0
