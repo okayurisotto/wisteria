@@ -1,0 +1,33 @@
+# この設定では、Misskey本体は起動せず、RedisとPostgreSQLだけを起動します。
+# 起動されたRedisとPostgreSQLは`ports`設定によりホストに公開されるため、ホスト側で起動したMisskeyからアクセスできます。
+
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: "redis-cli ping"
+      interval: 5s
+      retries: 20
+
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    env_file:
+      - .config/docker.env
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"
+      interval: 5s
+      retries: 20
+
+volumes:
+  redis:
+  db:
