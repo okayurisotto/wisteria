@@ -114,7 +114,6 @@ export class ApNoteService {
 	 */
 	@bindThis
 	public async createNote(value: string | IObject, resolver?: Resolver, silent = false): Promise<MiNote | null> {
-		// eslint-disable-next-line no-param-reassign
 		if (resolver == null) resolver = this.apResolverService.createResolver();
 
 		const object = await resolver.resolve(value);
@@ -347,7 +346,6 @@ export class ApNoteService {
 
 	@bindThis
 	public async extractEmojis(tags: IObject | IObject[], host: string): Promise<MiEmoji[]> {
-		// eslint-disable-next-line no-param-reassign
 		host = this.utilityService.toPuny(host);
 
 		const eomjiTags = toArray(tags).filter(isEmoji);

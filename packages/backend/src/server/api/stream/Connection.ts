@@ -21,7 +21,6 @@ import type Channel from './channel.js';
 /**
  * Main stream connection
  */
-// eslint-disable-next-line import/no-default-export
 export default class Connection {
 	public user?: MiUser;
 	public token?: MiAccessToken;

@@ -18,7 +18,7 @@ import type { KVs } from '../core.js';
  * ユーザーごとのプロフィール被閲覧数に関するチャート
  */
 @Injectable()
-export default class PerUserPvChart extends Chart<typeof schema> { // eslint-disable-line import/no-default-export
+export default class PerUserPvChart extends Chart<typeof schema> {
 	constructor(
 		@Inject(DI.db)
 		private db: DataSource,

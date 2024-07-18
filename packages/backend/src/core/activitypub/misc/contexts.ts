@@ -5,7 +5,6 @@
 
 import type { JsonLd } from 'jsonld/jsonld-spec.js';
 
-/* eslint:disable:quotemark indent */
 const id_v1 = {
 	'@context': {
 		'id': '@id',

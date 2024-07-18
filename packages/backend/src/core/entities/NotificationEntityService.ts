@@ -56,7 +56,6 @@ export class NotificationEntityService implements OnModuleInit {
 	public async pack(
 		src: MiNotification,
 		meId: MiUser['id'],
-		// eslint-disable-next-line @typescript-eslint/ban-types
 		options: {
 
 		},
@@ -151,7 +150,6 @@ export class NotificationEntityService implements OnModuleInit {
 	public async packGrouped(
 		src: MiGroupedNotification,
 		meId: MiUser['id'],
-		// eslint-disable-next-line @typescript-eslint/ban-types
 		options: {
 
 		},

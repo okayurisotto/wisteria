@@ -20,7 +20,7 @@ import type { KVs } from '../core.js';
  * ユーザーごとのリアクションに関するチャート
  */
 @Injectable()
-export default class PerUserReactionsChart extends Chart<typeof schema> { // eslint-disable-line import/no-default-export
+export default class PerUserReactionsChart extends Chart<typeof schema> {
 	constructor(
 		@Inject(DI.db)
 		private db: DataSource,

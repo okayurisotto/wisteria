@@ -71,7 +71,6 @@ export function genIdenticon(seed: string, stream: WriteStream): Promise<void> {
 	// 1*n (filled by false)
 	const center: boolean[] = new Array(n).fill(false);
 
-	// eslint:disable-next-line:prefer-for-of
 	for (let x = 0; x < side.length; x++) {
 		for (let y = 0; y < side[x].length; y++) {
 			side[x][y] = rand(3) === 0;

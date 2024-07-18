@@ -854,7 +854,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 			}
 		} else {
 			// TODO: キャッシュ？
-			// eslint-disable-next-line prefer-const
 			let [followings, userListMemberships] = await Promise.all([
 				this.followingsRepository.find({
 					where: {

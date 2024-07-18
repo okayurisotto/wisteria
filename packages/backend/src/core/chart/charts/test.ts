@@ -17,7 +17,7 @@ import type { KVs } from '../core.js';
  * For testing
  */
 @Injectable()
-export default class TestChart extends Chart<typeof schema> { // eslint-disable-line import/no-default-export
+export default class TestChart extends Chart<typeof schema> {
 	public total = 0; // publicにするのはテストのため
 
 	constructor(

@@ -45,7 +45,6 @@ import type { ApNoteService } from './ApNoteService.js';
 import type { ApMfmService } from '../ApMfmService.js';
 import type { ApResolverService, Resolver } from '../ApResolverService.js';
 import type { ApLoggerService } from '../ApLoggerService.js';
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import type { ApImageService } from './ApImageService.js';
 import type { IActor, IObject } from '../type.js';
 
@@ -270,7 +269,6 @@ export class ApPersonService implements OnModuleInit {
 			throw new StatusError('cannot resolve local user', 400, 'cannot resolve local user');
 		}
 
-		// eslint-disable-next-line no-param-reassign
 		if (resolver == null) resolver = this.apResolverService.createResolver();
 
 		const object = await resolver.resolve(uri);
@@ -435,7 +433,6 @@ export class ApPersonService implements OnModuleInit {
 		if (exist === null) return;
 		//#endregion
 
-		// eslint-disable-next-line no-param-reassign
 		if (resolver == null) resolver = this.apResolverService.createResolver();
 
 		const object = hint ?? await resolver.resolve(uri);
@@ -581,7 +578,6 @@ export class ApPersonService implements OnModuleInit {
 		//#endregion
 
 		// リモートサーバーからフェッチしてきて登録
-		// eslint-disable-next-line no-param-reassign
 		if (resolver == null) resolver = this.apResolverService.createResolver();
 		return await this.createPerson(uri, resolver);
 	}

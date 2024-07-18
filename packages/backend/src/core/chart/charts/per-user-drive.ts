@@ -20,7 +20,7 @@ import type { KVs } from '../core.js';
  * ユーザーごとのドライブに関するチャート
  */
 @Injectable()
-export default class PerUserDriveChart extends Chart<typeof schema> { // eslint-disable-line import/no-default-export
+export default class PerUserDriveChart extends Chart<typeof schema> {
 	constructor(
 		@Inject(DI.db)
 		private db: DataSource,
