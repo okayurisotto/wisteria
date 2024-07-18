@@ -19,15 +19,20 @@ export function useChartTooltip(opts: { position: 'top' | 'middle' } = { positio
 	}[] | null>(null);
 	let disposeTooltipComponent;
 
-	os.popup(MkChartTooltip, {
-		showing: tooltipShowing,
-		x: tooltipX,
-		y: tooltipY,
-		title: tooltipTitle,
-		series: tooltipSeries,
-	}, {}).then(({ dispose }) => {
-		disposeTooltipComponent = dispose;
-	});
+	const show = () => {
+		if (disposeTooltipComponent) disposeTooltipComponent();
+
+		os.popup(MkChartTooltip, {
+			showing: tooltipShowing,
+			x: tooltipX,
+			y: tooltipY,
+			title: tooltipTitle,
+			series: tooltipSeries,
+		}, {}).then(({ dispose }) => {
+			disposeTooltipComponent = dispose;
+		});
+	};
+	show();
 
 	onUnmounted(() => {
 		if (disposeTooltipComponent) disposeTooltipComponent();
@@ -59,6 +64,8 @@ export function useChartTooltip(opts: { position: 'top' | 'middle' } = { positio
 		} else if (opts.position === 'middle') {
 			tooltipY.value = rect.top + window.pageYOffset + context.tooltip.caretY;
 		}
+
+		show();
 	}
 
 	return {
