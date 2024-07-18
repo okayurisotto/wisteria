@@ -14,7 +14,7 @@ import { PollService } from '@/core/PollService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
-import { UserBlockingService } from '@/core/UserBlockingService.js';
+import { UserBlockingCheckService } from '@/core/UserBlockingCheckService.js';
 import { ApiError } from '../../../error.js';
 
 export const meta = {
@@ -94,7 +94,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private pollService: PollService,
 		private apRendererService: ApRendererService,
 		private globalEventService: GlobalEventService,
-		private userBlockingService: UserBlockingService,
+		private userBlockingCheckService: UserBlockingCheckService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const createdAt = new Date();
@@ -111,7 +111,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			// Check blocking
 			if (note.userId !== me.id) {
-				const blocked = await this.userBlockingService.checkBlocked(note.userId, me.id);
+				const blocked = await this.userBlockingCheckService.checkBlocked(note.userId, me.id);
 				if (blocked) {
 					throw new ApiError(meta.errors.youHaveBeenBlocked);
 				}

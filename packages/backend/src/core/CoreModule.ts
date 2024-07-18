@@ -46,7 +46,9 @@ import { RoleService } from './RoleService.js';
 import { S3Service } from './S3Service.js';
 import { SignupService } from './SignupService.js';
 import { WebAuthnService } from './WebAuthnService.js';
-import { UserBlockingService } from './UserBlockingService.js';
+import { UserBlockingBlockService } from '../../built/core/UserBlockingBlockService.js';
+import { UserBlockingCheckService } from './UserBlockingCheckService.js';
+import { UserBlockingUnblockService } from './UserBlockingUnblockService.js';
 import { CacheService } from './CacheService.js';
 import { UserService } from './UserService.js';
 import { UserFollowingService } from './UserFollowingService.js';
@@ -155,7 +157,6 @@ const $MfmService: Provider = { provide: 'MfmService', useExisting: MfmService }
 const $NotificationService: Provider = { provide: 'NotificationService', useExisting: NotificationService };
 const $ReactionService: Provider = { provide: 'ReactionService', useExisting: ReactionService };
 const $RoleService: Provider = { provide: 'RoleService', useExisting: RoleService };
-const $UserBlockingService: Provider = { provide: 'UserBlockingService', useExisting: UserBlockingService };
 const $CacheService: Provider = { provide: 'CacheService', useExisting: CacheService };
 const $UserFollowingService: Provider = { provide: 'UserFollowingService', useExisting: UserFollowingService };
 const $UtilityService: Provider = { provide: 'UtilityService', useExisting: UtilityService };
@@ -225,7 +226,9 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		S3Service,
 		SignupService,
 		WebAuthnService,
-		UserBlockingService,
+		UserBlockingBlockService,
+		UserBlockingCheckService,
+		UserBlockingUnblockService,
 		CacheService,
 		UserService,
 		UserFollowingService,
@@ -331,7 +334,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		$NotificationService,
 		$ReactionService,
 		$RoleService,
-		$UserBlockingService,
 		$CacheService,
 		$UserFollowingService,
 		$UtilityService,
@@ -398,7 +400,9 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		S3Service,
 		SignupService,
 		WebAuthnService,
-		UserBlockingService,
+		UserBlockingBlockService,
+		UserBlockingCheckService,
+		UserBlockingUnblockService,
 		CacheService,
 		UserService,
 		UserFollowingService,
@@ -503,7 +507,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		$NotificationService,
 		$ReactionService,
 		$RoleService,
-		$UserBlockingService,
 		$CacheService,
 		$UserFollowingService,
 		$UtilityService,

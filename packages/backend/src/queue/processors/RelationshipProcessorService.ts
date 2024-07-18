@@ -6,7 +6,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { UserFollowingService } from '@/core/UserFollowingService.js';
-import { UserBlockingService } from '@/core/UserBlockingService.js';
+import { UserBlockingBlockService } from '@/core/UserBlockingBlockService.js';
+import { UserBlockingUnblockService } from '@/core/UserBlockingUnblockService.js';
 import { bindThis } from '@/decorators.js';
 import type Logger from '@/logger.js';
 
@@ -27,7 +28,8 @@ export class RelationshipProcessorService {
 
 		private queueLoggerService: QueueLoggerService,
 		private userFollowingService: UserFollowingService,
-		private userBlockingService: UserBlockingService,
+		private userBlockingUnblockService: UserBlockingUnblockService,
+		private userBlockingBlockService: UserBlockingBlockService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('follow-block');
 	}
@@ -61,7 +63,7 @@ export class RelationshipProcessorService {
 			this.usersRepository.findOneByOrFail({ id: job.data.from.id }),
 			this.usersRepository.findOneByOrFail({ id: job.data.to.id }),
 		]);
-		await this.userBlockingService.block(blockee, blocker, job.data.silent);
+		await this.userBlockingBlockService.block(blockee, blocker, job.data.silent);
 		return 'ok';
 	}
 
@@ -72,7 +74,7 @@ export class RelationshipProcessorService {
 			this.usersRepository.findOneByOrFail({ id: job.data.from.id }),
 			this.usersRepository.findOneByOrFail({ id: job.data.to.id }),
 		]);
-		await this.userBlockingService.unblock(blockee, blocker);
+		await this.userBlockingUnblockService.unblock(blockee, blocker);
 		return 'ok';
 	}
 }

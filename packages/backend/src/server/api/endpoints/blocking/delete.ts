@@ -8,7 +8,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { UsersRepository, BlockingsRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { UserBlockingService } from '@/core/UserBlockingService.js';
+import { UserBlockingUnblockService } from '@/core/UserBlockingUnblockService.js';
 import { DI } from '@/di-symbols.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { ApiError } from '../../error.js';
@@ -71,7 +71,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 		private userEntityService: UserEntityService,
 		private getterService: GetterService,
-		private userBlockingService: UserBlockingService,
+		private userBlockingUnblockService: UserBlockingUnblockService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const blocker = await this.usersRepository.findOneByOrFail({ id: me.id });
@@ -100,7 +100,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			}
 
 			// Delete blocking
-			await this.userBlockingService.unblock(blocker, blockee);
+			await this.userBlockingUnblockService.unblock(blocker, blockee);
 
 			return await this.userEntityService.pack(blockee.id, blocker, {
 				schema: 'UserDetailedNotMe',

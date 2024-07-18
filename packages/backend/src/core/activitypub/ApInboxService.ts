@@ -11,7 +11,8 @@ import { UserFollowingService } from '@/core/UserFollowingService.js';
 import { ReactionService } from '@/core/ReactionService.js';
 import { RelayService } from '@/core/RelayService.js';
 import { NotePiningService } from '@/core/NotePiningService.js';
-import { UserBlockingService } from '@/core/UserBlockingService.js';
+import { UserBlockingBlockService } from '../UserBlockingBlockService.js';
+import { UserBlockingUnblockService } from '@/core/UserBlockingUnblockService.js';
 import { NoteDeleteService } from '@/core/NoteDeleteService.js';
 import { NoteCreateService } from '@/core/NoteCreateService.js';
 import { concat, toArray, toSingle, unique } from '@/misc/prelude/array.js';
@@ -35,7 +36,6 @@ import { ApResolverService } from './ApResolverService.js';
 import { ApAudienceService } from './ApAudienceService.js';
 import { ApPersonService } from './models/ApPersonService.js';
 import { ApQuestionService } from './models/ApQuestionService.js';
-import { CacheService } from '@/core/CacheService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { Resolver } from './ApResolverService.js';
 import type { IAccept, IAdd, IAnnounce, IBlock, ICreate, IDelete, IFlag, IFollow, ILike, IObject, IReject, IRemove, IUndo, IUpdate, IMove } from './type.js';
@@ -73,7 +73,8 @@ export class ApInboxService {
 		private reactionService: ReactionService,
 		private relayService: RelayService,
 		private notePiningService: NotePiningService,
-		private userBlockingService: UserBlockingService,
+		private userBlockingBlockService: UserBlockingBlockService,
+		private userBlockingUnblockService: UserBlockingUnblockService,
 		private noteCreateService: NoteCreateService,
 		private noteDeleteService: NoteDeleteService,
 		private appLockService: AppLockService,
@@ -84,7 +85,6 @@ export class ApInboxService {
 		private apPersonService: ApPersonService,
 		private apQuestionService: ApQuestionService,
 		private queueService: QueueService,
-		private cacheService: CacheService,
 		private globalEventService: GlobalEventService,
 	) {
 		this.logger = this.apLoggerService.logger;
@@ -345,7 +345,7 @@ export class ApInboxService {
 			return 'skip: ブロックしようとしているユーザーはローカルユーザーではありません';
 		}
 
-		await this.userBlockingService.block(await this.usersRepository.findOneByOrFail({ id: actor.id }), await this.usersRepository.findOneByOrFail({ id: blockee.id }));
+		await this.userBlockingBlockService.block(await this.usersRepository.findOneByOrFail({ id: actor.id }), await this.usersRepository.findOneByOrFail({ id: blockee.id }));
 		return 'ok';
 	}
 
@@ -677,7 +677,7 @@ export class ApInboxService {
 			return 'skip: ブロック解除しようとしているユーザーはローカルユーザーではありません';
 		}
 
-		await this.userBlockingService.unblock(await this.usersRepository.findOneByOrFail({ id: actor.id }), blockee);
+		await this.userBlockingUnblockService.unblock(await this.usersRepository.findOneByOrFail({ id: actor.id }), blockee);
 		return 'ok';
 	}
 

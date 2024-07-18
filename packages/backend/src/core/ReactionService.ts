@@ -24,7 +24,7 @@ import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { bindThis } from '@/decorators.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import { UserBlockingService } from '@/core/UserBlockingService.js';
+import { UserBlockingCheckService } from './UserBlockingCheckService.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import { RoleService } from '@/core/RoleService.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
@@ -91,7 +91,7 @@ export class ReactionService {
 		private roleService: RoleService,
 		private userEntityService: UserEntityService,
 		private noteEntityService: NoteEntityService,
-		private userBlockingService: UserBlockingService,
+		private userBlockingCheckService: UserBlockingCheckService,
 		private idService: IdService,
 		private featuredService: FeaturedService,
 		private globalEventService: GlobalEventService,
@@ -106,7 +106,7 @@ export class ReactionService {
 	public async create(user: { id: MiUser['id']; host: MiUser['host']; isBot: MiUser['isBot'] }, note: MiNote, _reaction?: string | null) {
 		// Check blocking
 		if (note.userId !== user.id) {
-			const blocked = await this.userBlockingService.checkBlocked(note.userId, user.id);
+			const blocked = await this.userBlockingCheckService.checkBlocked(note.userId, user.id);
 			if (blocked) {
 				throw new IdentifiableError('e70412a4-7197-4726-8e74-f3e0deb92aa7');
 			}

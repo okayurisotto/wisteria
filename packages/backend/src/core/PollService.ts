@@ -14,7 +14,7 @@ import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
 import { bindThis } from '@/decorators.js';
-import { UserBlockingService } from '@/core/UserBlockingService.js';
+import { UserBlockingCheckService } from './UserBlockingCheckService.js';
 
 @Injectable()
 export class PollService {
@@ -35,7 +35,7 @@ export class PollService {
 		private idService: IdService,
 		private relayService: RelayService,
 		private globalEventService: GlobalEventService,
-		private userBlockingService: UserBlockingService,
+		private userBlockingCheckService: UserBlockingCheckService,
 		private apRendererService: ApRendererService,
 		private apDeliverManagerService: ApDeliverManagerService,
 	) {
@@ -52,7 +52,7 @@ export class PollService {
 
 		// Check blocking
 		if (note.userId !== user.id) {
-			const blocked = await this.userBlockingService.checkBlocked(note.userId, user.id);
+			const blocked = await this.userBlockingCheckService.checkBlocked(note.userId, user.id);
 			if (blocked) {
 				throw new Error('blocked');
 			}

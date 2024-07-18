@@ -3,8 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
+import { Inject, Injectable } from '@nestjs/common';
 import { IsNull } from 'typeorm';
 import type { MiLocalUser, MiPartialLocalUser, MiPartialRemoteUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
@@ -13,7 +12,6 @@ import PerUserFollowingChart from '@/core/chart/charts/per-user-following.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { IdService } from '@/core/IdService.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
-import type { Packed } from '@/misc/json-schema.js';
 import InstanceChart from '@/core/chart/charts/instance.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { WebhookService } from '@/core/WebhookService.js';
@@ -23,13 +21,13 @@ import type { FollowingsRepository, FollowRequestsRepository, InstancesRepositor
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { bindThis } from '@/decorators.js';
-import { UserBlockingService } from '@/core/UserBlockingService.js';
+import { UserBlockingCheckService } from './UserBlockingCheckService.js';
+import { UserBlockingUnblockService } from '@/core/UserBlockingUnblockService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { CacheService } from '@/core/CacheService.js';
 import type { Config } from '@/config.js';
 import { AccountMoveService } from '@/core/AccountMoveService.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import Logger from '../logger.js';
 
 const logger = new Logger('following/create');
@@ -48,12 +46,8 @@ type Remote = MiRemoteUser | {
 type Both = Local | Remote;
 
 @Injectable()
-export class UserFollowingService implements OnModuleInit {
-	private userBlockingService: UserBlockingService;
-
+export class UserFollowingService {
 	constructor(
-		private moduleRef: ModuleRef,
-
 		@Inject(DI.config)
 		private config: Config,
 
@@ -84,14 +78,11 @@ export class UserFollowingService implements OnModuleInit {
 		private webhookService: WebhookService,
 		private apRendererService: ApRendererService,
 		private accountMoveService: AccountMoveService,
-		private fanoutTimelineService: FanoutTimelineService,
 		private perUserFollowingChart: PerUserFollowingChart,
 		private instanceChart: InstanceChart,
+		private userBlockingCheckService: UserBlockingCheckService,
+		private userBlockingUnblockService: UserBlockingUnblockService,
 	) {
-	}
-
-	onModuleInit() {
-		this.userBlockingService = this.moduleRef.get('UserBlockingService');
 	}
 
 	@bindThis
@@ -111,8 +102,8 @@ export class UserFollowingService implements OnModuleInit {
 
 		// check blocking
 		const [blocking, blocked] = await Promise.all([
-			this.userBlockingService.checkBlocked(follower.id, followee.id),
-			this.userBlockingService.checkBlocked(followee.id, follower.id),
+			this.userBlockingCheckService.checkBlocked(follower.id, followee.id),
+			this.userBlockingCheckService.checkBlocked(followee.id, follower.id),
 		]);
 
 		if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee) && blocked) {
@@ -122,7 +113,7 @@ export class UserFollowingService implements OnModuleInit {
 			return;
 		} else if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee) && blocking) {
 			// リモートフォローを受けてブロックされているはずの場合だったら、ブロック解除しておく。
-			await this.userBlockingService.unblock(follower, followee);
+			await this.userBlockingUnblockService.unblock(follower, followee);
 		} else {
 			// それ以外は単純に例外
 			if (blocking) throw new IdentifiableError('710e8fb0-b8c3-4922-be49-d5d93d8e6a6e', 'blocking');
@@ -472,8 +463,8 @@ export class UserFollowingService implements OnModuleInit {
 
 		// check blocking
 		const [blocking, blocked] = await Promise.all([
-			this.userBlockingService.checkBlocked(follower.id, followee.id),
-			this.userBlockingService.checkBlocked(followee.id, follower.id),
+			this.userBlockingCheckService.checkBlocked(follower.id, followee.id),
+			this.userBlockingCheckService.checkBlocked(followee.id, follower.id),
 		]);
 
 		if (blocking) throw new Error('blocking');
