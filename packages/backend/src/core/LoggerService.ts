@@ -10,12 +10,8 @@ import type { KEYWORD } from 'color-convert/conversions.js';
 
 @Injectable()
 export class LoggerService {
-	constructor(
-	) {
-	}
-
 	@bindThis
-	public getLogger(domain: string, color?: KEYWORD | undefined, store?: boolean) {
-		return new Logger(domain, color, store);
+	public getLogger(domain: string, color?: KEYWORD | undefined) {
+		return new Logger(domain, color);
 	}
 }

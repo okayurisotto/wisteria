@@ -18,7 +18,7 @@ import { META_FILE } from '@/path.js';
 const meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
 
 const logger = new Logger('core', 'cyan');
-const bootLogger = logger.createSubLogger('boot', 'magenta', false);
+const bootLogger = logger.createSubLogger('boot', 'magenta');
 
 const themeColor = chalk.hex('#86b300');
 

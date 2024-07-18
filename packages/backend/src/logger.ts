@@ -12,101 +12,162 @@ import type { KEYWORD } from 'color-convert/conversions.js';
 
 type Context = {
 	name: string;
-	color?: KEYWORD;
+	color?: KEYWORD | undefined;
 };
 
 type Level = 'error' | 'success' | 'warning' | 'debug' | 'info';
 
 export default class Logger {
-	private context: Context;
+	private readonly context: Context;
 	private parentLogger: Logger | null = null;
-	private store: boolean;
 
-	constructor(context: string, color?: KEYWORD, store = true) {
+	constructor(context: string, color?: KEYWORD) {
 		this.context = {
 			name: context,
 			color: color,
 		};
-		this.store = store;
 	}
 
 	@bindThis
-	public createSubLogger(context: string, color?: KEYWORD, store = true): Logger {
-		const logger = new Logger(context, color, store);
+	public createSubLogger(context: string, color?: KEYWORD): Logger {
+		const logger = new Logger(context, color);
 		logger.parentLogger = this;
 		return logger;
 	}
 
 	@bindThis
-	private log(level: Level, message: string, data?: Record<string, any> | null, important = false, subContexts: Context[] = [], store = true): void {
+	private log(
+		level: Level,
+		message: string,
+		data: Record<string, unknown> | null,
+		important = false,
+		subContexts: Context[] = [],
+	): void {
 		if (envOption.MK_QUIET) return;
-		if (!this.store) store = false;
-		if (level === 'debug') store = false;
 
 		if (this.parentLogger) {
-			this.parentLogger.log(level, message, data, important, [this.context].concat(subContexts), store);
+			this.parentLogger.log(level, message, data, important, [
+				this.context,
+				...subContexts,
+			]);
 			return;
 		}
 
 		const time = dateFormat(new Date(), 'HH:mm:ss');
-		const l =
-			level === 'error' ? important ? chalk.bgRed.white('ERR ') : chalk.red('ERR ') :
-			level === 'warning' ? chalk.yellow('WARN') :
-			level === 'success' ? important ? chalk.bgGreen.white('DONE') : chalk.green('DONE') :
-			level === 'debug' ? chalk.gray('VERB') :
-			level === 'info' ? chalk.blue('INFO') :
-			null;
-		const contexts = [this.context].concat(subContexts).map(d => d.color ? chalk.rgb(...convertColor.keyword.rgb(d.color))(d.name) : chalk.white(d.name));
-		const m =
-			level === 'error' ? chalk.red(message) :
-			level === 'warning' ? chalk.yellow(message) :
-			level === 'success' ? chalk.green(message) :
-			level === 'debug' ? chalk.gray(message) :
-			level === 'info' ? message :
-			null;
 
-		let log = `${l}\t[${contexts.join(' ')}]\t${m}`;
-		if (envOption.MK_WITH_LOG_TIME) log = chalk.gray(time) + ' ' + log;
+		const l = (() => {
+			switch (level) {
+				case 'error': {
+					return important ? chalk.bgRed.white('ERR ') : chalk.red('ERR ');
+				}
+				case 'warning': {
+					return chalk.yellow('WARN');
+				}
+				case 'success': {
+					return important ? chalk.bgGreen.white('DONE') : chalk.green('DONE');
+				}
+				case 'debug': {
+					return chalk.gray('VERB');
+				}
+				case 'info': {
+					return chalk.blue('INFO');
+				}
+			}
+		})();
+
+		const contexts = [this.context, ...subContexts].map((d) => {
+			return d.color
+				? chalk.rgb(...convertColor.keyword.rgb(d.color))(d.name)
+				: chalk.white(d.name);
+		});
+
+		const m = (() => {
+			switch (level) {
+				case 'error': {
+					return chalk.red(message);
+				}
+				case 'warning': {
+					return chalk.yellow(message);
+				}
+				case 'success': {
+					return chalk.green(message);
+				}
+				case 'debug': {
+					return chalk.gray(message);
+				}
+				case 'info': {
+					return message;
+				}
+			}
+		})();
+
+		let log = [l, `[${contexts.join(' ')}]`, m].join('\t');
+		if (envOption.MK_WITH_LOG_TIME) {
+			log = chalk.gray(time) + ' ' + log;
+		}
 
 		const args: unknown[] = [important ? chalk.bold(log) : log];
-		if (data != null) {
+		if (data !== null) {
 			args.push(data);
 		}
 		console.log(...args);
 	}
 
 	@bindThis
-	public error(x: string | Error, data?: Record<string, any> | null, important = false): void { // 実行を継続できない状況で使う
-		if (x instanceof Error) {
-			data = data ?? {};
-			data.e = x;
-			this.log('error', x.toString(), data, important);
-		} else if (typeof x === 'object') {
-			this.log('error', `${(x as any).message ?? (x as any).name ?? x}`, data, important);
+	/** 実行を継続できない状況で使う */
+	public error(
+		e: string | Error,
+		data: Record<string, unknown> | null = null,
+		important = false,
+	): void {
+		if (e instanceof Error) {
+			this.log('error', e.toString(), { ...data, e }, important);
+		} else if (typeof e === 'object') {
+			// TODO: `e`は`never`となるはずだが信用できないので消せずにいる
+			this.log('error', `${e.message ?? e.name ?? e}`, data, important);
 		} else {
-			this.log('error', `${x}`, data, important);
+			this.log('error', e, data, important);
 		}
 	}
 
 	@bindThis
-	public warn(message: string, data?: Record<string, any> | null, important = false): void { // 実行を継続できるが改善すべき状況で使う
+	/** 実行を継続できるが改善すべき状況で使う */
+	public warn(
+		message: string,
+		data: Record<string, unknown> | null = null,
+		important = false,
+	): void {
 		this.log('warning', message, data, important);
 	}
 
 	@bindThis
-	public succ(message: string, data?: Record<string, any> | null, important = false): void { // 何かに成功した状況で使う
+	/** 何かに成功した状況で使う */
+	public succ(
+		message: string,
+		data: Record<string, unknown> | null = null,
+		important = false,
+	): void {
 		this.log('success', message, data, important);
 	}
 
 	@bindThis
-	public debug(message: string, data?: Record<string, any> | null, important = false): void { // デバッグ用に使う(開発者に必要だが利用者に不要な情報)
-		if (process.env.NODE_ENV !== 'production' || envOption.MK_VERBOSE) {
+	/** デバッグ用に使う(開発者に必要だが利用者に不要な情報) */
+	public debug(
+		message: string,
+		data: Record<string, unknown> | null = null,
+		important = false,
+	): void {
+		if (process.env['NODE_ENV'] !== 'production' || envOption.MK_VERBOSE) {
 			this.log('debug', message, data, important);
 		}
 	}
 
 	@bindThis
-	public info(message: string, data?: Record<string, any> | null, important = false): void { // それ以外
+	public info(
+		message: string,
+		data: Record<string, unknown> | null = null,
+		important = false,
+	): void {
 		this.log('info', message, data, important);
 	}
 }
