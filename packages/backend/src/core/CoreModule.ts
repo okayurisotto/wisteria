@@ -4,7 +4,6 @@
  */
 
 import { Module } from '@nestjs/common';
-import { FanoutTimelineEndpointService } from '@/core/FanoutTimelineEndpointService.js';
 import { AccountMoveService } from './AccountMoveService.js';
 import { AccountUpdateService } from './AccountUpdateService.js';
 import { AiService } from './AiService.js';
@@ -245,7 +244,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		ClipService,
 		FeaturedService,
 		FanoutTimelineService,
-		FanoutTimelineEndpointService,
 		ChannelFollowingService,
 		RegistryApiService,
 		ReversiService,
@@ -419,7 +417,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		ClipService,
 		FeaturedService,
 		FanoutTimelineService,
-		FanoutTimelineEndpointService,
 		ChannelFollowingService,
 		RegistryApiService,
 		ReversiService,

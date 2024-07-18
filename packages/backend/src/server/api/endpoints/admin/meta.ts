@@ -343,30 +343,6 @@ export const meta = {
 				type: 'object',
 				optional: false, nullable: false,
 			},
-			enableFanoutTimeline: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			enableFanoutTimelineDbFallback: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			perLocalUserUserTimelineCacheMax: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-			perRemoteUserUserTimelineCacheMax: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-			perUserHomeTimelineCacheMax: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-			perUserListTimelineCacheMax: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
 			notesPerOneAd: {
 				type: 'number',
 				optional: false, nullable: false,
@@ -570,12 +546,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				bannedEmailDomains: instance.bannedEmailDomains,
 				policies: { ...DEFAULT_POLICIES, ...instance.policies },
 				manifestJsonOverride: instance.manifestJsonOverride,
-				enableFanoutTimeline: instance.enableFanoutTimeline,
-				enableFanoutTimelineDbFallback: instance.enableFanoutTimelineDbFallback,
-				perLocalUserUserTimelineCacheMax: instance.perLocalUserUserTimelineCacheMax,
-				perRemoteUserUserTimelineCacheMax: instance.perRemoteUserUserTimelineCacheMax,
-				perUserHomeTimelineCacheMax: instance.perUserHomeTimelineCacheMax,
-				perUserListTimelineCacheMax: instance.perUserListTimelineCacheMax,
 				notesPerOneAd: instance.notesPerOneAd,
 			};
 		});

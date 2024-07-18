@@ -136,12 +136,6 @@ export const paramDef = {
 		bannedEmailDomains: { type: 'array', items: { type: 'string' } },
 		preservedUsernames: { type: 'array', items: { type: 'string' } },
 		manifestJsonOverride: { type: 'string' },
-		enableFanoutTimeline: { type: 'boolean' },
-		enableFanoutTimelineDbFallback: { type: 'boolean' },
-		perLocalUserUserTimelineCacheMax: { type: 'integer' },
-		perRemoteUserUserTimelineCacheMax: { type: 'integer' },
-		perUserHomeTimelineCacheMax: { type: 'integer' },
-		perUserListTimelineCacheMax: { type: 'integer' },
 		notesPerOneAd: { type: 'integer' },
 		silencedHosts: {
 			type: 'array',
@@ -547,30 +541,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			if (ps.manifestJsonOverride !== undefined) {
 				set.manifestJsonOverride = ps.manifestJsonOverride;
-			}
-
-			if (ps.enableFanoutTimeline !== undefined) {
-				set.enableFanoutTimeline = ps.enableFanoutTimeline;
-			}
-
-			if (ps.enableFanoutTimelineDbFallback !== undefined) {
-				set.enableFanoutTimelineDbFallback = ps.enableFanoutTimelineDbFallback;
-			}
-
-			if (ps.perLocalUserUserTimelineCacheMax !== undefined) {
-				set.perLocalUserUserTimelineCacheMax = ps.perLocalUserUserTimelineCacheMax;
-			}
-
-			if (ps.perRemoteUserUserTimelineCacheMax !== undefined) {
-				set.perRemoteUserUserTimelineCacheMax = ps.perRemoteUserUserTimelineCacheMax;
-			}
-
-			if (ps.perUserHomeTimelineCacheMax !== undefined) {
-				set.perUserHomeTimelineCacheMax = ps.perUserHomeTimelineCacheMax;
-			}
-
-			if (ps.perUserListTimelineCacheMax !== undefined) {
-				set.perUserListTimelineCacheMax = ps.perUserListTimelineCacheMax;
 			}
 
 			if (ps.notesPerOneAd !== undefined) {

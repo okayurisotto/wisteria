@@ -12,10 +12,7 @@ import { DI } from '@/di-symbols.js';
 import { CacheService } from '@/core/CacheService.js';
 import { IdService } from '@/core/IdService.js';
 import { QueryService } from '@/core/QueryService.js';
-import { MetaService } from '@/core/MetaService.js';
 import { MiLocalUser } from '@/models/User.js';
-import { FanoutTimelineEndpointService } from '@/core/FanoutTimelineEndpointService.js';
-import { FanoutTimelineName } from '@/core/FanoutTimelineService.js';
 import { ApiError } from '@/server/api/error.js';
 
 export const meta = {
@@ -74,15 +71,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private queryService: QueryService,
 		private cacheService: CacheService,
 		private idService: IdService,
-		private fanoutTimelineEndpointService: FanoutTimelineEndpointService,
-		private metaService: MetaService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate!) : null);
 			const sinceId = ps.sinceId ?? (ps.sinceDate ? this.idService.gen(ps.sinceDate!) : null);
-			const isSelf = me && (me.id === ps.userId);
-
-			const serverSettings = await this.metaService.fetch();
 
 			if (ps.withReplies && ps.withFiles) throw new ApiError(meta.errors.bothWithRepliesAndWithFiles);
 
@@ -94,58 +86,17 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				}
 			}
 
-			if (!serverSettings.enableFanoutTimeline) {
-				const timeline = await this.getFromDb({
-					untilId,
-					sinceId,
-					limit: ps.limit,
-					userId: ps.userId,
-					withChannelNotes: ps.withChannelNotes,
-					withFiles: ps.withFiles,
-					withRenotes: ps.withRenotes,
-				}, me);
-
-				return await this.noteEntityService.packMany(timeline, me);
-			}
-
-			const redisTimelines: FanoutTimelineName[] = [ps.withFiles ? `userTimelineWithFiles:${ps.userId}` : `userTimeline:${ps.userId}`];
-
-			if (ps.withReplies) redisTimelines.push(`userTimelineWithReplies:${ps.userId}`);
-			if (ps.withChannelNotes) redisTimelines.push(`userTimelineWithChannel:${ps.userId}`);
-
-			const isFollowing = me && Object.hasOwn(await this.cacheService.userFollowingsCache.fetch(me.id), ps.userId);
-
-			const timeline = await this.fanoutTimelineEndpointService.timeline({
+			const timeline = await this.getFromDb({
 				untilId,
 				sinceId,
 				limit: ps.limit,
-				allowPartial: ps.allowPartial,
-				me,
-				redisTimelines,
-				useDbFallback: true,
-				ignoreAuthorFromMute: true,
-				excludeReplies: ps.withChannelNotes && !ps.withReplies, // userTimelineWithChannel may include replies
-				excludeNoFiles: ps.withChannelNotes && ps.withFiles, // userTimelineWithChannel may include notes without files
-				excludePureRenotes: !ps.withRenotes,
-				noteFilter: note => {
-					if (note.channel?.isSensitive && !isSelf) return false;
-					if (note.visibility === 'specified' && (!me || (me.id !== note.userId && !note.visibleUserIds.some(v => v === me.id)))) return false;
-					if (note.visibility === 'followers' && !isFollowing && !isSelf) return false;
+				userId: ps.userId,
+				withChannelNotes: ps.withChannelNotes,
+				withFiles: ps.withFiles,
+				withRenotes: ps.withRenotes,
+			}, me);
 
-					return true;
-				},
-				dbFallback: async (untilId, sinceId, limit) => await this.getFromDb({
-					untilId,
-					sinceId,
-					limit,
-					userId: ps.userId,
-					withChannelNotes: ps.withChannelNotes,
-					withFiles: ps.withFiles,
-					withRenotes: ps.withRenotes,
-				}, me),
-			});
-
-			return timeline;
+			return await this.noteEntityService.packMany(timeline, me);
 		});
 	}
 

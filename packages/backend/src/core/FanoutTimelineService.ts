@@ -10,33 +10,8 @@ import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 
 export type FanoutTimelineName =
-	// home timeline
-	| `homeTimeline:${string}`
-	| `homeTimelineWithFiles:${string}` // only notes with files are included
-	// local timeline
-	| `localTimeline` // replies are not included
-	| `localTimelineWithFiles` // only non-reply notes with files are included
-	| `localTimelineWithReplies` // only replies are included
-	| `localTimelineWithReplyTo:${string}` // Only replies to specific local user are included. Parameter is reply user id.
-
-	// antenna
 	| `antennaTimeline:${string}`
-
-	// user timeline
-	| `userTimeline:${string}` // replies are not included
-	| `userTimelineWithFiles:${string}` // only non-reply notes with files are included
-	| `userTimelineWithReplies:${string}` // only replies are included
-	| `userTimelineWithChannel:${string}` // only channel notes are included, replies are included
-
-	// user list timelines
-	| `userListTimeline:${string}`
-	| `userListTimelineWithFiles:${string}` // only notes with files are included
-
-	// channel timelines
-	| `channelTimeline:${string}` // replies are included
-
-	// role timelines
-	| `roleTimeline:${string}` // any notes are included
+	| `roleTimeline:${string}`;
 
 @Injectable()
 export class FanoutTimelineService {
@@ -45,8 +20,7 @@ export class FanoutTimelineService {
 		private redisForTimelines: Redis.Redis,
 
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public push(tl: FanoutTimelineName, id: string, maxlen: number, pipeline: Redis.ChainableCommander) {
@@ -59,11 +33,13 @@ export class FanoutTimelineService {
 			}
 		} else {
 			// 末尾のIDを取得
-			this.redisForTimelines.lindex('list:' + tl, -1).then(lastId => {
-				if (lastId == null || (this.idService.parse(id).date.getTime() > this.idService.parse(lastId).date.getTime())) {
-					this.redisForTimelines.lpush('list:' + tl, id);
-				} else {
-					Promise.resolve();
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
+			this.redisForTimelines.lindex('list:' + tl, -1).then(async (lastId) => {
+				if (
+					lastId === null ||
+					(this.idService.parse(id).date.getTime() > this.idService.parse(lastId).date.getTime())
+				) {
+					await this.redisForTimelines.lpush('list:' + tl, id);
 				}
 			});
 		}
@@ -84,31 +60,5 @@ export class FanoutTimelineService {
 			return this.redisForTimelines.lrange('list:' + name, 0, -1)
 				.then(ids => ids.sort((a, b) => a > b ? -1 : 1));
 		}
-	}
-
-	@bindThis
-	public getMulti(name: FanoutTimelineName[], untilId?: string | null, sinceId?: string | null): Promise<string[][]> {
-		const pipeline = this.redisForTimelines.pipeline();
-		for (const n of name) {
-			pipeline.lrange('list:' + n, 0, -1);
-		}
-		return pipeline.exec().then(res => {
-			if (res == null) return [];
-			const tls = res.map(r => r[1] as string[]);
-			return tls.map(ids =>
-				(untilId && sinceId)
-					? ids.filter(id => id < untilId && id > sinceId).sort((a, b) => a > b ? -1 : 1)
-					: untilId
-						? ids.filter(id => id < untilId).sort((a, b) => a > b ? -1 : 1)
-						: sinceId
-							? ids.filter(id => id > sinceId).sort((a, b) => a < b ? -1 : 1)
-							: ids.sort((a, b) => a > b ? -1 : 1),
-			);
-		});
-	}
-
-	@bindThis
-	public purge(name: FanoutTimelineName) {
-		return this.redisForTimelines.del('list:' + name);
 	}
 }

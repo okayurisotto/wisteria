@@ -12,11 +12,8 @@ import ActiveUsersChart from '@/core/chart/charts/active-users.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { IdService } from '@/core/IdService.js';
-import { CacheService } from '@/core/CacheService.js';
 import { UserFollowingService } from '@/core/UserFollowingService.js';
 import { MiLocalUser } from '@/models/User.js';
-import { MetaService } from '@/core/MetaService.js';
-import { FanoutTimelineEndpointService } from '@/core/FanoutTimelineEndpointService.js';
 
 export const meta = {
 	tags: ['notes'],
@@ -65,77 +62,29 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private noteEntityService: NoteEntityService,
 		private activeUsersChart: ActiveUsersChart,
 		private idService: IdService,
-		private cacheService: CacheService,
-		private fanoutTimelineEndpointService: FanoutTimelineEndpointService,
 		private userFollowingService: UserFollowingService,
 		private queryService: QueryService,
-		private metaService: MetaService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate!) : null);
 			const sinceId = ps.sinceId ?? (ps.sinceDate ? this.idService.gen(ps.sinceDate!) : null);
 
-			const serverSettings = await this.metaService.fetch();
-
-			if (!serverSettings.enableFanoutTimeline) {
-				const timeline = await this.getFromDb({
-					untilId,
-					sinceId,
-					limit: ps.limit,
-					includeMyRenotes: ps.includeMyRenotes,
-					includeRenotedMyNotes: ps.includeRenotedMyNotes,
-					includeLocalRenotes: ps.includeLocalRenotes,
-					withFiles: ps.withFiles,
-					withRenotes: ps.withRenotes,
-				}, me);
-
-				process.nextTick(() => {
-					this.activeUsersChart.read(me);
-				});
-
-				return await this.noteEntityService.packMany(timeline, me);
-			}
-
-			const [
-				followings,
-			] = await Promise.all([
-				this.cacheService.userFollowingsCache.fetch(me.id),
-			]);
-
-			const timeline = this.fanoutTimelineEndpointService.timeline({
+			const timeline = await this.getFromDb({
 				untilId,
 				sinceId,
 				limit: ps.limit,
-				allowPartial: ps.allowPartial,
-				me,
-				useDbFallback: serverSettings.enableFanoutTimelineDbFallback,
-				redisTimelines: ps.withFiles ? [`homeTimelineWithFiles:${me.id}`] : [`homeTimeline:${me.id}`],
-				alwaysIncludeMyNotes: true,
-				excludePureRenotes: !ps.withRenotes,
-				noteFilter: note => {
-					if (note.reply && note.reply.visibility === 'followers') {
-						if (!Object.hasOwn(followings, note.reply.userId)) return false;
-					}
-
-					return true;
-				},
-				dbFallback: async (untilId, sinceId, limit) => await this.getFromDb({
-					untilId,
-					sinceId,
-					limit,
-					includeMyRenotes: ps.includeMyRenotes,
-					includeRenotedMyNotes: ps.includeRenotedMyNotes,
-					includeLocalRenotes: ps.includeLocalRenotes,
-					withFiles: ps.withFiles,
-					withRenotes: ps.withRenotes,
-				}, me),
-			});
+				includeMyRenotes: ps.includeMyRenotes,
+				includeRenotedMyNotes: ps.includeRenotedMyNotes,
+				includeLocalRenotes: ps.includeLocalRenotes,
+				withFiles: ps.withFiles,
+				withRenotes: ps.withRenotes,
+			}, me);
 
 			process.nextTick(() => {
 				this.activeUsersChart.read(me);
 			});
 
-			return timeline;
+			return await this.noteEntityService.packMany(timeline, me);
 		});
 	}
 

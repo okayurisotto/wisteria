@@ -12,11 +12,8 @@ import ActiveUsersChart from '@/core/chart/charts/active-users.js';
 import { DI } from '@/di-symbols.js';
 import { RoleService } from '@/core/RoleService.js';
 import { IdService } from '@/core/IdService.js';
-import { CacheService } from '@/core/CacheService.js';
 import { QueryService } from '@/core/QueryService.js';
-import { MetaService } from '@/core/MetaService.js';
 import { MiLocalUser } from '@/models/User.js';
-import { FanoutTimelineEndpointService } from '@/core/FanoutTimelineEndpointService.js';
 import { ApiError } from '../../error.js';
 
 export const meta = {
@@ -73,10 +70,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private roleService: RoleService,
 		private activeUsersChart: ActiveUsersChart,
 		private idService: IdService,
-		private cacheService: CacheService,
-		private fanoutTimelineEndpointService: FanoutTimelineEndpointService,
 		private queryService: QueryService,
-		private metaService: MetaService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate!) : null);
@@ -89,48 +83,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			if (ps.withReplies && ps.withFiles) throw new ApiError(meta.errors.bothWithRepliesAndWithFiles);
 
-			const serverSettings = await this.metaService.fetch();
-
-			if (!serverSettings.enableFanoutTimeline) {
-				const timeline = await this.getFromDb({
-					untilId,
-					sinceId,
-					limit: ps.limit,
-					withFiles: ps.withFiles,
-					withReplies: ps.withReplies,
-				}, me);
-
-				process.nextTick(() => {
-					if (me) {
-						this.activeUsersChart.read(me);
-					}
-				});
-
-				return await this.noteEntityService.packMany(timeline, me);
-			}
-
-			const timeline = await this.fanoutTimelineEndpointService.timeline({
+			const timeline = await this.getFromDb({
 				untilId,
 				sinceId,
 				limit: ps.limit,
-				allowPartial: ps.allowPartial,
-				me,
-				useDbFallback: serverSettings.enableFanoutTimelineDbFallback,
-				redisTimelines:
-					ps.withFiles ? ['localTimelineWithFiles']
-					: ps.withReplies ? ['localTimeline', 'localTimelineWithReplies']
-					: me ? ['localTimeline', `localTimelineWithReplyTo:${me.id}`]
-					: ['localTimeline'],
-				alwaysIncludeMyNotes: true,
-				excludePureRenotes: !ps.withRenotes,
-				dbFallback: async (untilId, sinceId, limit) => await this.getFromDb({
-					untilId,
-					sinceId,
-					limit,
-					withFiles: ps.withFiles,
-					withReplies: ps.withReplies,
-				}, me),
-			});
+				withFiles: ps.withFiles,
+				withReplies: ps.withReplies,
+			}, me);
 
 			process.nextTick(() => {
 				if (me) {
@@ -138,7 +97,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				}
 			});
 
-			return timeline;
+			return await this.noteEntityService.packMany(timeline, me);
 		});
 	}
 
