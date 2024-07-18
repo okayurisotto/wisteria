@@ -10,12 +10,12 @@
 import { EventEmitter } from 'node:events';
 import Xev from 'xev';
 import Logger from '@/logger.js';
-import { envOption } from '../env.js';
-import { masterMain } from './master.js';
+import { envOption } from '@/env.js';
+import { initialize } from './master.js';
 
 import 'reflect-metadata';
 
-process.title = 'Misskey';
+process.title = 'Wisteria';
 
 Error.stackTraceLimit = Infinity;
 EventEmitter.defaultMaxListeners = 128;
@@ -23,29 +23,25 @@ EventEmitter.defaultMaxListeners = 128;
 const logger = new Logger('core', 'cyan');
 const ev = new Xev();
 
-//#region Events
-
 // Display detail of unhandled promise rejection
 if (!envOption.MK_QUIET) {
 	process.on('unhandledRejection', console.dir);
 }
 
 // Display detail of uncaught exception
-process.on('uncaughtException', err => {
+process.on('uncaughtException', (err) => {
 	try {
 		logger.error(err);
 		console.trace(err);
-	} catch { }
+	} catch { /* empty */ }
 });
 
 // Dying away...
-process.on('exit', code => {
-	logger.info(`The process is going to exit with code ${code}`);
+process.on('exit', (code) => {
+	logger.info(`The process is going to exit with code ${code.toString()}`);
 });
 
-//#endregion
-
-await masterMain();
+await initialize();
 ev.mount();
 
 // ユニットテスト時にMisskeyが子プロセスで起動された時のため

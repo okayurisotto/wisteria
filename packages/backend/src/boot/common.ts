@@ -13,30 +13,32 @@ import { ServerStatsService } from '@/daemons/ServerStatsService.js';
 import { ServerService } from '@/server/ServerService.js';
 import { MainModule } from '@/MainModule.js';
 
-export async function server() {
-	const app = await NestFactory.createApplicationContext(MainModule, {
-		logger: new NestLogger(),
-	});
+export const server = async () => {
+	const app = await NestFactory.createApplicationContext(
+		MainModule,
+		{ logger: new NestLogger() },
+	);
 
 	const serverService = app.get(ServerService);
 	await serverService.launch();
 
-	if (process.env.NODE_ENV !== 'test') {
-		app.get(ChartManagementService).start();
+	if (process.env['NODE_ENV'] !== 'test') {
+		void app.get(ChartManagementService).start();
 		app.get(QueueStatsService).start();
-		app.get(ServerStatsService).start();
+		void app.get(ServerStatsService).start();
 	}
 
 	return app;
 }
 
-export async function jobQueue() {
-	const jobQueue = await NestFactory.createApplicationContext(QueueProcessorModule, {
-		logger: new NestLogger(),
-	});
+export const jobQueue = async () => {
+	const jobQueue = await NestFactory.createApplicationContext(
+		QueueProcessorModule,
+		{ logger: new NestLogger() },
+	);
 
-	jobQueue.get(QueueProcessorService).start();
-	jobQueue.get(ChartManagementService).start();
+	void jobQueue.get(QueueProcessorService).start();
+	void jobQueue.get(ChartManagementService).start();
 
 	return jobQueue;
 }
