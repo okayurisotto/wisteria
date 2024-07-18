@@ -28,9 +28,7 @@ import { CacheService } from '@/core/CacheService.js';
 import type { Config } from '@/config.js';
 import { AccountMoveService } from '@/core/AccountMoveService.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import Logger from '../logger.js';
-
-const logger = new Logger('following/create');
+import { LoggerService } from './LoggerService.js';
 
 type Local = MiLocalUser | {
 	id: MiLocalUser['id'];
@@ -47,6 +45,8 @@ type Both = Local | Remote;
 
 @Injectable()
 export class UserFollowingService {
+	private readonly logger;
+
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
@@ -82,7 +82,9 @@ export class UserFollowingService {
 		private instanceChart: InstanceChart,
 		private userBlockingCheckService: UserBlockingCheckService,
 		private userBlockingUnblockService: UserBlockingUnblockService,
+		private loggerService: LoggerService,
 	) {
+		this.logger = this.loggerService.getLogger('following/create');
 	}
 
 	@bindThis
@@ -215,7 +217,7 @@ export class UserFollowingService {
 			followeeSharedInbox: this.userEntityService.isRemoteUser(followee) ? followee.sharedInbox : null,
 		}).catch(err => {
 			if (isDuplicateKeyValueError(err) && this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee)) {
-				logger.info(`Insert duplicated ignore. ${follower.id} => ${followee.id}`);
+				this.logger.info(`Insert duplicated ignore. ${follower.id} => ${followee.id}`);
 				alreadyFollowed = true;
 			} else {
 				throw err;
@@ -338,7 +340,7 @@ export class UserFollowingService {
 		});
 
 		if (following === null || !following.follower || !following.followee) {
-			logger.warn('フォロー解除がリクエストされましたがフォローしていませんでした');
+			this.logger.warn('フォロー解除がリクエストされましたがフォローしていませんでした');
 			return;
 		}
 
