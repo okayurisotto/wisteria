@@ -55,6 +55,7 @@
 		"postcss": "8.4.33",
 		"tar": "6.2.0",
 		"terser": "5.27.0",
+		"turbo": "^2.0.7",
 		"typescript": "5.3.3"
 	},
 	"devDependencies": {
@@ -64,8 +65,7 @@
 		"cypress": "13.6.3",
 		"eslint": "8.56.0",
 		"ncp": "2.0.0",
-		"start-server-and-test": "2.0.3",
-		"turbo": "^2.0.7"
+		"start-server-and-test": "2.0.3"
 	},
 	"optionalDependencies": {
 		"@tensorflow/tfjs-core": "4.4.0"

@@ -36,6 +36,9 @@ importers:
       terser:
         specifier: 5.27.0
         version: 5.27.0
+      turbo:
+        specifier: ^2.0.7
+        version: 2.0.7
       typescript:
         specifier: 5.3.3
         version: 5.3.3
@@ -65,9 +68,6 @@ importers:
       start-server-and-test:
         specifier: 2.0.3
         version: 2.0.3
-      turbo:
-        specifier: ^2.0.7
-        version: 2.0.7
 
   packages/backend:
     dependencies:
@@ -10030,6 +10030,7 @@ packages:
 
   ts-case-convert@2.0.2:
     resolution: {integrity: sha512-vdKfx1VAdpvEBOBv5OpVu5ZFqRg9HdTI4sYt6qqMeICBeNyXvitrarCnFWNDAki51IKwCyx+ZssY46Q9jH5otA==}
+    bundledDependencies: []
 
   ts-dedent@2.2.0:
     resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
