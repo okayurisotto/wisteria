@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { In, IsNull } from 'typeorm';
 import * as Redis from 'ioredis';
 import { DI } from '@/di-symbols.js';
@@ -14,17 +14,15 @@ import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiEmoji } from '@/models/Emoji.js';
 import type { EmojisRepository, MiRole, MiUser } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
-import { MemoryKVCache, RedisSingleCache } from '@/misc/cache.js';
+import { RedisSingleCache } from '@/misc/cache.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import { query } from '@/misc/prelude/url.js';
 import type { Serialized } from '@/types.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 
 const parseEmojiStrRegexp = /^(\w+)(?:@([\w.-]+))?$/;
 
 @Injectable()
-export class CustomEmojiService implements OnApplicationShutdown {
-	private cache: MemoryKVCache<MiEmoji | null>;
+export class CustomEmojiService {
 	public localEmojisCache: RedisSingleCache<Map<string, MiEmoji>>;
 
 	constructor(
@@ -40,8 +38,6 @@ export class CustomEmojiService implements OnApplicationShutdown {
 		private moderationLogService: ModerationLogService,
 		private globalEventService: GlobalEventService,
 	) {
-		this.cache = new MemoryKVCache<MiEmoji | null>(1000 * 60 * 60 * 12);
-
 		this.localEmojisCache = new RedisSingleCache<Map<string, MiEmoji>>(this.redisClient, 'localEmojis', {
 			lifetime: 1000 * 60 * 30, // 30m
 			memoryCacheLifetime: 1000 * 60 * 3, // 3m
@@ -329,12 +325,7 @@ export class CustomEmojiService implements OnApplicationShutdown {
 		if (name == null) return null;
 		if (host == null) return null;
 
-		const queryOrNull = async () => (await this.emojisRepository.findOneBy({
-			name,
-			host,
-		})) ?? null;
-
-		const emoji = await this.cache.fetch(`${name} ${host}`, queryOrNull);
+		const emoji = await this.emojisRepository.findOneBy({ name, host });
 
 		if (emoji == null) return null;
 		return emoji.publicUrl || emoji.originalUrl; // || emoji.originalUrl してるのは後方互換性のため（publicUrlはstringなので??はだめ）
@@ -356,30 +347,6 @@ export class CustomEmojiService implements OnApplicationShutdown {
 	}
 
 	/**
-	 * 与えられた絵文字のリストをデータベースから取得し、キャッシュに追加します
-	 */
-	@bindThis
-	public async prefetchEmojis(emojis: { name: string; host: string | null; }[]): Promise<void> {
-		const notCachedEmojis = emojis.filter(emoji => this.cache.get(`${emoji.name} ${emoji.host}`) == null);
-		const emojisQuery: any[] = [];
-		const hosts = new Set(notCachedEmojis.map(e => e.host));
-		for (const host of hosts) {
-			if (host == null) continue;
-			emojisQuery.push({
-				name: In(notCachedEmojis.filter(e => e.host === host).map(e => e.name)),
-				host: host,
-			});
-		}
-		const _emojis = emojisQuery.length > 0 ? await this.emojisRepository.find({
-			where: emojisQuery,
-			select: ['name', 'host', 'originalUrl', 'publicUrl'],
-		}) : [];
-		for (const emoji of _emojis) {
-			this.cache.set(`${emoji.name} ${emoji.host}`, emoji);
-		}
-	}
-
-	/**
 	 * ローカル内の絵文字に重複がないかチェックします
 	 * @param name 絵文字名
 	 */
@@ -391,15 +358,5 @@ export class CustomEmojiService implements OnApplicationShutdown {
 	@bindThis
 	public getEmojiById(id: string): Promise<MiEmoji | null> {
 		return this.emojisRepository.findOneBy({ id });
-	}
-
-	@bindThis
-	public dispose(): void {
-		this.cache.dispose();
-	}
-
-	@bindThis
-	public onApplicationShutdown(signal?: string | undefined): void {
-		this.dispose();
 	}
 }

@@ -3,18 +3,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import type { InstancesRepository } from '@/models/_.js';
 import type { MiInstance } from '@/models/Instance.js';
-import { MemoryKVCache, RedisKVCache } from '@/misc/cache.js';
+import { RedisKVCache } from '@/misc/cache.js';
 import { IdService } from '@/core/IdService.js';
 import { DI } from '@/di-symbols.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { bindThis } from '@/decorators.js';
 
 @Injectable()
-export class FederatedInstanceService implements OnApplicationShutdown {
+export class FederatedInstanceService {
 	public federatedInstanceCache: RedisKVCache<MiInstance | null>;
 
 	constructor(
@@ -81,15 +81,5 @@ export class FederatedInstanceService implements OnApplicationShutdown {
 			});
 
 		this.federatedInstanceCache.set(result.host, result);
-	}
-
-	@bindThis
-	public dispose(): void {
-		this.federatedInstanceCache.dispose();
-	}
-
-	@bindThis
-	public onApplicationShutdown(signal?: string | undefined): void {
-		this.dispose();
 	}
 }

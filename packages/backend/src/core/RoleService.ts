@@ -230,7 +230,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	@bindThis
 	public async getUserAssigns(userId: MiUser['id']) {
 		const now = Date.now();
-		let assigns = await this.roleAssignmentByUserIdCache.fetch(userId, () => this.roleAssignmentsRepository.findBy({ userId }));
+		let assigns = await this.roleAssignmentsRepository.findBy({ userId });
 		// 期限切れのロールを除外
 		assigns = assigns.filter(a => a.expiresAt == null || (a.expiresAt.getTime() > now));
 		return assigns;
@@ -252,7 +252,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	@bindThis
 	public async getUserBadgeRoles(userId: MiUser['id']) {
 		const now = Date.now();
-		let assigns = await this.roleAssignmentByUserIdCache.fetch(userId, () => this.roleAssignmentsRepository.findBy({ userId }));
+		let assigns = await this.roleAssignmentsRepository.findBy({ userId });
 		// 期限切れのロールを除外
 		assigns = assigns.filter(a => a.expiresAt == null || (a.expiresAt.getTime() > now));
 		const assignedRoleIds = assigns.map(x => x.roleId);
@@ -556,7 +556,6 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	@bindThis
 	public dispose(): void {
 		this.redisForSub.off('message', this.onMessage);
-		this.roleAssignmentByUserIdCache.dispose();
 	}
 
 	@bindThis

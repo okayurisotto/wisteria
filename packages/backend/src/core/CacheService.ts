@@ -6,20 +6,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import type { BlockingsRepository, FollowingsRepository, MutingsRepository, RenoteMutingsRepository, MiUserProfile, UserProfilesRepository, UsersRepository, MiFollowing } from '@/models/_.js';
-import { MemoryKVCache, RedisKVCache } from '@/misc/cache.js';
-import type { MiLocalUser, MiUser } from '@/models/User.js';
+import { RedisKVCache } from '@/misc/cache.js';
+import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import type { OnApplicationShutdown } from '@nestjs/common';
 
 @Injectable()
 export class CacheService implements OnApplicationShutdown {
-	public userByIdCache: MemoryKVCache<MiUser>;
-	public localUserByNativeTokenCache: MemoryKVCache<MiLocalUser | null>;
-	public localUserByIdCache: MemoryKVCache<MiLocalUser>;
-	public uriPersonCache: MemoryKVCache<MiUser | null>;
 	public userProfileCache: RedisKVCache<MiUserProfile>;
 	public userMutingsCache: RedisKVCache<Set<string>>;
 	public userBlockingCache: RedisKVCache<Set<string>>;
@@ -51,16 +46,7 @@ export class CacheService implements OnApplicationShutdown {
 
 		@Inject(DI.followingsRepository)
 		private followingsRepository: FollowingsRepository,
-
-		private userEntityService: UserEntityService,
 	) {
-		//this.onMessage = this.onMessage.bind(this);
-
-		this.userByIdCache = new MemoryKVCache<MiUser>(Infinity);
-		this.localUserByNativeTokenCache = new MemoryKVCache<MiLocalUser | null>(Infinity);
-		this.localUserByIdCache = new MemoryKVCache<MiLocalUser>(Infinity);
-		this.uriPersonCache = new MemoryKVCache<MiUser | null>(Infinity);
-
 		this.userProfileCache = new RedisKVCache<MiUserProfile>(this.redisClient, 'userProfile', {
 			lifetime: 1000 * 60 * 30, // 30m
 			memoryCacheLifetime: 1000 * 60, // 1m
@@ -129,39 +115,12 @@ export class CacheService implements OnApplicationShutdown {
 			switch (type) {
 				case 'userChangeSuspendedState':
 				case 'remoteUserUpdated': {
-					const user = await this.usersRepository.findOneBy({ id: body.id });
-					if (user == null) {
-						this.userByIdCache.delete(body.id);
-						for (const [k, v] of this.uriPersonCache.cache.entries()) {
-							if (v.value?.id === body.id) {
-								this.uriPersonCache.delete(k);
-							}
-						}
-					} else {
-						this.userByIdCache.set(user.id, user);
-						for (const [k, v] of this.uriPersonCache.cache.entries()) {
-							if (v.value?.id === user.id) {
-								this.uriPersonCache.set(k, user);
-							}
-						}
-						if (this.userEntityService.isLocalUser(user)) {
-							this.localUserByNativeTokenCache.set(user.token!, user);
-							this.localUserByIdCache.set(user.id, user);
-						}
-					}
 					break;
 				}
 				case 'userTokenRegenerated': {
-					const user = await this.usersRepository.findOneByOrFail({ id: body.id }) as MiLocalUser;
-					this.localUserByNativeTokenCache.delete(body.oldToken);
-					this.localUserByNativeTokenCache.set(body.newToken, user);
 					break;
 				}
 				case 'follow': {
-					const follower = this.userByIdCache.get(body.followerId);
-					if (follower) follower.followingCount++;
-					const followee = this.userByIdCache.get(body.followeeId);
-					if (followee) followee.followersCount++;
 					this.userFollowingsCache.delete(body.followerId);
 					break;
 				}
@@ -172,23 +131,13 @@ export class CacheService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	public findUserById(userId: MiUser['id']) {
-		return this.userByIdCache.fetch(userId, () => this.usersRepository.findOneByOrFail({ id: userId }));
+	public async findUserById(userId: MiUser['id']): Promise<MiUser> {
+		return await this.usersRepository.findOneByOrFail({ id: userId });
 	}
 
 	@bindThis
 	public dispose(): void {
 		this.redisForSub.off('message', this.onMessage);
-		this.userByIdCache.dispose();
-		this.localUserByNativeTokenCache.dispose();
-		this.localUserByIdCache.dispose();
-		this.uriPersonCache.dispose();
-		this.userProfileCache.dispose();
-		this.userMutingsCache.dispose();
-		this.userBlockingCache.dispose();
-		this.userBlockedCache.dispose();
-		this.renoteMutingsCache.dispose();
-		this.userFollowingsCache.dispose();
 	}
 
 	@bindThis

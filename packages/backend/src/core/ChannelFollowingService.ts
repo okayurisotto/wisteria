@@ -91,14 +91,4 @@ export class ChannelFollowingService implements OnModuleInit {
 			}
 		}
 	}
-
-	@bindThis
-	public dispose(): void {
-		this.userFollowingChannelsCache.dispose();
-	}
-
-	@bindThis
-	public onApplicationShutdown(signal?: string | undefined): void {
-		this.dispose();
-	}
 }

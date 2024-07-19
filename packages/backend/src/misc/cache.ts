@@ -88,16 +88,6 @@ export class RedisKVCache<T> {
 
 		// TODO: イベント発行して他プロセスのメモリキャッシュも更新できるようにする
 	}
-
-	@bindThis
-	public gc() {
-		this.memoryCache.gc();
-	}
-
-	@bindThis
-	public dispose() {
-		this.memoryCache.dispose();
-	}
 }
 
 export class RedisSingleCache<T> {
@@ -177,110 +167,29 @@ export class RedisSingleCache<T> {
 	}
 }
 
-// TODO: メモリ節約のためあまり参照されないキーを定期的に削除できるようにする？
-
 export class MemoryKVCache<T> {
-	public cache: Map<string, { date: number; value: T; }>;
-	private lifetime: number;
-	private gcIntervalHandle: NodeJS.Timeout;
+	public readonly cache = new Map<string, { date: number; value: T; }>();
 
-	constructor(lifetime: MemoryKVCache<never>['lifetime']) {
-		this.cache = new Map();
-		this.lifetime = lifetime;
+	public constructor(private readonly lifetime: number) {}
 
-		this.gcIntervalHandle = setInterval(() => {
-			this.gc();
-		}, 1000 * 60 * 3);
-	}
-
-	@bindThis
 	public set(key: string, value: T): void {
-		this.cache.set(key, {
-			date: Date.now(),
-			value,
-		});
+		this.cache.set(key, { date: Date.now(), value });
 	}
 
-	@bindThis
 	public get(key: string): T | undefined {
 		const cached = this.cache.get(key);
-		if (cached == null) return undefined;
-		if ((Date.now() - cached.date) > this.lifetime) {
+		if (cached === undefined) return undefined;
+
+		const now = Date.now();
+		if (now - cached.date > this.lifetime) {
 			this.cache.delete(key);
 			return undefined;
 		}
+
 		return cached.value;
 	}
 
-	@bindThis
 	public delete(key: string): void {
 		this.cache.delete(key);
-	}
-
-	/**
-	 * キャッシュがあればそれを返し、無ければfetcherを呼び出して結果をキャッシュ&返します
-	 * optional: キャッシュが存在してもvalidatorでfalseを返すとキャッシュ無効扱いにします
-	 */
-	@bindThis
-	public async fetch(key: string, fetcher: () => Promise<T>, validator?: (cachedValue: T) => boolean): Promise<T> {
-		const cachedValue = this.get(key);
-		if (cachedValue !== undefined) {
-			if (validator) {
-				if (validator(cachedValue)) {
-					// Cache HIT
-					return cachedValue;
-				}
-			} else {
-				// Cache HIT
-				return cachedValue;
-			}
-		}
-
-		// Cache MISS
-		const value = await fetcher();
-		this.set(key, value);
-		return value;
-	}
-
-	/**
-	 * キャッシュがあればそれを返し、無ければfetcherを呼び出して結果をキャッシュ&返します
-	 * optional: キャッシュが存在してもvalidatorでfalseを返すとキャッシュ無効扱いにします
-	 */
-	@bindThis
-	public async fetchMaybe(key: string, fetcher: () => Promise<T | undefined>, validator?: (cachedValue: T) => boolean): Promise<T | undefined> {
-		const cachedValue = this.get(key);
-		if (cachedValue !== undefined) {
-			if (validator) {
-				if (validator(cachedValue)) {
-					// Cache HIT
-					return cachedValue;
-				}
-			} else {
-				// Cache HIT
-				return cachedValue;
-			}
-		}
-
-		// Cache MISS
-		const value = await fetcher();
-		if (value !== undefined) {
-			this.set(key, value);
-		}
-		return value;
-	}
-
-	@bindThis
-	public gc(): void {
-		const now = Date.now();
-		for (const [key, { date }] of this.cache.entries()) {
-			if ((now - date) > this.lifetime) {
-				this.cache.delete(key);
-			}
-		}
-	}
-
-	@bindThis
-	public dispose(): void {
-		clearInterval(this.gcIntervalHandle);
 	}
 }

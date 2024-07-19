@@ -13,7 +13,6 @@ import type { Config } from '@/config.js';
 import type { MiLocalUser, MiRemoteUser } from '@/models/User.js';
 import { MiUser } from '@/models/User.js';
 import { truncate } from '@/misc/truncate.js';
-import type { CacheService } from '@/core/CacheService.js';
 import { normalizeForSearch } from '@/misc/normalize-for-search.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
 import type Logger from '@/logger.js';
@@ -63,7 +62,6 @@ export class ApPersonService implements OnModuleInit {
 	private metaService: MetaService;
 	private federatedInstanceService: FederatedInstanceService;
 	private fetchInstanceMetadataService: FetchInstanceMetadataService;
-	private cacheService: CacheService;
 	private apResolverService: ApResolverService;
 	private apNoteService: ApNoteService;
 	private apImageService: ApImageService;
@@ -111,7 +109,6 @@ export class ApPersonService implements OnModuleInit {
 		this.metaService = this.moduleRef.get('MetaService');
 		this.federatedInstanceService = this.moduleRef.get('FederatedInstanceService');
 		this.fetchInstanceMetadataService = this.moduleRef.get('FetchInstanceMetadataService');
-		this.cacheService = this.moduleRef.get('CacheService');
 		this.apResolverService = this.moduleRef.get('ApResolverService');
 		this.apNoteService = this.moduleRef.get('ApNoteService');
 		this.apImageService = this.moduleRef.get('ApImageService');
@@ -201,14 +198,10 @@ export class ApPersonService implements OnModuleInit {
 	 */
 	@bindThis
 	public async fetchPerson(uri: string): Promise<MiLocalUser | MiRemoteUser | null> {
-		const cached = this.cacheService.uriPersonCache.get(uri) as MiLocalUser | MiRemoteUser | null | undefined;
-		if (cached) return cached;
-
 		// URIがこのサーバーを指しているならデータベースからフェッチ
 		if (uri.startsWith(`${this.config.url}/`)) {
 			const id = uri.split('/').pop();
 			const u = await this.usersRepository.findOneBy({ id }) as MiLocalUser | null;
-			if (u) this.cacheService.uriPersonCache.set(uri, u);
 			return u;
 		}
 
@@ -216,7 +209,6 @@ export class ApPersonService implements OnModuleInit {
 		const exist = await this.usersRepository.findOneBy({ uri }) as MiLocalUser | MiRemoteUser | null;
 
 		if (exist) {
-			this.cacheService.uriPersonCache.set(uri, exist);
 			return exist;
 		}
 		//#endregion
@@ -376,9 +368,6 @@ export class ApPersonService implements OnModuleInit {
 
 		if (user == null) throw new Error('failed to create user: user is null');
 
-		// Register to the cache
-		this.cacheService.uriPersonCache.set(user.uri, user);
-
 		// Register host
 		this.federatedInstanceService.fetch(host).then(async i => {
 			this.instancesRepository.increment({ id: i.id }, 'usersCount', 1);
@@ -398,9 +387,6 @@ export class ApPersonService implements OnModuleInit {
 			const updates = await this.resolveAvatarAndBanner(user, person.icon, person.image);
 			await this.usersRepository.update(user.id, updates);
 			user = { ...user, ...updates };
-
-			// Register to the cache
-			this.cacheService.uriPersonCache.set(user.uri, user);
 		} catch (err) {
 			this.logger.error('error occurred while fetching user avatar/banner', { stack: err });
 		}
@@ -539,8 +525,6 @@ export class ApPersonService implements OnModuleInit {
 		await this.updateFeatured(exist.id, resolver).catch(err => this.logger.error(err));
 
 		const updated = { ...exist, ...updates };
-
-		this.cacheService.uriPersonCache.set(uri, updated);
 
 		// 移行処理を行う
 		if (updated.movedAt && (

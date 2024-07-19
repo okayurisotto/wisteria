@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import push from 'web-push';
 import * as Redis from 'ioredis';
 import { DI } from '@/di-symbols.js';
@@ -47,7 +47,7 @@ function truncateBody<T extends keyof PushNotificationsTypes>(type: T, body: Pus
 }
 
 @Injectable()
-export class PushNotificationService implements OnApplicationShutdown {
+export class PushNotificationService {
 	private subscriptionsCache: RedisKVCache<MiSwSubscription[]>;
 
 	constructor(
@@ -119,15 +119,5 @@ export class PushNotificationService implements OnApplicationShutdown {
 				}
 			});
 		}
-	}
-
-	@bindThis
-	public dispose(): void {
-		this.subscriptionsCache.dispose();
-	}
-
-	@bindThis
-	public onApplicationShutdown(signal?: string | undefined): void {
-		this.dispose();
 	}
 }

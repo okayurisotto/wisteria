@@ -3,11 +3,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { NotesRepository, UserPublickeysRepository, UsersRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
-import { MemoryKVCache } from '@/misc/cache.js';
 import type { MiUserPublickey } from '@/models/UserPublickey.js';
 import { CacheService } from '@/core/CacheService.js';
 import type { MiNote } from '@/models/Note.js';
@@ -34,10 +33,7 @@ export type UriParseResult = {
 };
 
 @Injectable()
-export class ApDbResolverService implements OnApplicationShutdown {
-	private publicKeyCache: MemoryKVCache<MiUserPublickey | null>;
-	private publicKeyByUserIdCache: MemoryKVCache<MiUserPublickey | null>;
-
+export class ApDbResolverService {
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
@@ -53,10 +49,7 @@ export class ApDbResolverService implements OnApplicationShutdown {
 
 		private cacheService: CacheService,
 		private apPersonService: ApPersonService,
-	) {
-		this.publicKeyCache = new MemoryKVCache<MiUserPublickey | null>(Infinity);
-		this.publicKeyByUserIdCache = new MemoryKVCache<MiUserPublickey | null>(Infinity);
-	}
+	) {}
 
 	@bindThis
 	public parseUri(value: string | IObject): UriParseResult {
@@ -104,15 +97,9 @@ export class ApDbResolverService implements OnApplicationShutdown {
 		if (parsed.local) {
 			if (parsed.type !== 'users') return null;
 
-			return await this.cacheService.userByIdCache.fetchMaybe(
-				parsed.id,
-				() => this.usersRepository.findOneBy({ id: parsed.id, isDeleted: false }).then(x => x ?? undefined),
-			) as MiLocalUser | undefined ?? null;
+			return await this.usersRepository.findOneBy({ id: parsed.id, isDeleted: false }).then(x => x ?? undefined) as MiLocalUser | undefined ?? null;
 		} else {
-			return await this.cacheService.uriPersonCache.fetch(
-				parsed.uri,
-				() => this.usersRepository.findOneBy({ uri: parsed.uri, isDeleted: false }),
-			) as MiRemoteUser | null;
+			return await this.usersRepository.findOneBy({ uri: parsed.uri, isDeleted: false }) as MiRemoteUser | null;
 		}
 	}
 
@@ -124,16 +111,7 @@ export class ApDbResolverService implements OnApplicationShutdown {
 		user: MiRemoteUser;
 		key: MiUserPublickey;
 	} | null> {
-		const key = await this.publicKeyCache.fetch(keyId, async () => {
-			const key = await this.userPublickeysRepository.findOneBy({
-				keyId,
-			});
-
-			if (key == null) return null;
-
-			return key;
-		}, key => key != null);
-
+		const key = await this.userPublickeysRepository.findOneBy({ keyId });
 		if (key == null) return null;
 
 		const user = await this.cacheService.findUserById(key.userId).catch(() => null) as MiRemoteUser | null;
@@ -157,26 +135,11 @@ export class ApDbResolverService implements OnApplicationShutdown {
 		const user = await this.apPersonService.resolvePerson(uri) as MiRemoteUser;
 		if (user.isDeleted) return null;
 
-		const key = await this.publicKeyByUserIdCache.fetch(
-			user.id,
-			() => this.userPublickeysRepository.findOneBy({ userId: user.id }),
-			v => v != null,
-		);
+		const key = await this.userPublickeysRepository.findOneBy({ userId: user.id });
 
 		return {
 			user,
 			key,
 		};
-	}
-
-	@bindThis
-	public dispose(): void {
-		this.publicKeyCache.dispose();
-		this.publicKeyByUserIdCache.dispose();
-	}
-
-	@bindThis
-	public onApplicationShutdown(signal?: string | undefined): void {
-		this.dispose();
 	}
 }
