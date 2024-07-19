@@ -17,21 +17,21 @@ import { normalizeForSearch } from '@/misc/normalize-for-search.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
 import type Logger from '@/logger.js';
 import type { MiNote } from '@/models/Note.js';
-import type { IdService } from '@/core/IdService.js';
-import type { MfmService } from '@/core/MfmService.js';
+import { IdService } from '@/core/IdService.js';
+import { MfmService } from '@/core/MfmService.js';
 import { toArray } from '@/misc/prelude/array.js';
-import type { GlobalEventService } from '@/core/GlobalEventService.js';
-import type { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
-import type { FetchInstanceMetadataService } from '@/core/FetchInstanceMetadataService.js';
+import { GlobalEventService } from '@/core/GlobalEventService.js';
+import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
+import { FetchInstanceMetadataService } from '@/core/FetchInstanceMetadataService.js';
 import { MiUserProfile } from '@/models/UserProfile.js';
 import { MiUserPublickey } from '@/models/UserPublickey.js';
-import type UsersChart from '@/core/chart/charts/users.js';
-import type InstanceChart from '@/core/chart/charts/instance.js';
-import type { HashtagService } from '@/core/HashtagService.js';
+import UsersChart from '@/core/chart/charts/users.js';
+import InstanceChart from '@/core/chart/charts/instance.js';
+import { HashtagService } from '@/core/HashtagService.js';
 import { MiUserNotePining } from '@/models/UserNotePining.js';
 import { StatusError } from '@/misc/status-error.js';
-import type { UtilityService } from '@/core/UtilityService.js';
-import type { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { UtilityService } from '@/core/UtilityService.js';
+import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
 import { MetaService } from '@/core/MetaService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
@@ -40,11 +40,11 @@ import { checkHttps } from '@/misc/check-https.js';
 import { getApId, getApType, getOneApHrefNullable, isActor, isCollection, isCollectionOrOrderedCollection, isPropertyValue } from '../type.js';
 import { extractApHashtags } from './tag.js';
 import type { OnModuleInit } from '@nestjs/common';
-import type { ApNoteService } from './ApNoteService.js';
-import type { ApMfmService } from '../ApMfmService.js';
+import { ApNoteService } from './ApNoteService.js';
+import { ApMfmService } from '../ApMfmService.js';
 import type { ApResolverService, Resolver } from '../ApResolverService.js';
-import type { ApLoggerService } from '../ApLoggerService.js';
-import type { ApImageService } from './ApImageService.js';
+import { ApLoggerService } from '../ApLoggerService.js';
+import { ApImageService } from './ApImageService.js';
 import type { IActor, IObject } from '../type.js';
 
 const nameLength = 128;
@@ -54,23 +54,9 @@ type Field = Record<'name' | 'value', string>;
 
 @Injectable()
 export class ApPersonService implements OnModuleInit {
-	private utilityService: UtilityService;
-	private userEntityService: UserEntityService;
-	private driveFileEntityService: DriveFileEntityService;
-	private idService: IdService;
-	private globalEventService: GlobalEventService;
-	private metaService: MetaService;
-	private federatedInstanceService: FederatedInstanceService;
-	private fetchInstanceMetadataService: FetchInstanceMetadataService;
 	private apResolverService: ApResolverService;
 	private apNoteService: ApNoteService;
 	private apImageService: ApImageService;
-	private apMfmService: ApMfmService;
-	private mfmService: MfmService;
-	private hashtagService: HashtagService;
-	private usersChart: UsersChart;
-	private instanceChart: InstanceChart;
-	private apLoggerService: ApLoggerService;
 	private accountMoveService: AccountMoveService;
 	private logger: Logger;
 
@@ -97,29 +83,30 @@ export class ApPersonService implements OnModuleInit {
 
 		@Inject(DI.followingsRepository)
 		private followingsRepository: FollowingsRepository,
+
+		private metaService: MetaService,
+		private idService: IdService,
+		private utilityService: UtilityService,
+		private apLoggerService: ApLoggerService,
+		private mfmService: MfmService,
+		private userEntityService: UserEntityService,
+		private driveFileEntityService: DriveFileEntityService,
+		private globalEventService: GlobalEventService,
+		private federatedInstanceService: FederatedInstanceService,
+		private fetchInstanceMetadataService: FetchInstanceMetadataService,
+		private apMfmService: ApMfmService,
+		private hashtagService: HashtagService,
+		private usersChart: UsersChart,
+		private instanceChart: InstanceChart,
 	) {
+		this.logger = this.apLoggerService.logger;
 	}
 
 	onModuleInit(): void {
-		this.utilityService = this.moduleRef.get('UtilityService');
-		this.userEntityService = this.moduleRef.get('UserEntityService');
-		this.driveFileEntityService = this.moduleRef.get('DriveFileEntityService');
-		this.idService = this.moduleRef.get('IdService');
-		this.globalEventService = this.moduleRef.get('GlobalEventService');
-		this.metaService = this.moduleRef.get('MetaService');
-		this.federatedInstanceService = this.moduleRef.get('FederatedInstanceService');
-		this.fetchInstanceMetadataService = this.moduleRef.get('FetchInstanceMetadataService');
 		this.apResolverService = this.moduleRef.get('ApResolverService');
 		this.apNoteService = this.moduleRef.get('ApNoteService');
 		this.apImageService = this.moduleRef.get('ApImageService');
-		this.apMfmService = this.moduleRef.get('ApMfmService');
-		this.mfmService = this.moduleRef.get('MfmService');
-		this.hashtagService = this.moduleRef.get('HashtagService');
-		this.usersChart = this.moduleRef.get('UsersChart');
-		this.instanceChart = this.moduleRef.get('InstanceChart');
-		this.apLoggerService = this.moduleRef.get('ApLoggerService');
 		this.accountMoveService = this.moduleRef.get('AccountMoveService');
-		this.logger = this.apLoggerService.logger;
 	}
 
 	private punyHost(url: string): string {

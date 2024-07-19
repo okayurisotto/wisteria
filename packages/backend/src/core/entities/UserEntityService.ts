@@ -15,19 +15,17 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import { USER_ACTIVE_THRESHOLD, USER_ONLINE_THRESHOLD } from '@/const.js';
 import type { MiLocalUser, MiPartialLocalUser, MiPartialRemoteUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import { birthdaySchema, descriptionSchema, localUsernameSchema, locationSchema, nameSchema, passwordSchema } from '@/models/User.js';
-import { MiNotification } from '@/models/Notification.js';
-import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, DriveFilesRepository, NoteUnreadsRepository, UserNotePiningsRepository, UserProfilesRepository, AnnouncementReadsRepository, AnnouncementsRepository, MiUserProfile, RenoteMutingsRepository, UserMemoRepository } from '@/models/_.js';
+import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, NoteUnreadsRepository, UserNotePiningsRepository, UserProfilesRepository, MiUserProfile, RenoteMutingsRepository, UserMemoRepository } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
 import { RoleService } from '@/core/RoleService.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { IdService } from '@/core/IdService.js';
-import type { AnnouncementService } from '@/core/AnnouncementService.js';
-import type { CustomEmojiService } from '@/core/CustomEmojiService.js';
+import { AnnouncementService } from '@/core/AnnouncementService.js';
+import { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 import type { OnModuleInit } from '@nestjs/common';
-import type { NoteEntityService } from './NoteEntityService.js';
-import type { DriveFileEntityService } from './DriveFileEntityService.js';
+import { NoteEntityService } from './NoteEntityService.js';
 import type { PageEntityService } from './PageEntityService.js';
 
 const Ajv = _Ajv.default;
@@ -48,15 +46,8 @@ function isRemoteUser(user: MiUser | { host: MiUser['host'] }): boolean {
 @Injectable()
 export class UserEntityService implements OnModuleInit {
 	private apPersonService: ApPersonService;
-	private noteEntityService: NoteEntityService;
-	private driveFileEntityService: DriveFileEntityService;
 	private pageEntityService: PageEntityService;
-	private customEmojiService: CustomEmojiService;
-	private announcementService: AnnouncementService;
 	private roleService: RoleService;
-	private federatedInstanceService: FederatedInstanceService;
-	private idService: IdService;
-	private avatarDecorationService: AvatarDecorationService;
 
 	constructor(
 		private moduleRef: ModuleRef,
@@ -88,9 +79,6 @@ export class UserEntityService implements OnModuleInit {
 		@Inject(DI.renoteMutingsRepository)
 		private renoteMutingsRepository: RenoteMutingsRepository,
 
-		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
-
 		@Inject(DI.noteUnreadsRepository)
 		private noteUnreadsRepository: NoteUnreadsRepository,
 
@@ -100,28 +88,22 @@ export class UserEntityService implements OnModuleInit {
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
 
-		@Inject(DI.announcementReadsRepository)
-		private announcementReadsRepository: AnnouncementReadsRepository,
-
-		@Inject(DI.announcementsRepository)
-		private announcementsRepository: AnnouncementsRepository,
-
 		@Inject(DI.userMemosRepository)
 		private userMemosRepository: UserMemoRepository,
+
+		private idService: IdService,
+		private announcementService: AnnouncementService,
+		private avatarDecorationService: AvatarDecorationService,
+		private customEmojiService: CustomEmojiService,
+		private federatedInstanceService: FederatedInstanceService,
+		private noteEntityService: NoteEntityService,
 	) {
 	}
 
 	onModuleInit() {
 		this.apPersonService = this.moduleRef.get('ApPersonService');
-		this.noteEntityService = this.moduleRef.get('NoteEntityService');
-		this.driveFileEntityService = this.moduleRef.get('DriveFileEntityService');
 		this.pageEntityService = this.moduleRef.get('PageEntityService');
-		this.customEmojiService = this.moduleRef.get('CustomEmojiService');
-		this.announcementService = this.moduleRef.get('AnnouncementService');
 		this.roleService = this.moduleRef.get('RoleService');
-		this.federatedInstanceService = this.moduleRef.get('FederatedInstanceService');
-		this.idService = this.moduleRef.get('IdService');
-		this.avatarDecorationService = this.moduleRef.get('AvatarDecorationService');
 	}
 
 	//#region Validators

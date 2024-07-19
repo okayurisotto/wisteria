@@ -146,24 +146,10 @@ import { LegacyReactionConvertService } from './LegacyReactionConvertService cop
 
 //#region 文字列ベースでのinjection用(循環参照対応のため)
 const $AccountMoveService: Provider = { provide: 'AccountMoveService', useExisting: AccountMoveService };
-const $AnnouncementService: Provider = { provide: 'AnnouncementService', useExisting: AnnouncementService };
-const $AvatarDecorationService: Provider = { provide: 'AvatarDecorationService', useExisting: AvatarDecorationService };
 const $CustomEmojiService: Provider = { provide: 'CustomEmojiService', useExisting: CustomEmojiService };
-const $FederatedInstanceService: Provider = { provide: 'FederatedInstanceService', useExisting: FederatedInstanceService };
-const $FetchInstanceMetadataService: Provider = { provide: 'FetchInstanceMetadataService', useExisting: FetchInstanceMetadataService };
-const $GlobalEventService: Provider = { provide: 'GlobalEventService', useExisting: GlobalEventService };
-const $HashtagService: Provider = { provide: 'HashtagService', useExisting: HashtagService };
-const $IdService: Provider = { provide: 'IdService', useExisting: IdService };
-const $MetaService: Provider = { provide: 'MetaService', useExisting: MetaService };
-const $MfmService: Provider = { provide: 'MfmService', useExisting: MfmService };
 const $NotificationService: Provider = { provide: 'NotificationService', useExisting: NotificationService };
 const $RoleService: Provider = { provide: 'RoleService', useExisting: RoleService };
-const $CacheService: Provider = { provide: 'CacheService', useExisting: CacheService };
 const $UserFollowingService: Provider = { provide: 'UserFollowingService', useExisting: UserFollowingService };
-const $UtilityService: Provider = { provide: 'UtilityService', useExisting: UtilityService };
-
-const $UsersChart: Provider = { provide: 'UsersChart', useExisting: UsersChart };
-const $InstanceChart: Provider = { provide: 'InstanceChart', useExisting: InstanceChart };
 
 const $DriveFileEntityService: Provider = { provide: 'DriveFileEntityService', useExisting: DriveFileEntityService };
 const $NoteEntityService: Provider = { provide: 'NoteEntityService', useExisting: NoteEntityService };
@@ -171,8 +157,6 @@ const $PageEntityService: Provider = { provide: 'PageEntityService', useExisting
 const $UserEntityService: Provider = { provide: 'UserEntityService', useExisting: UserEntityService };
 const $RoleEntityService: Provider = { provide: 'RoleEntityService', useExisting: RoleEntityService };
 
-const $ApLoggerService: Provider = { provide: 'ApLoggerService', useExisting: ApLoggerService };
-const $ApMfmService: Provider = { provide: 'ApMfmService', useExisting: ApMfmService };
 const $ApResolverService: Provider = { provide: 'ApResolverService', useExisting: ApResolverService };
 const $ApImageService: Provider = { provide: 'ApImageService', useExisting: ApImageService };
 const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNoteService };
@@ -324,24 +308,10 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 
 		//#region 文字列ベースでのinjection用(循環参照対応のため)
 		$AccountMoveService,
-		$AnnouncementService,
-		$AvatarDecorationService,
 		$CustomEmojiService,
-		$FederatedInstanceService,
-		$FetchInstanceMetadataService,
-		$GlobalEventService,
-		$HashtagService,
-		$IdService,
-		$MetaService,
-		$MfmService,
 		$NotificationService,
 		$RoleService,
-		$CacheService,
 		$UserFollowingService,
-		$UtilityService,
-
-		$UsersChart,
-		$InstanceChart,
 
 		$DriveFileEntityService,
 		$NoteEntityService,
@@ -349,8 +319,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		$UserEntityService,
 		$RoleEntityService,
 
-		$ApLoggerService,
-		$ApMfmService,
 		$ApResolverService,
 		$ApImageService,
 		$ApNoteService,
@@ -498,24 +466,10 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 
 		//#region 文字列ベースでのinjection用(循環参照対応のため)
 		$AccountMoveService,
-		$AnnouncementService,
-		$AvatarDecorationService,
 		$CustomEmojiService,
-		$FederatedInstanceService,
-		$FetchInstanceMetadataService,
-		$GlobalEventService,
-		$HashtagService,
-		$IdService,
-		$MetaService,
-		$MfmService,
 		$NotificationService,
 		$RoleService,
-		$CacheService,
 		$UserFollowingService,
-		$UtilityService,
-
-		$UsersChart,
-		$InstanceChart,
 
 		$DriveFileEntityService,
 		$NoteEntityService,
@@ -523,8 +477,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		$UserEntityService,
 		$RoleEntityService,
 
-		$ApLoggerService,
-		$ApMfmService,
 		$ApResolverService,
 		$ApImageService,
 		$ApNoteService,

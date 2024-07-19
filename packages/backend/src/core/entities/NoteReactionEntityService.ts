@@ -9,35 +9,24 @@ import type { NoteReactionsRepository } from '@/models/_.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
-import type { OnModuleInit } from '@nestjs/common';
 import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiNoteReaction } from '@/models/NoteReaction.js';
-import type { UserEntityService } from './UserEntityService.js';
-import type { NoteEntityService } from './NoteEntityService.js';
-import { ModuleRef } from '@nestjs/core';
+import { UserEntityService } from './UserEntityService.js';
+import { NoteEntityService } from './NoteEntityService.js';
 import { LegacyReactionConvertService } from '../LegacyReactionConvertService copy.js';
 
 @Injectable()
-export class NoteReactionEntityService implements OnModuleInit {
-	private userEntityService!: UserEntityService;
-	private noteEntityService!: NoteEntityService;
-	private idService!: IdService;
-
+export class NoteReactionEntityService {
 	constructor(
-		private moduleRef: ModuleRef,
-
 		@Inject(DI.noteReactionsRepository)
 		private noteReactionsRepository: NoteReactionsRepository,
 
 		private legacyReactionConvertService: LegacyReactionConvertService,
+		private idService: IdService,
+		private userEntityService: UserEntityService,
+		private noteEntityService: NoteEntityService,
 	) {
-	}
-
-	onModuleInit() {
-		this.userEntityService = this.moduleRef.get('UserEntityService');
-		this.noteEntityService = this.moduleRef.get('NoteEntityService');
-		this.idService = this.moduleRef.get('IdService');
 	}
 
 	@bindThis

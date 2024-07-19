@@ -28,7 +28,6 @@ export class NoteEntityService implements OnModuleInit {
 	private userEntityService!: UserEntityService;
 	private driveFileEntityService!: DriveFileEntityService;
 	private customEmojiService!: CustomEmojiService;
-	private idService!: IdService;
 	private noteLoader = new DebounceLoader(this.findNoteOrFail);
 
 	constructor(
@@ -57,6 +56,7 @@ export class NoteEntityService implements OnModuleInit {
 
 		private reactionDecodeService: ReactionDecodeService,
 		private legacyReactionConvertService: LegacyReactionConvertService,
+		private idService: IdService,
 	) {
 	}
 
@@ -64,7 +64,6 @@ export class NoteEntityService implements OnModuleInit {
 		this.userEntityService = this.moduleRef.get('UserEntityService');
 		this.driveFileEntityService = this.moduleRef.get('DriveFileEntityService');
 		this.customEmojiService = this.moduleRef.get('CustomEmojiService');
-		this.idService = this.moduleRef.get('IdService');
 	}
 
 	@bindThis

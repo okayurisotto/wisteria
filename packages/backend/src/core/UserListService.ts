@@ -3,9 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import * as Redis from 'ioredis';
-import { ModuleRef } from '@nestjs/core';
 import type { UserListMembershipsRepository } from '@/models/_.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiUserList } from '@/models/UserList.js';
@@ -22,15 +21,12 @@ import { RedisKVCache } from '@/misc/cache.js';
 import { RoleService } from '@/core/RoleService.js';
 
 @Injectable()
-export class UserListService implements OnApplicationShutdown, OnModuleInit {
+export class UserListService implements OnApplicationShutdown {
 	public static TooManyUsersError = class extends Error {};
 
 	public membersCache: RedisKVCache<Set<string>>;
-	private roleService: RoleService;
 
 	constructor(
-		private moduleRef: ModuleRef,
-
 		@Inject(DI.redis)
 		private redisClient: Redis.Redis,
 
@@ -45,6 +41,7 @@ export class UserListService implements OnApplicationShutdown, OnModuleInit {
 		private globalEventService: GlobalEventService,
 		private proxyAccountService: ProxyAccountService,
 		private queueService: QueueService,
+		private roleService: RoleService,
 	) {
 		this.membersCache = new RedisKVCache<Set<string>>(this.redisClient, 'userListMembers', {
 			lifetime: 1000 * 60 * 30, // 30m
@@ -55,10 +52,6 @@ export class UserListService implements OnApplicationShutdown, OnModuleInit {
 		});
 
 		this.redisForSub.on('message', this.onMessage);
-	}
-
-	async onModuleInit() {
-		this.roleService = this.moduleRef.get(RoleService.name);
 	}
 
 	@bindThis

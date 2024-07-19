@@ -5,9 +5,8 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
-import { ModuleRef } from '@nestjs/core';
 import * as Reversi from 'misskey-reversi';
-import { IsNull, LessThan, MoreThan } from 'typeorm';
+import { LessThan, MoreThan } from 'typeorm';
 import type {
 	MiReversiGame,
 	ReversiGamesRepository,
@@ -15,40 +14,29 @@ import type {
 import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
-import { CacheService } from '@/core/CacheService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { IdService } from '@/core/IdService.js';
-import { NotificationService } from '@/core/NotificationService.js';
 import { Serialized } from '@/types.js';
 import { ReversiGameEntityService } from './entities/ReversiGameEntityService.js';
-import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
+import type { OnApplicationShutdown } from '@nestjs/common';
 
 const INVITATION_TIMEOUT_MS = 1000 * 20; // 20sec
 
 @Injectable()
-export class ReversiService implements OnApplicationShutdown, OnModuleInit {
-	private notificationService: NotificationService;
-
+export class ReversiService implements OnApplicationShutdown {
 	constructor(
-		private moduleRef: ModuleRef,
-
 		@Inject(DI.redis)
 		private redisClient: Redis.Redis,
 
 		@Inject(DI.reversiGamesRepository)
 		private reversiGamesRepository: ReversiGamesRepository,
 
-		private cacheService: CacheService,
 		private userEntityService: UserEntityService,
 		private globalEventService: GlobalEventService,
 		private reversiGameEntityService: ReversiGameEntityService,
 		private idService: IdService,
 	) {
-	}
-
-	async onModuleInit() {
-		this.notificationService = this.moduleRef.get(NotificationService.name);
 	}
 
 	@bindThis
