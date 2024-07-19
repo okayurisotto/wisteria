@@ -13,17 +13,16 @@ import type { OnModuleInit } from '@nestjs/common';
 import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiNoteReaction } from '@/models/NoteReaction.js';
-import type { ReactionService } from '../ReactionService.js';
 import type { UserEntityService } from './UserEntityService.js';
 import type { NoteEntityService } from './NoteEntityService.js';
 import { ModuleRef } from '@nestjs/core';
+import { LegacyReactionConvertService } from '../LegacyReactionConvertService copy.js';
 
 @Injectable()
 export class NoteReactionEntityService implements OnModuleInit {
-	private userEntityService: UserEntityService;
-	private noteEntityService: NoteEntityService;
-	private reactionService: ReactionService;
-	private idService: IdService;
+	private userEntityService!: UserEntityService;
+	private noteEntityService!: NoteEntityService;
+	private idService!: IdService;
 
 	constructor(
 		private moduleRef: ModuleRef,
@@ -31,17 +30,13 @@ export class NoteReactionEntityService implements OnModuleInit {
 		@Inject(DI.noteReactionsRepository)
 		private noteReactionsRepository: NoteReactionsRepository,
 
-		//private userEntityService: UserEntityService,
-		//private noteEntityService: NoteEntityService,
-		//private reactionService: ReactionService,
-		//private idService: IdService,
+		private legacyReactionConvertService: LegacyReactionConvertService,
 	) {
 	}
 
 	onModuleInit() {
 		this.userEntityService = this.moduleRef.get('UserEntityService');
 		this.noteEntityService = this.moduleRef.get('NoteEntityService');
-		this.reactionService = this.moduleRef.get('ReactionService');
 		this.idService = this.moduleRef.get('IdService');
 	}
 
@@ -63,7 +58,7 @@ export class NoteReactionEntityService implements OnModuleInit {
 			id: reaction.id,
 			createdAt: this.idService.parse(reaction.id).date.toISOString(),
 			user: await this.userEntityService.pack(reaction.user ?? reaction.userId, me),
-			type: this.reactionService.convertLegacyReaction(reaction.reaction),
+			type: this.legacyReactionConvertService.convertLegacyReaction(reaction.reaction),
 			...(opts.withNote ? {
 				note: await this.noteEntityService.pack(reaction.note ?? reaction.noteId, me),
 			} : {}),

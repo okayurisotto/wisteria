@@ -39,7 +39,7 @@ import { NotificationService } from './NotificationService.js';
 import { PollService } from './PollService.js';
 import { PushNotificationService } from './PushNotificationService.js';
 import { QueryService } from './QueryService.js';
-import { ReactionService } from './ReactionService.js';
+import { ReactionCreateService } from './ReactionCreateService.js';
 import { RelayService } from './RelayService.js';
 import { RoleService } from './RoleService.js';
 import { S3Service } from './S3Service.js';
@@ -140,6 +140,9 @@ import { QueueModule } from './QueueModule.js';
 import { QueueService } from './QueueService.js';
 import { LoggerService } from './LoggerService.js';
 import type { Provider } from '@nestjs/common';
+import { ReactionDeleteService } from './ReactionDeleteService.js';
+import { ReactionDecodeService } from './ReactionDecodeService.js';
+import { LegacyReactionConvertService } from './LegacyReactionConvertService copy.js';
 
 //#region 文字列ベースでのinjection用(循環参照対応のため)
 const $AccountMoveService: Provider = { provide: 'AccountMoveService', useExisting: AccountMoveService };
@@ -154,7 +157,6 @@ const $IdService: Provider = { provide: 'IdService', useExisting: IdService };
 const $MetaService: Provider = { provide: 'MetaService', useExisting: MetaService };
 const $MfmService: Provider = { provide: 'MfmService', useExisting: MfmService };
 const $NotificationService: Provider = { provide: 'NotificationService', useExisting: NotificationService };
-const $ReactionService: Provider = { provide: 'ReactionService', useExisting: ReactionService };
 const $RoleService: Provider = { provide: 'RoleService', useExisting: RoleService };
 const $CacheService: Provider = { provide: 'CacheService', useExisting: CacheService };
 const $UserFollowingService: Provider = { provide: 'UserFollowingService', useExisting: UserFollowingService };
@@ -219,7 +221,10 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		ProxyAccountService,
 		PushNotificationService,
 		QueryService,
-		ReactionService,
+		ReactionCreateService,
+		ReactionDeleteService,
+		ReactionDecodeService,
+		LegacyReactionConvertService,
 		RelayService,
 		RoleService,
 		S3Service,
@@ -330,7 +335,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		$MetaService,
 		$MfmService,
 		$NotificationService,
-		$ReactionService,
 		$RoleService,
 		$CacheService,
 		$UserFollowingService,
@@ -392,7 +396,10 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		ProxyAccountService,
 		PushNotificationService,
 		QueryService,
-		ReactionService,
+		ReactionCreateService,
+		ReactionDeleteService,
+		ReactionDecodeService,
+		LegacyReactionConvertService,
 		RelayService,
 		RoleService,
 		S3Service,
@@ -502,7 +509,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		$MetaService,
 		$MfmService,
 		$NotificationService,
-		$ReactionService,
 		$RoleService,
 		$CacheService,
 		$UserFollowingService,

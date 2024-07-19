@@ -11,7 +11,6 @@ import type { Packed } from '@/misc/json-schema.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiNote } from '@/models/Note.js';
-import type { MiNoteReaction } from '@/models/NoteReaction.js';
 import type { UsersRepository, NotesRepository, FollowingsRepository, PollsRepository, PollVotesRepository, NoteReactionsRepository, ChannelsRepository } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
 import { isNotNull } from '@/misc/is-not-null.js';
@@ -19,17 +18,17 @@ import { DebounceLoader } from '@/misc/loader.js';
 import { IdService } from '@/core/IdService.js';
 import type { OnModuleInit } from '@nestjs/common';
 import type { CustomEmojiService } from '../CustomEmojiService.js';
-import type { ReactionService } from '../ReactionService.js';
 import type { UserEntityService } from './UserEntityService.js';
 import type { DriveFileEntityService } from './DriveFileEntityService.js';
+import { ReactionDecodeService } from '../ReactionDecodeService.js';
+import { LegacyReactionConvertService } from '../LegacyReactionConvertService copy.js';
 
 @Injectable()
 export class NoteEntityService implements OnModuleInit {
-	private userEntityService: UserEntityService;
-	private driveFileEntityService: DriveFileEntityService;
-	private customEmojiService: CustomEmojiService;
-	private reactionService: ReactionService;
-	private idService: IdService;
+	private userEntityService!: UserEntityService;
+	private driveFileEntityService!: DriveFileEntityService;
+	private customEmojiService!: CustomEmojiService;
+	private idService!: IdService;
 	private noteLoader = new DebounceLoader(this.findNoteOrFail);
 
 	constructor(
@@ -56,10 +55,8 @@ export class NoteEntityService implements OnModuleInit {
 		@Inject(DI.channelsRepository)
 		private channelsRepository: ChannelsRepository,
 
-		//private userEntityService: UserEntityService,
-		//private driveFileEntityService: DriveFileEntityService,
-		//private customEmojiService: CustomEmojiService,
-		//private reactionService: ReactionService,
+		private reactionDecodeService: ReactionDecodeService,
+		private legacyReactionConvertService: LegacyReactionConvertService,
 	) {
 	}
 
@@ -67,7 +64,6 @@ export class NoteEntityService implements OnModuleInit {
 		this.userEntityService = this.moduleRef.get('UserEntityService');
 		this.driveFileEntityService = this.moduleRef.get('DriveFileEntityService');
 		this.customEmojiService = this.moduleRef.get('CustomEmojiService');
-		this.reactionService = this.moduleRef.get('ReactionService');
 		this.idService = this.moduleRef.get('IdService');
 	}
 
@@ -176,7 +172,7 @@ export class NoteEntityService implements OnModuleInit {
 		if (_hint_?.myReactions) {
 			const reaction = _hint_.myReactions.get(note.id);
 			if (reaction) {
-				return this.reactionService.convertLegacyReaction(reaction);
+				return this.legacyReactionConvertService.convertLegacyReaction(reaction);
 			} else {
 				return undefined;
 			}
@@ -187,7 +183,7 @@ export class NoteEntityService implements OnModuleInit {
 		if (note.reactionAndUserPairCache && reactionsCount <= note.reactionAndUserPairCache.length) {
 			const pair = note.reactionAndUserPairCache.find(p => p.startsWith(meId));
 			if (pair) {
-				return this.reactionService.convertLegacyReaction(pair.split('/')[1]);
+				return this.legacyReactionConvertService.convertLegacyReaction(pair.split('/')[1]);
 			} else {
 				return undefined;
 			}
@@ -204,7 +200,7 @@ export class NoteEntityService implements OnModuleInit {
 		});
 
 		if (reaction) {
-			return this.reactionService.convertLegacyReaction(reaction.reaction);
+			return this.legacyReactionConvertService.convertLegacyReaction(reaction.reaction);
 		}
 
 		return undefined;
@@ -317,7 +313,7 @@ export class NoteEntityService implements OnModuleInit {
 
 		const reactionEmojiNames = Object.keys(note.reactions)
 			.filter(x => x.startsWith(':') && x.includes('@') && !x.includes('@.')) // リモートカスタム絵文字のみ
-			.map(x => this.reactionService.decodeReaction(x).reaction.replaceAll(':', ''));
+			.map(x => this.reactionDecodeService.decodeReaction(x).reaction.replaceAll(':', ''));
 		const packedFiles = options?._hint_?.packedFiles;
 
 		const packed: Packed<'Note'> = await awaitAll({
@@ -333,7 +329,7 @@ export class NoteEntityService implements OnModuleInit {
 			visibleUserIds: note.visibility === 'specified' ? note.visibleUserIds : undefined,
 			renoteCount: note.renoteCount,
 			repliesCount: note.repliesCount,
-			reactions: this.reactionService.convertLegacyReactions(note.reactions),
+			reactions: this.legacyReactionConvertService.convertLegacyReactions(note.reactions),
 			reactionEmojis: this.customEmojiService.populateEmojis(reactionEmojiNames, host),
 			reactionAndUserPairCache: opts.withReactionAndUserPairCache ? note.reactionAndUserPairCache : undefined,
 			emojis: host != null ? this.customEmojiService.populateEmojis(note.emojis, host) : undefined,
@@ -472,7 +468,7 @@ export class NoteEntityService implements OnModuleInit {
 						.map(e => this.customEmojiService.parseEmojiStr(e, note.renote!.userHost)));
 				}
 			}
-			const customReactions = Object.keys(note.reactions).map(x => this.reactionService.decodeReaction(x)).filter(x => x.name != null) as typeof emojis;
+			const customReactions = Object.keys(note.reactions).map(x => this.reactionDecodeService.decodeReaction(x)).filter(x => x.name != null) as typeof emojis;
 			emojis = emojis.concat(customReactions);
 			if (note.user) {
 				emojis = emojis.concat(note.user.emojis

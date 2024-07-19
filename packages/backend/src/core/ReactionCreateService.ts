@@ -4,7 +4,6 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import * as Redis from 'ioredis';
 import { DI } from '@/di-symbols.js';
 import type { EmojisRepository, NoteReactionsRepository, UsersRepository, NotesRepository } from '@/models/_.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
@@ -29,50 +28,18 @@ import { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import { RoleService } from '@/core/RoleService.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
 import { trackPromise } from '@/misc/promise-tracker.js';
+import { ReactionDecodeService } from './ReactionDecodeService.js';
+import { LEGACY_EMOJIS } from './LEGACY_EMOJIS.js';
+import { ReactionDeleteService } from './ReactionDeleteService.js';
 
 const FALLBACK = '\u2764';
 const PER_NOTE_REACTION_USER_PAIR_CACHE_MAX = 16;
 
-const legacies: Record<string, string> = {
-	'like': '👍',
-	'love': '\u2764', // ハート、異体字セレクタを入れない
-	'laugh': '😆',
-	'hmm': '🤔',
-	'surprise': '😮',
-	'congrats': '🎉',
-	'angry': '💢',
-	'confused': '😥',
-	'rip': '😇',
-	'pudding': '🍮',
-	'star': '⭐',
-};
-
-type DecodedReaction = {
-	/**
-	 * リアクション名 (Unicode Emoji or ':name@hostname' or ':name@.')
-	 */
-	reaction: string;
-
-	/**
-	 * name (カスタム絵文字の場合name, Emojiクエリに使う)
-	 */
-	name?: string;
-
-	/**
-	 * host (カスタム絵文字の場合host, Emojiクエリに使う)
-	 */
-	host?: string | null;
-};
-
 const isCustomEmojiRegexp = /^:([\w+-]+)(?:@\.)?:$/;
-const decodeCustomEmojiRegexp = /^:([\w+-]+)(?:@([\w.-]+))?:$/;
 
 @Injectable()
-export class ReactionService {
+export class ReactionCreateService {
 	constructor(
-		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
-
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
@@ -99,8 +66,9 @@ export class ReactionService {
 		private apDeliverManagerService: ApDeliverManagerService,
 		private notificationService: NotificationService,
 		private perUserReactionsChart: PerUserReactionsChart,
-	) {
-	}
+		private reactionDecodeService: ReactionDecodeService,
+		private reactionDeleteService: ReactionDeleteService,
+	) {}
 
 	@bindThis
 	public async create(user: { id: MiUser['id']; host: MiUser['host']; isBot: MiUser['isBot'] }, note: MiNote, _reaction?: string | null) {
@@ -173,7 +141,7 @@ export class ReactionService {
 
 				if (exists.reaction !== reaction) {
 					// 別のリアクションがすでにされていたら置き換える
-					await this.delete(user, note);
+					await this.reactionDeleteService.delete(user, note);
 					await this.noteReactionsRepository.insert(record);
 				} else {
 					// 同じリアクションがすでにされていたらエラー
@@ -221,7 +189,7 @@ export class ReactionService {
 		}
 
 		// カスタム絵文字リアクションだったら絵文字情報も送る
-		const decodedReaction = this.decodeReaction(reaction);
+		const decodedReaction = this.reactionDecodeService.decodeReaction(reaction);
 
 		const customEmoji = decodedReaction.name == null ? null : decodedReaction.host == null
 			? (await this.customEmojiService.localEmojisCache.fetch()).get(decodedReaction.name)
@@ -275,90 +243,12 @@ export class ReactionService {
 	}
 
 	@bindThis
-	public async delete(user: { id: MiUser['id']; host: MiUser['host']; isBot: MiUser['isBot']; }, note: MiNote) {
-		// if already unreacted
-		const exist = await this.noteReactionsRepository.findOneBy({
-			noteId: note.id,
-			userId: user.id,
-		});
-
-		if (exist == null) {
-			throw new IdentifiableError('60527ec9-b4cb-4a88-a6bd-32d3ad26817d', 'not reacted');
-		}
-
-		// Delete reaction
-		const result = await this.noteReactionsRepository.delete(exist.id);
-
-		if (result.affected !== 1) {
-			throw new IdentifiableError('60527ec9-b4cb-4a88-a6bd-32d3ad26817d', 'not reacted');
-		}
-
-		// Decrement reactions count
-		const sql = `jsonb_set("reactions", '{${exist.reaction}}', (COALESCE("reactions"->>'${exist.reaction}', '0')::int - 1)::text::jsonb)`;
-		await this.notesRepository.createQueryBuilder().update()
-			.set({
-				reactions: () => sql,
-				reactionAndUserPairCache: () => `array_remove("reactionAndUserPairCache", '${user.id}/${exist.reaction}')`,
-			})
-			.where('id = :id', { id: note.id })
-			.execute();
-
-		this.globalEventService.publishNoteStream(note.id, 'unreacted', {
-			reaction: this.decodeReaction(exist.reaction).reaction,
-			userId: user.id,
-		});
-
-		//#region 配信
-		if (this.userEntityService.isLocalUser(user) && !note.localOnly) {
-			const content = this.apRendererService.addContext(this.apRendererService.renderUndo(await this.apRendererService.renderLike(exist, note), user));
-			const dm = this.apDeliverManagerService.createDeliverManager(user, content);
-			if (note.userHost !== null) {
-				const reactee = await this.usersRepository.findOneBy({ id: note.userId });
-				dm.addDirectRecipe(reactee as MiRemoteUser);
-			}
-			dm.addFollowersRecipe();
-			trackPromise(dm.execute());
-		}
-		//#endregion
-	}
-
-	@bindThis
-	public convertLegacyReactions(reactions: Record<string, number>) {
-		const _reactions = {} as Record<string, number>;
-
-		for (const reaction of Object.keys(reactions)) {
-			if (reactions[reaction] <= 0) continue;
-
-			if (Object.keys(legacies).includes(reaction)) {
-				if (_reactions[legacies[reaction]]) {
-					_reactions[legacies[reaction]] += reactions[reaction];
-				} else {
-					_reactions[legacies[reaction]] = reactions[reaction];
-				}
-			} else {
-				if (_reactions[reaction]) {
-					_reactions[reaction] += reactions[reaction];
-				} else {
-					_reactions[reaction] = reactions[reaction];
-				}
-			}
-		}
-
-		const _reactions2 = {} as Record<string, number>;
-
-		for (const reaction of Object.keys(_reactions)) {
-			_reactions2[this.decodeReaction(reaction).reaction] = _reactions[reaction];
-		}
-
-		return _reactions2;
-	}
-
-	@bindThis
-	public normalize(reaction: string | null): string {
+	private normalize(reaction: string | null): string {
 		if (reaction == null) return FALLBACK;
 
 		// 文字列タイプのリアクションを絵文字に変換
-		if (Object.keys(legacies).includes(reaction)) return legacies[reaction];
+		const legacy = LEGACY_EMOJIS.get(reaction);
+		if (legacy) return legacy;
 
 		// Unicode絵文字
 		const match = emojiRegex.exec(reaction);
@@ -371,34 +261,5 @@ export class ReactionService {
 		}
 
 		return FALLBACK;
-	}
-
-	@bindThis
-	public decodeReaction(str: string): DecodedReaction {
-		const custom = str.match(decodeCustomEmojiRegexp);
-
-		if (custom) {
-			const name = custom[1];
-			const host = custom[2] ?? null;
-
-			return {
-				reaction: `:${name}@${host ?? '.'}:`,	// ローカル分は@以降を省略するのではなく.にする
-				name,
-				host,
-			};
-		}
-
-		return {
-			reaction: str,
-			name: undefined,
-			host: undefined,
-		};
-	}
-
-	@bindThis
-	public convertLegacyReaction(reaction: string): string {
-		reaction = this.decodeReaction(reaction).reaction;
-		if (Object.keys(legacies).includes(reaction)) return legacies[reaction];
-		return reaction;
 	}
 }

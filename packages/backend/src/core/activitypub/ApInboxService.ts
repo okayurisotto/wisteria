@@ -8,7 +8,7 @@ import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { UserFollowingService } from '@/core/UserFollowingService.js';
-import { ReactionService } from '@/core/ReactionService.js';
+import { ReactionCreateService } from '@/core/ReactionCreateService.js';
 import { RelayService } from '@/core/RelayService.js';
 import { NotePiningService } from '@/core/NotePiningService.js';
 import { UserBlockingBlockService } from '../UserBlockingBlockService.js';
@@ -39,6 +39,7 @@ import { ApQuestionService } from './models/ApQuestionService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { Resolver } from './ApResolverService.js';
 import type { IAccept, IAdd, IAnnounce, IBlock, ICreate, IDelete, IFlag, IFollow, ILike, IObject, IReject, IRemove, IUndo, IUpdate, IMove } from './type.js';
+import { ReactionDeleteService } from '../ReactionDeleteService.js';
 
 @Injectable()
 export class ApInboxService {
@@ -70,7 +71,8 @@ export class ApInboxService {
 		private metaService: MetaService,
 		private userFollowingService: UserFollowingService,
 		private apAudienceService: ApAudienceService,
-		private reactionService: ReactionService,
+		private reactionCreateService: ReactionCreateService,
+		private reactionDeleteService: ReactionDeleteService,
 		private relayService: RelayService,
 		private notePiningService: NotePiningService,
 		private userBlockingBlockService: UserBlockingBlockService,
@@ -183,7 +185,7 @@ export class ApInboxService {
 
 		await this.apNoteService.extractEmojis(activity.tag ?? [], actor.host).catch(() => null);
 
-		return await this.reactionService.create(actor, note, activity._misskey_reaction ?? activity.content ?? activity.name).catch(err => {
+		return await this.reactionCreateService.create(actor, note, activity._misskey_reaction ?? activity.content ?? activity.name).catch(err => {
 			if (err.id === '51c42bb4-931a-456b-bff7-e5a8a70dd298') {
 				return 'skip: already reacted';
 			} else {
@@ -726,7 +728,7 @@ export class ApInboxService {
 		const note = await this.apNoteService.fetchNote(targetUri);
 		if (!note) return `skip: target note not found ${targetUri}`;
 
-		await this.reactionService.delete(actor, note).catch(e => {
+		await this.reactionDeleteService.delete(actor, note).catch(e => {
 			if (e.id === '60527ec9-b4cb-4a88-a6bd-32d3ad26817d') return;
 			throw e;
 		});
