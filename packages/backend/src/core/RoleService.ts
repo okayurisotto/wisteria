@@ -14,7 +14,7 @@ import type {
 	RolesRepository,
 	UsersRepository,
 } from '@/models/_.js';
-import { MemoryKVCache, MemorySingleCache } from '@/misc/cache.js';
+import { MemoryKVCache } from '@/misc/cache.js';
 import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
@@ -87,7 +87,6 @@ export const DEFAULT_POLICIES: RolePolicies = {
 
 @Injectable()
 export class RoleService implements OnApplicationShutdown, OnModuleInit {
-	private rolesCache: MemorySingleCache<MiRole[]>;
 	private roleAssignmentByUserIdCache: MemoryKVCache<MiRoleAssignment[]>;
 	private notificationService: NotificationService;
 
@@ -96,9 +95,6 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 
 	constructor(
 		private moduleRef: ModuleRef,
-
-		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
 
 		@Inject(DI.redisForTimelines)
 		private redisForTimelines: Redis.Redis,
@@ -123,9 +119,6 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		private moderationLogService: ModerationLogService,
 		private fanoutTimelineService: FanoutTimelineService,
 	) {
-		//this.onMessage = this.onMessage.bind(this);
-
-		this.rolesCache = new MemorySingleCache<MiRole[]>(1000 * 60 * 60 * 1);
 		this.roleAssignmentByUserIdCache = new MemoryKVCache<MiRoleAssignment[]>(1000 * 60 * 60 * 1);
 
 		this.redisForSub.on('message', this.onMessage);
@@ -143,35 +136,12 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			const { type, body } = obj.message as GlobalEvents['internal']['payload'];
 			switch (type) {
 				case 'roleCreated': {
-					const cached = this.rolesCache.get();
-					if (cached) {
-						cached.push({
-							...body,
-							updatedAt: new Date(body.updatedAt),
-							lastUsedAt: new Date(body.lastUsedAt),
-						});
-					}
 					break;
 				}
 				case 'roleUpdated': {
-					const cached = this.rolesCache.get();
-					if (cached) {
-						const i = cached.findIndex(x => x.id === body.id);
-						if (i > -1) {
-							cached[i] = {
-								...body,
-								updatedAt: new Date(body.updatedAt),
-								lastUsedAt: new Date(body.lastUsedAt),
-							};
-						}
-					}
 					break;
 				}
 				case 'roleDeleted': {
-					const cached = this.rolesCache.get();
-					if (cached) {
-						this.rolesCache.set(cached.filter(x => x.id !== body.id));
-					}
 					break;
 				}
 				case 'userRoleAssigned': {
@@ -253,7 +223,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 
 	@bindThis
 	public async getRoles() {
-		const roles = await this.rolesCache.fetch(() => this.rolesRepository.findBy({}));
+		const roles = await this.rolesRepository.findBy({});
 		return roles;
 	}
 
@@ -268,7 +238,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 
 	@bindThis
 	public async getUserRoles(userId: MiUser['id']) {
-		const roles = await this.rolesCache.fetch(() => this.rolesRepository.findBy({}));
+		const roles = await this.rolesRepository.findBy({});
 		const assigns = await this.getUserAssigns(userId);
 		const assignedRoles = roles.filter(r => assigns.map(x => x.roleId).includes(r.id));
 		const user = roles.some(r => r.target === 'conditional') ? await this.cacheService.findUserById(userId) : null;
@@ -286,7 +256,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		// 期限切れのロールを除外
 		assigns = assigns.filter(a => a.expiresAt == null || (a.expiresAt.getTime() > now));
 		const assignedRoleIds = assigns.map(x => x.roleId);
-		const roles = await this.rolesCache.fetch(() => this.rolesRepository.findBy({}));
+		const roles = await this.rolesRepository.findBy({});
 		const assignedBadgeRoles = roles.filter(r => r.asBadge && assignedRoleIds.includes(r.id));
 		const badgeCondRoles = roles.filter(r => r.asBadge && (r.target === 'conditional'));
 		if (badgeCondRoles.length > 0) {
@@ -371,7 +341,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 
 	@bindThis
 	public async getModeratorIds(includeAdmins = true): Promise<MiUser['id'][]> {
-		const roles = await this.rolesCache.fetch(() => this.rolesRepository.findBy({}));
+		const roles = await this.rolesRepository.findBy({});
 		const moderatorRoles = includeAdmins ? roles.filter(r => r.isModerator || r.isAdministrator) : roles.filter(r => r.isModerator);
 		const assigns = moderatorRoles.length > 0 ? await this.roleAssignmentsRepository.findBy({
 			roleId: In(moderatorRoles.map(r => r.id)),
@@ -391,7 +361,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 
 	@bindThis
 	public async getAdministratorIds(): Promise<MiUser['id'][]> {
-		const roles = await this.rolesCache.fetch(() => this.rolesRepository.findBy({}));
+		const roles = await this.rolesRepository.findBy({});
 		const administratorRoles = roles.filter(r => r.isAdministrator);
 		const assigns = administratorRoles.length > 0 ? await this.roleAssignmentsRepository.findBy({
 			roleId: In(administratorRoles.map(r => r.id)),

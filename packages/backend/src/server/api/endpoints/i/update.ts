@@ -352,7 +352,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			}
 
 			if (ps.avatarDecorations) {
-				const decorations = await this.avatarDecorationService.getAll(true);
+				const decorations = await this.avatarDecorationService.getAll();
 				const [myRoles, myPolicies] = await Promise.all([this.roleService.getUserRoles(user.id), this.roleService.getUserPolicies(user.id)]);
 				const allRoles = await this.roleService.getRoles();
 				const decorationIds = decorations

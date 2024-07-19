@@ -86,7 +86,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const avatarDecorations = await this.avatarDecorationService.getAll(true);
+			const avatarDecorations = await this.avatarDecorationService.getAll();
 
 			return avatarDecorations.map(avatarDecoration => ({
 				id: avatarDecoration.id,

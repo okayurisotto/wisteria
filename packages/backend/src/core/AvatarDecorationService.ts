@@ -3,55 +3,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
-import * as Redis from 'ioredis';
+import { Inject, Injectable } from '@nestjs/common';
 import type { AvatarDecorationsRepository, MiAvatarDecoration, MiUser } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
-import { MemorySingleCache } from '@/misc/cache.js';
-import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 
 @Injectable()
-export class AvatarDecorationService implements OnApplicationShutdown {
-	public cache: MemorySingleCache<MiAvatarDecoration[]>;
-
+export class AvatarDecorationService {
 	constructor(
-		@Inject(DI.redisForSub)
-		private redisForSub: Redis.Redis,
-
 		@Inject(DI.avatarDecorationsRepository)
 		private avatarDecorationsRepository: AvatarDecorationsRepository,
 
 		private idService: IdService,
 		private moderationLogService: ModerationLogService,
 		private globalEventService: GlobalEventService,
-	) {
-		this.cache = new MemorySingleCache<MiAvatarDecoration[]>(1000 * 60 * 30);
-
-		this.redisForSub.on('message', this.onMessage);
-	}
-
-	@bindThis
-	private async onMessage(_: string, data: string): Promise<void> {
-		const obj = JSON.parse(data);
-
-		if (obj.channel === 'internal') {
-			const { type, body } = obj.message as GlobalEvents['internal']['payload'];
-			switch (type) {
-				case 'avatarDecorationCreated':
-				case 'avatarDecorationUpdated':
-				case 'avatarDecorationDeleted': {
-					this.cache.delete();
-					break;
-				}
-				default:
-					break;
-			}
-		}
-	}
+	) {}
 
 	@bindThis
 	public async create(options: Partial<MiAvatarDecoration>, moderator?: MiUser): Promise<MiAvatarDecoration> {
@@ -110,20 +79,7 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	public async getAll(noCache = false): Promise<MiAvatarDecoration[]> {
-		if (noCache) {
-			this.cache.delete();
-		}
-		return this.cache.fetch(() => this.avatarDecorationsRepository.find());
-	}
-
-	@bindThis
-	public dispose(): void {
-		this.redisForSub.off('message', this.onMessage);
-	}
-
-	@bindThis
-	public onApplicationShutdown(signal?: string | undefined): void {
-		this.dispose();
+	public async getAll(): Promise<MiAvatarDecoration[]> {
+		return await this.avatarDecorationsRepository.find();
 	}
 }

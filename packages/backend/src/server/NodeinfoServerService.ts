@@ -8,7 +8,6 @@ import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
 import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
-import { MemorySingleCache } from '@/misc/cache.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
 import NotesChart from '@/core/chart/charts/notes.js';
@@ -130,10 +129,8 @@ export class NodeinfoServerService {
 			return document;
 		};
 
-		const cache = new MemorySingleCache<Awaited<ReturnType<typeof nodeinfo2>>>(1000 * 60 * 10);
-
 		fastify.get(nodeinfo2_1path, async (request, reply) => {
-			const base = await cache.fetch(() => nodeinfo2(21));
+			const base = await nodeinfo2(21);
 
 			reply
 				.type(
@@ -148,7 +145,7 @@ export class NodeinfoServerService {
 		});
 
 		fastify.get(nodeinfo2_0path, async (request, reply) => {
-			const base = await cache.fetch(() => nodeinfo2(20));
+			const base = await nodeinfo2(20);
 
 			delete (base as any).software.repository;
 

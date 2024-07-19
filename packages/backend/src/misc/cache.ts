@@ -104,7 +104,6 @@ export class RedisSingleCache<T> {
 	private redisClient: Redis.Redis;
 	private name: string;
 	private lifetime: number;
-	private memoryCache: MemorySingleCache<T>;
 	private fetcher: () => Promise<T>;
 	private toRedisConverter: (value: T) => string;
 	private fromRedisConverter: (value: string) => T | undefined;
@@ -119,7 +118,6 @@ export class RedisSingleCache<T> {
 		this.redisClient = redisClient;
 		this.name = name;
 		this.lifetime = opts.lifetime;
-		this.memoryCache = new MemorySingleCache(opts.memoryCacheLifetime);
 		this.fetcher = opts.fetcher;
 		this.toRedisConverter = opts.toRedisConverter;
 		this.fromRedisConverter = opts.fromRedisConverter;
@@ -127,7 +125,6 @@ export class RedisSingleCache<T> {
 
 	@bindThis
 	public async set(value: T): Promise<void> {
-		this.memoryCache.set(value);
 		if (this.lifetime === Infinity) {
 			await this.redisClient.set(
 				`singlecache:${this.name}`,
@@ -144,9 +141,6 @@ export class RedisSingleCache<T> {
 
 	@bindThis
 	public async get(): Promise<T | undefined> {
-		const memoryCached = this.memoryCache.get();
-		if (memoryCached !== undefined) return memoryCached;
-
 		const cached = await this.redisClient.get(`singlecache:${this.name}`);
 		if (cached == null) return undefined;
 		return this.fromRedisConverter(cached);
@@ -154,7 +148,6 @@ export class RedisSingleCache<T> {
 
 	@bindThis
 	public async delete(): Promise<void> {
-		this.memoryCache.delete();
 		await this.redisClient.del(`singlecache:${this.name}`);
 	}
 
@@ -289,90 +282,5 @@ export class MemoryKVCache<T> {
 	@bindThis
 	public dispose(): void {
 		clearInterval(this.gcIntervalHandle);
-	}
-}
-
-export class MemorySingleCache<T> {
-	private cachedAt: number | null = null;
-	private value: T | undefined;
-	private lifetime: number;
-
-	constructor(lifetime: MemorySingleCache<never>['lifetime']) {
-		this.lifetime = lifetime;
-	}
-
-	@bindThis
-	public set(value: T): void {
-		this.cachedAt = Date.now();
-		this.value = value;
-	}
-
-	@bindThis
-	public get(): T | undefined {
-		if (this.cachedAt == null) return undefined;
-		if ((Date.now() - this.cachedAt) > this.lifetime) {
-			this.value = undefined;
-			this.cachedAt = null;
-			return undefined;
-		}
-		return this.value;
-	}
-
-	@bindThis
-	public delete() {
-		this.value = undefined;
-		this.cachedAt = null;
-	}
-
-	/**
-	 * キャッシュがあればそれを返し、無ければfetcherを呼び出して結果をキャッシュ&返します
-	 * optional: キャッシュが存在してもvalidatorでfalseを返すとキャッシュ無効扱いにします
-	 */
-	@bindThis
-	public async fetch(fetcher: () => Promise<T>, validator?: (cachedValue: T) => boolean): Promise<T> {
-		const cachedValue = this.get();
-		if (cachedValue !== undefined) {
-			if (validator) {
-				if (validator(cachedValue)) {
-					// Cache HIT
-					return cachedValue;
-				}
-			} else {
-				// Cache HIT
-				return cachedValue;
-			}
-		}
-
-		// Cache MISS
-		const value = await fetcher();
-		this.set(value);
-		return value;
-	}
-
-	/**
-	 * キャッシュがあればそれを返し、無ければfetcherを呼び出して結果をキャッシュ&返します
-	 * optional: キャッシュが存在してもvalidatorでfalseを返すとキャッシュ無効扱いにします
-	 */
-	@bindThis
-	public async fetchMaybe(fetcher: () => Promise<T | undefined>, validator?: (cachedValue: T) => boolean): Promise<T | undefined> {
-		const cachedValue = this.get();
-		if (cachedValue !== undefined) {
-			if (validator) {
-				if (validator(cachedValue)) {
-					// Cache HIT
-					return cachedValue;
-				}
-			} else {
-				// Cache HIT
-				return cachedValue;
-			}
-		}
-
-		// Cache MISS
-		const value = await fetcher();
-		if (value !== undefined) {
-			this.set(value);
-		}
-		return value;
 	}
 }

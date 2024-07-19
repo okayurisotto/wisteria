@@ -8,7 +8,6 @@ import { IsNull } from 'typeorm';
 import type { MiLocalUser, MiUser } from '@/models/User.js';
 import type { RelaysRepository, UsersRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
-import { MemorySingleCache } from '@/misc/cache.js';
 import type { MiRelay } from '@/models/Relay.js';
 import { QueueService } from '@/core/QueueService.js';
 import { CreateSystemUserService } from '@/core/CreateSystemUserService.js';
@@ -21,8 +20,6 @@ const ACTOR_USERNAME = 'relay.actor' as const;
 
 @Injectable()
 export class RelayService {
-	private relaysCache: MemorySingleCache<MiRelay[]>;
-
 	constructor(
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
@@ -34,9 +31,7 @@ export class RelayService {
 		private queueService: QueueService,
 		private createSystemUserService: CreateSystemUserService,
 		private apRendererService: ApRendererService,
-	) {
-		this.relaysCache = new MemorySingleCache<MiRelay[]>(1000 * 60 * 10);
-	}
+	) {}
 
 	@bindThis
 	private async getRelayActor(): Promise<MiLocalUser> {
@@ -114,9 +109,9 @@ export class RelayService {
 	public async deliverToRelays(user: { id: MiUser['id']; host: null; }, activity: any): Promise<void> {
 		if (activity == null) return;
 
-		const relays = await this.relaysCache.fetch(() => this.relaysRepository.findBy({
+		const relays = await this.relaysRepository.findBy({
 			status: 'accepted',
-		}));
+		});
 		if (relays.length === 0) return;
 
 		const copy = deepClone(activity);
