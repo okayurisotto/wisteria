@@ -62,6 +62,9 @@ export const NSFW_MODEL_DIR = pathToFileURL(
 /** `/packages/backend/assets` */
 export const STATIC_ASSETS_DIR = path.join(BACKEND_DIR, 'assets');
 
+/** `/packages/backend/migration/*.js` */
+export const DATABASE_MIGRATION_FILES = path.join(BACKEND_DIR, 'migration/*.js');
+
 /** `/packages/backend/built/server/assets` */
 export const ASSETS_DIR = path.join(BACKEND_DIR, 'built/server/assets');
 

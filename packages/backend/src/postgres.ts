@@ -82,6 +82,7 @@ import { MiReversiGame } from '@/models/ReversiGame.js';
 import { Config } from '@/config.js';
 import MisskeyLogger from '@/logger.js';
 import { bindThis } from '@/decorators.js';
+import { DATABASE_MIGRATION_FILES } from './path.js';
 
 export const dbLogger = new MisskeyLogger('db');
 
@@ -246,6 +247,6 @@ export function createPostgresDataSource(config: Config) {
 		logger: log ? new MyCustomLogger() : undefined,
 		maxQueryExecutionTime: 300,
 		entities: entities,
-		migrations: ['../../migration/*.js'],
+		migrations: [DATABASE_MIGRATION_FILES],
 	});
 }
