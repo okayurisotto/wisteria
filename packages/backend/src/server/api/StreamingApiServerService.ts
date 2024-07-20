@@ -8,14 +8,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import * as WebSocket from 'ws';
 import { DI } from '@/di-symbols.js';
-import type { UsersRepository, MiAccessToken } from '@/models/_.js';
+import type { BlockingsRepository, ChannelFollowingsRepository, FollowingsRepository, MiAccessToken, MutingsRepository, RenoteMutingsRepository, UserProfilesRepository } from '@/models/_.js';
 import { NoteReadService } from '@/core/NoteReadService.js';
 import { NotificationService } from '@/core/NotificationService.js';
 import { bindThis } from '@/decorators.js';
-import { CacheService } from '@/core/CacheService.js';
 import { MiLocalUser } from '@/models/User.js';
 import { UserService } from '@/core/UserService.js';
-import { ChannelFollowingService } from '@/core/ChannelFollowingService.js';
 import { AuthenticateService, AuthenticationError } from './AuthenticateService.js';
 import MainStreamConnection from './stream/Connection.js';
 import { ChannelsService } from './stream/ChannelsService.js';
@@ -31,18 +29,30 @@ export class StreamingApiServerService {
 		@Inject(DI.redisForSub)
 		private redisForSub: Redis.Redis,
 
-		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		@Inject(DI.userProfilesRepository)
+		private userProfilesRepository: UserProfilesRepository,
 
-		private cacheService: CacheService,
-		private noteReadService: NoteReadService,
-		private authenticateService: AuthenticateService,
+		@Inject(DI.mutingsRepository)
+		private mutingsRepository: MutingsRepository,
+
+		@Inject(DI.blockingsRepository)
+		private blockingsRepository: BlockingsRepository,
+
+		@Inject(DI.renoteMutingsRepository)
+		private renoteMutingsRepository: RenoteMutingsRepository,
+
+		@Inject(DI.followingsRepository)
+		private followingsRepository: FollowingsRepository,
+
+		@Inject(DI.channelFollowingsRepository)
+		private channelFollowingsRepository: ChannelFollowingsRepository,
+
 		private channelsService: ChannelsService,
+		private noteReadService: NoteReadService,
 		private notificationService: NotificationService,
+		private authenticateService: AuthenticateService,
 		private usersService: UserService,
-		private channelFollowingService: ChannelFollowingService,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public attach(server: http.Server): void {
@@ -95,11 +105,16 @@ export class StreamingApiServerService {
 			}
 
 			const stream = new MainStreamConnection(
+				this.userProfilesRepository,
+				this.mutingsRepository,
+				this.blockingsRepository,
+				this.renoteMutingsRepository,
+				this.followingsRepository,
+				this.channelFollowingsRepository,
 				this.channelsService,
 				this.noteReadService,
 				this.notificationService,
-				this.cacheService,
-				this.channelFollowingService,
+
 				user, app,
 			);
 

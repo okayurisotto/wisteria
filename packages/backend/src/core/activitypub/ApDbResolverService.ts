@@ -8,7 +8,6 @@ import { DI } from '@/di-symbols.js';
 import type { NotesRepository, UserPublickeysRepository, UsersRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
 import type { MiUserPublickey } from '@/models/UserPublickey.js';
-import { CacheService } from '@/core/CacheService.js';
 import type { MiNote } from '@/models/Note.js';
 import { bindThis } from '@/decorators.js';
 import { MiLocalUser, MiRemoteUser } from '@/models/User.js';
@@ -47,7 +46,6 @@ export class ApDbResolverService {
 		@Inject(DI.userPublickeysRepository)
 		private userPublickeysRepository: UserPublickeysRepository,
 
-		private cacheService: CacheService,
 		private apPersonService: ApPersonService,
 	) {}
 
@@ -114,7 +112,7 @@ export class ApDbResolverService {
 		const key = await this.userPublickeysRepository.findOneBy({ keyId });
 		if (key == null) return null;
 
-		const user = await this.cacheService.findUserById(key.userId).catch(() => null) as MiRemoteUser | null;
+		const user = await this.usersRepository.findOneByOrFail({ id: key.userId }).catch(() => null) as MiRemoteUser | null;
 		if (user == null) return null;
 		if (user.isDeleted) return null;
 

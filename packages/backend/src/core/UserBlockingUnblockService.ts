@@ -14,7 +14,6 @@ import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import { bindThis } from '@/decorators.js';
-import { CacheService } from '@/core/CacheService.js';
 
 @Injectable()
 export class UserBlockingUnblockService {
@@ -24,7 +23,6 @@ export class UserBlockingUnblockService {
 		@Inject(DI.blockingsRepository)
 		private readonly blockingsRepository: BlockingsRepository,
 
-		private readonly cacheService: CacheService,
 		private readonly userEntityService: UserEntityService,
 		private readonly queueService: QueueService,
 		private readonly globalEventService: GlobalEventService,
@@ -54,11 +52,6 @@ export class UserBlockingUnblockService {
 		blocking.blockee = blockee;
 
 		await this.blockingsRepository.delete(blocking.id);
-
-		await Promise.all([
-			this.cacheService.userBlockingCache.refresh(blocker.id),
-			this.cacheService.userBlockedCache.refresh(blockee.id),
-		]);
 
 		this.globalEventService.publishInternalEvent('blockingDeleted', {
 			blockerId: blocker.id,

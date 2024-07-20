@@ -24,7 +24,6 @@ import { bindThis } from '@/decorators.js';
 import { UserBlockingCheckService } from './UserBlockingCheckService.js';
 import { UserBlockingUnblockService } from '@/core/UserBlockingUnblockService.js';
 import { MetaService } from '@/core/MetaService.js';
-import { CacheService } from '@/core/CacheService.js';
 import type { Config } from '@/config.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { LoggerService } from './LoggerService.js';
@@ -66,7 +65,6 @@ export class UserFollowingService {
 		@Inject(DI.instancesRepository)
 		private instancesRepository: InstancesRepository,
 
-		private cacheService: CacheService,
 		private utilityService: UtilityService,
 		private userEntityService: UserEntityService,
 		private idService: IdService,
@@ -224,8 +222,6 @@ export class UserFollowingService {
 			}
 		});
 
-		this.cacheService.userFollowingsCache.refresh(follower.id);
-
 		const requestExist = await this.followRequestsRepository.exists({
 			where: {
 				followeeId: followee.id,
@@ -345,8 +341,6 @@ export class UserFollowingService {
 		}
 
 		await this.followingsRepository.delete(following.id);
-
-		this.cacheService.userFollowingsCache.refresh(follower.id);
 
 		this.decrementFollowing(following.follower, following.followee);
 

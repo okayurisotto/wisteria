@@ -15,10 +15,9 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import { USER_ACTIVE_THRESHOLD, USER_ONLINE_THRESHOLD } from '@/const.js';
 import type { MiLocalUser, MiPartialLocalUser, MiPartialRemoteUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import { birthdaySchema, descriptionSchema, localUsernameSchema, locationSchema, nameSchema, passwordSchema } from '@/models/User.js';
-import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, NoteUnreadsRepository, UserNotePiningsRepository, UserProfilesRepository, MiUserProfile, RenoteMutingsRepository, UserMemoRepository } from '@/models/_.js';
+import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, NoteUnreadsRepository, UserNotePiningsRepository, UserProfilesRepository, MiUserProfile, RenoteMutingsRepository, UserMemoRepository, InstancesRepository } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
-import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { IdService } from '@/core/IdService.js';
 import { AnnouncementService } from '@/core/AnnouncementService.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
@@ -91,10 +90,12 @@ export class UserEntityService implements OnModuleInit {
 		@Inject(DI.userMemosRepository)
 		private userMemosRepository: UserMemoRepository,
 
+		@Inject(DI.instancesRepository)
+		private instancesRepository: InstancesRepository,
+
 		private idService: IdService,
 		private announcementService: AnnouncementService,
 		private avatarDecorationService: AvatarDecorationService,
-		private federatedInstanceService: FederatedInstanceService,
 		private noteEntityService: NoteEntityService,
 		private customEmojiPopulateService: CustomEmojiPopulateService,
 	) {
@@ -343,7 +344,7 @@ export class UserEntityService implements OnModuleInit {
 			}))) : [],
 			isBot: user.isBot,
 			isCat: user.isCat,
-			instance: user.host ? this.federatedInstanceService.federatedInstanceCache.fetch(user.host).then(instance => instance ? {
+			instance: user.host ? this.instancesRepository.findOneBy({ host: user.host }).then(instance => instance ? {
 				name: instance.name,
 				softwareName: instance.softwareName,
 				softwareVersion: instance.softwareVersion,

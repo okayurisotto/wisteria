@@ -16,7 +16,6 @@ import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { WebhookService } from '@/core/WebhookService.js';
 import { bindThis } from '@/decorators.js';
-import { CacheService } from '@/core/CacheService.js';
 import { UserFollowingService } from '@/core/UserFollowingService.js';
 
 @Injectable()
@@ -38,7 +37,6 @@ export class UserBlockingBlockService implements OnModuleInit {
 		@Inject(DI.userListMembershipsRepository)
 		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
-		private readonly cacheService: CacheService,
 		private readonly userEntityService: UserEntityService,
 		private readonly idService: IdService,
 		private readonly queueService: QueueService,
@@ -70,11 +68,6 @@ export class UserBlockingBlockService implements OnModuleInit {
 		};
 
 		await this.blockingsRepository.insert(blocking);
-
-		await Promise.all([
-			this.cacheService.userBlockingCache.refresh(blocker.id),
-			this.cacheService.userBlockedCache.refresh(blockee.id),
-		]);
 
 		this.globalEventService.publishInternalEvent('blockingCreated', {
 			blockerId: blocker.id,

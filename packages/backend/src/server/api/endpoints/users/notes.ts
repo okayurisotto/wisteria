@@ -5,11 +5,10 @@
 
 import { Brackets } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
-import type { NotesRepository } from '@/models/_.js';
+import type { BlockingsRepository, NotesRepository } from '@/models/_.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { DI } from '@/di-symbols.js';
-import { CacheService } from '@/core/CacheService.js';
 import { IdService } from '@/core/IdService.js';
 import { QueryService } from '@/core/QueryService.js';
 import { MiLocalUser } from '@/models/User.js';
@@ -67,9 +66,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.notesRepository)
 		private notesRepository: NotesRepository,
 
+		@Inject(DI.blockingsRepository)
+		private blockingsRepository: BlockingsRepository,
+
 		private noteEntityService: NoteEntityService,
 		private queryService: QueryService,
-		private cacheService: CacheService,
 		private idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
@@ -80,7 +81,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			// early return if me is blocked by requesting user
 			if (me != null) {
-				const userIdsWhoBlockingMe = await this.cacheService.userBlockedCache.fetch(me.id);
+				const userIdsWhoBlockingMe = await this.blockingsRepository.find({ where: { blockeeId: me.id }, select: ['blockerId'] }).then(xs => new Set(xs.map(x => x.blockerId)));
 				if (userIdsWhoBlockingMe.has(ps.userId)) {
 					return [];
 				}

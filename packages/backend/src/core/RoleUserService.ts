@@ -5,12 +5,11 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
-import type { RoleAssignmentsRepository, RolesRepository } from '@/models/_.js';
+import type { RoleAssignmentsRepository, RolesRepository, UsersRepository } from '@/models/_.js';
 import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
 import { MetaService } from '@/core/MetaService.js';
-import { CacheService } from '@/core/CacheService.js';
 import type { MiRole, RoleCondFormulaValue } from '@/models/Role.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
@@ -87,8 +86,10 @@ export class RoleUserService {
 		@Inject(DI.roleAssignmentsRepository)
 		private roleAssignmentsRepository: RoleAssignmentsRepository,
 
+		@Inject(DI.usersRepository)
+		private usersRepository: UsersRepository,
+
 		private metaService: MetaService,
-		private cacheService: CacheService,
 		private userEntityService: UserEntityService,
 		private globalEventService: GlobalEventService,
 		private idService: IdService,
@@ -178,7 +179,7 @@ export class RoleUserService {
 		const matchedCondRoles = await (async () => {
 			if (condRoles.length === 0) return [];
 
-			const user = await this.cacheService.findUserById(userId);
+			const user = await this.usersRepository.findOneByOrFail({ id: userId });
 			return condRoles.filter((r) => {
 				return this.evalCond(user, r.condFormula);
 			});

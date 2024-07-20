@@ -3,36 +3,25 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
-import * as Redis from 'ioredis';
+import { Inject, Injectable } from '@nestjs/common';
 import type { UserListMembershipsRepository } from '@/models/_.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiUserList } from '@/models/UserList.js';
 import type { MiUserListMembership } from '@/models/UserListMembership.js';
 import { IdService } from '@/core/IdService.js';
-import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ProxyAccountService } from '@/core/ProxyAccountService.js';
 import { bindThis } from '@/decorators.js';
 import { QueueService } from '@/core/QueueService.js';
-import { RedisKVCache } from '@/misc/cache.js';
 import { RoleUserService } from './RoleUserService.js';
 
 @Injectable()
-export class UserListService implements OnApplicationShutdown {
+export class UserListService {
 	public static TooManyUsersError = class extends Error {};
 
-	public membersCache: RedisKVCache<Set<string>>;
-
 	constructor(
-		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
-
-		@Inject(DI.redisForSub)
-		private redisForSub: Redis.Redis,
-
 		@Inject(DI.userListMembershipsRepository)
 		private userListMembershipsRepository: UserListMembershipsRepository,
 
@@ -42,46 +31,7 @@ export class UserListService implements OnApplicationShutdown {
 		private proxyAccountService: ProxyAccountService,
 		private queueService: QueueService,
 		private roleUserService: RoleUserService,
-	) {
-		this.membersCache = new RedisKVCache<Set<string>>(this.redisClient, 'userListMembers', {
-			lifetime: 1000 * 60 * 30, // 30m
-			memoryCacheLifetime: 1000 * 60, // 1m
-			fetcher: (key) => this.userListMembershipsRepository.find({ where: { userListId: key }, select: ['userId'] }).then(xs => new Set(xs.map(x => x.userId))),
-			toRedisConverter: (value) => JSON.stringify(Array.from(value)),
-			fromRedisConverter: (value) => new Set(JSON.parse(value)),
-		});
-
-		this.redisForSub.on('message', this.onMessage);
-	}
-
-	@bindThis
-	private async onMessage(_: string, data: string): Promise<void> {
-		const obj = JSON.parse(data);
-
-		if (obj.channel === 'internal') {
-			const { type, body } = obj.message as GlobalEvents['internal']['payload'];
-			switch (type) {
-				case 'userListMemberAdded': {
-					const { userListId, memberId } = body;
-					const members = await this.membersCache.get(userListId);
-					if (members) {
-						members.add(memberId);
-					}
-					break;
-				}
-				case 'userListMemberRemoved': {
-					const { userListId, memberId } = body;
-					const members = await this.membersCache.get(userListId);
-					if (members) {
-						members.delete(memberId);
-					}
-					break;
-				}
-				default:
-					break;
-			}
-		}
-	}
+	) {}
 
 	@bindThis
 	public async addMember(target: MiUser, list: MiUserList, me: MiUser) {
@@ -138,15 +88,5 @@ export class UserListService implements OnApplicationShutdown {
 		}, {
 			withReplies: options.withReplies,
 		});
-	}
-
-	@bindThis
-	public dispose(): void {
-		this.redisForSub.off('message', this.onMessage);
-	}
-
-	@bindThis
-	public onApplicationShutdown(signal?: string | undefined): void {
-		this.dispose();
 	}
 }

@@ -49,7 +49,6 @@ import { WebAuthnService } from './WebAuthnService.js';
 import { UserBlockingBlockService } from './UserBlockingBlockService.js';
 import { UserBlockingCheckService } from './UserBlockingCheckService.js';
 import { UserBlockingUnblockService } from './UserBlockingUnblockService.js';
-import { CacheService } from './CacheService.js';
 import { UserService } from './UserService.js';
 import { UserFollowingService } from './UserFollowingService.js';
 import { UserKeypairService } from './UserKeypairService.js';
@@ -224,7 +223,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		UserBlockingBlockService,
 		UserBlockingCheckService,
 		UserBlockingUnblockService,
-		CacheService,
 		UserService,
 		UserFollowingService,
 		UserKeypairService,
@@ -386,7 +384,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		UserBlockingBlockService,
 		UserBlockingCheckService,
 		UserBlockingUnblockService,
-		CacheService,
 		UserService,
 		UserFollowingService,
 		UserKeypairService,

@@ -10,10 +10,8 @@ import type { Packed } from '@/misc/json-schema.js';
 import type { NoteReadService } from '@/core/NoteReadService.js';
 import type { NotificationService } from '@/core/NotificationService.js';
 import { bindThis } from '@/decorators.js';
-import { CacheService } from '@/core/CacheService.js';
-import { MiFollowing, MiUserProfile } from '@/models/_.js';
+import type { BlockingsRepository, ChannelFollowingsRepository, FollowingsRepository, MiFollowing, MiUserProfile, MutingsRepository, RenoteMutingsRepository, UserProfilesRepository } from '@/models/_.js';
 import type { StreamEventEmitter, GlobalEvents } from '@/core/GlobalEventService.js';
-import { ChannelFollowingService } from '@/core/ChannelFollowingService.js';
 import type { ChannelsService } from './ChannelsService.js';
 import type { EventEmitter } from 'events';
 import type Channel from './channel.js';
@@ -22,8 +20,8 @@ import type Channel from './channel.js';
  * Main stream connection
  */
 export default class Connection {
-	public user?: MiUser;
-	public token?: MiAccessToken;
+	public readonly user?: MiUser;
+	public readonly token?: MiAccessToken;
 	private wsConnection: WebSocket.WebSocket;
 	public subscriber: StreamEventEmitter;
 	private channels: Channel[] = [];
@@ -39,11 +37,15 @@ export default class Connection {
 	private fetchIntervalId: NodeJS.Timeout | null = null;
 
 	constructor(
+		private userProfilesRepository: UserProfilesRepository,
+		private mutingsRepository: MutingsRepository,
+		private blockingsRepository: BlockingsRepository,
+		private renoteMutingsRepository: RenoteMutingsRepository,
+		private followingsRepository: FollowingsRepository,
+		private channelFollowingsRepository: ChannelFollowingsRepository,
 		private channelsService: ChannelsService,
 		private noteReadService: NoteReadService,
 		private notificationService: NotificationService,
-		private cacheService: CacheService,
-		private channelFollowingService: ChannelFollowingService,
 
 		user: MiUser | null | undefined,
 		token: MiAccessToken | null | undefined,
@@ -52,16 +54,32 @@ export default class Connection {
 		if (token) this.token = token;
 	}
 
-	@bindThis
-	public async fetch() {
+	private async fetch() {
 		if (this.user == null) return;
-		const [userProfile, following, followingChannels, userIdsWhoMeMuting, userIdsWhoBlockingMe, userIdsWhoMeMutingRenotes] = await Promise.all([
-			this.cacheService.userProfileCache.fetch(this.user.id),
-			this.cacheService.userFollowingsCache.fetch(this.user.id),
-			this.channelFollowingService.userFollowingChannelsCache.fetch(this.user.id),
-			this.cacheService.userMutingsCache.fetch(this.user.id),
-			this.cacheService.userBlockedCache.fetch(this.user.id),
-			this.cacheService.renoteMutingsCache.fetch(this.user.id),
+
+		const [
+			userProfile,
+			following,
+			followingChannels,
+			userIdsWhoMeMuting,
+			userIdsWhoBlockingMe,
+			userIdsWhoMeMutingRenotes,
+		] = await Promise.all([
+			this.userProfilesRepository.findOneByOrFail({ userId: this.user.id }),
+			(this.followingsRepository.find({
+				where: { followerId: this.user.id },
+				select: ['followeeId', 'withReplies'],
+			}).then(xs => {
+				const obj: Record<string, Pick<MiFollowing, 'withReplies'> | undefined> = {};
+				for (const x of xs) {
+					obj[x.followeeId] = { withReplies: x.withReplies };
+				}
+				return obj;
+			})),
+			this.channelFollowingsRepository.find({ where: { followerId: this.user.id }, select: ['followeeId'] }).then(xs => new Set(xs.map(x => x.followeeId))),
+			this.mutingsRepository.find({ where: { muterId: this.user.id }, select: ['muteeId'] }).then(xs => new Set(xs.map(x => x.muteeId))),
+			this.blockingsRepository.find({ where: { blockeeId: this.user.id }, select: ['blockerId'] }).then(xs => new Set(xs.map(x => x.blockerId))),
+			this.renoteMutingsRepository.find({ where: { muterId: this.user.id }, select: ['muteeId'] }).then(xs => new Set(xs.map(x => x.muteeId))),
 		]);
 		this.userProfile = userProfile;
 		this.following = following;
@@ -72,13 +90,14 @@ export default class Connection {
 		this.userMutedInstances = new Set(userProfile.mutedInstances);
 	}
 
-	@bindThis
 	public async init() {
 		if (this.user != null) {
 			await this.fetch();
 
 			if (!this.fetchIntervalId) {
-				this.fetchIntervalId = setInterval(this.fetch, 1000 * 10);
+				this.fetchIntervalId = setInterval(() => {
+					void this.fetch();
+				}, 1000 * 10);
 			}
 		}
 	}

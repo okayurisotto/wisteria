@@ -10,10 +10,9 @@ import type { Config } from '@/config.js';
 import { bindThis } from '@/decorators.js';
 import { MiNote } from '@/models/Note.js';
 import { MiUser } from '@/models/_.js';
-import type { NotesRepository } from '@/models/_.js';
+import type { BlockingsRepository, MutingsRepository, NotesRepository } from '@/models/_.js';
 import { sqlLikeEscape } from '@/misc/sql-like-escape.js';
 import { isUserRelated } from '@/misc/is-user-related.js';
-import { CacheService } from '@/core/CacheService.js';
 import { QueryService } from '@/core/QueryService.js';
 import { IdService } from '@/core/IdService.js';
 import type { Index, MeiliSearch } from 'meilisearch';
@@ -68,7 +67,7 @@ export class SearchService {
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		config: Config,
 
 		@Inject(DI.meilisearch)
 		private meilisearch: MeiliSearch | null,
@@ -76,7 +75,12 @@ export class SearchService {
 		@Inject(DI.notesRepository)
 		private notesRepository: NotesRepository,
 
-		private cacheService: CacheService,
+		@Inject(DI.mutingsRepository)
+		private mutingsRepository: MutingsRepository,
+
+		@Inject(DI.blockingsRepository)
+		private blockingsRepository: BlockingsRepository,
+
 		private queryService: QueryService,
 		private idService: IdService,
 	) {
@@ -190,20 +194,19 @@ export class SearchService {
 				limit: pagination.limit,
 			});
 			if (res.hits.length === 0) return [];
-			const [
-				userIdsWhoMeMuting,
-				userIdsWhoBlockingMe,
-			] = me ? await Promise.all([
-				this.cacheService.userMutingsCache.fetch(me.id),
-				this.cacheService.userBlockedCache.fetch(me.id),
-			]) : [new Set<string>(), new Set<string>()];
-			const notes = (await this.notesRepository.findBy({
-				id: In(res.hits.map(x => x.id)),
-			})).filter(note => {
-				if (me && isUserRelated(note, userIdsWhoBlockingMe)) return false;
-				if (me && isUserRelated(note, userIdsWhoMeMuting)) return false;
-				return true;
-			});
+			const [userIdsWhoMeMuting, userIdsWhoBlockingMe] = me
+				? await Promise.all([
+						this.mutingsRepository.find({ where: { muterId: me.id }, select: ['muteeId'] }).then(xs => new Set(xs.map(x => x.muteeId))),
+						this.blockingsRepository.find({ where: { blockeeId: me.id }, select: ['blockerId'] }).then(xs => new Set(xs.map(x => x.blockerId))),
+					])
+				: [new Set<string>(), new Set<string>()]
+				;
+			const notes = (await this.notesRepository.findBy({ id: In(res.hits.map(x => x.id)) }))
+				.filter(note => {
+					if (me && isUserRelated(note, userIdsWhoMeMuting)) return false;
+					if (me && isUserRelated(note, userIdsWhoBlockingMe)) return false;
+					return true;
+				});
 			return notes.sort((a, b) => a.id > b.id ? -1 : 1);
 		} else {
 			const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), pagination.sinceId, pagination.untilId);

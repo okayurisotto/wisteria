@@ -4,12 +4,11 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import type { NotesRepository } from '@/models/_.js';
+import type { BlockingsRepository, MutingsRepository, NotesRepository } from '@/models/_.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
-import { CacheService } from '@/core/CacheService.js';
 import { isUserRelated } from '@/misc/is-user-related.js';
 
 export const meta = {
@@ -46,12 +45,17 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.notesRepository)
 		private notesRepository: NotesRepository,
 
+		@Inject(DI.mutingsRepository)
+		private mutingsRepository: MutingsRepository,
+
+		@Inject(DI.blockingsRepository)
+		private blockingsRepository: BlockingsRepository,
+
 		private noteEntityService: NoteEntityService,
 		private featuredService: FeaturedService,
-		private cacheService: CacheService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const userIdsWhoBlockingMe = me ? await this.cacheService.userBlockedCache.fetch(me.id) : new Set<string>();
+			const userIdsWhoBlockingMe = me ? await this.blockingsRepository.find({ where: { blockeeId: me.id }, select: ['blockerId'] }).then(xs => new Set(xs.map(x => x.blockerId))) : new Set<string>();
 
 			// early return if me is blocked by requesting user
 			if (userIdsWhoBlockingMe.has(ps.userId)) {
@@ -73,7 +77,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			const [
 				userIdsWhoMeMuting,
 			] = me ? await Promise.all([
-				this.cacheService.userMutingsCache.fetch(me.id),
+				this.mutingsRepository.find({ where: { muterId: me.id }, select: ['muteeId'] }).then(xs => new Set(xs.map(x => x.muteeId))),
 			]) : [new Set<string>()];
 
 			const query = this.notesRepository.createQueryBuilder('note')

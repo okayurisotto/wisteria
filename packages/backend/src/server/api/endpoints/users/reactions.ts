@@ -4,12 +4,11 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import type { UserProfilesRepository, NoteReactionsRepository } from '@/models/_.js';
+import type { UserProfilesRepository, NoteReactionsRepository, UsersRepository } from '@/models/_.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { QueryService } from '@/core/QueryService.js';
 import { NoteReactionEntityService } from '@/core/entities/NoteReactionEntityService.js';
 import { DI } from '@/di-symbols.js';
-import { CacheService } from '@/core/CacheService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { ApiError } from '../../error.js';
@@ -61,13 +60,15 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
+		@Inject(DI.usersRepository)
+		private usersRepository: UsersRepository,
+
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.noteReactionsRepository)
 		private noteReactionsRepository: NoteReactionsRepository,
 
-		private cacheService: CacheService,
 		private userEntityService: UserEntityService,
 		private noteReactionEntityService: NoteReactionEntityService,
 		private queryService: QueryService,
@@ -76,7 +77,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		super(meta, paramDef, async (ps, me) => {
 			const iAmModerator = me ? await this.roleUserService.isModerator(me) : false; // Moderators can see reactions of all users
 			if (!iAmModerator) {
-				const user = await this.cacheService.findUserById(ps.userId);
+				const user = await this.usersRepository.findOneByOrFail({ id: ps.userId });
 				if (this.userEntityService.isRemoteUser(user)) {
 					throw new ApiError(meta.errors.isRemoteUser);
 				}

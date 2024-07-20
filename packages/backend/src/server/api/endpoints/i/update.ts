@@ -25,7 +25,6 @@ import { AccountUpdateService } from '@/core/AccountUpdateService.js';
 import { HashtagService } from '@/core/HashtagService.js';
 import { DI } from '@/di-symbols.js';
 import { RoleService } from '@/core/RoleService.js';
-import { CacheService } from '@/core/CacheService.js';
 import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
@@ -245,7 +244,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private hashtagService: HashtagService,
 		private roleService: RoleService,
 		private roleUserService: RoleUserService,
-		private cacheService: CacheService,
 		private httpRequestService: HttpRequestService,
 		private avatarDecorationService: AvatarDecorationService,
 	) {
@@ -470,8 +468,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			});
 
 			const updatedProfile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
-
-			this.cacheService.userProfileCache.set(user.id, updatedProfile);
 
 			// Publish meUpdated event
 			this.globalEventService.publishMainStream(user.id, 'meUpdated', iObj);

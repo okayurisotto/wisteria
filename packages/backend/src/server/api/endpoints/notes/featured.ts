@@ -4,13 +4,12 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import type { NotesRepository } from '@/models/_.js';
+import type { BlockingsRepository, MutingsRepository, NotesRepository } from '@/models/_.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
 import { isUserRelated } from '@/misc/is-user-related.js';
-import { CacheService } from '@/core/CacheService.js';
 
 export const meta = {
 	tags: ['notes'],
@@ -49,7 +48,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.notesRepository)
 		private notesRepository: NotesRepository,
 
-		private cacheService: CacheService,
+		@Inject(DI.mutingsRepository)
+		private mutingsRepository: MutingsRepository,
+
+		@Inject(DI.blockingsRepository)
+		private blockingsRepository: BlockingsRepository,
+
 		private noteEntityService: NoteEntityService,
 		private featuredService: FeaturedService,
 	) {
@@ -81,8 +85,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				userIdsWhoMeMuting,
 				userIdsWhoBlockingMe,
 			] = me ? await Promise.all([
-				this.cacheService.userMutingsCache.fetch(me.id),
-				this.cacheService.userBlockedCache.fetch(me.id),
+				this.mutingsRepository.find({ where: { muterId: me.id }, select: ['muteeId'] }).then(xs => new Set(xs.map(x => x.muteeId))),
+				this.blockingsRepository.find({ where: { blockeeId: me.id }, select: ['blockerId'] }).then(xs => new Set(xs.map(x => x.blockerId))),
 			]) : [new Set<string>(), new Set<string>()];
 
 			const query = this.notesRepository.createQueryBuilder('note')

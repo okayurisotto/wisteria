@@ -10,7 +10,6 @@ import { IdService } from '@/core/IdService.js';
 import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
-import { CacheService } from '@/core/CacheService.js';
 
 @Injectable()
 export class UserMutingService {
@@ -19,9 +18,7 @@ export class UserMutingService {
 		private mutingsRepository: MutingsRepository,
 
 		private idService: IdService,
-		private cacheService: CacheService,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public async mute(user: MiUser, target: MiUser, expiresAt: Date | null = null): Promise<void> {
@@ -31,8 +28,6 @@ export class UserMutingService {
 			muterId: user.id,
 			muteeId: target.id,
 		});
-
-		this.cacheService.userMutingsCache.refresh(user.id);
 	}
 
 	@bindThis
@@ -42,10 +37,5 @@ export class UserMutingService {
 		await this.mutingsRepository.delete({
 			id: In(mutings.map(m => m.id)),
 		});
-
-		const muterIds = [...new Set(mutings.map(m => m.muterId))];
-		for (const muterId of muterIds) {
-			this.cacheService.userMutingsCache.refresh(muterId);
-		}
 	}
 }
