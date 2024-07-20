@@ -96,7 +96,7 @@ export class ReactionCreateService {
 
 				const name = custom[1];
 				const emoji = reacterHost == null
-					? (await this.customEmojiService.localEmojisCache.fetch()).get(name)
+					? (await this.customEmojiService.fetch()).get(name)
 					: await this.emojisRepository.findOneBy({
 						host: reacterHost,
 						name,
@@ -192,7 +192,7 @@ export class ReactionCreateService {
 		const decodedReaction = this.reactionDecodeService.decodeReaction(reaction);
 
 		const customEmoji = decodedReaction.name == null ? null : decodedReaction.host == null
-			? (await this.customEmojiService.localEmojisCache.fetch()).get(decodedReaction.name)
+			? (await this.customEmojiService.fetch()).get(decodedReaction.name)
 			: await this.emojisRepository.findOne(
 				{
 					where: {

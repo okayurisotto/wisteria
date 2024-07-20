@@ -4,44 +4,21 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { IsNull } from 'typeorm';
-import * as Redis from 'ioredis';
 import { DI } from '@/di-symbols.js';
-import type { MiEmoji } from '@/models/Emoji.js';
 import type { EmojisRepository } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
-import { RedisSingleCache } from '@/misc/cache.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import type { Serialized } from '@/types.js';
 
 const parseEmojiStrRegexp = /^(\w+)(?:@([\w.-]+))?$/;
 
 @Injectable()
 export class CustomEmojiPopulateService {
-	public localEmojisCache: RedisSingleCache<Map<string, MiEmoji>>;
-
 	constructor(
-		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
-
 		@Inject(DI.emojisRepository)
 		private emojisRepository: EmojisRepository,
 
 		private utilityService: UtilityService,
-	) {
-		this.localEmojisCache = new RedisSingleCache<Map<string, MiEmoji>>(this.redisClient, 'localEmojis', {
-			lifetime: 1000 * 60 * 30, // 30m
-			memoryCacheLifetime: 1000 * 60 * 3, // 3m
-			fetcher: () => this.emojisRepository.find({ where: { host: IsNull() } }).then(emojis => new Map(emojis.map(emoji => [emoji.name, emoji]))),
-			toRedisConverter: (value) => JSON.stringify(Array.from(value.values())),
-			fromRedisConverter: (value) => {
-				return new Map(JSON.parse(value).map((x: Serialized<MiEmoji>) => [x.name, {
-					...x,
-					updatedAt: x.updatedAt ? new Date(x.updatedAt) : null,
-				}]));
-			},
-		});
-	}
+	) {}
 
 	@bindThis
 	private normalizeHost(src: string | undefined, noteUserHost: string | null): string | null {

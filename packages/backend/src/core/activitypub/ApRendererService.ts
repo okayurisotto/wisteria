@@ -277,7 +277,7 @@ export class ApRendererService {
 
 		if (reaction.startsWith(':')) {
 			const name = reaction.replaceAll(':', '');
-			const emoji = (await this.customEmojiService.localEmojisCache.fetch()).get(name);
+			const emoji = (await this.customEmojiService.fetch()).get(name);
 
 			if (emoji && !emoji.localOnly) object.tag = [this.renderEmoji(emoji)];
 		}
@@ -715,7 +715,7 @@ export class ApRendererService {
 	private async getEmojis(names: string[]): Promise<MiEmoji[]> {
 		if (names.length === 0) return [];
 
-		const allEmojis = await this.customEmojiService.localEmojisCache.fetch();
+		const allEmojis = await this.customEmojiService.fetch();
 		const emojis = names.map(name => allEmojis.get(name)).filter(isNotNull);
 
 		return emojis;
