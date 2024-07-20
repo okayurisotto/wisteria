@@ -15,7 +15,7 @@ import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js
 import InstanceChart from '@/core/chart/charts/instance.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { WebhookService } from '@/core/WebhookService.js';
-import { NotificationService } from '@/core/NotificationService.js';
+import { NotificationCreateService } from './NotificationCreateService.js';
 import { DI } from '@/di-symbols.js';
 import type { FollowingsRepository, FollowRequestsRepository, InstancesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
@@ -73,7 +73,7 @@ export class UserFollowingService {
 		private queueService: QueueService,
 		private globalEventService: GlobalEventService,
 		private metaService: MetaService,
-		private notificationService: NotificationService,
+		private notificationCreateService: NotificationCreateService,
 		private federatedInstanceService: FederatedInstanceService,
 		private webhookService: WebhookService,
 		private apRendererService: ApRendererService,
@@ -240,7 +240,7 @@ export class UserFollowingService {
 			});
 
 			// 通知を作成
-			this.notificationService.createNotification(follower.id, 'followRequestAccepted', {
+			this.notificationCreateService.createNotification(follower.id, 'followRequestAccepted', {
 			}, followee.id);
 		}
 
@@ -313,7 +313,7 @@ export class UserFollowingService {
 			});
 
 			// 通知を作成
-			this.notificationService.createNotification(followee.id, 'follow', {
+			this.notificationCreateService.createNotification(followee.id, 'follow', {
 			}, follower.id);
 		}
 	}
@@ -497,7 +497,7 @@ export class UserFollowingService {
 			}).then(packed => this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed));
 
 			// 通知を作成
-			this.notificationService.createNotification(followee.id, 'receiveFollowRequest', {
+			this.notificationCreateService.createNotification(followee.id, 'receiveFollowRequest', {
 			}, follower.id);
 		}
 

@@ -8,7 +8,7 @@ import type { UserProfilesRepository } from '@/models/_.js';
 import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
-import { NotificationService } from '@/core/NotificationService.js';
+import { NotificationCreateService } from './NotificationCreateService.js';
 
 export const ACHIEVEMENT_TYPES = [
 	'notes1',
@@ -97,7 +97,7 @@ export class AchievementService {
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
 
-		private notificationService: NotificationService,
+		private notificationCreateService: NotificationCreateService,
 	) {
 	}
 
@@ -121,7 +121,7 @@ export class AchievementService {
 			}],
 		});
 
-		this.notificationService.createNotification(userId, 'achievementEarned', {
+		this.notificationCreateService.createNotification(userId, 'achievementEarned', {
 			achievement: type,
 		});
 	}

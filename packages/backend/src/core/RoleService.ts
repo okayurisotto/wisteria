@@ -28,7 +28,7 @@ import { IdService } from '@/core/IdService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
-import { NotificationService } from '@/core/NotificationService.js';
+import type { NotificationCreateService } from './NotificationCreateService.js';
 import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 
 export type RolePolicies = {
@@ -88,7 +88,7 @@ export const DEFAULT_POLICIES: RolePolicies = {
 @Injectable()
 export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	private roleAssignmentByUserIdCache: MemoryKVCache<MiRoleAssignment[]>;
-	private notificationService: NotificationService;
+	private notificationCreateService: NotificationCreateService;
 
 	public static AlreadyAssignedError = class extends Error {};
 	public static NotAssignedError = class extends Error {};
@@ -125,7 +125,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	}
 
 	async onModuleInit() {
-		this.notificationService = this.moduleRef.get('NotificationService');
+		this.notificationCreateService = this.moduleRef.get('NotificationCreateService');
 	}
 
 	@bindThis
@@ -415,7 +415,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		this.globalEventService.publishInternalEvent('userRoleAssigned', created);
 
 		if (role.isPublic) {
-			this.notificationService.createNotification(userId, 'roleAssigned', {
+			this.notificationCreateService.createNotification(userId, 'roleAssigned', {
 				roleId: roleId,
 			});
 		}

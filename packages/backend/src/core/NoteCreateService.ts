@@ -5,15 +5,14 @@
 
 import { setImmediate } from 'node:timers/promises';
 import * as mfm from 'mfm-js';
-import { In, DataSource, IsNull, LessThan } from 'typeorm';
-import * as Redis from 'ioredis';
+import { In, DataSource, LessThan } from 'typeorm';
 import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { extractMentions } from '@/misc/extract-mentions.js';
 import { extractCustomEmojisFromMfm } from '@/misc/extract-custom-emojis-from-mfm.js';
 import { extractHashtags } from '@/misc/extract-hashtags.js';
 import type { IMentionedRemoteUsers } from '@/models/Note.js';
 import { MiNote } from '@/models/Note.js';
-import type { ChannelFollowingsRepository, ChannelsRepository, FollowingsRepository, InstancesRepository, MiFollowing, MutingsRepository, NotesRepository, NoteThreadMutingsRepository, UserListMembershipsRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import type { ChannelsRepository, FollowingsRepository, InstancesRepository, MiFollowing, MutingsRepository, NotesRepository, NoteThreadMutingsRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiApp } from '@/models/App.js';
 import { concat } from '@/misc/prelude/array.js';
@@ -50,11 +49,10 @@ import { RoleService } from '@/core/RoleService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { SearchService } from '@/core/SearchService.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
-import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { UserBlockingCheckService } from './UserBlockingCheckService.js';
-import { isReply } from '@/misc/is-reply.js';
 import { trackPromise } from '@/misc/promise-tracker.js';
+import { NotificationCreateService } from './NotificationCreateService.js';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention';
 
@@ -67,8 +65,7 @@ class NotificationManager {
 	}[];
 
 	constructor(
-		private mutingsRepository: MutingsRepository,
-		private notificationService: NotificationService,
+		private notificationCreateService: NotificationCreateService,
 		notifier: { id: MiUser['id']; },
 		note: MiNote,
 	) {
@@ -101,12 +98,12 @@ class NotificationManager {
 	public async notify() {
 		for (const x of this.queue) {
 			if (x.reason === 'renote') {
-				this.notificationService.createNotification(x.target, 'renote', {
+				this.notificationCreateService.createNotification(x.target, 'renote', {
 					noteId: this.note.id,
 					targetNoteId: this.note.renoteId!,
 				}, this.notifier.id);
 			} else {
-				this.notificationService.createNotification(x.target, x.reason, {
+				this.notificationCreateService.createNotification(x.target, x.reason, {
 					noteId: this.note.id,
 				}, this.notifier.id);
 			}
@@ -156,9 +153,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 		@Inject(DI.db)
 		private db: DataSource,
 
-		@Inject(DI.redisForTimelines)
-		private redisForTimelines: Redis.Redis,
-
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
@@ -174,9 +168,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
 
-		@Inject(DI.userListMembershipsRepository)
-		private userListMembershipsRepository: UserListMembershipsRepository,
-
 		@Inject(DI.channelsRepository)
 		private channelsRepository: ChannelsRepository,
 
@@ -186,17 +177,14 @@ export class NoteCreateService implements OnApplicationShutdown {
 		@Inject(DI.followingsRepository)
 		private followingsRepository: FollowingsRepository,
 
-		@Inject(DI.channelFollowingsRepository)
-		private channelFollowingsRepository: ChannelFollowingsRepository,
-
 		private userEntityService: UserEntityService,
 		private noteEntityService: NoteEntityService,
 		private idService: IdService,
 		private globalEventService: GlobalEventService,
 		private queueService: QueueService,
-		private fanoutTimelineService: FanoutTimelineService,
 		private noteReadService: NoteReadService,
 		private notificationService: NotificationService,
+		private notificationCreateService: NotificationCreateService,
 		private relayService: RelayService,
 		private federatedInstanceService: FederatedInstanceService,
 		private hashtagService: HashtagService,
@@ -529,7 +517,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 				if (note.visibility !== 'specified') {
 					for (const following of followings) {
 						// TODO: ワードミュート考慮
-						this.notificationService.createNotification(following.followerId, 'note', {
+						this.notificationCreateService.createNotification(following.followerId, 'note', {
 							noteId: note.id,
 						}, user.id);
 					}
@@ -595,7 +583,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 				}
 			});
 
-			const nm = new NotificationManager(this.mutingsRepository, this.notificationService, user, note);
+			const nm = new NotificationManager(this.notificationCreateService, user, note);
 
 			await this.createMentionedEvents(mentionedUsers, note, nm);
 

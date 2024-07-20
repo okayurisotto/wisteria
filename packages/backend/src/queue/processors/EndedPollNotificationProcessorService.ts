@@ -6,17 +6,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { PollVotesRepository, NotesRepository } from '@/models/_.js';
-import type Logger from '@/logger.js';
-import { NotificationService } from '@/core/NotificationService.js';
 import { bindThis } from '@/decorators.js';
-import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { EndedPollNotificationJobData } from '../types.js';
+import { NotificationCreateService } from '@/core/NotificationCreateService.js';
 
 @Injectable()
 export class EndedPollNotificationProcessorService {
-	private logger: Logger;
-
 	constructor(
 		@Inject(DI.notesRepository)
 		private notesRepository: NotesRepository,
@@ -24,10 +20,8 @@ export class EndedPollNotificationProcessorService {
 		@Inject(DI.pollVotesRepository)
 		private pollVotesRepository: PollVotesRepository,
 
-		private notificationService: NotificationService,
-		private queueLoggerService: QueueLoggerService,
+		private notificationCreateService: NotificationCreateService,
 	) {
-		this.logger = this.queueLoggerService.logger.createSubLogger('ended-poll-notification');
 	}
 
 	@bindThis
@@ -47,7 +41,7 @@ export class EndedPollNotificationProcessorService {
 		const userIds = [...new Set([note.userId, ...votes.map(v => v.userId)])];
 
 		for (const userId of userIds) {
-			this.notificationService.createNotification(userId, 'pollEnded', {
+			this.notificationCreateService.createNotification(userId, 'pollEnded', {
 				noteId: note.id,
 			});
 		}

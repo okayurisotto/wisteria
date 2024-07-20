@@ -13,7 +13,7 @@ import { IdService } from '@/core/IdService.js';
 import type { MiNoteReaction } from '@/models/NoteReaction.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
-import { NotificationService } from '@/core/NotificationService.js';
+import { NotificationCreateService } from './NotificationCreateService.js';
 import PerUserReactionsChart from '@/core/chart/charts/per-user-reactions.js';
 import { emojiRegex } from '@/misc/emoji-regex.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
@@ -64,7 +64,7 @@ export class ReactionCreateService {
 		private globalEventService: GlobalEventService,
 		private apRendererService: ApRendererService,
 		private apDeliverManagerService: ApDeliverManagerService,
-		private notificationService: NotificationService,
+		private notificationCreateService: NotificationCreateService,
 		private perUserReactionsChart: PerUserReactionsChart,
 		private reactionDecodeService: ReactionDecodeService,
 		private reactionDeleteService: ReactionDeleteService,
@@ -213,7 +213,7 @@ export class ReactionCreateService {
 
 		// リアクションされたユーザーがローカルユーザーなら通知を作成
 		if (note.userHost === null) {
-			this.notificationService.createNotification(note.userId, 'reaction', {
+			this.notificationCreateService.createNotification(note.userId, 'reaction', {
 				noteId: note.id,
 				reaction: reaction,
 			}, user.id);
