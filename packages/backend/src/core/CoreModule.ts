@@ -145,9 +145,9 @@ import { ReactionDecodeService } from './ReactionDecodeService.js';
 import { LegacyReactionConvertService } from './LegacyReactionConvertService copy.js';
 import { CustomEmojiAliasService } from './CustomEmojiAliasService.js';
 import { CustomEmojiPopulateService } from './CustomEmojiPopulateService.js';
+import { AlsoKnownAsValidateService } from './AlsoKnownAsValidateService.js';
 
 //#region 文字列ベースでのinjection用(循環参照対応のため)
-const $AccountMoveService: Provider = { provide: 'AccountMoveService', useExisting: AccountMoveService };
 const $NotificationService: Provider = { provide: 'NotificationService', useExisting: NotificationService };
 const $RoleService: Provider = { provide: 'RoleService', useExisting: RoleService };
 const $UserFollowingService: Provider = { provide: 'UserFollowingService', useExisting: UserFollowingService };
@@ -239,6 +239,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		ChannelFollowingService,
 		RegistryApiService,
 		ReversiService,
+		AlsoKnownAsValidateService,
 
 		ChartLoggerService,
 		FederationChart,
@@ -310,7 +311,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		QueueService,
 
 		//#region 文字列ベースでのinjection用(循環参照対応のため)
-		$AccountMoveService,
 		$NotificationService,
 		$RoleService,
 		$UserFollowingService,
@@ -399,6 +399,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		ChannelFollowingService,
 		RegistryApiService,
 		ReversiService,
+		AlsoKnownAsValidateService,
 
 		FederationChart,
 		NotesChart,
@@ -469,7 +470,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		QueueService,
 
 		//#region 文字列ベースでのinjection用(循環参照対応のため)
-		$AccountMoveService,
 		$NotificationService,
 		$RoleService,
 		$UserFollowingService,

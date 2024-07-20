@@ -11,12 +11,10 @@ import { DI } from '@/di-symbols.js';
 import type { MiLocalUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import type { BlockingsRepository, FollowingsRepository, InstancesRepository, MutingsRepository, UserListMembershipsRepository, UsersRepository } from '@/models/_.js';
 import type { RelationshipJobData, ThinUser } from '@/queue/types.js';
-
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { QueueService } from '@/core/QueueService.js';
 import { RelayService } from '@/core/RelayService.js';
-import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
@@ -49,7 +47,6 @@ export class AccountMoveService {
 
 		private userEntityService: UserEntityService,
 		private idService: IdService,
-		private apPersonService: ApPersonService,
 		private apRendererService: ApRendererService,
 		private apDeliverManagerService: ApDeliverManagerService,
 		private globalEventService: GlobalEventService,
@@ -144,7 +141,7 @@ export class AccountMoveService {
 	}
 
 	@bindThis
-	public async copyBlocking(src: ThinUser, dst: ThinUser): Promise<void> {
+	private async copyBlocking(src: ThinUser, dst: ThinUser): Promise<void> {
 		// Followers shouldn't overlap with blockers, but the destination account, different from the blockee (i.e., old account), may have followed the local user before moving.
 		// So block the destination account here.
 		const srcBlockings = await this.blockingsRepository.findBy({ blockeeId: src.id });
@@ -161,7 +158,7 @@ export class AccountMoveService {
 	}
 
 	@bindThis
-	public async copyMutings(src: ThinUser, dst: ThinUser): Promise<void> {
+	private async copyMutings(src: ThinUser, dst: ThinUser): Promise<void> {
 		// Insert new mutings with the same values except mutee
 		const oldMutings = await this.mutingsRepository.findBy([
 			{ muteeId: src.id, expiresAt: IsNull() },
@@ -206,7 +203,7 @@ export class AccountMoveService {
 	 * @returns Promise<void>
 	 */
 	@bindThis
-	public async updateLists(src: ThinUser, dst: MiUser): Promise<void> {
+	private async updateLists(src: ThinUser, dst: MiUser): Promise<void> {
 		// Return if there is no list to be updated.
 		const oldMemberships = await this.userListMembershipsRepository.find({
 			where: {
@@ -282,59 +279,5 @@ export class AccountMoveService {
 		for (const followerId of localFollowerIds) {
 			this.perUserFollowingChart.update({ id: followerId, host: null }, oldAccount, false);
 		}
-	}
-
-	/**
-	 * dstユーザーのalsoKnownAsをfetchPersonしていき、本当にmovedToUrlをdstに指定するユーザーが存在するのかを調べる
-	 *
-	 * @param dst movedToUrlを指定するユーザー
-	 * @param check
-	 * @param instant checkがtrueであるユーザーが最初に見つかったら即座にreturnするかどうか
-	 * @returns Promise<LocalUser | RemoteUser | null>
-	 */
-	@bindThis
-	public async validateAlsoKnownAs(
-		dst: MiLocalUser | MiRemoteUser,
-		check: (oldUser: MiLocalUser | MiRemoteUser | null, newUser: MiLocalUser | MiRemoteUser) => boolean | Promise<boolean> = () => true,
-		instant = false,
-	): Promise<MiLocalUser | MiRemoteUser | null> {
-		let resultUser: MiLocalUser | MiRemoteUser | null = null;
-
-		if (this.userEntityService.isRemoteUser(dst)) {
-			if ((new Date()).getTime() - (dst.lastFetchedAt?.getTime() ?? 0) > 10 * 1000) {
-				await this.apPersonService.updatePerson(dst.uri);
-			}
-			dst = await this.apPersonService.fetchPerson(dst.uri) ?? dst;
-		}
-
-		if (!dst.alsoKnownAs || dst.alsoKnownAs.length === 0) return null;
-
-		const dstUri = this.userEntityService.getUserUri(dst);
-
-		for (const srcUri of dst.alsoKnownAs) {
-			try {
-				let src = await this.apPersonService.fetchPerson(srcUri);
-				if (!src) continue; // oldAccountを探してもこのサーバーに存在しない場合はフォロー関係もないということなのでスルー
-
-				if (this.userEntityService.isRemoteUser(dst)) {
-					if ((new Date()).getTime() - (src.lastFetchedAt?.getTime() ?? 0) > 10 * 1000) {
-						await this.apPersonService.updatePerson(srcUri);
-					}
-
-					src = await this.apPersonService.fetchPerson(srcUri) ?? src;
-				}
-
-				if (src.movedToUri === dstUri) {
-					if (await check(resultUser, src)) {
-						resultUser = src;
-					}
-					if (instant && resultUser) return resultUser;
-				}
-			} catch {
-				/* skip if any error happens */
-			}
-		}
-
-		return resultUser;
 	}
 }

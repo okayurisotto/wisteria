@@ -7,10 +7,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import ms from 'ms';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { QueueService } from '@/core/QueueService.js';
-import { AccountMoveService } from '@/core/AccountMoveService.js';
 import type { DriveFilesRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../error.js';
+import { AlsoKnownAsValidateService } from '@/core/AlsoKnownAsValidateService.js';
 
 export const meta = {
 	secure: true,
@@ -63,7 +63,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private driveFilesRepository: DriveFilesRepository,
 
 		private queueService: QueueService,
-		private accountMoveService: AccountMoveService,
+		private alsoKnownAsValidateService: AlsoKnownAsValidateService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const file = await this.driveFilesRepository.findOneBy({ id: ps.fileId });
@@ -72,7 +72,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			//if (!file.type.endsWith('/csv')) throw new ApiError(meta.errors.unexpectedFileType);
 			if (file.size === 0) throw new ApiError(meta.errors.emptyFile);
 
-			const checkMoving = await this.accountMoveService.validateAlsoKnownAs(
+			const checkMoving = await this.alsoKnownAsValidateService.validate(
 				me,
 				(old, src) => !!src.movedAt && src.movedAt.getTime() + 1000 * 60 * 60 * 2 > (new Date()).getTime(),
 				true,

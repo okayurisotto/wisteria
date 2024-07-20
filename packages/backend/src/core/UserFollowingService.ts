@@ -26,9 +26,9 @@ import { UserBlockingUnblockService } from '@/core/UserBlockingUnblockService.js
 import { MetaService } from '@/core/MetaService.js';
 import { CacheService } from '@/core/CacheService.js';
 import type { Config } from '@/config.js';
-import { AccountMoveService } from '@/core/AccountMoveService.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { LoggerService } from './LoggerService.js';
+import { AlsoKnownAsValidateService } from './AlsoKnownAsValidateService.js';
 
 type Local = MiLocalUser | {
 	id: MiLocalUser['id'];
@@ -77,12 +77,12 @@ export class UserFollowingService {
 		private federatedInstanceService: FederatedInstanceService,
 		private webhookService: WebhookService,
 		private apRendererService: ApRendererService,
-		private accountMoveService: AccountMoveService,
 		private perUserFollowingChart: PerUserFollowingChart,
 		private instanceChart: InstanceChart,
 		private userBlockingCheckService: UserBlockingCheckService,
 		private userBlockingUnblockService: UserBlockingUnblockService,
 		private loggerService: LoggerService,
+		private alsoKnownAsValidateService: AlsoKnownAsValidateService,
 	) {
 		this.logger = this.loggerService.getLogger('following/create');
 	}
@@ -161,7 +161,7 @@ export class UserFollowingService {
 
 			// Automatically accept if the follower is an account who has moved and the locked followee had accepted the old account.
 			if (followee.isLocked && !autoAccept) {
-				autoAccept = !!(await this.accountMoveService.validateAlsoKnownAs(
+				autoAccept = !!(await this.alsoKnownAsValidateService.validate(
 					follower,
 					(oldSrc, newSrc) => this.followingsRepository.exists({
 						where: {

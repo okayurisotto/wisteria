@@ -35,7 +35,7 @@ import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
 import { MetaService } from '@/core/MetaService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
-import type { AccountMoveService } from '@/core/AccountMoveService.js';
+import { AccountMoveService } from '@/core/AccountMoveService.js';
 import { checkHttps } from '@/misc/check-https.js';
 import { getApId, getApType, getOneApHrefNullable, isActor, isCollection, isCollectionOrOrderedCollection, isPropertyValue } from '../type.js';
 import { extractApHashtags } from './tag.js';
@@ -57,10 +57,11 @@ export class ApPersonService implements OnModuleInit {
 	private apResolverService: ApResolverService;
 	private apNoteService: ApNoteService;
 	private apImageService: ApImageService;
-	private accountMoveService: AccountMoveService;
 	private logger: Logger;
 
 	constructor(
+		private accountMoveService: AccountMoveService,
+
 		private moduleRef: ModuleRef,
 
 		@Inject(DI.config)
@@ -106,7 +107,6 @@ export class ApPersonService implements OnModuleInit {
 		this.apResolverService = this.moduleRef.get('ApResolverService');
 		this.apNoteService = this.moduleRef.get('ApNoteService');
 		this.apImageService = this.moduleRef.get('ApImageService');
-		this.accountMoveService = this.moduleRef.get('AccountMoveService');
 	}
 
 	private punyHost(url: string): string {
