@@ -17,7 +17,6 @@ import type { MiLocalUser, MiPartialLocalUser, MiPartialRemoteUser, MiRemoteUser
 import { birthdaySchema, descriptionSchema, localUsernameSchema, locationSchema, nameSchema, passwordSchema } from '@/models/User.js';
 import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, NoteUnreadsRepository, UserNotePiningsRepository, UserProfilesRepository, MiUserProfile, RenoteMutingsRepository, UserMemoRepository } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
-import { RoleService } from '@/core/RoleService.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { IdService } from '@/core/IdService.js';
@@ -27,6 +26,7 @@ import type { OnModuleInit } from '@nestjs/common';
 import { NoteEntityService } from './NoteEntityService.js';
 import type { PageEntityService } from './PageEntityService.js';
 import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
+import type { RoleUserService } from '../RoleUserService.js';
 
 const Ajv = _Ajv.default;
 const ajv = new Ajv();
@@ -47,7 +47,7 @@ function isRemoteUser(user: MiUser | { host: MiUser['host'] }): boolean {
 export class UserEntityService implements OnModuleInit {
 	private apPersonService: ApPersonService;
 	private pageEntityService: PageEntityService;
-	private roleService: RoleService;
+	private roleUserService: RoleUserService;
 
 	constructor(
 		private moduleRef: ModuleRef,
@@ -103,7 +103,7 @@ export class UserEntityService implements OnModuleInit {
 	onModuleInit() {
 		this.apPersonService = this.moduleRef.get('ApPersonService');
 		this.pageEntityService = this.moduleRef.get('PageEntityService');
-		this.roleService = this.moduleRef.get('RoleService');
+		this.roleUserService = this.moduleRef.get('RoleUserService');
 	}
 
 	//#region Validators
@@ -296,7 +296,7 @@ export class UserEntityService implements OnModuleInit {
 		const isDetailed = opts.schema !== 'UserLite';
 		const meId = me ? me.id : null;
 		const isMe = meId === user.id;
-		const iAmModerator = me ? await this.roleService.isModerator(me as MiUser) : false;
+		const iAmModerator = me ? await this.roleUserService.isModerator(me as MiUser) : false;
 
 		const relation = meId && !isMe && isDetailed ? await this.getRelation(meId, user.id) : null;
 		const pins = isDetailed ? await this.userNotePiningsRepository.createQueryBuilder('pin')
@@ -316,8 +316,8 @@ export class UserEntityService implements OnModuleInit {
 			(profile.followersVisibility === 'followers') && (relation && relation.isFollowing) ? user.followersCount :
 			null;
 
-		const isModerator = isMe && isDetailed ? this.roleService.isModerator(user) : null;
-		const isAdmin = isMe && isDetailed ? this.roleService.isAdministrator(user) : null;
+		const isModerator = isMe && isDetailed ? this.roleUserService.isModerator(user) : null;
+		const isAdmin = isMe && isDetailed ? this.roleUserService.isAdministrator(user) : null;
 		const unreadAnnouncements = isMe && isDetailed ?
 			(await this.announcementService.getUnreadAnnouncements(user)).map((announcement) => ({
 				createdAt: this.idService.parse(announcement.id).date.toISOString(),
@@ -354,7 +354,7 @@ export class UserEntityService implements OnModuleInit {
 			emojis: this.customEmojiPopulateService.populateEmojis(user.emojis, user.host),
 			onlineStatus: this.getOnlineStatus(user),
 			// パフォーマンス上の理由でローカルユーザーのみ
-			badgeRoles: user.host == null ? this.roleService.getUserBadgeRoles(user.id).then(rs => rs.sort((a, b) => b.displayOrder - a.displayOrder).map(r => ({
+			badgeRoles: user.host == null ? this.roleUserService.getUserBadgeRoles(user.id).then(rs => rs.sort((a, b) => b.displayOrder - a.displayOrder).map(r => ({
 				name: r.name,
 				iconUrl: r.iconUrl,
 				displayOrder: r.displayOrder,
@@ -374,7 +374,7 @@ export class UserEntityService implements OnModuleInit {
 				bannerUrl: user.bannerUrl,
 				bannerBlurhash: user.bannerBlurhash,
 				isLocked: user.isLocked,
-				isSilenced: this.roleService.getUserPolicies(user.id).then(r => !r.canPublicNote),
+				isSilenced: this.roleUserService.getUserPolicies(user.id).then(r => !r.canPublicNote),
 				isSuspended: user.isSuspended,
 				description: profile!.description,
 				location: profile!.location,
@@ -401,7 +401,7 @@ export class UserEntityService implements OnModuleInit {
 						userId: user.id,
 					}).then(result => result >= 1)
 					: false,
-				roles: this.roleService.getUserRoles(user.id).then(roles => roles.filter(role => role.isPublic).sort((a, b) => b.displayOrder - a.displayOrder).map(role => ({
+				roles: this.roleUserService.getUserRoles(user.id).then(roles => roles.filter(role => role.isPublic).sort((a, b) => b.displayOrder - a.displayOrder).map(role => ({
 					id: role.id,
 					name: role.name,
 					color: role.color,
@@ -458,7 +458,7 @@ export class UserEntityService implements OnModuleInit {
 				emailNotificationTypes: profile!.emailNotificationTypes,
 				achievements: profile!.achievements,
 				loggedInDays: profile!.loggedInDates.length,
-				policies: this.roleService.getUserPolicies(user.id),
+				policies: this.roleUserService.getUserPolicies(user.id),
 			} : {}),
 
 			...(opts.includeSecrets ? {

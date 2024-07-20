@@ -9,7 +9,7 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { RegistrationTicketsRepository } from '@/models/_.js';
 import { InviteCodeEntityService } from '@/core/entities/InviteCodeEntityService.js';
 import { IdService } from '@/core/IdService.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 import { DI } from '@/di-symbols.js';
 import { generateInviteCode } from '@/misc/generate-invite-code.js';
 import { ApiError } from '../../error.js';
@@ -50,10 +50,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 		private inviteCodeEntityService: InviteCodeEntityService,
 		private idService: IdService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const policies = await this.roleService.getUserPolicies(me.id);
+			const policies = await this.roleUserService.getUserPolicies(me.id);
 
 			if (policies.inviteLimit) {
 				const count = await this.registrationTicketsRepository.countBy({

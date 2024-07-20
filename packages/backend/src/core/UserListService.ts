@@ -18,7 +18,7 @@ import { ProxyAccountService } from '@/core/ProxyAccountService.js';
 import { bindThis } from '@/decorators.js';
 import { QueueService } from '@/core/QueueService.js';
 import { RedisKVCache } from '@/misc/cache.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from './RoleUserService.js';
 
 @Injectable()
 export class UserListService implements OnApplicationShutdown {
@@ -41,7 +41,7 @@ export class UserListService implements OnApplicationShutdown {
 		private globalEventService: GlobalEventService,
 		private proxyAccountService: ProxyAccountService,
 		private queueService: QueueService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 	) {
 		this.membersCache = new RedisKVCache<Set<string>>(this.redisClient, 'userListMembers', {
 			lifetime: 1000 * 60 * 30, // 30m
@@ -88,7 +88,7 @@ export class UserListService implements OnApplicationShutdown {
 		const currentCount = await this.userListMembershipsRepository.countBy({
 			userListId: list.id,
 		});
-		if (currentCount > (await this.roleService.getUserPolicies(me.id)).userEachUserListsLimit) {
+		if (currentCount > (await this.roleUserService.getUserPolicies(me.id)).userEachUserListsLimit) {
 			throw new UserListService.TooManyUsersError();
 		}
 

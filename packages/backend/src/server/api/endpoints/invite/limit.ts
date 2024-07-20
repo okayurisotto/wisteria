@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { MoreThan } from 'typeorm';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { RegistrationTicketsRepository } from '@/models/_.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 import { DI } from '@/di-symbols.js';
 import { IdService } from '@/core/IdService.js';
 
@@ -42,11 +42,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.registrationTicketsRepository)
 		private registrationTicketsRepository: RegistrationTicketsRepository,
 
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const policies = await this.roleService.getUserPolicies(me.id);
+			const policies = await this.roleUserService.getUserPolicies(me.id);
 
 			const count = policies.inviteLimit ? await this.registrationTicketsRepository.countBy({
 				id: MoreThan(this.idService.gen(Date.now() - (policies.inviteExpirationTime * 60 * 1000))),

@@ -7,8 +7,8 @@ import { Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { SearchService } from '@/core/SearchService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { RoleService } from '@/core/RoleService.js';
 import { ApiError } from '../../error.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 
 export const meta = {
 	tags: ['notes'],
@@ -59,10 +59,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private noteEntityService: NoteEntityService,
 		private searchService: SearchService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const policies = await this.roleService.getUserPolicies(me ? me.id : null);
+			const policies = await this.roleUserService.getUserPolicies(me ? me.id : null);
 			if (!policies.canSearchNotes) {
 				throw new ApiError(meta.errors.unavailable);
 			}

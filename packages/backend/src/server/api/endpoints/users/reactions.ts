@@ -11,7 +11,7 @@ import { NoteReactionEntityService } from '@/core/entities/NoteReactionEntitySer
 import { DI } from '@/di-symbols.js';
 import { CacheService } from '@/core/CacheService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 import { ApiError } from '../../error.js';
 
 export const meta = {
@@ -71,10 +71,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private userEntityService: UserEntityService,
 		private noteReactionEntityService: NoteReactionEntityService,
 		private queryService: QueryService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const iAmModerator = me ? await this.roleService.isModerator(me) : false; // Moderators can see reactions of all users
+			const iAmModerator = me ? await this.roleUserService.isModerator(me) : false; // Moderators can see reactions of all users
 			if (!iAmModerator) {
 				const user = await this.cacheService.findUserById(ps.userId);
 				if (this.userEntityService.isRemoteUser(user)) {

@@ -15,7 +15,6 @@ import type { UsersRepository, DriveFilesRepository, UserProfilesRepository, Pag
 import type { MiLocalUser, MiUser } from '@/models/User.js';
 import { birthdaySchema, descriptionSchema, locationSchema, nameSchema } from '@/models/User.js';
 import type { MiUserProfile } from '@/models/UserProfile.js';
-import { notificationTypes } from '@/types.js';
 import { normalizeForSearch } from '@/misc/normalize-for-search.js';
 import { langmap } from '@/misc/langmap.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
@@ -36,6 +35,7 @@ import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 import { notificationRecieveConfig } from '@/models/json-schema/user.js';
 import { ApiLoggerService } from '../../ApiLoggerService.js';
 import { ApiError } from '../../error.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 
 export const meta = {
 	tags: ['account'],
@@ -244,6 +244,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private apiLoggerService: ApiLoggerService,
 		private hashtagService: HashtagService,
 		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private cacheService: CacheService,
 		private httpRequestService: HttpRequestService,
 		private avatarDecorationService: AvatarDecorationService,
@@ -289,14 +290,14 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			}
 
 			if (ps.mutedWords !== undefined) {
-				checkMuteWordCount(ps.mutedWords, (await this.roleService.getUserPolicies(user.id)).wordMuteLimit);
+				checkMuteWordCount(ps.mutedWords, (await this.roleUserService.getUserPolicies(user.id)).wordMuteLimit);
 				validateMuteWordRegex(ps.mutedWords);
 
 				profileUpdates.mutedWords = ps.mutedWords;
 				profileUpdates.enableWordMute = ps.mutedWords.length > 0;
 			}
 			if (ps.hardMutedWords !== undefined) {
-				checkMuteWordCount(ps.hardMutedWords, (await this.roleService.getUserPolicies(user.id)).wordMuteLimit);
+				checkMuteWordCount(ps.hardMutedWords, (await this.roleUserService.getUserPolicies(user.id)).wordMuteLimit);
 				validateMuteWordRegex(ps.hardMutedWords);
 				profileUpdates.hardMutedWords = ps.hardMutedWords;
 			}
@@ -315,7 +316,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			if (typeof ps.injectFeaturedNote === 'boolean') profileUpdates.injectFeaturedNote = ps.injectFeaturedNote;
 			if (typeof ps.receiveAnnouncementEmail === 'boolean') profileUpdates.receiveAnnouncementEmail = ps.receiveAnnouncementEmail;
 			if (typeof ps.alwaysMarkNsfw === 'boolean') {
-				if ((await roleService.getUserPolicies(user.id)).alwaysMarkNsfw) throw new ApiError(meta.errors.restrictedByRole);
+				if ((await roleUserService.getUserPolicies(user.id)).alwaysMarkNsfw) throw new ApiError(meta.errors.restrictedByRole);
 				profileUpdates.alwaysMarkNsfw = ps.alwaysMarkNsfw;
 			}
 			if (typeof ps.autoSensitive === 'boolean') profileUpdates.autoSensitive = ps.autoSensitive;
@@ -353,7 +354,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			if (ps.avatarDecorations) {
 				const decorations = await this.avatarDecorationService.getAll();
-				const [myRoles, myPolicies] = await Promise.all([this.roleService.getUserRoles(user.id), this.roleService.getUserPolicies(user.id)]);
+				const [myRoles, myPolicies] = await Promise.all([this.roleUserService.getUserRoles(user.id), this.roleUserService.getUserPolicies(user.id)]);
 				const allRoles = await this.roleService.getRoles();
 				const decorationIds = decorations
 					.filter(d => d.roleIdsThatCanBeUsedThisDecoration.filter(roleId => allRoles.some(r => r.id === roleId)).length === 0 || myRoles.some(r => d.roleIdsThatCanBeUsedThisDecoration.includes(r.id)))

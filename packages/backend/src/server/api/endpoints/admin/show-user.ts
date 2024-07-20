@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository, SigninsRepository, UserProfilesRepository } from '@/models/_.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { DI } from '@/di-symbols.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 import { RoleEntityService } from '@/core/entities/RoleEntityService.js';
 import { IdService } from '@/core/IdService.js';
 import { notificationRecieveConfig } from '@/models/json-schema/user.js';
@@ -196,7 +196,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.signinsRepository)
 		private signinsRepository: SigninsRepository,
 
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private roleEntityService: RoleEntityService,
 		private idService: IdService,
 	) {
@@ -210,18 +210,18 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				throw new Error('user not found');
 			}
 
-			const isModerator = await this.roleService.isModerator(user);
-			const isSilenced = !(await this.roleService.getUserPolicies(user.id)).canPublicNote;
+			const isModerator = await this.roleUserService.isModerator(user);
+			const isSilenced = !(await this.roleUserService.getUserPolicies(user.id)).canPublicNote;
 
 			const _me = await this.usersRepository.findOneByOrFail({ id: me.id });
-			if (!await this.roleService.isAdministrator(_me) && await this.roleService.isAdministrator(user)) {
+			if (!await this.roleUserService.isAdministrator(_me) && await this.roleUserService.isAdministrator(user)) {
 				throw new Error('cannot show info of admin');
 			}
 
 			const signins = await this.signinsRepository.findBy({ userId: user.id });
 
-			const roleAssigns = await this.roleService.getUserAssigns(user.id);
-			const roles = await this.roleService.getUserRoles(user.id);
+			const roleAssigns = await this.roleUserService.getUserAssigns(user.id);
+			const roles = await this.roleUserService.getUserRoles(user.id);
 
 			return {
 				email: profile.email,
@@ -244,7 +244,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				lastActiveDate: user.lastActiveDate ? user.lastActiveDate.toISOString() : null,
 				moderationNote: profile.moderationNote ?? '',
 				signins,
-				policies: await this.roleService.getUserPolicies(user.id),
+				policies: await this.roleUserService.getUserPolicies(user.id),
 				roles: await this.roleEntityService.packMany(roles, me),
 				roleAssigns: roleAssigns.map(a => ({
 					createdAt: this.idService.parse(a.id).date.toISOString(),

@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { DriveFilesRepository, UsersRepository } from '@/models/_.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { DI } from '@/di-symbols.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 import { IdService } from '@/core/IdService.js';
 import { ApiError } from '../../../error.js';
 
@@ -182,7 +182,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
@@ -204,8 +204,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				id: file.userId,
 			}) : null;
 
-			const iAmModerator = await this.roleService.isModerator(me);
-			const ownerIsModerator = owner ? await this.roleService.isModerator(owner) : false;
+			const iAmModerator = await this.roleUserService.isModerator(me);
+			const ownerIsModerator = owner ? await this.roleUserService.isModerator(owner) : false;
 
 			return {
 				id: file.id,

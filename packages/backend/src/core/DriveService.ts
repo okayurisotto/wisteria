@@ -9,7 +9,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import sharp from 'sharp';
 import { sharpBmp } from '@misskey-dev/sharp-read-bmp';
 import { IsNull } from 'typeorm';
-import { DeleteObjectCommandInput, PutObjectCommandInput, NoSuchKey } from '@aws-sdk/client-s3';
+import { DeleteObjectCommandInput, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { DI } from '@/di-symbols.js';
 import type { DriveFilesRepository, UsersRepository, DriveFoldersRepository, UserProfilesRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
@@ -39,7 +39,7 @@ import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.j
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { FileInfoService } from '@/core/FileInfoService.js';
 import { bindThis } from '@/decorators.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from './RoleUserService.js';
 import { correctFilename } from '@/misc/correct-filename.js';
 import { isMimeImage } from '@/misc/is-mime-image.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
@@ -122,7 +122,7 @@ export class DriveService {
 		private videoProcessingService: VideoProcessingService,
 		private globalEventService: GlobalEventService,
 		private queueService: QueueService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private moderationLogService: ModerationLogService,
 		private driveChart: DriveChart,
 		private perUserDriveChart: PerUserDriveChart,
@@ -459,7 +459,7 @@ export class DriveService {
 	}: AddFileArgs): Promise<MiDriveFile> {
 		let skipNsfwCheck = false;
 		const instance = await this.metaService.fetch();
-		const userRoleNSFW = user && (await this.roleService.getUserPolicies(user.id)).alwaysMarkNsfw;
+		const userRoleNSFW = user && (await this.roleUserService.getUserPolicies(user.id)).alwaysMarkNsfw;
 		if (user == null) {
 			skipNsfwCheck = true;
 		} else if (userRoleNSFW) {
@@ -515,7 +515,7 @@ export class DriveService {
 			const usage = await this.driveFileEntityService.calcDriveUsageOf(user);
 			const isLocalUser = this.userEntityService.isLocalUser(user);
 
-			const policies = await this.roleService.getUserPolicies(user.id);
+			const policies = await this.roleUserService.getUserPolicies(user.id);
 			const driveCapacity = 1024 * 1024 * policies.driveCapacityMb;
 			this.registerLogger.debug('drive capacity override applied');
 			this.registerLogger.debug(`overrideCap: ${driveCapacity}bytes, usage: ${usage}bytes, u+s: ${usage + info.size}bytes`);
@@ -653,7 +653,7 @@ export class DriveService {
 
 	@bindThis
 	public async updateFile(file: MiDriveFile, values: Partial<MiDriveFile>, updater: MiUser) {
-		const alwaysMarkNsfw = (await this.roleService.getUserPolicies(file.userId)).alwaysMarkNsfw;
+		const alwaysMarkNsfw = (await this.roleUserService.getUserPolicies(file.userId)).alwaysMarkNsfw;
 
 		if (values.name != null && !this.driveFileEntityService.validateFileName(values.name)) {
 			throw new DriveService.InvalidFileNameError();
@@ -683,7 +683,7 @@ export class DriveService {
 			this.globalEventService.publishDriveStream(file.userId, 'fileUpdated', fileObj);
 		}
 
-		if (await this.roleService.isModerator(updater) && (file.userId !== updater.id)) {
+		if (await this.roleUserService.isModerator(updater) && (file.userId !== updater.id)) {
 			if (values.isSensitive !== undefined && values.isSensitive !== file.isSensitive) {
 				const user = file.userId ? await this.usersRepository.findOneByOrFail({ id: file.userId }) : null;
 				if (values.isSensitive) {
@@ -798,7 +798,7 @@ export class DriveService {
 			this.globalEventService.publishDriveStream(file.userId, 'fileDeleted', file.id);
 		}
 
-		if (deleter && await this.roleService.isModerator(deleter) && (file.userId !== deleter.id)) {
+		if (deleter && await this.roleUserService.isModerator(deleter) && (file.userId !== deleter.id)) {
 			const user = file.userId ? await this.usersRepository.findOneByOrFail({ id: file.userId }) : null;
 			this.moderationLogService.log(deleter, 'deleteDriveFile', {
 				fileId: file.id,

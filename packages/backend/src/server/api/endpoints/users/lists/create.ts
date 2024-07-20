@@ -11,7 +11,7 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import { UserListEntityService } from '@/core/entities/UserListEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '@/server/api/error.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 
 export const meta = {
 	tags: ['lists'],
@@ -55,13 +55,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 		private userListEntityService: UserListEntityService,
 		private idService: IdService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const currentCount = await this.userListsRepository.countBy({
 				userId: me.id,
 			});
-			if (currentCount > (await this.roleService.getUserPolicies(me.id)).userListLimit) {
+			if (currentCount > (await this.roleUserService.getUserPolicies(me.id)).userListLimit) {
 				throw new ApiError(meta.errors.tooManyUserLists);
 			}
 

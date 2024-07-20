@@ -10,7 +10,7 @@ import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { GetterService } from '@/server/api/GetterService.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 import { ApiError } from '../../error.js';
 
 export const meta = {
@@ -58,10 +58,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private getterService: GetterService,
 		private metaService: MetaService,
 		private httpRequestService: HttpRequestService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const policies = await this.roleService.getUserPolicies(me.id);
+			const policies = await this.roleUserService.getUserPolicies(me.id);
 			if (!policies.canUseTranslator) {
 				throw new ApiError(meta.errors.unavailable);
 			}

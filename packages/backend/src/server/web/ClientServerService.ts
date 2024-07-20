@@ -31,11 +31,10 @@ import { ClipEntityService } from '@/core/entities/ClipEntityService.js';
 import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
 import type { ChannelsRepository, ClipsRepository, FlashsRepository, GalleryPostsRepository, MiMeta, NotesRepository, PagesRepository, ReversiGamesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import type Logger from '@/logger.js';
-import { deepClone } from '@/misc/clone.js';
 import { handleRequestRedirectToOmitSearch } from '@/misc/fastify-hook-handlers.js';
 import { bindThis } from '@/decorators.js';
 import { FlashEntityService } from '@/core/entities/FlashEntityService.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 import { ReversiGameEntityService } from '@/core/entities/ReversiGameEntityService.js';
 import { FeedService } from './FeedService.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
@@ -89,7 +88,7 @@ export class ClientServerService {
 		private metaService: MetaService,
 		private urlPreviewService: UrlPreviewService,
 		private feedService: FeedService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private clientLoggerService: ClientLoggerService,
 
 		@Inject('queue:system') public systemQueue: SystemQueue,
@@ -192,7 +191,7 @@ export class ClientServerService {
 					reply.code(403).send('No such user');
 					return;
 				}
-				const isAdministrator = await this.roleService.isAdministrator(user);
+				const isAdministrator = await this.roleUserService.isAdministrator(user);
 				if (!isAdministrator) {
 					reply.code(403).send('Access denied');
 					return;

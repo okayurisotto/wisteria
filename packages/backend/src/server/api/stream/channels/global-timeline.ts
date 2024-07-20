@@ -4,15 +4,13 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { checkWordMute } from '@/misc/check-word-mute.js';
 import { isInstanceMuted } from '@/misc/is-instance-muted.js';
 import { isUserRelated } from '@/misc/is-user-related.js';
 import type { Packed } from '@/misc/json-schema.js';
-import { MetaService } from '@/core/MetaService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { bindThis } from '@/decorators.js';
-import { RoleService } from '@/core/RoleService.js';
 import Channel, { type MiChannelService } from '../channel.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 
 class GlobalTimelineChannel extends Channel {
 	public readonly chName = 'globalTimeline';
@@ -22,8 +20,7 @@ class GlobalTimelineChannel extends Channel {
 	private withFiles: boolean;
 
 	constructor(
-		private metaService: MetaService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private noteEntityService: NoteEntityService,
 
 		id: string,
@@ -35,7 +32,7 @@ class GlobalTimelineChannel extends Channel {
 
 	@bindThis
 	public async init(params: any) {
-		const policies = await this.roleService.getUserPolicies(this.user ? this.user.id : null);
+		const policies = await this.roleUserService.getUserPolicies(this.user ? this.user.id : null);
 		if (!policies.gtlAvailable) return;
 
 		this.withRenotes = params.withRenotes ?? true;
@@ -97,8 +94,7 @@ export class GlobalTimelineChannelService implements MiChannelService<false> {
 	public readonly kind = GlobalTimelineChannel.kind;
 
 	constructor(
-		private metaService: MetaService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private noteEntityService: NoteEntityService,
 	) {
 	}
@@ -106,8 +102,7 @@ export class GlobalTimelineChannelService implements MiChannelService<false> {
 	@bindThis
 	public create(id: string, connection: Channel['connection']): GlobalTimelineChannel {
 		return new GlobalTimelineChannel(
-			this.metaService,
-			this.roleService,
+			this.roleUserService,
 			this.noteEntityService,
 			id,
 			connection,

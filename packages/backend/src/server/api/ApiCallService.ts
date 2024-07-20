@@ -16,7 +16,6 @@ import type { UserIpsRepository } from '@/models/_.js';
 import { MetaService } from '@/core/MetaService.js';
 import { createTemp } from '@/misc/create-temp.js';
 import { bindThis } from '@/decorators.js';
-import { RoleService } from '@/core/RoleService.js';
 import { ApiError } from './error.js';
 import { RateLimiterService } from './RateLimiterService.js';
 import { ApiLoggerService } from './ApiLoggerService.js';
@@ -24,6 +23,7 @@ import { AuthenticateService, AuthenticationError } from './AuthenticateService.
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import type { OnApplicationShutdown } from '@nestjs/common';
 import type { IEndpointMeta, IEndpoint } from './endpoints.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 
 const accessDenied = {
 	message: 'Access denied.',
@@ -44,7 +44,7 @@ export class ApiCallService implements OnApplicationShutdown {
 		private metaService: MetaService,
 		private authenticateService: AuthenticateService,
 		private rateLimiterService: RateLimiterService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private apiLoggerService: ApiLoggerService,
 	) {
 		this.logger = this.apiLoggerService.logger;
@@ -253,7 +253,7 @@ export class ApiCallService implements OnApplicationShutdown {
 			}
 
 			// TODO: 毎リクエスト計算するのもあれだしキャッシュしたい
-			const factor = user ? (await this.roleService.getUserPolicies(user.id)).rateLimitFactor : 1;
+			const factor = user ? (await this.roleUserService.getUserPolicies(user.id)).rateLimitFactor : 1;
 
 			if (factor > 0) {
 				// Rate limit
@@ -298,7 +298,7 @@ export class ApiCallService implements OnApplicationShutdown {
 		}
 
 		if ((ep.meta.requireModerator || ep.meta.requireAdmin) && !user!.isRoot) {
-			const myRoles = await this.roleService.getUserRoles(user!.id);
+			const myRoles = await this.roleUserService.getUserRoles(user!.id);
 			if (ep.meta.requireModerator && !myRoles.some(r => r.isModerator || r.isAdministrator)) {
 				throw new ApiError({
 					message: 'You are not assigned to a moderator role.',
@@ -318,8 +318,8 @@ export class ApiCallService implements OnApplicationShutdown {
 		}
 
 		if (ep.meta.requireRolePolicy != null && !user!.isRoot) {
-			const myRoles = await this.roleService.getUserRoles(user!.id);
-			const policies = await this.roleService.getUserPolicies(user!.id);
+			const myRoles = await this.roleUserService.getUserRoles(user!.id);
+			const policies = await this.roleUserService.getUserPolicies(user!.id);
 			if (!policies[ep.meta.requireRolePolicy] && !myRoles.some(r => r.isAdministrator)) {
 				throw new ApiError({
 					message: 'You are not assigned to a required role.',

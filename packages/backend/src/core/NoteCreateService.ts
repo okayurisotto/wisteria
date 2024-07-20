@@ -45,7 +45,7 @@ import { NoteReadService } from '@/core/NoteReadService.js';
 import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { bindThis } from '@/decorators.js';
 import { DB_MAX_NOTE_TEXT_LENGTH } from '@/const.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from './RoleUserService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { SearchService } from '@/core/SearchService.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
@@ -194,7 +194,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		private remoteUserResolveService: RemoteUserResolveService,
 		private apDeliverManagerService: ApDeliverManagerService,
 		private apRendererService: ApRendererService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private metaService: MetaService,
 		private searchService: SearchService,
 		private notesChart: NotesChart,
@@ -242,7 +242,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			const sensitiveWords = meta.sensitiveWords;
 			if (this.utilityService.isKeyWordIncluded(data.cw ?? data.text ?? '', sensitiveWords)) {
 				data.visibility = 'home';
-			} else if ((await this.roleService.getUserPolicies(user.id)).canPublicNote === false) {
+			} else if ((await this.roleUserService.getUserPolicies(user.id)).canPublicNote === false) {
 				data.visibility = 'home';
 			}
 		}
@@ -572,7 +572,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 			this.globalEventService.publishNotesStream(noteObj);
 
-			this.roleService.addNoteToRoleTimeline(noteObj);
+			this.roleUserService.addNoteToRoleTimeline(noteObj);
 
 			this.webhookService.getActiveWebhooks().then(webhooks => {
 				webhooks = webhooks.filter(x => x.userId === user.id && x.on.includes('note'));

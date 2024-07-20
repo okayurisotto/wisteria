@@ -6,7 +6,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { RegistrationTicketsRepository } from '@/models/_.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../error.js';
 
@@ -52,11 +52,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.registrationTicketsRepository)
 		private registrationTicketsRepository: RegistrationTicketsRepository,
 
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const ticket = await this.registrationTicketsRepository.findOneBy({ id: ps.inviteId });
-			const isModerator = await this.roleService.isModerator(me);
+			const isModerator = await this.roleUserService.isModerator(me);
 
 			if (ticket == null) {
 				throw new ApiError(meta.errors.noSuchCode);

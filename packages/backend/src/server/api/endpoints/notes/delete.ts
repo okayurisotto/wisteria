@@ -10,7 +10,7 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import { NoteDeleteService } from '@/core/NoteDeleteService.js';
 import { DI } from '@/di-symbols.js';
 import { GetterService } from '@/server/api/GetterService.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 import { ApiError } from '../../error.js';
 
 export const meta = {
@@ -56,7 +56,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private usersRepository: UsersRepository,
 
 		private getterService: GetterService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private noteDeleteService: NoteDeleteService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
@@ -65,7 +65,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				throw err;
 			});
 
-			if (!await this.roleService.isModerator(me) && (note.userId !== me.id)) {
+			if (!await this.roleUserService.isModerator(me) && (note.userId !== me.id)) {
 				throw new ApiError(meta.errors.accessDenied);
 			}
 

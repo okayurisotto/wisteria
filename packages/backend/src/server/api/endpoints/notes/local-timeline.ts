@@ -10,7 +10,7 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import ActiveUsersChart from '@/core/chart/charts/active-users.js';
 import { DI } from '@/di-symbols.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 import { IdService } from '@/core/IdService.js';
 import { QueryService } from '@/core/QueryService.js';
 import { MiLocalUser } from '@/models/User.js';
@@ -67,7 +67,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private notesRepository: NotesRepository,
 
 		private noteEntityService: NoteEntityService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private activeUsersChart: ActiveUsersChart,
 		private idService: IdService,
 		private queryService: QueryService,
@@ -76,7 +76,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate!) : null);
 			const sinceId = ps.sinceId ?? (ps.sinceDate ? this.idService.gen(ps.sinceDate!) : null);
 
-			const policies = await this.roleService.getUserPolicies(me ? me.id : null);
+			const policies = await this.roleUserService.getUserPolicies(me ? me.id : null);
 			if (!policies.ltlAvailable) {
 				throw new ApiError(meta.errors.ltlDisabled);
 			}

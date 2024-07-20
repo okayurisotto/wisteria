@@ -4,32 +4,22 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import * as Redis from 'ioredis';
 import { In } from 'typeorm';
 import { ModuleRef } from '@nestjs/core';
 import type {
 	MiRole,
-	MiRoleAssignment,
 	RoleAssignmentsRepository,
 	RolesRepository,
 	UsersRepository,
 } from '@/models/_.js';
-import { MemoryKVCache } from '@/misc/cache.js';
 import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
-import { MetaService } from '@/core/MetaService.js';
-import { CacheService } from '@/core/CacheService.js';
-import type { RoleCondFormulaValue } from '@/models/Role.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { IdService } from '@/core/IdService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
-import type { Packed } from '@/misc/json-schema.js';
-import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import type { NotificationCreateService } from './NotificationCreateService.js';
-import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
+import type { OnModuleInit } from '@nestjs/common';
 
 export type RolePolicies = {
 	gtlAvailable: boolean;
@@ -86,21 +76,14 @@ export const DEFAULT_POLICIES: RolePolicies = {
 };
 
 @Injectable()
-export class RoleService implements OnApplicationShutdown, OnModuleInit {
-	private roleAssignmentByUserIdCache: MemoryKVCache<MiRoleAssignment[]>;
-	private notificationCreateService: NotificationCreateService;
+export class RoleService implements OnModuleInit {
+	private notificationCreateService!: NotificationCreateService;
 
 	public static AlreadyAssignedError = class extends Error {};
 	public static NotAssignedError = class extends Error {};
 
 	constructor(
 		private moduleRef: ModuleRef,
-
-		@Inject(DI.redisForTimelines)
-		private redisForTimelines: Redis.Redis,
-
-		@Inject(DI.redisForSub)
-		private redisForSub: Redis.Redis,
 
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
@@ -111,224 +94,19 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		@Inject(DI.roleAssignmentsRepository)
 		private roleAssignmentsRepository: RoleAssignmentsRepository,
 
-		private metaService: MetaService,
-		private cacheService: CacheService,
-		private userEntityService: UserEntityService,
 		private globalEventService: GlobalEventService,
 		private idService: IdService,
 		private moderationLogService: ModerationLogService,
-		private fanoutTimelineService: FanoutTimelineService,
-	) {
-		this.roleAssignmentByUserIdCache = new MemoryKVCache<MiRoleAssignment[]>(1000 * 60 * 60 * 1);
-
-		this.redisForSub.on('message', this.onMessage);
-	}
+	) {}
 
 	async onModuleInit() {
 		this.notificationCreateService = this.moduleRef.get('NotificationCreateService');
 	}
 
 	@bindThis
-	private async onMessage(_: string, data: string): Promise<void> {
-		const obj = JSON.parse(data);
-
-		if (obj.channel === 'internal') {
-			const { type, body } = obj.message as GlobalEvents['internal']['payload'];
-			switch (type) {
-				case 'roleCreated': {
-					break;
-				}
-				case 'roleUpdated': {
-					break;
-				}
-				case 'roleDeleted': {
-					break;
-				}
-				case 'userRoleAssigned': {
-					const cached = this.roleAssignmentByUserIdCache.get(body.userId);
-					if (cached) {
-						cached.push({ // TODO: このあたりのデシリアライズ処理は各modelファイル内に関数としてexportしたい
-							...body,
-							expiresAt: body.expiresAt ? new Date(body.expiresAt) : null,
-							user: null, // joinなカラムは通常取ってこないので
-							role: null, // joinなカラムは通常取ってこないので
-						});
-					}
-					break;
-				}
-				case 'userRoleUnassigned': {
-					const cached = this.roleAssignmentByUserIdCache.get(body.userId);
-					if (cached) {
-						this.roleAssignmentByUserIdCache.set(body.userId, cached.filter(x => x.id !== body.id));
-					}
-					break;
-				}
-				default:
-					break;
-			}
-		}
-	}
-
-	@bindThis
-	private evalCond(user: MiUser, value: RoleCondFormulaValue): boolean {
-		try {
-			switch (value.type) {
-				case 'and': {
-					return value.values.every(v => this.evalCond(user, v));
-				}
-				case 'or': {
-					return value.values.some(v => this.evalCond(user, v));
-				}
-				case 'not': {
-					return !this.evalCond(user, value.value);
-				}
-				case 'isLocal': {
-					return this.userEntityService.isLocalUser(user);
-				}
-				case 'isRemote': {
-					return this.userEntityService.isRemoteUser(user);
-				}
-				case 'createdLessThan': {
-					return this.idService.parse(user.id).date.getTime() > (Date.now() - (value.sec * 1000));
-				}
-				case 'createdMoreThan': {
-					return this.idService.parse(user.id).date.getTime() < (Date.now() - (value.sec * 1000));
-				}
-				case 'followersLessThanOrEq': {
-					return user.followersCount <= value.value;
-				}
-				case 'followersMoreThanOrEq': {
-					return user.followersCount >= value.value;
-				}
-				case 'followingLessThanOrEq': {
-					return user.followingCount <= value.value;
-				}
-				case 'followingMoreThanOrEq': {
-					return user.followingCount >= value.value;
-				}
-				case 'notesLessThanOrEq': {
-					return user.notesCount <= value.value;
-				}
-				case 'notesMoreThanOrEq': {
-					return user.notesCount >= value.value;
-				}
-				default:
-					return false;
-			}
-		} catch (err) {
-			// TODO: log error
-			return false;
-		}
-	}
-
-	@bindThis
 	public async getRoles() {
 		const roles = await this.rolesRepository.findBy({});
 		return roles;
-	}
-
-	@bindThis
-	public async getUserAssigns(userId: MiUser['id']) {
-		const now = Date.now();
-		let assigns = await this.roleAssignmentsRepository.findBy({ userId });
-		// 期限切れのロールを除外
-		assigns = assigns.filter(a => a.expiresAt == null || (a.expiresAt.getTime() > now));
-		return assigns;
-	}
-
-	@bindThis
-	public async getUserRoles(userId: MiUser['id']) {
-		const roles = await this.rolesRepository.findBy({});
-		const assigns = await this.getUserAssigns(userId);
-		const assignedRoles = roles.filter(r => assigns.map(x => x.roleId).includes(r.id));
-		const user = roles.some(r => r.target === 'conditional') ? await this.cacheService.findUserById(userId) : null;
-		const matchedCondRoles = roles.filter(r => r.target === 'conditional' && this.evalCond(user!, r.condFormula));
-		return [...assignedRoles, ...matchedCondRoles];
-	}
-
-	/**
-	 * 指定ユーザーのバッジロール一覧取得
-	 */
-	@bindThis
-	public async getUserBadgeRoles(userId: MiUser['id']) {
-		const now = Date.now();
-		let assigns = await this.roleAssignmentsRepository.findBy({ userId });
-		// 期限切れのロールを除外
-		assigns = assigns.filter(a => a.expiresAt == null || (a.expiresAt.getTime() > now));
-		const assignedRoleIds = assigns.map(x => x.roleId);
-		const roles = await this.rolesRepository.findBy({});
-		const assignedBadgeRoles = roles.filter(r => r.asBadge && assignedRoleIds.includes(r.id));
-		const badgeCondRoles = roles.filter(r => r.asBadge && (r.target === 'conditional'));
-		if (badgeCondRoles.length > 0) {
-			const user = roles.some(r => r.target === 'conditional') ? await this.cacheService.findUserById(userId) : null;
-			const matchedBadgeCondRoles = badgeCondRoles.filter(r => this.evalCond(user!, r.condFormula));
-			return [...assignedBadgeRoles, ...matchedBadgeCondRoles];
-		} else {
-			return assignedBadgeRoles;
-		}
-	}
-
-	@bindThis
-	public async getUserPolicies(userId: MiUser['id'] | null): Promise<RolePolicies> {
-		const meta = await this.metaService.fetch();
-		const basePolicies = { ...DEFAULT_POLICIES, ...meta.policies };
-
-		if (userId == null) return basePolicies;
-
-		const roles = await this.getUserRoles(userId);
-
-		function calc<T extends keyof RolePolicies>(name: T, aggregate: (values: RolePolicies[T][]) => RolePolicies[T]) {
-			if (roles.length === 0) return basePolicies[name];
-
-			const policies = roles.map(role => role.policies[name] ?? { priority: 0, useDefault: true });
-
-			const p2 = policies.filter(policy => policy.priority === 2);
-			if (p2.length > 0) return aggregate(p2.map(policy => policy.useDefault ? basePolicies[name] : policy.value));
-
-			const p1 = policies.filter(policy => policy.priority === 1);
-			if (p1.length > 0) return aggregate(p1.map(policy => policy.useDefault ? basePolicies[name] : policy.value));
-
-			return aggregate(policies.map(policy => policy.useDefault ? basePolicies[name] : policy.value));
-		}
-
-		return {
-			gtlAvailable: calc('gtlAvailable', vs => vs.some(v => v === true)),
-			ltlAvailable: calc('ltlAvailable', vs => vs.some(v => v === true)),
-			canPublicNote: calc('canPublicNote', vs => vs.some(v => v === true)),
-			canInvite: calc('canInvite', vs => vs.some(v => v === true)),
-			inviteLimit: calc('inviteLimit', vs => Math.max(...vs)),
-			inviteLimitCycle: calc('inviteLimitCycle', vs => Math.max(...vs)),
-			inviteExpirationTime: calc('inviteExpirationTime', vs => Math.max(...vs)),
-			canManageCustomEmojis: calc('canManageCustomEmojis', vs => vs.some(v => v === true)),
-			canManageAvatarDecorations: calc('canManageAvatarDecorations', vs => vs.some(v => v === true)),
-			canSearchNotes: calc('canSearchNotes', vs => vs.some(v => v === true)),
-			canUseTranslator: calc('canUseTranslator', vs => vs.some(v => v === true)),
-			canHideAds: calc('canHideAds', vs => vs.some(v => v === true)),
-			driveCapacityMb: calc('driveCapacityMb', vs => Math.max(...vs)),
-			alwaysMarkNsfw: calc('alwaysMarkNsfw', vs => vs.some(v => v === true)),
-			pinLimit: calc('pinLimit', vs => Math.max(...vs)),
-			antennaLimit: calc('antennaLimit', vs => Math.max(...vs)),
-			wordMuteLimit: calc('wordMuteLimit', vs => Math.max(...vs)),
-			webhookLimit: calc('webhookLimit', vs => Math.max(...vs)),
-			clipLimit: calc('clipLimit', vs => Math.max(...vs)),
-			noteEachClipsLimit: calc('noteEachClipsLimit', vs => Math.max(...vs)),
-			userListLimit: calc('userListLimit', vs => Math.max(...vs)),
-			userEachUserListsLimit: calc('userEachUserListsLimit', vs => Math.max(...vs)),
-			rateLimitFactor: calc('rateLimitFactor', vs => Math.max(...vs)),
-			avatarDecorationLimit: calc('avatarDecorationLimit', vs => Math.max(...vs)),
-		};
-	}
-
-	@bindThis
-	public async isModerator(user: { id: MiUser['id']; isRoot: MiUser['isRoot'] } | null): Promise<boolean> {
-		if (user == null) return false;
-		return user.isRoot || (await this.getUserRoles(user.id)).some(r => r.isModerator || r.isAdministrator);
-	}
-
-	@bindThis
-	public async isAdministrator(user: { id: MiUser['id']; isRoot: MiUser['isRoot'] } | null): Promise<boolean> {
-		if (user == null) return false;
-		return user.isRoot || (await this.getUserRoles(user.id)).some(r => r.isAdministrator);
 	}
 
 	@bindThis
@@ -472,20 +250,6 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	}
 
 	@bindThis
-	public async addNoteToRoleTimeline(note: Packed<'Note'>): Promise<void> {
-		const roles = await this.getUserRoles(note.userId);
-
-		const redisPipeline = this.redisForTimelines.pipeline();
-
-		for (const role of roles) {
-			this.fanoutTimelineService.push(`roleTimeline:${role.id}`, note.id, 1000, redisPipeline);
-			this.globalEventService.publishRoleTimelineStream(role.id, 'note', note);
-		}
-
-		redisPipeline.exec();
-	}
-
-	@bindThis
 	public async create(values: Partial<MiRole>, moderator?: MiUser): Promise<MiRole> {
 		const date = new Date();
 		const created = await this.rolesRepository.insert({
@@ -551,15 +315,5 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 				role: role,
 			});
 		}
-	}
-
-	@bindThis
-	public dispose(): void {
-		this.redisForSub.off('message', this.onMessage);
-	}
-
-	@bindThis
-	public onApplicationShutdown(signal?: string | undefined): void {
-		this.dispose();
 	}
 }

@@ -25,7 +25,7 @@ import { bindThis } from '@/decorators.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { UserBlockingCheckService } from './UserBlockingCheckService.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from './RoleUserService.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
 import { trackPromise } from '@/misc/promise-tracker.js';
 import { ReactionDecodeService } from './ReactionDecodeService.js';
@@ -55,7 +55,7 @@ export class ReactionCreateService {
 		private utilityService: UtilityService,
 		private metaService: MetaService,
 		private customEmojiService: CustomEmojiService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private userEntityService: UserEntityService,
 		private noteEntityService: NoteEntityService,
 		private userBlockingCheckService: UserBlockingCheckService,
@@ -103,7 +103,7 @@ export class ReactionCreateService {
 					});
 
 				if (emoji) {
-					if (emoji.roleIdsThatCanBeUsedThisEmojiAsReaction.length === 0 || (await this.roleService.getUserRoles(user.id)).some(r => emoji.roleIdsThatCanBeUsedThisEmojiAsReaction.includes(r.id))) {
+					if (emoji.roleIdsThatCanBeUsedThisEmojiAsReaction.length === 0 || (await this.roleUserService.getUserRoles(user.id)).some(r => emoji.roleIdsThatCanBeUsedThisEmojiAsReaction.includes(r.id))) {
 						reaction = reacterHost ? `:${name}@${reacterHost}:` : `:${name}:`;
 
 						// センシティブ

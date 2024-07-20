@@ -42,6 +42,7 @@ import { QueryService } from './QueryService.js';
 import { ReactionCreateService } from './ReactionCreateService.js';
 import { RelayService } from './RelayService.js';
 import { RoleService } from './RoleService.js';
+import { RoleUserService } from './RoleUserService.js';
 import { S3Service } from './S3Service.js';
 import { SignupService } from './SignupService.js';
 import { WebAuthnService } from './WebAuthnService.js';
@@ -150,7 +151,7 @@ import { NotificationCreateService } from './NotificationCreateService.js';
 
 //#region 文字列ベースでのinjection用(循環参照対応のため)
 const $NotificationCreateService: Provider = { provide: 'NotificationCreateService', useExisting: NotificationCreateService };
-const $RoleService: Provider = { provide: 'RoleService', useExisting: RoleService };
+const $RoleUserService: Provider = { provide: 'RoleUserService', useExisting: RoleUserService };
 const $UserFollowingService: Provider = { provide: 'UserFollowingService', useExisting: UserFollowingService };
 
 const $DriveFileEntityService: Provider = { provide: 'DriveFileEntityService', useExisting: DriveFileEntityService };
@@ -216,6 +217,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		LegacyReactionConvertService,
 		RelayService,
 		RoleService,
+		RoleUserService,
 		S3Service,
 		SignupService,
 		WebAuthnService,
@@ -314,7 +316,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 
 		//#region 文字列ベースでのinjection用(循環参照対応のため)
 		$NotificationCreateService,
-		$RoleService,
+		$RoleUserService,
 		$UserFollowingService,
 
 		$DriveFileEntityService,
@@ -377,6 +379,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		LegacyReactionConvertService,
 		RelayService,
 		RoleService,
+		RoleUserService,
 		S3Service,
 		SignupService,
 		WebAuthnService,
@@ -474,7 +477,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 
 		//#region 文字列ベースでのinjection用(循環参照対応のため)
 		$NotificationCreateService,
-		$RoleService,
+		$RoleUserService,
 		$UserFollowingService,
 
 		$DriveFileEntityService,

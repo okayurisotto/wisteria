@@ -9,7 +9,7 @@ import { DI } from '@/di-symbols.js';
 import type { ClipsRepository, MiNote, MiClip, ClipNotesRepository, NotesRepository } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from './RoleUserService.js';
 import { IdService } from '@/core/IdService.js';
 import type { MiLocalUser } from '@/models/User.js';
 
@@ -31,7 +31,7 @@ export class ClipService {
 		@Inject(DI.notesRepository)
 		private notesRepository: NotesRepository,
 
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private idService: IdService,
 	) {
 	}
@@ -41,7 +41,7 @@ export class ClipService {
 		const currentCount = await this.clipsRepository.countBy({
 			userId: me.id,
 		});
-		if (currentCount > (await this.roleService.getUserPolicies(me.id)).clipLimit) {
+		if (currentCount > (await this.roleUserService.getUserPolicies(me.id)).clipLimit) {
 			throw new ClipService.TooManyClipsError();
 		}
 
@@ -102,7 +102,7 @@ export class ClipService {
 		const currentCount = await this.clipNotesRepository.countBy({
 			clipId: clip.id,
 		});
-		if (currentCount > (await this.roleService.getUserPolicies(me.id)).noteEachClipsLimit) {
+		if (currentCount > (await this.roleUserService.getUserPolicies(me.id)).noteEachClipsLimit) {
 			throw new ClipService.TooManyClipNotesError();
 		}
 

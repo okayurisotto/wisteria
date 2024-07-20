@@ -9,6 +9,7 @@ import type { RolesRepository, UsersRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '@/server/api/error.js';
 import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 
 export const meta = {
 	tags: ['admin', 'role'],
@@ -66,6 +67,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private rolesRepository: RolesRepository,
 
 		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const role = await this.rolesRepository.findOneBy({ id: ps.roleId });
@@ -73,7 +75,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				throw new ApiError(meta.errors.noSuchRole);
 			}
 
-			if (!role.canEditMembersByModerator && !(await this.roleService.isAdministrator(me))) {
+			if (!role.canEditMembersByModerator && !(await this.roleUserService.isAdministrator(me))) {
 				throw new ApiError(meta.errors.accessDenied);
 			}
 

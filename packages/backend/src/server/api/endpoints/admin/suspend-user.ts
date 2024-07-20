@@ -13,7 +13,7 @@ import { ModerationLogService } from '@/core/ModerationLogService.js';
 import { UserSuspendService } from '@/core/UserSuspendService.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 import { QueueService } from '@/core/QueueService.js';
 
 export const meta = {
@@ -42,7 +42,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private followingsRepository: FollowingsRepository,
 
 		private userSuspendService: UserSuspendService,
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private moderationLogService: ModerationLogService,
 		private queueService: QueueService,
 	) {
@@ -53,7 +53,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				throw new Error('user not found');
 			}
 
-			if (await this.roleService.isModerator(user)) {
+			if (await this.roleUserService.isModerator(user)) {
 				throw new Error('cannot suspend moderator account');
 			}
 

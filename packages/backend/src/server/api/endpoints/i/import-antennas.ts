@@ -9,7 +9,7 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import { QueueService } from '@/core/QueueService.js';
 import type { AntennasRepository, DriveFilesRepository, UsersRepository, MiAntenna as _Antenna } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
-import { RoleService } from '@/core/RoleService.js';
+import { RoleUserService } from '@/core/RoleUserService.js';
 import { DownloadService } from '@/core/DownloadService.js';
 import { ApiError } from '../../error.js';
 
@@ -65,7 +65,7 @@ export const paramDef = {
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
-		private roleService: RoleService,
+		private roleUserService: RoleUserService,
 		private queueService: QueueService,
 		private downloadService: DownloadService,
 	) {
@@ -77,7 +77,7 @@ export const paramDef = {
 			if (file.size === 0) throw new ApiError(meta.errors.emptyFile);
 			const antennas: (_Antenna & { userListAccts: string[] | null })[] = JSON.parse(await this.downloadService.downloadTextFile(file.url));
 			const currentAntennasCount = await this.antennasRepository.countBy({ userId: me.id });
-			if (currentAntennasCount + antennas.length > (await this.roleService.getUserPolicies(me.id)).antennaLimit) {
+			if (currentAntennasCount + antennas.length > (await this.roleUserService.getUserPolicies(me.id)).antennaLimit) {
 				throw new ApiError(meta.errors.tooManyAntennas);
 			}
 			this.queueService.createImportAntennasJob(me, antennas);
