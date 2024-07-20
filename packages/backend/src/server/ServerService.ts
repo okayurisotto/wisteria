@@ -239,16 +239,34 @@ export class ServerService implements OnApplicationShutdown {
 			if (fs.existsSync(this.config.socket)) {
 				fs.unlinkSync(this.config.socket);
 			}
-			fastify.listen({ path: this.config.socket }, (err, address) => {
-				if (this.config.chmodSocket) {
-					fs.chmodSync(this.config.socket!, this.config.chmodSocket);
-				}
-			});
+			fastify.listen({ path: this.config.socket },
+				() => {
+					if (this.config.chmodSocket) {
+						fs.chmodSync(this.config.socket!, this.config.chmodSocket);
+					}
+					this.logLaunch();
+				},
+			);
 		} else {
-			fastify.listen({ port: this.config.port, host: '0.0.0.0' });
+			fastify.listen(
+				{ port: this.config.port, host: '0.0.0.0' },
+				() => {
+					this.logLaunch();
+				},
+			);
 		}
 
 		await fastify.ready();
+	}
+
+	private logLaunch(): void {
+		this.logger.succ(
+			this.config.socket
+				? `Now listening on socket ${this.config.socket} on ${this.config.url}`
+				: `Now listening on port ${this.config.port.toString()} on ${this.config.url}`,
+			null,
+			true,
+		);
 	}
 
 	@bindThis

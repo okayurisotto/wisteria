@@ -68,6 +68,21 @@ function getJobInfo(job: Bull.Job | undefined, increment = false): string {
 	return `id=${job.id} attempts=${currentAttempts}/${maxAttempts} age=${formated}`;
 }
 
+const runWorker = async (worker: Bull.Worker): Promise<void> => {
+	return new Promise<void>((resolve, reject) => {
+		if (worker.isRunning()) {
+			resolve();
+			return;
+		}
+
+		worker.on("ready", resolve);
+
+		void worker.run().catch(() => {
+			reject(new Error());
+		});
+	});
+}
+
 @Injectable()
 export class QueueProcessorService implements OnApplicationShutdown {
 	private logger: Logger;
@@ -334,15 +349,17 @@ export class QueueProcessorService implements OnApplicationShutdown {
 	@bindThis
 	public async start(): Promise<void> {
 		await Promise.all([
-			this.systemQueueWorker.run(),
-			this.dbQueueWorker.run(),
-			this.deliverQueueWorker.run(),
-			this.inboxQueueWorker.run(),
-			this.webhookDeliverQueueWorker.run(),
-			this.relationshipQueueWorker.run(),
-			this.objectStorageQueueWorker.run(),
-			this.endedPollNotificationQueueWorker.run(),
+			runWorker(this.systemQueueWorker),
+			runWorker(this.dbQueueWorker),
+			runWorker(this.deliverQueueWorker),
+			runWorker(this.inboxQueueWorker),
+			runWorker(this.webhookDeliverQueueWorker),
+			runWorker(this.relationshipQueueWorker),
+			runWorker(this.objectStorageQueueWorker),
+			runWorker(this.endedPollNotificationQueueWorker),
 		]);
+
+		this.logger.succ('Queue started', null, true);
 	}
 
 	@bindThis

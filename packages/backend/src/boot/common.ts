@@ -14,31 +14,29 @@ import { ServerService } from '@/server/ServerService.js';
 import { MainModule } from '@/MainModule.js';
 
 export const server = async () => {
-	const app = await NestFactory.createApplicationContext(
-		MainModule,
-		{ logger: new NestLogger() },
-	);
+	const app = await NestFactory.createApplicationContext(MainModule, {
+		logger: new NestLogger(),
+	});
 
 	const serverService = app.get(ServerService);
 	await serverService.launch();
 
 	if (process.env['NODE_ENV'] !== 'test') {
-		void app.get(ChartManagementService).start();
+		app.get(ChartManagementService).start();
 		app.get(QueueStatsService).start();
 		void app.get(ServerStatsService).start();
 	}
 
 	return app;
-}
+};
 
 export const jobQueue = async () => {
-	const jobQueue = await NestFactory.createApplicationContext(
-		QueueProcessorModule,
-		{ logger: new NestLogger() },
-	);
+	const app = await NestFactory.createApplicationContext(QueueProcessorModule, {
+		logger: new NestLogger(),
+	});
 
-	void jobQueue.get(QueueProcessorService).start();
-	void jobQueue.get(ChartManagementService).start();
+	await app.get(QueueProcessorService).start();
+	app.get(ChartManagementService).start();
 
-	return jobQueue;
-}
+	return app;
+};

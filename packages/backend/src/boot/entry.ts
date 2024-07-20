@@ -25,7 +25,9 @@ const ev = new Xev();
 
 // Display detail of unhandled promise rejection
 if (!envOption.MK_QUIET) {
-	process.on('unhandledRejection', console.dir);
+	process.on('unhandledRejection', (reason, promise) => {
+		console.dir(reason, promise);
+	});
 }
 
 // Display detail of uncaught exception
@@ -33,7 +35,9 @@ process.on('uncaughtException', (err) => {
 	try {
 		logger.error(err);
 		console.trace(err);
-	} catch { /* empty */ }
+	} catch {
+		/* empty */
+	}
 });
 
 // Dying away...

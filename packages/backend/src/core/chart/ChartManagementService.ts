@@ -56,7 +56,7 @@ export class ChartManagementService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	public async start() {
+	public start() {
 		// 20分おきにメモリ情報をDBに書き込み
 		this.saveIntervalId = setInterval(() => {
 			for (const chart of this.charts) {
