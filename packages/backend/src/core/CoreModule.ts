@@ -46,7 +46,7 @@ import { RoleService } from './RoleService.js';
 import { S3Service } from './S3Service.js';
 import { SignupService } from './SignupService.js';
 import { WebAuthnService } from './WebAuthnService.js';
-import { UserBlockingBlockService } from '../../built/core/UserBlockingBlockService.js';
+import { UserBlockingBlockService } from './UserBlockingBlockService.js';
 import { UserBlockingCheckService } from './UserBlockingCheckService.js';
 import { UserBlockingUnblockService } from './UserBlockingUnblockService.js';
 import { CacheService } from './CacheService.js';
