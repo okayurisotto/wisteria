@@ -22,11 +22,11 @@ import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { IdService } from '@/core/IdService.js';
 import { AnnouncementService } from '@/core/AnnouncementService.js';
-import { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 import type { OnModuleInit } from '@nestjs/common';
 import { NoteEntityService } from './NoteEntityService.js';
 import type { PageEntityService } from './PageEntityService.js';
+import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
 
 const Ajv = _Ajv.default;
 const ajv = new Ajv();
@@ -94,9 +94,9 @@ export class UserEntityService implements OnModuleInit {
 		private idService: IdService,
 		private announcementService: AnnouncementService,
 		private avatarDecorationService: AvatarDecorationService,
-		private customEmojiService: CustomEmojiService,
 		private federatedInstanceService: FederatedInstanceService,
 		private noteEntityService: NoteEntityService,
+		private customEmojiPopulateService: CustomEmojiPopulateService,
 	) {
 	}
 
@@ -351,7 +351,7 @@ export class UserEntityService implements OnModuleInit {
 				faviconUrl: instance.faviconUrl,
 				themeColor: instance.themeColor,
 			} : undefined) : undefined,
-			emojis: this.customEmojiService.populateEmojis(user.emojis, user.host),
+			emojis: this.customEmojiPopulateService.populateEmojis(user.emojis, user.host),
 			onlineStatus: this.getOnlineStatus(user),
 			// パフォーマンス上の理由でローカルユーザーのみ
 			badgeRoles: user.host == null ? this.roleService.getUserBadgeRoles(user.id).then(rs => rs.sort((a, b) => b.displayOrder - a.displayOrder).map(r => ({

@@ -12,6 +12,7 @@ import { DriveService } from '@/core/DriveService.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import { EmojiEntityService } from '@/core/entities/EmojiEntityService.js';
 import { ApiError } from '../../../error.js';
+import { IsNull } from 'typeorm';
 
 export const meta = {
 	tags: ['admin'],
@@ -61,6 +62,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.emojisRepository)
 		private emojisRepository: EmojisRepository,
+
 		private emojiEntityService: EmojiEntityService,
 		private customEmojiService: CustomEmojiService,
 		private driveService: DriveService,
@@ -82,7 +84,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			}
 
 			// Duplication Check
-			const isDuplicate = await this.customEmojiService.checkDuplicate(emoji.name);
+			const isDuplicate = await this.emojisRepository.exists({ where: { name: emoji.name, host: IsNull() } });
 			if (isDuplicate) throw new ApiError(meta.errors.duplicateName);
 
 			const addedEmoji = await this.customEmojiService.add({

@@ -5,7 +5,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
-import { CustomEmojiService } from '@/core/CustomEmojiService.js';
+import { CustomEmojiAliasService } from '@/core/CustomEmojiAliasService.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -31,10 +31,10 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private customEmojiService: CustomEmojiService,
+		private customEmojiAliasService: CustomEmojiAliasService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			await this.customEmojiService.addAliasesBulk(ps.ids, ps.aliases);
+			await this.customEmojiAliasService.addAliasesBulk(ps.ids, ps.aliases);
 		});
 	}
 }

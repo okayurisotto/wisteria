@@ -143,10 +143,11 @@ import type { Provider } from '@nestjs/common';
 import { ReactionDeleteService } from './ReactionDeleteService.js';
 import { ReactionDecodeService } from './ReactionDecodeService.js';
 import { LegacyReactionConvertService } from './LegacyReactionConvertService copy.js';
+import { CustomEmojiAliasService } from './CustomEmojiAliasService.js';
+import { CustomEmojiPopulateService } from './CustomEmojiPopulateService.js';
 
 //#region 文字列ベースでのinjection用(循環参照対応のため)
 const $AccountMoveService: Provider = { provide: 'AccountMoveService', useExisting: AccountMoveService };
-const $CustomEmojiService: Provider = { provide: 'CustomEmojiService', useExisting: CustomEmojiService };
 const $NotificationService: Provider = { provide: 'NotificationService', useExisting: NotificationService };
 const $RoleService: Provider = { provide: 'RoleService', useExisting: RoleService };
 const $UserFollowingService: Provider = { provide: 'UserFollowingService', useExisting: UserFollowingService };
@@ -180,6 +181,8 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		CaptchaService,
 		CreateSystemUserService,
 		CustomEmojiService,
+		CustomEmojiAliasService,
+		CustomEmojiPopulateService,
 		DeleteAccountService,
 		DownloadService,
 		DriveService,
@@ -308,7 +311,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 
 		//#region 文字列ベースでのinjection用(循環参照対応のため)
 		$AccountMoveService,
-		$CustomEmojiService,
 		$NotificationService,
 		$RoleService,
 		$UserFollowingService,
@@ -339,6 +341,8 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		CaptchaService,
 		CreateSystemUserService,
 		CustomEmojiService,
+		CustomEmojiAliasService,
+		CustomEmojiPopulateService,
 		DeleteAccountService,
 		DownloadService,
 		DriveService,
@@ -466,7 +470,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 
 		//#region 文字列ベースでのinjection用(循環参照対応のため)
 		$AccountMoveService,
-		$CustomEmojiService,
 		$NotificationService,
 		$RoleService,
 		$UserFollowingService,

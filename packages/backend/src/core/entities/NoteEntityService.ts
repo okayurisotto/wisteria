@@ -17,17 +17,16 @@ import { isNotNull } from '@/misc/is-not-null.js';
 import { DebounceLoader } from '@/misc/loader.js';
 import { IdService } from '@/core/IdService.js';
 import type { OnModuleInit } from '@nestjs/common';
-import type { CustomEmojiService } from '../CustomEmojiService.js';
 import type { UserEntityService } from './UserEntityService.js';
 import type { DriveFileEntityService } from './DriveFileEntityService.js';
 import { ReactionDecodeService } from '../ReactionDecodeService.js';
 import { LegacyReactionConvertService } from '../LegacyReactionConvertService copy.js';
+import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
 
 @Injectable()
 export class NoteEntityService implements OnModuleInit {
 	private userEntityService!: UserEntityService;
 	private driveFileEntityService!: DriveFileEntityService;
-	private customEmojiService!: CustomEmojiService;
 	private noteLoader = new DebounceLoader(this.findNoteOrFail);
 
 	constructor(
@@ -57,13 +56,13 @@ export class NoteEntityService implements OnModuleInit {
 		private reactionDecodeService: ReactionDecodeService,
 		private legacyReactionConvertService: LegacyReactionConvertService,
 		private idService: IdService,
+		private customEmojiPopulateService: CustomEmojiPopulateService,
 	) {
 	}
 
 	onModuleInit() {
 		this.userEntityService = this.moduleRef.get('UserEntityService');
 		this.driveFileEntityService = this.moduleRef.get('DriveFileEntityService');
-		this.customEmojiService = this.moduleRef.get('CustomEmojiService');
 	}
 
 	@bindThis
@@ -329,9 +328,9 @@ export class NoteEntityService implements OnModuleInit {
 			renoteCount: note.renoteCount,
 			repliesCount: note.repliesCount,
 			reactions: this.legacyReactionConvertService.convertLegacyReactions(note.reactions),
-			reactionEmojis: this.customEmojiService.populateEmojis(reactionEmojiNames, host),
+			reactionEmojis: this.customEmojiPopulateService.populateEmojis(reactionEmojiNames, host),
 			reactionAndUserPairCache: opts.withReactionAndUserPairCache ? note.reactionAndUserPairCache : undefined,
-			emojis: host != null ? this.customEmojiService.populateEmojis(note.emojis, host) : undefined,
+			emojis: host != null ? this.customEmojiPopulateService.populateEmojis(note.emojis, host) : undefined,
 			tags: note.tags.length > 0 ? note.tags : undefined,
 			fileIds: note.fileIds,
 			files: packedFiles != null ? this.packAttachedFiles(note.fileIds, packedFiles) : this.driveFileEntityService.packManyByIds(note.fileIds),
@@ -457,20 +456,20 @@ export class NoteEntityService implements OnModuleInit {
 		let emojis: { name: string | null; host: string | null; }[] = [];
 		for (const note of notes) {
 			emojis = emojis.concat(note.emojis
-				.map(e => this.customEmojiService.parseEmojiStr(e, note.userHost)));
+				.map(e => this.customEmojiPopulateService.parseEmojiStr(e, note.userHost)));
 			if (note.renote) {
 				emojis = emojis.concat(note.renote.emojis
-					.map(e => this.customEmojiService.parseEmojiStr(e, note.renote!.userHost)));
+					.map(e => this.customEmojiPopulateService.parseEmojiStr(e, note.renote!.userHost)));
 				if (note.renote.user) {
 					emojis = emojis.concat(note.renote.user.emojis
-						.map(e => this.customEmojiService.parseEmojiStr(e, note.renote!.userHost)));
+						.map(e => this.customEmojiPopulateService.parseEmojiStr(e, note.renote!.userHost)));
 				}
 			}
 			const customReactions = Object.keys(note.reactions).map(x => this.reactionDecodeService.decodeReaction(x)).filter(x => x.name != null) as typeof emojis;
 			emojis = emojis.concat(customReactions);
 			if (note.user) {
 				emojis = emojis.concat(note.user.emojis
-					.map(e => this.customEmojiService.parseEmojiStr(e, note.userHost)));
+					.map(e => this.customEmojiPopulateService.parseEmojiStr(e, note.userHost)));
 			}
 		}
 		return emojis.filter(x => x.name != null && x.host != null) as { name: string; host: string; }[];

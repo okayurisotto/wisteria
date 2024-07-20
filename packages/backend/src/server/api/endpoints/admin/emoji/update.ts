@@ -6,9 +6,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
-import type { DriveFilesRepository } from '@/models/_.js';
+import type { DriveFilesRepository, EmojisRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../../error.js';
+import { IsNull } from 'typeorm';
 
 export const meta = {
 	tags: ['admin'],
@@ -66,6 +67,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.driveFilesRepository)
 		private driveFilesRepository: DriveFilesRepository,
 
+		@Inject(DI.emojisRepository)
+		private emojisRepository: EmojisRepository,
+
 		private customEmojiService: CustomEmojiService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
@@ -75,10 +79,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				driveFile = await this.driveFilesRepository.findOneBy({ id: ps.fileId });
 				if (driveFile == null) throw new ApiError(meta.errors.noSuchFile);
 			}
-			const emoji = await this.customEmojiService.getEmojiById(ps.id);
+			const emoji = await this.emojisRepository.findOneBy({ id: ps.id });
 			if (emoji != null) {
 				if (ps.name !== emoji.name) {
-					const isDuplicate = await this.customEmojiService.checkDuplicate(ps.name);
+					const isDuplicate = await this.emojisRepository.exists({ where: { name: ps.name, host: IsNull() } });
 					if (isDuplicate) throw new ApiError(meta.errors.sameNameEmojiExists);
 				}
 			} else {
