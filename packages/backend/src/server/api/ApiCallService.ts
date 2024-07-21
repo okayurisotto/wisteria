@@ -214,8 +214,7 @@ export class ApiCallService implements OnApplicationShutdown {
 					userId: user.id,
 					ip: ip,
 				}).orIgnore(true).execute();
-			} catch {
-			}
+			} catch { /* empty */ }
 		}
 	}
 
