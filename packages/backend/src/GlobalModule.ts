@@ -43,37 +43,79 @@ const $meilisearch: Provider = {
 	inject: [DI.config],
 };
 
-const $redis: Provider = {
+const $redis: Provider<Redis.Redis> = {
 	provide: DI.redis,
-	useFactory: (config: Config) => {
-		return new Redis.Redis(config.redis);
+	useFactory: async (config: Config) => {
+		return await new Promise<Redis.Redis>((resolve, reject) => {
+			const redis = new Redis.Redis(config.redis);
+
+			redis.on('ready', () => {
+				resolve(redis);
+			});
+
+			redis.on('error', (e) => {
+				console.error(e);
+				reject(e);
+			});
+		});
 	},
 	inject: [DI.config],
 };
 
-const $redisForPub: Provider = {
+const $redisForPub: Provider<Redis.Redis> = {
 	provide: DI.redisForPub,
-	useFactory: (config: Config) => {
-		const redis = new Redis.Redis(config.redisForPubsub);
-		return redis;
+	useFactory: async (config: Config) => {
+		return await new Promise<Redis.Redis>((resolve, reject) => {
+			const redis = new Redis.Redis(config.redisForPubsub);
+
+			redis.on('ready', () => {
+				resolve(redis);
+			});
+
+			redis.on('error', (e) => {
+				console.error(e);
+				reject(e);
+			});
+		});
 	},
 	inject: [DI.config],
 };
 
-const $redisForSub: Provider = {
+const $redisForSub: Provider<Redis.Redis> = {
 	provide: DI.redisForSub,
-	useFactory: (config: Config) => {
-		const redis = new Redis.Redis(config.redisForPubsub);
-		redis.subscribe(config.host);
-		return redis;
+	useFactory: async (config: Config) => {
+		return await new Promise<Redis.Redis>((resolve, reject) => {
+			const redis = new Redis.Redis(config.redisForPubsub);
+			redis.subscribe(config.host);
+
+			redis.on('ready', () => {
+				resolve(redis);
+			});
+
+			redis.on('error', (e) => {
+				console.error(e);
+				reject(e);
+			});
+		});
 	},
 	inject: [DI.config],
 };
 
-const $redisForTimelines: Provider = {
+const $redisForTimelines: Provider<Redis.Redis> = {
 	provide: DI.redisForTimelines,
-	useFactory: (config: Config) => {
-		return new Redis.Redis(config.redisForTimelines);
+	useFactory: async (config: Config) => {
+		return await new Promise<Redis.Redis>((resolve, reject) => {
+			const redis = new Redis.Redis(config.redisForTimelines);
+
+			redis.on('ready', () => {
+				resolve(redis);
+			});
+
+			redis.on('error', (e) => {
+				console.error(e);
+				reject(e);
+			});
+		});
 	},
 	inject: [DI.config],
 };

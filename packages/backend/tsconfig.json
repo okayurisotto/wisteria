@@ -11,11 +11,5 @@
 		"@tsconfig/strictest/tsconfig.json",
 		"@tsconfig/node-lts/tsconfig.json"
 	],
-	"include": [
-		"check_connect.js",
-		"eslint.config.js",
-		"generate_api_json.js",
-		"ormconfig.js",
-		"src"
-	]
+	"include": ["eslint.config.js", "generate_api_json.js", "ormconfig.js", "src"]
 }
