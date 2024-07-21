@@ -86,7 +86,7 @@ export class ImportUserListsProcessorService {
 					}).then(x => this.userListsRepository.findOneByOrFail(x.identifiers[0]));
 				}
 
-				let target = this.utilityService.isSelfHost(host!) ? await this.usersRepository.findOneBy({
+				let target = this.utilityService.isSelfHost(host) ? await this.usersRepository.findOneBy({
 					host: IsNull(),
 					usernameLower: username.toLowerCase(),
 				}) : await this.usersRepository.findOneBy({

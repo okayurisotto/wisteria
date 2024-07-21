@@ -140,7 +140,7 @@ export class FetchInstanceMetadataService {
 				throw new Error('No wellknown links');
 			}
 
-			const links = wellknown.links as any[];
+			const links = wellknown.links;
 
 			const link1_0 = links.find(link => link.rel === 'http://nodeinfo.diaspora.software/ns/schema/1.0');
 			const link2_0 = links.find(link => link.rel === 'http://nodeinfo.diaspora.software/ns/schema/2.0');
@@ -186,7 +186,7 @@ export class FetchInstanceMetadataService {
 
 		const manifestUrl = url + '/manifest.json';
 
-		const manifest = await this.httpRequestService.getJson(manifestUrl) as Record<string, unknown>;
+		const manifest = await this.httpRequestService.getJson(manifestUrl);
 
 		return manifest;
 	}

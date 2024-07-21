@@ -89,7 +89,7 @@ export class ExportNotesProcessorService {
 					order: {
 						id: 1,
 					},
-				}) as MiNote[];
+				});
 
 				if (notes.length === 0) {
 					job.updateProgress(100);

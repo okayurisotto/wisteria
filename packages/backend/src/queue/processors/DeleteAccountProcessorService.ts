@@ -65,7 +65,7 @@ export class DeleteAccountProcessorService {
 					order: {
 						id: 1,
 					},
-				}) as MiNote[];
+				});
 
 				if (notes.length === 0) {
 					break;
@@ -96,7 +96,7 @@ export class DeleteAccountProcessorService {
 					order: {
 						id: 1,
 					},
-				}) as MiDriveFile[];
+				});
 
 				if (files.length === 0) {
 					break;

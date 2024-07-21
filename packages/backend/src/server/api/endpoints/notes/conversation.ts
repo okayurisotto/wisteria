@@ -69,7 +69,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				const p = await this.notesRepository.findOneBy({ id });
 				if (p == null) return;
 
-				if (i > ps.offset!) {
+				if (i > ps.offset) {
 					conversation.push(p);
 				}
 

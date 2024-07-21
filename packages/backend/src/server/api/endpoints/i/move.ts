@@ -103,7 +103,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				this.apiLoggerService.logger.warn(`failed to resolve remote user: ${e}`);
 				throw new ApiError(meta.errors.noSuchUser);
 			});
-			const destination = await this.getterService.getUser(moveTo.id) as MiLocalUser | MiRemoteUser;
+			const destination = await this.getterService.getUser(moveTo.id);
 			const newUri = this.userEntityService.getUserUri(destination);
 
 			// update local db

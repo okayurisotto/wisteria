@@ -182,11 +182,11 @@ export class ApiCallService implements OnApplicationShutdown {
 			reply.code(x);
 			reply.send({
 				error: {
-					message: y!.message,
-					code: y!.code,
-					id: y!.id,
-					kind: y!.kind,
-					...(y!.info ? { info: y!.info } : {}),
+					message: y.message,
+					code: y.code,
+					id: y.id,
+					kind: y.kind,
+					...(y.info ? { info: y.info } : {}),
 				},
 			});
 		} else {
@@ -275,7 +275,7 @@ export class ApiCallService implements OnApplicationShutdown {
 					id: '1384574d-a912-4b81-8601-c7b1c4085df1',
 					httpStatusCode: 401,
 				});
-			} else if (user!.isSuspended) {
+			} else if (user.isSuspended) {
 				throw new ApiError({
 					message: 'Your account has been suspended.',
 					code: 'YOUR_ACCOUNT_SUSPENDED',
@@ -342,7 +342,7 @@ export class ApiCallService implements OnApplicationShutdown {
 		// Cast non JSON input
 		if ((ep.meta.requireFile || request.method === 'GET') && ep.params.properties) {
 			for (const k of Object.keys(ep.params.properties)) {
-				const param = ep.params.properties![k];
+				const param = ep.params.properties[k];
 				if (['boolean', 'number', 'integer'].includes(param.type ?? '') && typeof data[k] === 'string') {
 					try {
 						data[k] = JSON.parse(data[k]);

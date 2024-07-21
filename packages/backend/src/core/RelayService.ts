@@ -16,7 +16,7 @@ import { DI } from '@/di-symbols.js';
 import { deepClone } from '@/misc/clone.js';
 import { bindThis } from '@/decorators.js';
 
-const ACTOR_USERNAME = 'relay.actor' as const;
+const ACTOR_USERNAME = 'relay.actor';
 
 @Injectable()
 export class RelayService {

@@ -56,7 +56,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			return await this.appEntityService.pack(ap, user, {
 				detail: true,
-				includeSecret: isSecure && (ap.userId === user!.id),
+				includeSecret: isSecure && (ap.userId === user.id),
 			});
 		});
 	}

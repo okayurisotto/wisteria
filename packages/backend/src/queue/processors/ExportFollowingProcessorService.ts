@@ -74,7 +74,7 @@ export class ExportFollowingProcessorService {
 					order: {
 						id: 1,
 					},
-				}) as MiFollowing[];
+				});
 
 				if (followings.length === 0) {
 					break;

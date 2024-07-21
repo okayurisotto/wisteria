@@ -168,7 +168,7 @@ export class FileServerService {
 
 				if (!image) {
 					if (request.headers.range && file.file.size > 0) {
-						const range = request.headers.range as string;
+						const range = request.headers.range;
 						const parts = range.replace(/bytes=/, '').split('-');
 						const start = parseInt(parts[0], 10);
 						let end = parts[1] ? parseInt(parts[1], 10) : file.file.size - 1;
@@ -228,7 +228,7 @@ export class FileServerService {
 				reply.header('Content-Disposition', contentDisposition('inline', filename));
 
 				if (request.headers.range && file.file.size > 0) {
-					const range = request.headers.range as string;
+					const range = request.headers.range;
 					const parts = range.replace(/bytes=/, '').split('-');
 					const start = parseInt(parts[0], 10);
 					let end = parts[1] ? parseInt(parts[1], 10) : file.file.size - 1;
@@ -254,7 +254,7 @@ export class FileServerService {
 				reply.header('Content-Disposition', contentDisposition('inline', file.filename));
 
 				if (request.headers.range && file.file.size > 0) {
-					const range = request.headers.range as string;
+					const range = request.headers.range;
 					const parts = range.replace(/bytes=/, '').split('-');
 					const start = parseInt(parts[0], 10);
 					let end = parts[1] ? parseInt(parts[1], 10) : file.file.size - 1;
@@ -407,7 +407,7 @@ export class FileServerService {
 
 			if (!image) {
 				if (request.headers.range && file.file && file.file.size > 0) {
-					const range = request.headers.range as string;
+					const range = request.headers.range;
 					const parts = range.replace(/bytes=/, '').split('-');
 					const start = parseInt(parts[0], 10);
 					let end = parts[1] ? parseInt(parts[1], 10) : file.file.size - 1;

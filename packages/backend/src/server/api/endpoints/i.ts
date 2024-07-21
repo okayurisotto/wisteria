@@ -71,7 +71,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				userProfile.loggedInDates = [...userProfile.loggedInDates, today];
 			}
 
-			return await this.userEntityService.pack(userProfile.user!, userProfile.user!, {
+			return await this.userEntityService.pack(userProfile.user!, userProfile.user, {
 				schema: 'MeDetailed',
 				includeSecrets: isSecure,
 				userProfile,

@@ -328,10 +328,10 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 		// Parse MFM if needed
 		if (!tags || !emojis || !mentionedUsers) {
-			const tokens = (data.text ? mfm.parse(data.text)! : []);
-			const cwTokens = data.cw ? mfm.parse(data.cw)! : [];
+			const tokens = (data.text ? mfm.parse(data.text) : []);
+			const cwTokens = data.cw ? mfm.parse(data.cw) : [];
 			const choiceTokens = data.poll && data.poll.choices
-				? concat(data.poll.choices.map(choice => mfm.parse(choice)!))
+				? concat(data.poll.choices.map(choice => mfm.parse(choice)))
 				: [];
 
 			const combinedTokens = tokens.concat(cwTokens).concat(choiceTokens);
@@ -346,7 +346,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		tags = tags.filter(tag => Array.from(tag).length <= 128).splice(0, 32);
 
 		if (data.reply && (user.id !== data.reply.userId) && !mentionedUsers.some(u => u.id === data.reply!.userId)) {
-			mentionedUsers.push(await this.usersRepository.findOneByOrFail({ id: data.reply!.userId }));
+			mentionedUsers.push(await this.usersRepository.findOneByOrFail({ id: data.reply.userId }));
 		}
 
 		if (data.visibility === 'specified') {
@@ -359,14 +359,14 @@ export class NoteCreateService implements OnApplicationShutdown {
 			}
 
 			if (data.reply && !data.visibleUsers.some(x => x.id === data.reply!.userId)) {
-				data.visibleUsers.push(await this.usersRepository.findOneByOrFail({ id: data.reply!.userId }));
+				data.visibleUsers.push(await this.usersRepository.findOneByOrFail({ id: data.reply.userId }));
 			}
 		}
 
 		const note = await this.insertNote(user, data, tags, emojis, mentionedUsers);
 
 		setImmediate('post created', { signal: this.#shutdownController.signal }).then(
-			() => this.postNoteCreated(note, user, data, silent, tags!, mentionedUsers!),
+			() => this.postNoteCreated(note, user, data, silent, tags, mentionedUsers),
 			() => { /* aborted, ignore this */ },
 		);
 

@@ -16,9 +16,9 @@ import type Logger from '@/logger.js';
 import { bindThis } from '@/decorators.js';
 import type { Repository, DataSource } from 'typeorm';
 
-const COLUMN_PREFIX = '___' as const;
-const UNIQUE_TEMP_COLUMN_PREFIX = 'unique_temp___' as const;
-const COLUMN_DELIMITER = '_' as const;
+const COLUMN_PREFIX = '___';
+const UNIQUE_TEMP_COLUMN_PREFIX = 'unique_temp___';
+const COLUMN_DELIMITER = '_';
 
 type Schema = Record<string, {
 	uniqueIncrement?: boolean;
@@ -431,9 +431,9 @@ export default abstract class Chart<T extends Schema> {
 						finalDiffs[k] = v;
 					} else {
 						if (typeof finalDiffs[k] === 'number') {
-							(finalDiffs[k] as number) += v as number;
+							(finalDiffs[k]) += v as number;
 						} else {
-							(finalDiffs[k] as string[]) = (finalDiffs[k] as string[]).concat(v);
+							(finalDiffs[k]) = (finalDiffs[k]).concat(v);
 						}
 					}
 				}

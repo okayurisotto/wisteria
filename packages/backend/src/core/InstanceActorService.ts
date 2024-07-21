@@ -11,7 +11,7 @@ import { DI } from '@/di-symbols.js';
 import { CreateSystemUserService } from '@/core/CreateSystemUserService.js';
 import { bindThis } from '@/decorators.js';
 
-const ACTOR_USERNAME = 'instance.actor' as const;
+const ACTOR_USERNAME = 'instance.actor';
 
 @Injectable()
 export class InstanceActorService {

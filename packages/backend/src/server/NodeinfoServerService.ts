@@ -147,7 +147,7 @@ export class NodeinfoServerService {
 		fastify.get(nodeinfo2_0path, async (request, reply) => {
 			const base = await nodeinfo2(20);
 
-			delete (base as any).software.repository;
+			delete (base).software.repository;
 
 			reply
 				.type(

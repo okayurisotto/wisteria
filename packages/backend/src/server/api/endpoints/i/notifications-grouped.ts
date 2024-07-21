@@ -127,17 +127,17 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 							type: 'reaction:grouped',
 							id: '',
 							createdAt: prev.createdAt,
-							noteId: prev.noteId!,
+							noteId: prev.noteId,
 							reactions: [{
-								userId: prev.notifierId!,
-								reaction: prev.reaction!,
+								userId: prev.notifierId,
+								reaction: prev.reaction,
 							}],
 						};
 						prevGroupedNotification = groupedNotifications.at(-1)!;
 					}
 					(prevGroupedNotification as FilterUnionByProperty<MiGroupedNotification, 'type', 'reaction:grouped'>).reactions.push({
-						userId: notification.notifierId!,
-						reaction: notification.reaction!,
+						userId: notification.notifierId,
+						reaction: notification.reaction,
 					});
 					prevGroupedNotification.id = notification.id;
 					continue;
@@ -148,12 +148,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 							type: 'renote:grouped',
 							id: '',
 							createdAt: notification.createdAt,
-							noteId: prev.noteId!,
-							userIds: [prev.notifierId!],
+							noteId: prev.noteId,
+							userIds: [prev.notifierId],
 						};
 						prevGroupedNotification = groupedNotifications.at(-1)!;
 					}
-					(prevGroupedNotification as FilterUnionByProperty<MiGroupedNotification, 'type', 'renote:grouped'>).userIds.push(notification.notifierId!);
+					(prevGroupedNotification as FilterUnionByProperty<MiGroupedNotification, 'type', 'renote:grouped'>).userIds.push(notification.notifierId);
 					prevGroupedNotification.id = notification.id;
 					continue;
 				}
@@ -165,7 +165,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			const noteIds = groupedNotifications
 				.filter((notification): notification is FilterUnionByProperty<MiNotification, 'type', 'mention' | 'reply' | 'quote'> => ['mention', 'reply', 'quote'].includes(notification.type))
-				.map(notification => notification.noteId!);
+				.map(notification => notification.noteId);
 
 			if (noteIds.length > 0) {
 				const notes = await this.notesRepository.findBy({ id: In(noteIds) });
