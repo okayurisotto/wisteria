@@ -47,10 +47,6 @@ import { Readable } from 'node:stream';
 
 @Injectable()
 export class ImageProcessingService {
-	constructor(
-	) {
-	}
-
 	/**
 	 * Convert to WebP
 	 *   with resize, remove metadata, resolve orientation, stop animation

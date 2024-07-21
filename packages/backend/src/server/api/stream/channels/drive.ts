@@ -28,10 +28,6 @@ export class DriveChannelService implements MiChannelService<true> {
 	public readonly requireCredential = DriveChannel.requireCredential;
 	public readonly kind = DriveChannel.kind;
 
-	constructor(
-	) {
-	}
-
 	@bindThis
 	public create(id: string, connection: Channel['connection']): DriveChannel {
 		return new DriveChannel(

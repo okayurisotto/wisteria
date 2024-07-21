@@ -15,12 +15,6 @@ class ServerStatsChannel extends Channel {
 	public static shouldShare = true;
 	public static requireCredential = false as const;
 
-	constructor(id: string, connection: Channel['connection']) {
-		super(id, connection);
-		//this.onStats = this.onStats.bind(this);
-		//this.onMessage = this.onMessage.bind(this);
-	}
-
 	@bindThis
 	public async init(params: any) {
 		ev.addListener('serverStats', this.onStats);
@@ -57,10 +51,6 @@ export class ServerStatsChannelService implements MiChannelService<false> {
 	public readonly shouldShare = ServerStatsChannel.shouldShare;
 	public readonly requireCredential = ServerStatsChannel.requireCredential;
 	public readonly kind = ServerStatsChannel.kind;
-
-	constructor(
-	) {
-	}
 
 	@bindThis
 	public create(id: string, connection: Channel['connection']): ServerStatsChannel {

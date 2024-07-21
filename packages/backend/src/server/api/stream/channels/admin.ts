@@ -28,10 +28,6 @@ export class AdminChannelService implements MiChannelService<true> {
 	public readonly requireCredential = AdminChannel.requireCredential;
 	public readonly kind = AdminChannel.kind;
 
-	constructor(
-	) {
-	}
-
 	@bindThis
 	public create(id: string, connection: Channel['connection']): AdminChannel {
 		return new AdminChannel(

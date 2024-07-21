@@ -19,10 +19,6 @@ export class AiService {
 	private model: nsfw.NSFWJS;
 	private modelLoadMutex: Mutex = new Mutex();
 
-	constructor(
-	) {
-	}
-
 	@bindThis
 	public async detectSensitive(path: string): Promise<nsfw.predictionType[] | null> {
 		try {

@@ -11,10 +11,6 @@ import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class HashtagEntityService {
-	constructor(
-	) {
-	}
-
 	@bindThis
 	public async pack(
 		src: MiHashtag,
@@ -37,4 +33,3 @@ export class HashtagEntityService {
 		return Promise.all(hashtags.map(x => this.pack(x)));
 	}
 }
-
