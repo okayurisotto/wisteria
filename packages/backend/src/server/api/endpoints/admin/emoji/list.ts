@@ -92,7 +92,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				//const emojis = await q.limit(ps.limit).getMany();
 
 				emojis = await q.getMany();
-				const queryarry = ps.query.match(/\:([a-z0-9_]*)\:/g);
+				const queryarry = ps.query.match(/:([a-z0-9_]*):/g);
 
 				if (queryarry) {
 					emojis = emojis.filter(emoji =>

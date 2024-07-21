@@ -129,7 +129,7 @@ export class ActivityPubServerService {
 				return;
 			}
 
-			const re = /^([a-zA-Z0-9\-]+)=(.+)$/;
+			const re = /^([a-zA-Z0-9-]+)=(.+)$/;
 			const match = digest.match(re);
 
 			if (match == null) {

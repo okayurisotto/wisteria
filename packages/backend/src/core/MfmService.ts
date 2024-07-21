@@ -17,8 +17,8 @@ import type * as mfm from 'mfm-js';
 
 const treeAdapter = TreeAdapter.defaultTreeAdapter;
 
-const urlRegex = /^https?:\/\/[\w\/:%#@$&?!()\[\]~.,=+\-]+/;
-const urlRegexFull = /^https?:\/\/[\w\/:%#@$&?!()\[\]~.,=+\-]+$/;
+const urlRegex = /^https?:\/\/[\w/:%#@$&?!()[\]~.,=+-]+/;
+const urlRegexFull = /^https?:\/\/[\w/:%#@$&?!()[\]~.,=+-]+$/;
 
 @Injectable()
 export class MfmService {
