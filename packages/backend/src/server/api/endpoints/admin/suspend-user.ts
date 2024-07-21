@@ -68,8 +68,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			});
 
 			(async () => {
-				await this.userSuspendService.doPostSuspend(user).catch(e => {});
-				await this.unFollowAll(user).catch(e => {});
+				await this.userSuspendService.doPostSuspend(user).catch(() => {});
+				await this.unFollowAll(user).catch(() => {});
 			})();
 		});
 	}

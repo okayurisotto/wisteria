@@ -115,7 +115,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			})).map(x => x.userId);
 
 			for (const user of users) {
-				const currentUser = await this.getterService.getUser(user).catch(err => {
+				const currentUser = await this.getterService.getUser(user).catch((err: unknown) => {
 					if (err.id === '15348ddd-432d-49c2-8a5a-8069753becff') throw new ApiError(meta.errors.noSuchUser);
 					throw err;
 				});

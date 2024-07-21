@@ -64,7 +64,9 @@ export class ExportClipsProcessorService {
 		try {
 			const stream = Writable.toWeb(fs.createWriteStream(path, { flags: 'a' }));
 			const writer = stream.getWriter();
-			writer.closed.catch(this.logger.error);
+			writer.closed.catch((e: unknown) => {
+				this.logger.error(e);
+			});
 
 			await writer.write('[');
 

@@ -30,7 +30,7 @@ export class DeleteAccountService {
 		if (_user.isRoot) throw new Error('cannot delete a root account');
 
 		// 物理削除する前にDelete activityを送信する
-		await this.userSuspendService.doPostSuspend(user).catch(e => {});
+		await this.userSuspendService.doPostSuspend(user).catch(() => {});
 
 		this.queueService.createDeleteAccountJob(user, {
 			soft: false,

@@ -89,7 +89,7 @@ export class PushNotificationService {
 				dateTime: (new Date()).getTime(),
 			}), {
 				proxy: this.config.proxy,
-			}).catch((err: any) => {
+			}).catch((err: unknown) => {
 				//swLogger.info(err.statusCode);
 				//swLogger.info(err.headers);
 				//swLogger.info(err.body);

@@ -139,9 +139,9 @@ export class ApInboxService {
 		} else if (isReject(activity)) {
 			await this.reject(actor, activity);
 		} else if (isAdd(activity)) {
-			await this.add(actor, activity).catch(err => this.logger.error(err));
+			await this.add(actor, activity).catch((err: unknown) => this.logger.error(err));
 		} else if (isRemove(activity)) {
-			await this.remove(actor, activity).catch(err => this.logger.error(err));
+			await this.remove(actor, activity).catch((err: unknown) => this.logger.error(err));
 		} else if (isAnnounce(activity)) {
 			await this.announce(actor, activity);
 		} else if (isLike(activity)) {
@@ -185,7 +185,7 @@ export class ApInboxService {
 
 		await this.apNoteService.extractEmojis(activity.tag ?? [], actor.host).catch(() => null);
 
-		return await this.reactionCreateService.create(actor, note, activity._misskey_reaction ?? activity.content ?? activity.name).catch(err => {
+		return await this.reactionCreateService.create(actor, note, activity._misskey_reaction ?? activity.content ?? activity.name).catch((err: unknown) => {
 			if (err.id === '51c42bb4-931a-456b-bff7-e5a8a70dd298') {
 				return 'skip: already reacted';
 			} else {
@@ -202,7 +202,7 @@ export class ApInboxService {
 
 		const resolver = this.apResolverService.createResolver();
 
-		const object = await resolver.resolve(activity.object).catch(err => {
+		const object = await resolver.resolve(activity.object).catch((err: unknown) => {
 			this.logger.error(`Resolution failed: ${err}`);
 			throw err;
 		});
@@ -375,7 +375,7 @@ export class ApInboxService {
 
 		const resolver = this.apResolverService.createResolver();
 
-		const object = await resolver.resolve(activity.object).catch(e => {
+		const object = await resolver.resolve(activity.object).catch((e: unknown) => {
 			this.logger.error(`Resolution failed: ${e}`);
 			throw e;
 		});
@@ -549,7 +549,7 @@ export class ApInboxService {
 
 		const resolver = this.apResolverService.createResolver();
 
-		const object = await resolver.resolve(activity.object).catch(e => {
+		const object = await resolver.resolve(activity.object).catch((e: unknown) => {
 			this.logger.error(`Resolution failed: ${e}`);
 			throw e;
 		});
@@ -615,7 +615,7 @@ export class ApInboxService {
 
 		const resolver = this.apResolverService.createResolver();
 
-		const object = await resolver.resolve(activity.object).catch(e => {
+		const object = await resolver.resolve(activity.object).catch((e: unknown) => {
 			this.logger.error(`Resolution failed: ${e}`);
 			throw e;
 		});
@@ -728,7 +728,7 @@ export class ApInboxService {
 		const note = await this.apNoteService.fetchNote(targetUri);
 		if (!note) return `skip: target note not found ${targetUri}`;
 
-		await this.reactionDeleteService.delete(actor, note).catch(e => {
+		await this.reactionDeleteService.delete(actor, note).catch((e: unknown) => {
 			if (e.id === '60527ec9-b4cb-4a88-a6bd-32d3ad26817d') return;
 			throw e;
 		});
@@ -746,7 +746,7 @@ export class ApInboxService {
 
 		const resolver = this.apResolverService.createResolver();
 
-		const object = await resolver.resolve(activity.object).catch(e => {
+		const object = await resolver.resolve(activity.object).catch((e: unknown) => {
 			this.logger.error(`Resolution failed: ${e}`);
 			throw e;
 		});
@@ -755,7 +755,7 @@ export class ApInboxService {
 			await this.apPersonService.updatePerson(actor.uri, resolver, object);
 			return 'ok: Person updated';
 		} else if (getApType(object) === 'Question') {
-			await this.apQuestionService.updateQuestion(object, resolver).catch(err => console.error(err));
+			await this.apQuestionService.updateQuestion(object, resolver).catch((err: unknown) => console.error(err));
 			return 'ok: Question updated';
 		} else {
 			return `skip: Unknown type: ${getApType(object)}`;

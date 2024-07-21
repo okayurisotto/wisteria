@@ -214,7 +214,7 @@ export class UserFollowingService {
 			followeeHost: followee.host,
 			followeeInbox: this.userEntityService.isRemoteUser(followee) ? followee.inbox : null,
 			followeeSharedInbox: this.userEntityService.isRemoteUser(followee) ? followee.sharedInbox : null,
-		}).catch(err => {
+		}).catch((err: unknown) => {
 			if (isDuplicateKeyValueError(err) && this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee)) {
 				this.logger.info(`Insert duplicated ignore. ${follower.id} => ${followee.id}`);
 				alreadyFollowed = true;

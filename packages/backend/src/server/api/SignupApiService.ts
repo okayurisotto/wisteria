@@ -79,25 +79,25 @@ export class SignupApiService {
 		// ただしテスト時はこの機構は障害となるため無効にする
 		if (!envOption.isTest) {
 			if (instance.enableHcaptcha && instance.hcaptchaSecretKey) {
-				await this.captchaService.verifyHcaptcha(instance.hcaptchaSecretKey, body['hcaptcha-response']).catch(err => {
+				await this.captchaService.verifyHcaptcha(instance.hcaptchaSecretKey, body['hcaptcha-response']).catch((err: unknown) => {
 					throw new FastifyReplyError(400, err);
 				});
 			}
 
 			if (instance.enableMcaptcha && instance.mcaptchaSecretKey && instance.mcaptchaSitekey && instance.mcaptchaInstanceUrl) {
-				await this.captchaService.verifyMcaptcha(instance.mcaptchaSecretKey, instance.mcaptchaSitekey, instance.mcaptchaInstanceUrl, body['m-captcha-response']).catch(err => {
+				await this.captchaService.verifyMcaptcha(instance.mcaptchaSecretKey, instance.mcaptchaSitekey, instance.mcaptchaInstanceUrl, body['m-captcha-response']).catch((err: unknown) => {
 					throw new FastifyReplyError(400, err);
 				});
 			}
 
 			if (instance.enableRecaptcha && instance.recaptchaSecretKey) {
-				await this.captchaService.verifyRecaptcha(instance.recaptchaSecretKey, body['g-recaptcha-response']).catch(err => {
+				await this.captchaService.verifyRecaptcha(instance.recaptchaSecretKey, body['g-recaptcha-response']).catch((err: unknown) => {
 					throw new FastifyReplyError(400, err);
 				});
 			}
 
 			if (instance.enableTurnstile && instance.turnstileSecretKey) {
-				await this.captchaService.verifyTurnstile(instance.turnstileSecretKey, body['turnstile-response']).catch(err => {
+				await this.captchaService.verifyTurnstile(instance.turnstileSecretKey, body['turnstile-response']).catch((err: unknown) => {
 					throw new FastifyReplyError(400, err);
 				});
 			}

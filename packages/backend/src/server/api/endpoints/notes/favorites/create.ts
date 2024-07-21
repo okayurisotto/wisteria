@@ -61,7 +61,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Get favoritee
-			const note = await this.getterService.getNote(ps.noteId).catch(err => {
+			const note = await this.getterService.getNote(ps.noteId).catch((err: unknown) => {
 				if (err.id === '9725d0ce-ba28-4dde-95a7-2cbb2c15de24') throw new ApiError(meta.errors.noSuchNote);
 				throw err;
 			});

@@ -87,7 +87,7 @@ export class FileInfoService {
 			'image/svg+xml',
 			'image/vnd.adobe.photoshop',
 		].includes(type.mime)) {
-			const imageSize = await this.detectImageSize(path).catch(e => {
+			const imageSize = await this.detectImageSize(path).catch((e: unknown) => {
 				warnings.push(`detectImageSize failed: ${e}`);
 				return undefined;
 			});
@@ -122,7 +122,7 @@ export class FileInfoService {
 			'image/avif',
 			'image/svg+xml',
 		].includes(type.mime)) {
-			blurhash = await this.getBlurhash(path).catch(e => {
+			blurhash = await this.getBlurhash(path).catch((e: unknown) => {
 				warnings.push(`getBlurhash failed: ${e}`);
 				return undefined;
 			});

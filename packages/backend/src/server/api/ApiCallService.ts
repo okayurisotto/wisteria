@@ -112,14 +112,14 @@ export class ApiCallService implements OnApplicationShutdown {
 					reply.header('Cache-Control', `public, max-age=${endpoint.meta.cacheSec}`);
 				}
 				this.send(reply, res);
-			}).catch((err: ApiError) => {
+			}).catch((err: unknown) => {
 				this.#sendApiError(reply, err);
 			});
 
 			if (user) {
 				this.logIp(request, user);
 			}
-		}).catch(err => {
+		}).catch((err: unknown) => {
 			this.#sendAuthenticationError(reply, err);
 		});
 	}
@@ -161,14 +161,14 @@ export class ApiCallService implements OnApplicationShutdown {
 				path: path,
 			}, request).then((res) => {
 				this.send(reply, res);
-			}).catch((err: ApiError) => {
+			}).catch((err: unknown) => {
 				this.#sendApiError(reply, err);
 			});
 
 			if (user) {
 				this.logIp(request, user);
 			}
-		}).catch(err => {
+		}).catch((err: unknown) => {
 			this.#sendAuthenticationError(reply, err);
 		});
 	}
@@ -256,7 +256,7 @@ export class ApiCallService implements OnApplicationShutdown {
 
 			if (factor > 0) {
 				// Rate limit
-				await this.rateLimiterService.limit(limit as IEndpointMeta['limit'] & { key: NonNullable<string> }, limitActor, factor).catch(err => {
+				await this.rateLimiterService.limit(limit as IEndpointMeta['limit'] & { key: NonNullable<string> }, limitActor, factor).catch(() => {
 					throw new ApiError({
 						message: 'Rate limit exceeded. Please try again later.',
 						code: 'RATE_LIMIT_EXCEEDED',

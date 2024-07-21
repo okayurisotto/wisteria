@@ -404,7 +404,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 					const { username, host } = Acct.parse(line);
 
 					// Retrieve the old account
-					const knownAs = await this.remoteUserResolveService.resolveUser(username, host).catch((e) => {
+					const knownAs = await this.remoteUserResolveService.resolveUser(username, host).catch((e: unknown) => {
 						this.apiLoggerService.logger.warn(`failed to resolve dstination user: ${e}`);
 						throw new ApiError(meta.errors.noSuchUser);
 					});

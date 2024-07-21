@@ -53,11 +53,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private reactionDeleteService: ReactionDeleteService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const note = await this.getterService.getNote(ps.noteId).catch(err => {
+			const note = await this.getterService.getNote(ps.noteId).catch((err: unknown) => {
 				if (err.id === '9725d0ce-ba28-4dde-95a7-2cbb2c15de24') throw new ApiError(meta.errors.noSuchNote);
 				throw err;
 			});
-			await this.reactionDeleteService.delete(me, note).catch(err => {
+			await this.reactionDeleteService.delete(me, note).catch((err: unknown) => {
 				if (err.id === '60527ec9-b4cb-4a88-a6bd-32d3ad26817d') throw new ApiError(meta.errors.notReacted);
 				throw err;
 			});

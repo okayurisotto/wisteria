@@ -402,7 +402,7 @@ export class DriveService {
 					}
 				})
 			.catch(
-				err => {
+				(err: unknown) => {
 					this.registerLogger.error(`Upload Failed: key = ${key}, filename = ${filename}`, err);
 				},
 			);

@@ -59,7 +59,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private notePiningService: NotePiningService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			await this.notePiningService.addPinned(me, ps.noteId).catch(err => {
+			await this.notePiningService.addPinned(me, ps.noteId).catch((err: unknown) => {
 				if (err.id === '70c4e51f-5bea-449c-a030-53bee3cce202') throw new ApiError(meta.errors.noSuchNote);
 				if (err.id === '15a018eb-58e5-4da1-93be-330fcc5e4e1a') throw new ApiError(meta.errors.pinLimitExceeded);
 				if (err.id === '23f0cf4e-59a3-4276-a91d-61a5891c1514') throw new ApiError(meta.errors.alreadyPinned);

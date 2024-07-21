@@ -99,7 +99,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			// parse user's input into the destination account
 			const { username, host } = Acct.parse(ps.moveToAccount);
 			// retrieve the destination account
-			let moveTo = await this.remoteUserResolveService.resolveUser(username, host).catch((e) => {
+			let moveTo = await this.remoteUserResolveService.resolveUser(username, host).catch((e: unknown) => {
 				this.apiLoggerService.logger.warn(`failed to resolve remote user: ${e}`);
 				throw new ApiError(meta.errors.noSuchUser);
 			});

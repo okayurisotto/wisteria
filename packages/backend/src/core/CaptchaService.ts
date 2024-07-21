@@ -47,7 +47,7 @@ export class CaptchaService {
 			throw new Error('recaptcha-failed: no response provided');
 		}
 
-		const result = await this.getCaptchaResponse('https://www.recaptcha.net/recaptcha/api/siteverify', secret, response).catch(err => {
+		const result = await this.getCaptchaResponse('https://www.recaptcha.net/recaptcha/api/siteverify', secret, response).catch((err: unknown) => {
 			throw new Error(`recaptcha-request-failed: ${err}`);
 		});
 
@@ -63,7 +63,7 @@ export class CaptchaService {
 			throw new Error('hcaptcha-failed: no response provided');
 		}
 
-		const result = await this.getCaptchaResponse('https://hcaptcha.com/siteverify', secret, response).catch(err => {
+		const result = await this.getCaptchaResponse('https://hcaptcha.com/siteverify', secret, response).catch((err: unknown) => {
 			throw new Error(`hcaptcha-request-failed: ${err}`);
 		});
 
@@ -110,7 +110,7 @@ export class CaptchaService {
 			throw new Error('turnstile-failed: no response provided');
 		}
 
-		const result = await this.getCaptchaResponse('https://challenges.cloudflare.com/turnstile/v0/siteverify', secret, response).catch(err => {
+		const result = await this.getCaptchaResponse('https://challenges.cloudflare.com/turnstile/v0/siteverify', secret, response).catch((err: unknown) => {
 			throw new Error(`turnstile-request-failed: ${err}`);
 		});
 
@@ -120,4 +120,3 @@ export class CaptchaService {
 		}
 	}
 }
-

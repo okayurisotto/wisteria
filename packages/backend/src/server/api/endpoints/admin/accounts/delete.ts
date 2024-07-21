@@ -50,7 +50,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			if (this.userEntityService.isLocalUser(user)) {
 				// 物理削除する前にDelete activityを送信する
-				await this.userSuspendService.doPostSuspend(user).catch(err => {});
+				await this.userSuspendService.doPostSuspend(user).catch(() => {});
 
 				this.queueService.createDeleteAccountJob(user, {
 					soft: false,

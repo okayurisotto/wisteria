@@ -194,7 +194,7 @@ export class ApNoteService {
 
 					return x;
 				})
-				.catch(async err => {
+				.catch(async (err: unknown) => {
 					this.logger.warn(`Error in inReplyTo ${note.inReplyTo} - ${err.statusCode ?? err}`);
 					throw err;
 				})
@@ -265,7 +265,7 @@ export class ApNoteService {
 			}
 		}
 
-		const emojis = await this.extractEmojis(note.tag ?? [], actor.host).catch(e => {
+		const emojis = await this.extractEmojis(note.tag ?? [], actor.host).catch((e: unknown) => {
 			this.logger.info(`extractEmojis: ${e}`);
 			return [];
 		});

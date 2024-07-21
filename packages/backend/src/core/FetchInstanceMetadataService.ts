@@ -128,7 +128,7 @@ export class FetchInstanceMetadataService {
 
 		try {
 			const wellknown = await this.httpRequestService.getJson('https://' + instance.host + '/.well-known/nodeinfo')
-				.catch(err => {
+				.catch((err: unknown) => {
 					if (err.statusCode === 404) {
 						throw new Error('No nodeinfo provided');
 					} else {
@@ -152,7 +152,7 @@ export class FetchInstanceMetadataService {
 			}
 
 			const info = await this.httpRequestService.getJson(link.href)
-				.catch(err => {
+				.catch((err: unknown) => {
 					throw err.statusCode ?? err.message;
 				});
 

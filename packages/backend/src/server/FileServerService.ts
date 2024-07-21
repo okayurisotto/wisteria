@@ -74,7 +74,7 @@ export class FileServerService {
 
 			fastify.get<{ Params: { key: string; } }>('/files/:key', async (request, reply) => {
 				return await this.sendDriveFile(request, reply)
-					.catch(err => this.errorHandler(request, reply, err));
+					.catch((err: unknown) => this.errorHandler(request, reply, err));
 			});
 			fastify.get<{ Params: { key: string; } }>('/files/:key/*', async (request, reply) => {
 				return await reply.redirect(301, `${this.config.url}/files/${request.params.key}`);
@@ -87,7 +87,7 @@ export class FileServerService {
 			Querystring: { url?: string; };
 		}>('/proxy/:url*', async (request, reply) => {
 			return await this.proxyHandler(request, reply)
-				.catch(err => this.errorHandler(request, reply, err));
+				.catch((err: unknown) => this.errorHandler(request, reply, err));
 		});
 
 		done();

@@ -279,7 +279,7 @@ export class ApPersonService implements OnModuleInit {
 		//#region カスタム絵文字取得
 		const emojis = await this.apNoteService.extractEmojis(person.tag ?? [], host)
 			.then(_emojis => _emojis.map(emoji => emoji.name))
-			.catch(err => {
+			.catch((err: unknown) => {
 				this.logger.error('error occurred while fetching user emojis', { stack: err });
 				return [];
 			});
@@ -379,7 +379,7 @@ export class ApPersonService implements OnModuleInit {
 		}
 		//#endregion
 
-		await this.updateFeatured(user.id, resolver).catch(err => this.logger.error(err));
+		await this.updateFeatured(user.id, resolver).catch((err: unknown) => this.logger.error(err));
 
 		return user;
 	}
@@ -415,7 +415,7 @@ export class ApPersonService implements OnModuleInit {
 		this.logger.info(`Updating the Person: ${person.id}`);
 
 		// カスタム絵文字取得
-		const emojis = await this.apNoteService.extractEmojis(person.tag ?? [], exist.host).catch(e => {
+		const emojis = await this.apNoteService.extractEmojis(person.tag ?? [], exist.host).catch((e: unknown) => {
 			this.logger.info(`extractEmojis: ${e}`);
 			return [];
 		});
@@ -509,7 +509,7 @@ export class ApPersonService implements OnModuleInit {
 			{ followerSharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox },
 		);
 
-		await this.updateFeatured(exist.id, resolver).catch(err => this.logger.error(err));
+		await this.updateFeatured(exist.id, resolver).catch((err: unknown) => this.logger.error(err));
 
 		const updated = { ...exist, ...updates };
 
@@ -527,7 +527,7 @@ export class ApPersonService implements OnModuleInit {
 					this.logger.info(`Processing Move Finished [${result}] @${updated.username}@${updated.host} (${uri})`);
 					return result;
 				})
-				.catch(e => {
+				.catch((e: unknown) => {
 					this.logger.info(`Processing Move Failed @${updated.username}@${updated.host} (${uri})`, { stack: e });
 				});
 		}
