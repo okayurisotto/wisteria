@@ -138,7 +138,7 @@ export class EmailService {
 				<div>${ html }</div>
 			</article>
 			<footer>
-				<a href="${ emailSettingUrl }">${ 'Email setting' }</a>
+				<a href="${ emailSettingUrl }">Email setting</a>
 			</footer>
 		</main>
 		<nav>

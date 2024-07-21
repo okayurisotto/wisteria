@@ -480,7 +480,7 @@ export class DriveService {
 			sensitiveThresholdForPorn: 0.75,
 			enableSensitiveMediaDetectionForVideos: instance.enableSensitiveMediaDetectionForVideos,
 		});
-		this.registerLogger.info(`${JSON.stringify(info)}`);
+		this.registerLogger.info(JSON.stringify(info));
 
 		// 現状 false positive が多すぎて実用に耐えない
 		//if (info.porn && instance.disallowUploadWhenPredictedAsPorn) {
