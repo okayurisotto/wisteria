@@ -242,7 +242,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			const sensitiveWords = meta.sensitiveWords;
 			if (this.utilityService.isKeyWordIncluded(data.cw ?? data.text ?? '', sensitiveWords)) {
 				data.visibility = 'home';
-			} else if ((await this.roleUserService.getUserPolicies(user.id)).canPublicNote === false) {
+			} else if (!(await this.roleUserService.getUserPolicies(user.id)).canPublicNote) {
 				data.visibility = 'home';
 			}
 		}

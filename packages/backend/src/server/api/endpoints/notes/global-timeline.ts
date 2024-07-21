@@ -88,7 +88,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				query.andWhere('note.fileIds != \'{}\'');
 			}
 
-			if (ps.withRenotes === false) {
+			if (!ps.withRenotes) {
 				query.andWhere(new Brackets(qb => {
 					qb.where('note.renoteId IS NULL');
 					qb.orWhere(new Brackets(qb => {
