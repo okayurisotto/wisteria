@@ -41,6 +41,7 @@ import { UrlPreviewService } from './UrlPreviewService.js';
 import { ClientLoggerService } from './ClientLoggerService.js';
 import type { FastifyInstance, FastifyPluginOptions, FastifyReply } from 'fastify';
 import { FLUENT_EMOJI_DIR, FRONTEND_ASSETS_DIR, FRONTEND_DIST_ASSETS_DIR, PUG_DIR, STATIC_ASSETS_DIR, SW_ASSETS_DIR, TARBALL_DIR, TWEMOJI_DIR, VITE_OUT_DIR } from '@/path.js';
+import { envOption } from '@/env.js';
 
 @Injectable()
 export class ClientServerService {
@@ -249,9 +250,8 @@ export class ClientServerService {
 				done();
 			});
 		} else {
-			const port = (process.env.VITE_PORT ?? '5173');
 			fastify.register(fastifyProxy, {
-				upstream: 'http://localhost:' + port,
+				upstream: 'http://localhost:' + envOption.VITE_PORT,
 				prefix: '/vite',
 				rewritePrefix: '/vite',
 			});

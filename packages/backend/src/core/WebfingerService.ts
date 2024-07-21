@@ -8,6 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { query as urlQuery } from '@/misc/prelude/url.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { bindThis } from '@/decorators.js';
+import { envOption } from '@/env.js';
 
 export type ILink = {
 	href: string;
@@ -46,8 +47,7 @@ export class WebfingerService {
 		const m = query.match(mRegex);
 		if (m) {
 			const hostname = m[2];
-			const useHttp = process.env.MISSKEY_WEBFINGER_USE_HTTP && process.env.MISSKEY_WEBFINGER_USE_HTTP.toLowerCase() === 'true';
-			return `http${useHttp ? '' : 's'}://${hostname}/.well-known/webfinger?${urlQuery({ resource: `acct:${query}` })}`;
+			return `http${envOption.MISSKEY_WEBFINGER_USE_HTTP ? '' : 's'}://${hostname}/.well-known/webfinger?${urlQuery({ resource: `acct:${query}` })}`;
 		}
 
 		throw new Error(`Invalid query (${query})`);

@@ -28,6 +28,7 @@ import type { Config } from '@/config.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { LoggerService } from './LoggerService.js';
 import { AlsoKnownAsValidateService } from './AlsoKnownAsValidateService.js';
+import { envOption } from '@/env.js';
 
 type Local = MiLocalUser | {
 	id: MiLocalUser['id'];
@@ -129,7 +130,7 @@ export class UserFollowingService {
 		if (
 			followee.isLocked ||
 			(followeeProfile.carefulBot && follower.isBot) ||
-			(this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee) && process.env.FORCE_FOLLOW_REMOTE_USER_FOR_TESTING !== 'true') ||
+			(this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee) && !envOption.FORCE_FOLLOW_REMOTE_USER_FOR_TESTING) ||
 			(this.userEntityService.isLocalUser(followee) && this.userEntityService.isRemoteUser(follower) && this.utilityService.isSilencedHost((await this.metaService.fetch()).silencedHosts, follower.host))
 		) {
 			let autoAccept = false;
