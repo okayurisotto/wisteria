@@ -38,7 +38,7 @@ export class EmailService {
 
 	@bindThis
 	public async sendEmail(to: string, subject: string, html: string, text: string) {
-		const meta = await this.metaService.fetch(true);
+		const meta = await this.metaService.fetch();
 
 		if (!meta.enableEmail) return;
 

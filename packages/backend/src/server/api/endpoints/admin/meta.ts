@@ -447,7 +447,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private metaService: MetaService,
 	) {
 		super(meta, paramDef, async () => {
-			const instance = await this.metaService.fetch(true);
+			const instance = await this.metaService.fetch();
 
 			return {
 				maintainerName: instance.maintainerName,

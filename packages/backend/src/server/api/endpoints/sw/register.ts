@@ -76,7 +76,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				publickey: ps.publickey,
 			});
 
-			const instance = await this.metaService.fetch(true);
+			const instance = await this.metaService.fetch();
 
 			if (exist != null) {
 				return {

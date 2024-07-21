@@ -32,7 +32,7 @@ export class ServerStatsService implements OnApplicationShutdown {
 	 */
 	@bindThis
 	public async start(): Promise<void> {
-		if (!(await this.metaService.fetch(true)).enableServerMachineStats) return;
+		if (!(await this.metaService.fetch()).enableServerMachineStats) return;
 
 		const log = [] as any[];
 

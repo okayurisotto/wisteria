@@ -105,7 +105,7 @@ export class ClientServerService {
 
 	@bindThis
 	private async manifestHandler(reply: FastifyReply) {
-		const instance = await this.metaService.fetch(true);
+		const instance = await this.metaService.fetch();
 
 		let manifest = {
 			// 空文字列の場合右辺を使いたいため
@@ -715,7 +715,7 @@ export class ClientServerService {
 		//#endregion
 
 		fastify.get('/_info_card_', async (request, reply) => {
-			const meta = await this.metaService.fetch(true);
+			const meta = await this.metaService.fetch();
 
 			reply.removeHeader('X-Frame-Options');
 

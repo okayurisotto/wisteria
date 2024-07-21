@@ -339,7 +339,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private instanceActorService: InstanceActorService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const instance = await this.metaService.fetch(true);
+			const instance = await this.metaService.fetch();
 
 			const ads = await this.adsRepository.createQueryBuilder('ads')
 				.where('ads.expiresAt > :now', { now: new Date() })

@@ -86,7 +86,7 @@ export class SignupService {
 		const isTheFirstUser = !await this.instanceActorService.realLocalUsersPresent();
 
 		if (!opts.ignorePreservedUsernames && !isTheFirstUser) {
-			const instance = await this.metaService.fetch(true);
+			const instance = await this.metaService.fetch();
 			const isPreserved = instance.preservedUsernames.map(x => x.toLowerCase()).includes(username.toLowerCase());
 			if (isPreserved) {
 				throw new Error('USED_USERNAME');
@@ -153,4 +153,3 @@ export class SignupService {
 		return { account, secret };
 	}
 }
-

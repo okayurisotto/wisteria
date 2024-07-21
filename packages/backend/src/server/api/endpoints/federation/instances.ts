@@ -99,7 +99,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			}
 
 			if (typeof ps.blocked === 'boolean') {
-				const meta = await this.metaService.fetch(true);
+				const meta = await this.metaService.fetch();
 				if (ps.blocked) {
 					query.andWhere(meta.blockedHosts.length === 0 ? '1=0' : 'instance.host IN (:...blocks)', { blocks: meta.blockedHosts });
 				} else {
@@ -124,7 +124,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			}
 
 			if (typeof ps.silenced === 'boolean') {
-				const meta = await this.metaService.fetch(true);
+				const meta = await this.metaService.fetch();
 
 				if (ps.silenced) {
 					if (meta.silencedHosts.length === 0) {

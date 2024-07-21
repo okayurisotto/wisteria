@@ -73,7 +73,7 @@ export class SignupApiService {
 	) {
 		const body = request.body;
 
-		const instance = await this.metaService.fetch(true);
+		const instance = await this.metaService.fetch();
 
 		// Verify *Captcha
 		// ただしテスト時はこの機構は障害となるため無効にする

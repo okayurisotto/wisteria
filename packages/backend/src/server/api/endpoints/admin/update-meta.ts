@@ -551,11 +551,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				set.bannedEmailDomains = ps.bannedEmailDomains;
 			}
 
-			const before = await this.metaService.fetch(true);
+			const before = await this.metaService.fetch();
 
 			await this.metaService.update(set);
 
-			const after = await this.metaService.fetch(true);
+			const after = await this.metaService.fetch();
 
 			this.moderationLogService.log(me, 'updateServerSettings', {
 				before,
