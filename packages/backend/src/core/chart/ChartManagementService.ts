@@ -19,6 +19,7 @@ import PerUserFollowingChart from './charts/per-user-following.js';
 import PerUserDriveChart from './charts/per-user-drive.js';
 import ApRequestChart from './charts/ap-request.js';
 import type { OnApplicationShutdown } from '@nestjs/common';
+import { envOption } from '@/env.js';
 
 @Injectable()
 export class ChartManagementService implements OnApplicationShutdown {
@@ -68,7 +69,7 @@ export class ChartManagementService implements OnApplicationShutdown {
 	@bindThis
 	public async dispose(): Promise<void> {
 		clearInterval(this.saveIntervalId);
-		if (process.env.NODE_ENV !== 'test') {
+		if (!envOption.isTest) {
 			await Promise.all(
 				this.charts.map(chart => chart.save()),
 			);

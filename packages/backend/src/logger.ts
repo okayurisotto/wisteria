@@ -157,7 +157,7 @@ export default class Logger {
 		data: Record<string, unknown> | null = null,
 		important = false,
 	): void {
-		if (process.env['NODE_ENV'] !== 'production' || envOption.MK_VERBOSE) {
+		if (!envOption.isProduction || envOption.MK_VERBOSE) {
 			this.log('debug', message, data, important);
 		}
 	}

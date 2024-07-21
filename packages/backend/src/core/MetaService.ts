@@ -13,6 +13,7 @@ import { bindThis } from '@/decorators.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
 import type { OnApplicationShutdown } from '@nestjs/common';
+import { envOption } from '@/env.js';
 
 @Injectable()
 export class MetaService implements OnApplicationShutdown {
@@ -31,7 +32,7 @@ export class MetaService implements OnApplicationShutdown {
 	) {
 		//this.onMessage = this.onMessage.bind(this);
 
-		if (process.env.NODE_ENV !== 'test') {
+		if (!envOption.isTest) {
 			this.intervalId = setInterval(() => {
 				this.fetch(true).then(meta => {
 					// fetch内でもセットしてるけど仕様変更の可能性もあるため一応

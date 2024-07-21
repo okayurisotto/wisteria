@@ -83,6 +83,7 @@ import { Config } from '@/config.js';
 import MisskeyLogger from '@/logger.js';
 import { bindThis } from '@/decorators.js';
 import { DATABASE_MIGRATION_FILES } from './path.js';
+import { envOption } from './env.js';
 
 export const dbLogger = new MisskeyLogger('db');
 
@@ -198,8 +199,6 @@ export const entities = [
 	...charts,
 ];
 
-const log = process.env.NODE_ENV !== 'production';
-
 export function createPostgresDataSource(config: Config) {
 	return new DataSource({
 		type: 'postgres',
@@ -230,9 +229,9 @@ export function createPostgresDataSource(config: Config) {
 				})),
 			},
 		} : {}),
-		synchronize: process.env.NODE_ENV === 'test',
-		dropSchema: process.env.NODE_ENV === 'test',
-		cache: !config.db.disableCache && process.env.NODE_ENV !== 'test' ? { // dbをcloseしても何故かredisのコネクションが内部的に残り続けるようで、テストの際に支障が出るため無効にする(キャッシュも含めてテストしたいため本当は有効にしたいが...)
+		synchronize: envOption.isTest,
+		dropSchema: envOption.isTest,
+		cache: !config.db.disableCache && !envOption.isTest ? { // dbをcloseしても何故かredisのコネクションが内部的に残り続けるようで、テストの際に支障が出るため無効にする(キャッシュも含めてテストしたいため本当は有効にしたいが...)
 			type: 'ioredis',
 			options: {
 				host: config.redis.host,
@@ -243,8 +242,8 @@ export function createPostgresDataSource(config: Config) {
 				db: config.redis.db ?? 0,
 			},
 		} : false,
-		logging: log,
-		logger: log ? new MyCustomLogger() : undefined,
+		logging: !envOption.isProduction,
+		logger: !envOption.isProduction ? new MyCustomLogger() : undefined,
 		maxQueryExecutionTime: 300,
 		entities: entities,
 		migrations: [DATABASE_MIGRATION_FILES],

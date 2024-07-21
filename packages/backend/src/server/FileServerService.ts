@@ -28,6 +28,7 @@ import { correctFilename } from '@/misc/correct-filename.js';
 import { handleRequestRedirectToOmitSearch } from '@/misc/fastify-hook-handlers.js';
 import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginOptions } from 'fastify';
 import { ASSETS_DIR, DUMMY_PNG_FILE } from '@/path.js';
+import { envOption } from '@/env.js';
 
 @Injectable()
 export class FileServerService {
@@ -56,7 +57,7 @@ export class FileServerService {
 	public createServer(fastify: FastifyInstance, options: FastifyPluginOptions, done: (err?: Error) => void) {
 		fastify.addHook('onRequest', (request, reply, done) => {
 			reply.header('Content-Security-Policy', 'default-src \'none\'; img-src \'self\'; media-src \'self\'; style-src \'unsafe-inline\'');
-			if (process.env.NODE_ENV === 'development') {
+			if (envOption.isDevelopment) {
 				reply.header('Access-Control-Allow-Origin', '*');
 			}
 			done();

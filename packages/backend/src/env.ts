@@ -4,6 +4,10 @@
  */
 
 const envOption = {
+	isTest: process.env['NODE_ENV'] === 'test',
+	isDevelopment: process.env['NODE_ENV'] === 'development',
+	isProduction: process.env['NODE_ENV'] === 'production',
+
 	MK_ONLY_QUEUE: process.env['MK_ONLY_QUEUE'] !== undefined,
 	MK_ONLY_SERVER: process.env['MK_ONLY_SERVER'] !== undefined,
 	MK_QUIET: process.env['MK_QUIET'] !== undefined,
@@ -11,7 +15,7 @@ const envOption = {
 	MK_WITH_LOG_TIME: process.env['MK_WITH_LOG_TIME'] !== undefined,
 };
 
-if (process.env['NODE_ENV'] === 'test') {
+if (envOption.isTest) {
 	envOption.MK_QUIET = true;
 }
 

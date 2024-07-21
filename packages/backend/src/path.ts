@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { envOption } from './env.js';
 
 /** `/packages/backend/built/path.ts` */
 const _filename = fileURLToPath(import.meta.url);
@@ -20,7 +21,7 @@ const CONFIG_DIR = path.join(ROOT_DIR, '.config');
  */
 export const CONFIG_FILE = process.env['MISSKEY_CONFIG_YML']
 	? path.join(CONFIG_DIR, process.env['MISSKEY_CONFIG_YML'])
-	: process.env['NODE_ENV'] === 'test'
+	: envOption.isTest
 		? path.join(CONFIG_DIR, 'test.yml')
 		: path.join(CONFIG_DIR, 'default.yml');
 

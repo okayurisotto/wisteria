@@ -33,6 +33,7 @@ import { StatusError } from '@/misc/status-error.js';
 import type { ServerResponse } from 'node:http';
 import type { FastifyInstance } from 'fastify';
 import { PUG_DIR } from '@/path.js';
+import { envOption } from '@/env.js';
 
 // TODO: Consider migrating to @node-oauth/oauth2-server once
 // https://github.com/node-oauth/node-oauth2-server/issues/180 is figured out.
@@ -54,7 +55,7 @@ function validateClientId(raw: string): URL {
 	// https://datatracker.ietf.org/doc/html/rfc6749.html#section-3.1.2.1
 	// 'The redirection endpoint SHOULD require the use of TLS as described
 	// in Section 1.6 when the requested response type is "code" or "token"'
-	const allowedProtocols = process.env.NODE_ENV === 'test' ? ['http:', 'https:'] : ['https:'];
+	const allowedProtocols = envOption.isTest ? ['http:', 'https:'] : ['https:'];
 	if (!allowedProtocols.includes(url.protocol)) {
 		throw new AuthorizationError('client_id must be a valid HTTPS URL', 'invalid_request');
 	}
@@ -406,7 +407,7 @@ export class OAuth2ProviderService {
 				// "the server may want to resolve the domain name first and avoid fetching the document
 				// if the IP address is within the loopback range defined by [RFC5735]
 				// or any other implementation-specific internal IP address."
-				if (process.env.NODE_ENV !== 'test' || process.env.MISSKEY_TEST_CHECK_IP_RANGE === '1') {
+				if (!envOption.isTest || process.env.MISSKEY_TEST_CHECK_IP_RANGE === '1') {
 					const lookup = await dns.lookup(clientUrl.hostname);
 					if (ipaddr.parse(lookup.address).range() !== 'unicast') {
 						throw new AuthorizationError('client_id resolves to disallowed IP range.', 'invalid_request');

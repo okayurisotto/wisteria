@@ -37,7 +37,7 @@ export const initialize = async () => {
 			envLogger.info(`NODE_ENV: ${NODE_ENV}`);
 		}
 
-		if (NODE_ENV !== 'production') {
+		if (!envOption.isProduction) {
 			envLogger.warn('The environment is not in production mode.');
 			envLogger.warn('DO NOT USE FOR PRODUCTION PURPOSE!', null, true);
 		}

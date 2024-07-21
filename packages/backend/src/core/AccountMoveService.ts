@@ -23,6 +23,7 @@ import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { MetaService } from '@/core/MetaService.js';
 import InstanceChart from '@/core/chart/charts/instance.js';
 import PerUserFollowingChart from '@/core/chart/charts/per-user-following.js';
+import { envOption } from '@/env.js';
 
 @Injectable()
 export class AccountMoveService {
@@ -97,7 +98,7 @@ export class AccountMoveService {
 		this.queueService.createDelayedUnfollowJob(followings.map(following => ({
 			from: { id: src.id },
 			to: { id: following.followeeId },
-		})), process.env.NODE_ENV === 'test' ? 10000 : 1000 * 60 * 60 * 24);
+		})), envOption.isTest ? 10000 : 1000 * 60 * 60 * 24);
 
 		await this.postMoveProcess(src, dst);
 

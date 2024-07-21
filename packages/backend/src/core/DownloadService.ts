@@ -19,6 +19,7 @@ import { LoggerService } from '@/core/LoggerService.js';
 import type Logger from '@/logger.js';
 
 import { bindThis } from '@/decorators.js';
+import { envOption } from '@/env.js';
 
 @Injectable()
 export class DownloadService {
@@ -70,7 +71,7 @@ export class DownloadService {
 			},
 			enableUnixSockets: false,
 		}).on('response', (res: Got.Response) => {
-			if ((process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test') && !this.config.proxy && res.ip) {
+			if ((envOption.isProduction || envOption.isTest) && !this.config.proxy && res.ip) {
 				if (this.isPrivateIp(res.ip)) {
 					this.logger.warn(`Blocked address: ${res.ip}`);
 					req.destroy();

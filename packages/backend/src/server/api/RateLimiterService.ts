@@ -11,6 +11,7 @@ import type Logger from '@/logger.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import { bindThis } from '@/decorators.js';
 import type { IEndpointMeta } from './endpoints.js';
+import { envOption } from '@/env.js';
 
 @Injectable()
 export class RateLimiterService {
@@ -25,7 +26,7 @@ export class RateLimiterService {
 	) {
 		this.logger = this.loggerService.getLogger('limiter');
 
-		if (process.env.NODE_ENV !== 'production') {
+		if (!envOption.isProduction) {
 			this.disabled = true;
 		}
 	}

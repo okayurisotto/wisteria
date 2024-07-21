@@ -20,6 +20,7 @@ import { entity as TestChart } from './charts/entities/test.js';
 import { entity as TestGroupedChart } from './charts/entities/test-grouped.js';
 import { entity as TestUniqueChart } from './charts/entities/test-unique.js';
 import { entity as TestIntersectionChart } from './charts/entities/test-intersection.js';
+import { envOption } from '@/env.js';
 
 export const entities = [
 	FederationChart.hour, FederationChart.day,
@@ -35,7 +36,7 @@ export const entities = [
 	PerUserDriveChart.hour, PerUserDriveChart.day,
 	ApRequestChart.hour, ApRequestChart.day,
 
-	...(process.env.NODE_ENV === 'test' ? [
+	...(envOption.isTest ? [
 		TestChart.hour, TestChart.day,
 		TestGroupedChart.hour, TestGroupedChart.day,
 		TestUniqueChart.hour, TestUniqueChart.day,
