@@ -19,8 +19,8 @@ const CONFIG_DIR = path.join(ROOT_DIR, '.config');
  * - `/.config/default.yml`
  * - `/.config/test.yml`
  */
-export const CONFIG_FILE = process.env['MISSKEY_CONFIG_YML']
-	? path.join(CONFIG_DIR, process.env['MISSKEY_CONFIG_YML'])
+export const CONFIG_FILE = envOption.MISSKEY_CONFIG_YML
+	? path.join(CONFIG_DIR, envOption.MISSKEY_CONFIG_YML)
 	: envOption.isTest
 		? path.join(CONFIG_DIR, 'test.yml')
 		: path.join(CONFIG_DIR, 'default.yml');

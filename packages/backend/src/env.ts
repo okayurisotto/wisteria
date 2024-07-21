@@ -10,6 +10,8 @@ const envOption = {
 
 	PORT: process.env['PORT'] ? parseInt(process.env['PORT'], 10) : null,
 
+	MISSKEY_CONFIG_YML: process.env['MISSKEY_CONFIG_YML'] ?? null,
+
 	MK_ONLY_QUEUE: process.env['MK_ONLY_QUEUE'] !== undefined,
 	MK_ONLY_SERVER: process.env['MK_ONLY_SERVER'] !== undefined,
 	MK_QUIET: process.env['MK_QUIET'] !== undefined,
