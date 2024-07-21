@@ -8,6 +8,8 @@ const envOption = {
 	isDevelopment: process.env['NODE_ENV'] === 'development',
 	isProduction: process.env['NODE_ENV'] === 'production',
 
+	PORT: process.env['PORT'] ? parseInt(process.env['PORT'], 10) : null,
+
 	MK_ONLY_QUEUE: process.env['MK_ONLY_QUEUE'] !== undefined,
 	MK_ONLY_SERVER: process.env['MK_ONLY_SERVER'] !== undefined,
 	MK_QUIET: process.env['MK_QUIET'] !== undefined,

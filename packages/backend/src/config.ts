@@ -7,6 +7,7 @@ import * as fs from 'node:fs';
 import * as yaml from 'js-yaml';
 import type { RedisOptions } from 'ioredis';
 import { META_FILE, FRONTEND_MANIFEST_FILE, CONFIG_FILE } from './path.js';
+import { envOption } from './env.js';
 
 type RedisOptionsSource = Partial<RedisOptions> & {
 	host: string;
@@ -193,7 +194,7 @@ export function loadConfig(): Config {
 		version,
 		publishTarballInsteadOfProvideRepositoryUrl: !!config.publishTarballInsteadOfProvideRepositoryUrl,
 		url: url.origin,
-		port: config.port ?? parseInt(process.env.PORT ?? '', 10),
+		port: config.port ?? envOption.PORT ?? 3000,
 		socket: config.socket,
 		chmodSocket: config.chmodSocket,
 		disableHsts: config.disableHsts,
