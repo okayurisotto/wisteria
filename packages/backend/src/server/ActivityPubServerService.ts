@@ -110,14 +110,14 @@ export class ActivityPubServerService {
 			return;
 		}
 
-		if (signature.params.headers.indexOf('host') === -1
+		if (!signature.params.headers.includes('host')
 			|| request.headers.host !== this.config.host) {
 			// Host not specified or not match.
 			reply.code(401);
 			return;
 		}
 
-		if (signature.params.headers.indexOf('digest') === -1) {
+		if (!signature.params.headers.includes('digest')) {
 			// Digest not found.
 			reply.code(401);
 		} else {

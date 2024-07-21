@@ -42,7 +42,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 							await queue.promote();
 						} catch (e) {
 							if (e instanceof Error) {
-								if (e.message.indexOf('not in a delayed state') !== -1) {
+								if (e.message.includes('not in a delayed state')) {
 									throw e;
 								}
 							} else {
@@ -60,7 +60,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 							await queue.promote();
 						} catch (e) {
 							if (e instanceof Error) {
-								if (e.message.indexOf('not in a delayed state') !== -1) {
+								if (e.message.includes('not in a delayed state')) {
 									throw e;
 								}
 							} else {
