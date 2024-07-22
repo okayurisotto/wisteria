@@ -29,9 +29,7 @@ export class NodeinfoServerService {
 		private metaService: MetaService,
 		private notesChart: NotesChart,
 		private usersChart: UsersChart,
-	) {
-		//this.createServer = this.createServer.bind(this);
-	}
+	) {}
 
 	@bindThis
 	public getLinks() {
@@ -44,93 +42,80 @@ export class NodeinfoServerService {
 			}];
 	}
 
+	private async nodeinfo2(version: '2.0' | '2.1') {
+		const notesChart = await this.notesChart.getChart('hour', 1, null);
+		const localPosts = notesChart.local.total[0];
+
+		const usersChart = await this.usersChart.getChart('hour', 1, null);
+		const total = usersChart.local.total[0];
+
+		const meta = await this.metaService.fetch();
+
+		const activeHalfyear = null;
+		const activeMonth = null;
+
+		const proxyAccount = meta.proxyAccountId
+			? await this.userEntityService.pack(meta.proxyAccountId).catch(() => null)
+			: null;
+
+		const basePolicies = { ...DEFAULT_POLICIES, ...meta.policies };
+
+		return {
+			version,
+			software: {
+				name: 'misskey',
+				version: this.config.version,
+				homepage: version === '2.1' ? meta.repositoryUrl : nodeinfo_homepage,
+				...(version === '2.1' ? { repository: meta.repositoryUrl } : {}),
+			},
+			protocols: ['activitypub'],
+			services: {
+				inbound: [] as string[],
+				outbound: ['atom1.0', 'rss2.0'],
+			},
+			openRegistrations: !meta.disableRegistration,
+			usage: {
+				users: { total, activeHalfyear, activeMonth },
+				localPosts,
+				localComments: 0,
+			},
+			metadata: {
+				nodeName: meta.name,
+				nodeDescription: meta.description,
+				nodeAdmins: [{
+					name: meta.maintainerName,
+					email: meta.maintainerEmail,
+				}],
+				// deprecated
+				maintainer: {
+					name: meta.maintainerName,
+					email: meta.maintainerEmail,
+				},
+				langs: meta.langs,
+				tosUrl: meta.termsOfServiceUrl,
+				privacyPolicyUrl: meta.privacyPolicyUrl,
+				impressumUrl: meta.impressumUrl,
+				repositoryUrl: meta.repositoryUrl,
+				feedbackUrl: meta.feedbackUrl,
+				disableRegistration: meta.disableRegistration,
+				disableLocalTimeline: !basePolicies.ltlAvailable,
+				disableGlobalTimeline: !basePolicies.gtlAvailable,
+				emailRequiredForSignup: meta.emailRequiredForSignup,
+				enableHcaptcha: meta.enableHcaptcha,
+				enableRecaptcha: meta.enableRecaptcha,
+				maxNoteTextLength: MAX_NOTE_TEXT_LENGTH,
+				enableEmail: meta.enableEmail,
+				enableServiceWorker: meta.enableServiceWorker,
+				proxyAccountName: proxyAccount ? proxyAccount.username : null,
+				themeColor: meta.themeColor ?? '#86b300',
+			},
+		} as const;
+	};
+
 	@bindThis
 	public createServer(fastify: FastifyInstance, options: FastifyPluginOptions, done: (err?: Error) => void) {
-		const nodeinfo2 = async (version: number) => {
-			const now = Date.now();
-
-			const notesChart = await this.notesChart.getChart('hour', 1, null);
-			const localPosts = notesChart.local.total[0];
-
-			const usersChart = await this.usersChart.getChart('hour', 1, null);
-			const total = usersChart.local.total[0];
-
-			const [
-				meta,
-				//activeHalfyear,
-				//activeMonth,
-			] = await Promise.all([
-				this.metaService.fetch(),
-				// 重い
-				//this.usersRepository.count({ where: { host: IsNull(), lastActiveDate: MoreThan(new Date(now - 15552000000)) } }),
-				//this.usersRepository.count({ where: { host: IsNull(), lastActiveDate: MoreThan(new Date(now - 2592000000)) } }),
-			]);
-
-			const activeHalfyear = null;
-			const activeMonth = null;
-
-			const proxyAccount = meta.proxyAccountId ? await this.userEntityService.pack(meta.proxyAccountId).catch(() => null) : null;
-
-			const basePolicies = { ...DEFAULT_POLICIES, ...meta.policies };
-
-			const document: any = {
-				software: {
-					name: 'misskey',
-					version: this.config.version,
-					homepage: nodeinfo_homepage,
-					repository: meta.repositoryUrl,
-				},
-				protocols: ['activitypub'],
-				services: {
-					inbound: [] as string[],
-					outbound: ['atom1.0', 'rss2.0'],
-				},
-				openRegistrations: !meta.disableRegistration,
-				usage: {
-					users: { total, activeHalfyear, activeMonth },
-					localPosts,
-					localComments: 0,
-				},
-				metadata: {
-					nodeName: meta.name,
-					nodeDescription: meta.description,
-					nodeAdmins: [{
-						name: meta.maintainerName,
-						email: meta.maintainerEmail,
-					}],
-					// deprecated
-					maintainer: {
-						name: meta.maintainerName,
-						email: meta.maintainerEmail,
-					},
-					langs: meta.langs,
-					tosUrl: meta.termsOfServiceUrl,
-					privacyPolicyUrl: meta.privacyPolicyUrl,
-					impressumUrl: meta.impressumUrl,
-					repositoryUrl: meta.repositoryUrl,
-					feedbackUrl: meta.feedbackUrl,
-					disableRegistration: meta.disableRegistration,
-					disableLocalTimeline: !basePolicies.ltlAvailable,
-					disableGlobalTimeline: !basePolicies.gtlAvailable,
-					emailRequiredForSignup: meta.emailRequiredForSignup,
-					enableHcaptcha: meta.enableHcaptcha,
-					enableRecaptcha: meta.enableRecaptcha,
-					maxNoteTextLength: MAX_NOTE_TEXT_LENGTH,
-					enableEmail: meta.enableEmail,
-					enableServiceWorker: meta.enableServiceWorker,
-					proxyAccountName: proxyAccount ? proxyAccount.username : null,
-					themeColor: meta.themeColor ?? '#86b300',
-				},
-			};
-			if (version >= 21) {
-				document.software.repository = meta.repositoryUrl;
-				document.software.homepage = meta.repositoryUrl;
-			}
-			return document;
-		};
-
 		fastify.get(nodeinfo2_1path, async (request, reply) => {
-			const base = await nodeinfo2(21);
+			const data = await this.nodeinfo2('2.1');
 
 			reply
 				.type(
@@ -141,13 +126,12 @@ export class NodeinfoServerService {
 				.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
 				.header('Access-Control-Allow-Origin', '*')
 				.header('Access-Control-Expose-Headers', 'Vary');
-			return { version: '2.1', ...base };
+
+			return data;
 		});
 
 		fastify.get(nodeinfo2_0path, async (request, reply) => {
-			const base = await nodeinfo2(20);
-
-			delete (base).software.repository;
+			const data = await this.nodeinfo2('2.0');
 
 			reply
 				.type(
@@ -158,7 +142,8 @@ export class NodeinfoServerService {
 				.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
 				.header('Access-Control-Allow-Origin', '*')
 				.header('Access-Control-Expose-Headers', 'Vary');
-			return { version: '2.0', ...base };
+
+			return data;
 		});
 
 		done();
