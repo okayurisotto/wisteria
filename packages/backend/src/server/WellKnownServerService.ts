@@ -32,24 +32,74 @@ export class WellKnownServerService {
 		private nodeinfoServerService: NodeinfoServerService,
 		private userEntityService: UserEntityService,
 		private oauth2ProviderService: OAuth2ProviderService,
-	) {
-		//this.createServer = this.createServer.bind(this);
-	}
+	) {}
+
+	private toXRD(elements: { name: string, value?: string, attributes?: Record<string, string> }[]): string {
+		const XML_DECL = '<?xml version="1.0" encoding="UTF-8"?>';
+
+		const elementsStr = elements
+			.map(({ name, value, attributes }) => {
+				const attributeEntries = Object.entries(attributes ?? {});
+
+				const attributesStr = attributeEntries
+					.map(([key, value]) => `${key}="${escapeAttribute(value)}"`)
+					.join(' ');
+
+				if (value === undefined) {
+					return `<${name} ${attributesStr}/>`;
+				} else {
+					return `<${name} ${attributesStr}>${escapeValue(value)}</${name}>`;
+				}
+			})
+			.join('');
+
+		return XML_DECL + `<XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">${elementsStr}</XRD>`;
+	};
+
+	private generateQueryFromId(id: MiUser['id']): FindOptionsWhere<MiUser> {
+		return {
+			id,
+			host: IsNull(),
+			isSuspended: false,
+		};
+	};
+
+	private generateQueryFromAcct(acct: Acct.Acct): FindOptionsWhere<MiUser> | null  {
+		if (acct.host === null || acct.host === '' || acct.host === this.config.host.toLowerCase()) {
+			const query: FindOptionsWhere<MiUser> = {
+				usernameLower: acct.username,
+				host: IsNull(),
+				isSuspended: false,
+			};
+			return query;
+		} else {
+			return null;
+		}
+	};
+
+	private generateQuery(resource: string): FindOptionsWhere<MiUser> | null  {
+		if (resource.startsWith(`${this.config.url.toLowerCase()}/users/`)) {
+			return this.generateQueryFromId(resource.split('/').at(-1));
+		}
+
+		if (resource.startsWith(`${this.config.url.toLowerCase()}/@`)) {
+			return this.generateQueryFromAcct(Acct.parse(resource.split('/').pop()!));
+		}
+
+		if (resource.startsWith('acct:')) {
+			const trimmed = resource.slice('acct:'.length);
+			return this.generateQueryFromAcct(Acct.parse(trimmed));
+		}
+
+		return this.generateQueryFromAcct(Acct.parse(resource));
+	};
 
 	@bindThis
 	public createServer(fastify: FastifyInstance, options: FastifyPluginOptions, done: (err?: Error) => void) {
-		const XRD = (...x: { element: string, value?: string, attributes?: Record<string, string> }[]) =>
-			`<?xml version="1.0" encoding="UTF-8"?><XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">${x.map(({ element, value, attributes }) =>
-				`<${
-					Object.entries(typeof attributes === 'object' && attributes || {}).reduce((a, [k, v]) => `${a} ${k}="${escapeAttribute(v)}"`, element)
-				}${
-					typeof value === 'string' ? `>${escapeValue(value)}</${element}` : '/'
-				}>`).reduce((a, c) => a + c, '')}</XRD>`;
-
-		const allPath = '/.well-known/*';
-		const webFingerPath = '/.well-known/webfinger';
-		const jrd = 'application/jrd+json';
-		const xrd = 'application/xrd+xml';
+		const ALL_PATH = '/.well-known/*';
+		const WEB_FINGER_PATH = '/.well-known/webfinger';
+		const JRD_MIMETYPE = 'application/jrd+json';
+		const XRD_MIMETYPE = 'application/xrd+xml';
 
 		fastify.register(fastifyAccepts);
 
@@ -61,17 +111,20 @@ export class WellKnownServerService {
 			done();
 		});
 
-		fastify.options(allPath, async (request, reply) => {
+		fastify.options(ALL_PATH, async (request, reply) => {
 			reply.code(204);
 		});
 
 		fastify.get('/.well-known/host-meta', async (request, reply) => {
-			reply.header('Content-Type', xrd);
-			return XRD({ element: 'Link', attributes: {
-				rel: 'lrdd',
-				type: xrd,
-				template: `${this.config.url}${webFingerPath}?resource={uri}`,
-			} });
+			reply.header('Content-Type', XRD_MIMETYPE);
+			return this.toXRD([{
+				name: 'Link',
+				attributes: {
+					rel: 'lrdd',
+					type: XRD_MIMETYPE,
+					template: `${this.config.url}${WEB_FINGER_PATH}?resource={uri}`,
+				},
+			}]);
 		});
 
 		fastify.get('/.well-known/host-meta.json', async (request, reply) => {
@@ -79,8 +132,8 @@ export class WellKnownServerService {
 			return {
 				links: [{
 					rel: 'lrdd',
-					type: jrd,
-					template: `${this.config.url}${webFingerPath}?resource={uri}`,
+					type: JRD_MIMETYPE,
+					template: `${this.config.url}${WEB_FINGER_PATH}?resource={uri}`,
 				}],
 			};
 		});
@@ -93,48 +146,22 @@ export class WellKnownServerService {
 			return this.oauth2ProviderService.generateRFC8414();
 		});
 
-		/* TODO
-fastify.get('/.well-known/change-password', async (request, reply) => {
-});
-*/
-
-		fastify.get<{ Querystring: { resource: string } }>(webFingerPath, async (request, reply) => {
-			const fromId = (id: MiUser['id']): FindOptionsWhere<MiUser> => ({
-				id,
-				host: IsNull(),
-				isSuspended: false,
-			});
-
-			const generateQuery = (resource: string): FindOptionsWhere<MiUser> | number =>
-				resource.startsWith(`${this.config.url.toLowerCase()}/users/`) ?
-					fromId(resource.split('/').pop()!) :
-					fromAcct(Acct.parse(
-						resource.startsWith(`${this.config.url.toLowerCase()}/@`) ? resource.split('/').pop()! :
-						resource.startsWith('acct:') ? resource.slice('acct:'.length) :
-						resource));
-
-			const fromAcct = (acct: Acct.Acct): FindOptionsWhere<MiUser> | number =>
-				!acct.host || acct.host === this.config.host.toLowerCase() ? {
-					usernameLower: acct.username,
-					host: IsNull(),
-					isSuspended: false,
-				} : 422;
-
+		fastify.get<{ Querystring: { resource: string } }>(WEB_FINGER_PATH, async (request, reply) => {
 			if (typeof request.query.resource !== 'string') {
 				reply.code(400);
 				return;
 			}
 
-			const query = generateQuery(request.query.resource.toLowerCase());
+			const query = this.generateQuery(request.query.resource.toLowerCase());
 
-			if (typeof query === 'number') {
-				reply.code(query);
+			if (query === null) {
+				reply.code(422);
 				return;
 			}
 
 			const user = await this.usersRepository.findOneBy(query);
 
-			if (user == null) {
+			if (user === null) {
 				reply.code(404);
 				return;
 			}
@@ -158,15 +185,16 @@ fastify.get('/.well-known/change-password', async (request, reply) => {
 			vary(reply.raw, 'Accept');
 			reply.header('Cache-Control', 'public, max-age=180');
 
-			if (request.accepts().type([jrd, xrd]) === xrd) {
-				reply.type(xrd);
-				return XRD(
-					{ element: 'Subject', value: subject },
-					{ element: 'Link', attributes: self },
-					{ element: 'Link', attributes: profilePage },
-					{ element: 'Link', attributes: subscribe });
+			if (request.accepts().type([JRD_MIMETYPE, XRD_MIMETYPE]) === XRD_MIMETYPE) {
+				reply.type(XRD_MIMETYPE);
+				return this.toXRD([
+					{ name: 'Subject', value: subject },
+					{ name: 'Link', attributes: self },
+					{ name: 'Link', attributes: profilePage },
+					{ name: 'Link', attributes: subscribe },
+				]);
 			} else {
-				reply.type(jrd);
+				reply.type(JRD_MIMETYPE);
 				return {
 					subject,
 					links: [self, profilePage, subscribe],
