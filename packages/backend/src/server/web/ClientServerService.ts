@@ -22,7 +22,7 @@ import { getNoteSummary } from '@/misc/get-note-summary.js';
 import { DI } from '@/di-symbols.js';
 import * as Acct from '@/misc/acct.js';
 import { MetaService } from '@/core/MetaService.js';
-import type { DbQueue, DeliverQueue, EndedPollNotificationQueue, InboxQueue, ObjectStorageQueue, SystemQueue, WebhookDeliverQueue } from '@/core/QueueModule.js';
+import type { DbQueue, DeliverQueue, EndedPollNotificationQueue, InboxQueue, ObjectStorageQueue, RelationshipQueue, SystemQueue, WebhookDeliverQueue } from '@/core/QueueModule.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { PageEntityService } from '@/core/entities/PageEntityService.js';
@@ -99,9 +99,8 @@ export class ClientServerService {
 		@Inject('queue:db') public dbQueue: DbQueue,
 		@Inject('queue:objectStorage') public objectStorageQueue: ObjectStorageQueue,
 		@Inject('queue:webhookDeliver') public webhookDeliverQueue: WebhookDeliverQueue,
-	) {
-		//this.createServer = this.createServer.bind(this);
-	}
+		@Inject('queue:relationship') public relationshipQueue: RelationshipQueue,
+	) {}
 
 	@bindThis
 	private async manifestHandler(reply: FastifyReply) {
@@ -211,6 +210,7 @@ export class ClientServerService {
 				this.dbQueue,
 				this.objectStorageQueue,
 				this.webhookDeliverQueue,
+				this.relationshipQueue,
 			].map(q => new BullMQAdapter(q)),
 			serverAdapter,
 		});
