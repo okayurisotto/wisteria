@@ -3,22 +3,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { NestFactory } from '@nestjs/core';
 import { ChartManagementService } from '@/core/chart/ChartManagementService.js';
 import { QueueProcessorService } from '@/queue/QueueProcessorService.js';
-import { NestLogger } from '@/NestLogger.js';
-import { QueueProcessorModule } from '@/queue/QueueProcessorModule.js';
 import { QueueStatsService } from '@/daemons/QueueStatsService.js';
 import { ServerStatsService } from '@/daemons/ServerStatsService.js';
 import { ServerService } from '@/server/ServerService.js';
-import { MainModule } from '@/MainModule.js';
 import { envOption } from '@/env.js';
+import { INestApplicationContext } from '@nestjs/common';
 
-export const server = async () => {
-	const app = await NestFactory.createApplicationContext(MainModule, {
-		logger: new NestLogger(),
-	});
-
+export const server = async (app: INestApplicationContext) => {
 	const serverService = app.get(ServerService);
 	await serverService.launch();
 
@@ -31,11 +24,7 @@ export const server = async () => {
 	return app;
 };
 
-export const jobQueue = async () => {
-	const app = await NestFactory.createApplicationContext(QueueProcessorModule, {
-		logger: new NestLogger(),
-	});
-
+export const jobQueue = async (app: INestApplicationContext) => {
 	await app.get(QueueProcessorService).start();
 	app.get(ChartManagementService).start();
 

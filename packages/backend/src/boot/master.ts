@@ -11,6 +11,9 @@ import { loadConfig } from '@/config.js';
 import { envOption } from '@/env.js';
 import { META_FILE } from '@/path.js';
 import { server, jobQueue } from './common.js';
+import { NestFactory } from '@nestjs/core';
+import { NestLogger } from '@/NestLogger.js';
+import { MainModule } from '@/MainModule.js';
 
 export const initialize = async () => {
 	const meta = JSON.parse(await fs.readFile(META_FILE, 'utf-8'));
@@ -101,11 +104,15 @@ export const initialize = async () => {
 
 	bootLogger.succ('Wisteria initialized');
 
+	const app = await NestFactory.createApplicationContext(MainModule, {
+		logger: new NestLogger(),
+	});
+
 	if (envOption.MK_ONLY_SERVER) {
-		await server();
+		await server(app);
 	} else if (envOption.MK_ONLY_QUEUE) {
-		await jobQueue();
+		await jobQueue(app);
 	} else {
-		await Promise.all([server(), jobQueue()]);
+		await Promise.all([server(app), jobQueue(app)]);
 	}
 };
