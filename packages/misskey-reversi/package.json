@@ -29,7 +29,9 @@
 		"@types/node": "20.11.5",
 		"@typescript-eslint/eslint-plugin": "6.18.1",
 		"@typescript-eslint/parser": "6.18.1",
+		"esbuild": "0.19.11",
 		"eslint": "8.56.0",
+		"glob": "10.3.10",
 		"nodemon": "3.0.2",
 		"typescript": "5.3.3"
 	},
@@ -37,8 +39,6 @@
 		"built"
 	],
 	"dependencies": {
-		"crc-32": "1.2.2",
-		"esbuild": "0.19.11",
-		"glob": "10.3.10"
+		"crc-32": "1.2.2"
 	}
 }
