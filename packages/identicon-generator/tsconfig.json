@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"noEmit": true,
+		"lib": ["ES2023", "DOM"]
+	},
+	"extends": [
+		"@tsconfig/strictest/tsconfig.json",
+		"@tsconfig/node-lts/tsconfig.json"
+	],
+	"include": ["src"]
+}

@@ -10,14 +10,13 @@ import Fastify, { FastifyInstance } from 'fastify';
 import fastifyStatic from '@fastify/static';
 import fastifyRawBody from 'fastify-raw-body';
 import { IsNull } from 'typeorm';
+import { generate as generateIdenticon } from "identicon-generator";
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { Config } from '@/config.js';
 import type { EmojisRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import type Logger from '@/logger.js';
 import * as Acct from '@/misc/acct.js';
-import { genIdenticon } from '@/misc/gen-identicon.js';
-import { createTemp } from '@/misc/create-temp.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import { bindThis } from '@/decorators.js';
@@ -183,9 +182,11 @@ export class ServerService implements OnApplicationShutdown {
 			reply.header('Cache-Control', 'public, max-age=86400');
 
 			if ((await this.metaService.fetch()).enableIdenticonGeneration) {
-				const [temp, cleanup] = await createTemp();
-				await genIdenticon(request.params.x, fs.createWriteStream(temp));
-				return fs.createReadStream(temp).on('close', () => cleanup());
+				const buffer = await generateIdenticon(
+					request.params.x,
+					{ pixels: 5, cellSize: 12, margin: 30 },
+				);
+				reply.send(buffer);
 			} else {
 				return reply.redirect('/static-assets/avatar.png');
 			}
