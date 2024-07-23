@@ -1,106 +1,92 @@
 # syntax = docker/dockerfile:1.4
 
-ARG NODE_VERSION=20.15.1-bullseye
+ARG IMAGE_TAG=20.15.1-bullseye
 
-# build assets & compile TypeScript
+# ----------------------------------------------------------
+# Fetch dependencies
+# ----------------------------------------------------------
 
-FROM --platform=$BUILDPLATFORM node:${NODE_VERSION} AS native-builder
-
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-	--mount=type=cache,target=/var/lib/apt,sharing=locked \
-	rm -f /etc/apt/apt.conf.d/docker-clean \
-	; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
-	&& apt-get update \
-	&& apt-get install -yqq --no-install-recommends \
-	build-essential
+FROM --platform=$TARGETPLATFORM node:${IMAGE_TAG} AS fetcher
 
 RUN corepack enable
 
 WORKDIR /misskey
 
-COPY --link ["pnpm-lock.yaml", "pnpm-workspace.yaml", "package.json", "./"]
-COPY --link ["scripts", "./scripts"]
-COPY --link ["packages/backend/package.json", "./packages/backend/"]
-COPY --link ["packages/frontend/package.json", "./packages/frontend/"]
-COPY --link ["packages/sw/package.json", "./packages/sw/"]
-COPY --link ["packages/misskey-js/package.json", "./packages/misskey-js/"]
-COPY --link ["packages/misskey-reversi/package.json", "./packages/misskey-reversi/"]
-COPY --link ["packages/misskey-bubble-game/package.json", "./packages/misskey-bubble-game/"]
-COPY --link ["packages/identicon-generator/package.json", "./packages/identicon-generator/"]
+COPY ./package.json ./pnpm-lock.yaml ./
 
-ARG NODE_ENV=production
+RUN pnpm fetch --prod
 
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store,sharing=locked \
-	pnpm i --frozen-lockfile --aggregate-output
+# ----------------------------------------------------------
+# Build Wisteria
+# ----------------------------------------------------------
+
+FROM --platform=$TARGETPLATFORM fetcher AS builder
+
+RUN pnpm fetch
 
 COPY --link . ./
 
+RUN pnpm install --offline --frozen-lockfile
+
 RUN git submodule update --init
+
+ENV NODE_ENV=production
+
 RUN pnpm build
-RUN rm -rf .git/
 
-# build native dependencies for target platform
+# ----------------------------------------------------------
+# Install dependencies & Setting up assets
+# ----------------------------------------------------------
 
-FROM --platform=$TARGETPLATFORM node:${NODE_VERSION} AS target-builder
+FROM --platform=$TARGETPLATFORM fetcher AS installer
 
-RUN apt-get update \
-	&& apt-get install -yqq --no-install-recommends \
-	build-essential
+COPY --link ./healthcheck.sh                            ./healthcheck.sh
+COPY --link ./packages/backend/assets                   ./packages/backend/assets
+COPY --link ./packages/backend/migration                ./packages/backend/migration
+COPY --link ./packages/backend/nsfw-model               ./packages/backend/nsfw-model
+COPY --link ./packages/backend/ormconfig.js             ./packages/backend/ormconfig.js
+COPY --link ./packages/backend/package.json             ./packages/backend/package.json
+COPY --link ./packages/frontend/assets                  ./packages/frontend/assets
+COPY --link ./packages/frontend/package.json            ./packages/frontend/package.json
+COPY --link ./packages/identicon-generator/package.json ./packages/identicon-generator/package.json
+COPY --link ./packages/misskey-bubble-game/package.json ./packages/misskey-bubble-game/package.json
+COPY --link ./packages/misskey-js/package.json          ./packages/misskey-js/package.json
+COPY --link ./packages/misskey-reversi/package.json     ./packages/misskey-reversi/package.json
+COPY --link ./packages/sw/package.json                  ./packages/sw/package.json
+COPY --link ./pnpm-workspace.yaml                       ./pnpm-workspace.yaml
 
-RUN corepack enable
+RUN pnpm install --prod --offline --frozen-lockfile
 
-WORKDIR /misskey
+COPY --link --from=builder /misskey/built                              ./built
+COPY --link --from=builder /misskey/fluent-emojis                      ./fluent-emojis
+COPY --link --from=builder /misskey/packages/backend/built             ./packages/backend/built
+COPY --link --from=builder /misskey/packages/identicon-generator/built ./packages/identicon-generator/built
+COPY --link --from=builder /misskey/packages/misskey-bubble-game/built ./packages/misskey-bubble-game/built
+COPY --link --from=builder /misskey/packages/misskey-js/built          ./packages/misskey-js/built
+COPY --link --from=builder /misskey/packages/misskey-reversi/built     ./packages/misskey-reversi/built
 
-COPY --link ["pnpm-lock.yaml", "pnpm-workspace.yaml", "package.json", "./"]
-COPY --link ["scripts", "./scripts"]
-COPY --link ["packages/backend/package.json", "./packages/backend/"]
-COPY --link ["packages/misskey-js/package.json", "./packages/misskey-js/"]
-COPY --link ["packages/misskey-reversi/package.json", "./packages/misskey-reversi/"]
-COPY --link ["packages/misskey-bubble-game/package.json", "./packages/misskey-bubble-game/"]
-COPY --link ["packages/identicon-generator/package.json", "./packages/identicon-generator/"]
+# ----------------------------------------------------------
+# Build a image
+# ----------------------------------------------------------
 
-ARG NODE_ENV=production
+FROM --platform=$TARGETPLATFORM node:${IMAGE_TAG}-slim AS runner
 
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store,sharing=locked \
-	pnpm i --frozen-lockfile --aggregate-output
-
-FROM --platform=$TARGETPLATFORM node:${NODE_VERSION}-slim AS runner
-
-ARG UID="991"
-ARG GID="991"
-
-RUN apt-get update \
-	&& apt-get install -y --no-install-recommends \
-	ffmpeg tini curl libjemalloc-dev libjemalloc2 \
+RUN \
+	apt-get update \
+	&& apt-get install -y --no-install-recommends ffmpeg tini curl libjemalloc2 \
 	&& ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so \
-	&& corepack enable \
-	&& groupadd -g "${GID}" misskey \
-	&& useradd -l -u "${UID}" -g "${GID}" -m -d /misskey misskey \
-	&& find / -type d -path /sys -prune -o -type d -path /proc -prune -o -type f -perm /u+s -ignore_readdir_race -exec chmod u-s {} \; \
-	&& find / -type d -path /sys -prune -o -type d -path /proc -prune -o -type f -perm /g+s -ignore_readdir_race -exec chmod g-s {} \; \
 	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists
+	&& rm -rf /var/lib/apt/lists \
+	&& corepack enable
 
-USER misskey
+COPY --link --from=installer /misskey /misskey
+
 WORKDIR /misskey
-
-COPY --chown=misskey:misskey --from=target-builder /misskey/node_modules ./node_modules
-COPY --chown=misskey:misskey --from=target-builder /misskey/packages/backend/node_modules ./packages/backend/node_modules
-COPY --chown=misskey:misskey --from=target-builder /misskey/packages/misskey-js/node_modules ./packages/misskey-js/node_modules
-COPY --chown=misskey:misskey --from=target-builder /misskey/packages/misskey-reversi/node_modules ./packages/misskey-reversi/node_modules
-COPY --chown=misskey:misskey --from=target-builder /misskey/packages/misskey-bubble-game/node_modules ./packages/misskey-bubble-game/node_modules
-COPY --chown=misskey:misskey --from=native-builder /misskey/packages/identicon-generator/node_modules ./packages/identicon-generator/node_modules
-COPY --chown=misskey:misskey --from=native-builder /misskey/built ./built
-COPY --chown=misskey:misskey --from=native-builder /misskey/packages/misskey-js/built ./packages/misskey-js/built
-COPY --chown=misskey:misskey --from=native-builder /misskey/packages/misskey-reversi/built ./packages/misskey-reversi/built
-COPY --chown=misskey:misskey --from=native-builder /misskey/packages/misskey-bubble-game/built ./packages/misskey-bubble-game/built
-COPY --chown=misskey:misskey --from=native-builder /misskey/packages/identicon-generator/built ./packages/identicon-generator/built
-COPY --chown=misskey:misskey --from=native-builder /misskey/packages/backend/built ./packages/backend/built
-COPY --chown=misskey:misskey --from=native-builder /misskey/fluent-emojis /misskey/fluent-emojis
-COPY --chown=misskey:misskey . ./
 
 ENV LD_PRELOAD=/usr/local/lib/libjemalloc.so
 ENV NODE_ENV=production
+
 HEALTHCHECK --interval=5s --retries=20 CMD ["/bin/bash", "/misskey/healthcheck.sh"]
+
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["pnpm", "run", "migrateandstart"]
