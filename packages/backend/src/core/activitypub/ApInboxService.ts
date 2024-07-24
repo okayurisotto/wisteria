@@ -485,8 +485,6 @@ export class ApInboxService {
 			isDeleted: true,
 		});
 
-		this.globalEventService.publishInternalEvent('remoteUserUpdated', { id: actor.id });
-
 		return `ok: queued ${job.name} ${job.id}`;
 	}
 

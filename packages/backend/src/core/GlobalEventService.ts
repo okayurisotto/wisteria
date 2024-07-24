@@ -6,7 +6,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import * as Reversi from 'misskey-reversi';
-import type { MiChannel } from '@/models/Channel.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiNote } from '@/models/Note.js';
 import type { MiAntenna } from '@/models/Antenna.js';
@@ -17,8 +16,7 @@ import type { MiAbuseUserReport } from '@/models/AbuseUserReport.js';
 import type { MiSignin } from '@/models/Signin.js';
 import type { MiPage } from '@/models/Page.js';
 import type { MiWebhook } from '@/models/Webhook.js';
-import type { MiMeta } from '@/models/Meta.js';
-import { MiAvatarDecoration, MiReversiGame, MiRole, MiRoleAssignment } from '@/models/_.js';
+import { MiReversiGame, MiRole } from '@/models/_.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
@@ -207,33 +205,12 @@ type SerializedAll<T> = {
 };
 
 export interface InternalEventTypes {
-	userChangeSuspendedState: { id: MiUser['id']; isSuspended: MiUser['isSuspended']; };
-	userTokenRegenerated: { id: MiUser['id']; oldToken: string; newToken: string; };
-	remoteUserUpdated: { id: MiUser['id']; };
-	follow: { followerId: MiUser['id']; followeeId: MiUser['id']; };
-	unfollow: { followerId: MiUser['id']; followeeId: MiUser['id']; };
-	blockingCreated: { blockerId: MiUser['id']; blockeeId: MiUser['id']; };
-	blockingDeleted: { blockerId: MiUser['id']; blockeeId: MiUser['id']; };
-	policiesUpdated: MiRole['policies'];
-	roleCreated: MiRole;
-	roleDeleted: MiRole;
-	roleUpdated: MiRole;
-	userRoleAssigned: MiRoleAssignment;
-	userRoleUnassigned: MiRoleAssignment;
 	webhookCreated: MiWebhook;
 	webhookDeleted: MiWebhook;
 	webhookUpdated: MiWebhook;
 	antennaCreated: MiAntenna;
 	antennaDeleted: MiAntenna;
 	antennaUpdated: MiAntenna;
-	avatarDecorationCreated: MiAvatarDecoration;
-	avatarDecorationDeleted: MiAvatarDecoration;
-	avatarDecorationUpdated: MiAvatarDecoration;
-	metaUpdated: MiMeta;
-	followChannel: { userId: MiUser['id']; channelId: MiChannel['id']; };
-	unfollowChannel: { userId: MiUser['id']; channelId: MiChannel['id']; };
-	userListMemberAdded: { userListId: MiUserList['id']; memberId: MiUser['id']; };
-	userListMemberRemoved: { userListId: MiUserList['id']; memberId: MiUser['id']; };
 }
 
 // name/messages(spec) pairs dictionary

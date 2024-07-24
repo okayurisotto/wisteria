@@ -29,8 +29,6 @@ export class AvatarDecorationService {
 			...options,
 		}).then(x => this.avatarDecorationsRepository.findOneByOrFail(x.identifiers[0]));
 
-		this.globalEventService.publishInternalEvent('avatarDecorationCreated', created);
-
 		if (moderator) {
 			this.moderationLogService.log(moderator, 'createAvatarDecoration', {
 				avatarDecorationId: created.id,
@@ -52,7 +50,6 @@ export class AvatarDecorationService {
 		});
 
 		const updated = await this.avatarDecorationsRepository.findOneByOrFail({ id: avatarDecoration.id });
-		this.globalEventService.publishInternalEvent('avatarDecorationUpdated', updated);
 
 		if (moderator) {
 			this.moderationLogService.log(moderator, 'updateAvatarDecoration', {
@@ -68,7 +65,6 @@ export class AvatarDecorationService {
 		const avatarDecoration = await this.avatarDecorationsRepository.findOneByOrFail({ id });
 
 		await this.avatarDecorationsRepository.delete({ id: avatarDecoration.id });
-		this.globalEventService.publishInternalEvent('avatarDecorationDeleted', avatarDecoration);
 
 		if (moderator) {
 			this.moderationLogService.log(moderator, 'deleteAvatarDecoration', {

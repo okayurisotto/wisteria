@@ -69,11 +69,6 @@ export class UserBlockingBlockService implements OnModuleInit {
 
 		await this.blockingsRepository.insert(blocking);
 
-		this.globalEventService.publishInternalEvent('blockingCreated', {
-			blockerId: blocker.id,
-			blockeeId: blockee.id,
-		});
-
 		if (this.userEntityService.isLocalUser(blocker) && this.userEntityService.isRemoteUser(blockee)) {
 			const content = this.apRendererService.addContext(this.apRendererService.renderBlock(blocking));
 			await this.queueService.deliver(blocker, content, blockee.inbox, false);

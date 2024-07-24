@@ -95,8 +95,6 @@ export class MetaService {
 			});
 		}
 
-		this.globalEventService.publishInternalEvent('metaUpdated', updated);
-
 		return updated;
 	}
 }

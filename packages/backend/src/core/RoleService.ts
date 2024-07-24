@@ -190,8 +190,6 @@ export class RoleService implements OnModuleInit {
 			lastUsedAt: new Date(),
 		});
 
-		this.globalEventService.publishInternalEvent('userRoleAssigned', created);
-
 		if (role.isPublic) {
 			this.notificationCreateService.createNotification(userId, 'roleAssigned', {
 				roleId: roleId,
@@ -232,8 +230,6 @@ export class RoleService implements OnModuleInit {
 			lastUsedAt: now,
 		});
 
-		this.globalEventService.publishInternalEvent('userRoleUnassigned', existing);
-
 		if (moderator) {
 			const [user, role] = await Promise.all([
 				this.usersRepository.findOneByOrFail({ id: userId }),
@@ -272,8 +268,6 @@ export class RoleService implements OnModuleInit {
 			policies: values.policies,
 		}).then(x => this.rolesRepository.findOneByOrFail(x.identifiers[0]));
 
-		this.globalEventService.publishInternalEvent('roleCreated', created);
-
 		if (moderator) {
 			this.moderationLogService.log(moderator, 'createRole', {
 				roleId: created.id,
@@ -293,7 +287,6 @@ export class RoleService implements OnModuleInit {
 		});
 
 		const updated = await this.rolesRepository.findOneByOrFail({ id: role.id });
-		this.globalEventService.publishInternalEvent('roleUpdated', updated);
 
 		if (moderator) {
 			this.moderationLogService.log(moderator, 'updateRole', {
@@ -307,7 +300,6 @@ export class RoleService implements OnModuleInit {
 	@bindThis
 	public async delete(role: MiRole, moderator?: MiUser): Promise<void> {
 		await this.rolesRepository.delete({ id: role.id });
-		this.globalEventService.publishInternalEvent('roleDeleted', role);
 
 		if (moderator) {
 			this.moderationLogService.log(moderator, 'deleteRole', {

@@ -243,8 +243,6 @@ export class UserFollowingService {
 
 		if (alreadyFollowed) return;
 
-		this.globalEventService.publishInternalEvent('follow', { followerId: follower.id, followeeId: followee.id });
-
 		const [followeeUser, followerUser] = await Promise.all([
 			this.usersRepository.findOneByOrFail({ id: followee.id }),
 			this.usersRepository.findOneByOrFail({ id: follower.id }),
@@ -378,8 +376,6 @@ export class UserFollowingService {
 		follower: MiUser,
 		followee: MiUser,
 	): Promise<void> {
-		this.globalEventService.publishInternalEvent('unfollow', { followerId: follower.id, followeeId: followee.id });
-
 		// Neither followee nor follower has moved.
 		if (!follower.movedToUri && !followee.movedToUri) {
 			//#region Decrement following / followers counts

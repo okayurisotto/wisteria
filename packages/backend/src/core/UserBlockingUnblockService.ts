@@ -53,11 +53,6 @@ export class UserBlockingUnblockService {
 
 		await this.blockingsRepository.delete(blocking.id);
 
-		this.globalEventService.publishInternalEvent('blockingDeleted', {
-			blockerId: blocker.id,
-			blockeeId: blockee.id,
-		});
-
 		// deliver if remote blocking
 		if (
 			this.userEntityService.isLocalUser(blocker) &&

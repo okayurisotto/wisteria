@@ -27,11 +27,6 @@ export class ChannelFollowingService {
 			followerId: requestUser.id,
 			followeeId: targetChannel.id,
 		});
-
-		this.globalEventService.publishInternalEvent('followChannel', {
-			userId: requestUser.id,
-			channelId: targetChannel.id,
-		});
 	}
 
 	@bindThis
@@ -42,11 +37,6 @@ export class ChannelFollowingService {
 		await this.channelFollowingsRepository.delete({
 			followerId: requestUser.id,
 			followeeId: targetChannel.id,
-		});
-
-		this.globalEventService.publishInternalEvent('unfollowChannel', {
-			userId: requestUser.id,
-			channelId: targetChannel.id,
 		});
 	}
 }
