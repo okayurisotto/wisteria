@@ -10,7 +10,7 @@ import ms from 'ms';
 import { JSDOM } from 'jsdom';
 import { extractCustomEmojisFromMfm } from '@/misc/extract-custom-emojis-from-mfm.js';
 import { extractHashtags } from '@/misc/extract-hashtags.js';
-import * as Acct from '@/misc/acct.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
 import type { UsersRepository, DriveFilesRepository, UserProfilesRepository, PagesRepository } from '@/models/_.js';
 import type { MiLocalUser, MiUser } from '@/models/User.js';
 import { birthdaySchema, descriptionSchema, locationSchema, nameSchema } from '@/models/User.js';
@@ -401,10 +401,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				const newAlsoKnownAs = new Set<string>();
 				for (const line of ps.alsoKnownAs) {
 					if (!line) throw new ApiError(meta.errors.noSuchUser);
-					const { username, host } = Acct.parse(line);
+
+					const acct = AcctEntity.parse(line, this.config.host);
+					if (acct === null) throw new ApiError(meta.errors.noSuchUser);
 
 					// Retrieve the old account
-					const knownAs = await this.remoteUserResolveService.resolveUser(username, host).catch((e: unknown) => {
+					const knownAs = await this.remoteUserResolveService.resolveUser(acct.value).catch((e: unknown) => {
 						this.apiLoggerService.logger.warn(`failed to resolve dstination user: ${e}`);
 						throw new ApiError(meta.errors.noSuchUser);
 					});

@@ -20,7 +20,7 @@ import vary from 'vary';
 import type { Config } from '@/config.js';
 import { getNoteSummary } from '@/misc/get-note-summary.js';
 import { DI } from '@/di-symbols.js';
-import * as Acct from '@/misc/acct.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
 import { MetaService } from '@/core/MetaService.js';
 import type { DbQueue, DeliverQueue, EndedPollNotificationQueue, InboxQueue, ObjectStorageQueue, RelationshipQueue, SystemQueue, WebhookDeliverQueue } from '@/core/QueueModule.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
@@ -30,7 +30,6 @@ import { GalleryPostEntityService } from '@/core/entities/GalleryPostEntityServi
 import { ClipEntityService } from '@/core/entities/ClipEntityService.js';
 import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
 import type { ChannelsRepository, ClipsRepository, FlashsRepository, GalleryPostsRepository, MiMeta, NotesRepository, PagesRepository, ReversiGamesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
-import type Logger from '@/logger.js';
 import { handleRequestRedirectToOmitSearch } from '@/misc/fastify-hook-handlers.js';
 import { bindThis } from '@/decorators.js';
 import { FlashEntityService } from '@/core/entities/FlashEntityService.js';
@@ -45,8 +44,6 @@ import { envOption } from '@/env.js';
 
 @Injectable()
 export class ClientServerService {
-	private logger: Logger;
-
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
@@ -424,14 +421,17 @@ export class ClientServerService {
 		fastify.get<{ Querystring: { url: string; lang: string; } }>('/url', (request, reply) => this.urlPreviewService.handle(request, reply));
 
 		const getFeed = async (acct: string) => {
-			const { username, host } = Acct.parse(acct);
+			const acctEntity = AcctEntity.parse(acct, this.config.host);
+			if (acctEntity === null) return null;
+
 			const user = await this.usersRepository.findOneBy({
-				usernameLower: username.toLowerCase(),
-				host: host ?? IsNull(),
+				usernameLower: acctEntity.username.toLowerCase(),
+				host: acctEntity.host ?? IsNull(),
 				isSuspended: false,
 			});
+			if (user === null) return null;
 
-			return user && await this.feedService.packFeed(user);
+			return await this.feedService.packFeed(user);
 		};
 
 		// Atom
@@ -476,12 +476,15 @@ export class ClientServerService {
 		//#region SSR (for crawlers)
 		// User
 		fastify.get<{ Params: { user: string; sub?: string; } }>('/@:user/:sub?', async (request, reply) => {
-			const { username, host } = Acct.parse(request.params.user);
-			const user = await this.usersRepository.findOneBy({
-				usernameLower: username.toLowerCase(),
-				host: host ?? IsNull(),
-				isSuspended: false,
-			});
+			const acct = AcctEntity.parse(request.params.user, this.config.host);
+
+			const user = acct !== null
+				? await this.usersRepository.findOneByOrFail({
+						usernameLower: acct.username.toLowerCase(),
+						host: acct.host ?? IsNull(),
+						isSuspended: false,
+					})
+				: null;
 
 			vary(reply.raw, 'Accept');
 
@@ -562,13 +565,15 @@ export class ClientServerService {
 
 		// Page
 		fastify.get<{ Params: { user: string; page: string; } }>('/@:user/pages/:page', async (request, reply) => {
-			const { username, host } = Acct.parse(request.params.user);
+			const acct = AcctEntity.parse(request.params.user, this.config.host);
+			if (acct === null) return;
+
 			const user = await this.usersRepository.findOneBy({
-				usernameLower: username.toLowerCase(),
-				host: host ?? IsNull(),
+				usernameLower: acct.username.toLowerCase(),
+				host: acct.host ?? IsNull(),
 			});
 
-			if (user == null) return;
+			if (user === null) return;
 
 			const page = await this.pagesRepository.findOneBy({
 				name: request.params.page,

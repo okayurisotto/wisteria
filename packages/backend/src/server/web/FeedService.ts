@@ -14,6 +14,7 @@ import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
 
 @Injectable()
 export class FeedService {
@@ -57,7 +58,7 @@ export class FeedService {
 
 		const feed = new Feed({
 			id: author.link,
-			title: `${author.name} (@${user.username}@${this.config.host})`,
+			title: `${author.name} (${AcctEntity.from(user.username, user.host, this.config.host).toLongString()})`,
 			updated: notes.length !== 0 ? this.idService.parse(notes[0].id).date : undefined,
 			generator: 'Wisteria',
 			description: `${user.notesCount} Notes, ${profile.followingVisibility === 'public' ? user.followingCount : '?'} Following, ${profile.followersVisibility === 'public' ? user.followersCount : '?'} Followers${profile.description ? ` · ${profile.description}` : ''}`,

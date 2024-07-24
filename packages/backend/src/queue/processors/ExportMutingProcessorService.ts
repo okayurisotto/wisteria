@@ -12,24 +12,27 @@ import type { MutingsRepository, UsersRepository, MiMuting } from '@/models/_.js
 import type Logger from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import { createTemp } from '@/misc/create-temp.js';
-import { UtilityService } from '@/core/UtilityService.js';
 import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbJobDataWithUser } from '../types.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
+import type { Config } from '@/config.js';
 
 @Injectable()
 export class ExportMutingProcessorService {
 	private logger: Logger;
 
 	constructor(
+		@Inject(DI.config)
+		private config: Config,
+
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
 		@Inject(DI.mutingsRepository)
 		private mutingsRepository: MutingsRepository,
 
-		private utilityService: UtilityService,
 		private driveService: DriveService,
 		private queueLoggerService: QueueLoggerService,
 	) {
@@ -82,7 +85,7 @@ export class ExportMutingProcessorService {
 						exportedCount++; continue;
 					}
 
-					const content = this.utilityService.getFullApAccount(u.username, u.host);
+					const content = AcctEntity.from(u.username, u.host, this.config.host).toLongStringLegacy();
 					await new Promise<void>((res, rej) => {
 						stream.write(content + '\n', err => {
 							if (err) {

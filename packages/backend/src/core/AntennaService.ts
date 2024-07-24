@@ -9,15 +9,15 @@ import type { MiAntenna } from '@/models/Antenna.js';
 import type { MiNote } from '@/models/Note.js';
 import type { MiUser } from '@/models/User.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
-import * as Acct from '@/misc/acct.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { DI } from '@/di-symbols.js';
 import type { AntennasRepository, UserListMembershipsRepository } from '@/models/_.js';
-import { UtilityService } from '@/core/UtilityService.js';
 import { bindThis } from '@/decorators.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import type { OnApplicationShutdown } from '@nestjs/common';
+import type { Config } from '@/config.js';
 
 @Injectable()
 export class AntennaService implements OnApplicationShutdown {
@@ -25,6 +25,9 @@ export class AntennaService implements OnApplicationShutdown {
 	private antennas: MiAntenna[];
 
 	constructor(
+		@Inject(DI.config)
+		private config: Config,
+
 		@Inject(DI.redisForTimelines)
 		private redisForTimelines: Redis.Redis,
 
@@ -37,7 +40,6 @@ export class AntennaService implements OnApplicationShutdown {
 		@Inject(DI.userListMembershipsRepository)
 		private userListMembershipsRepository: UserListMembershipsRepository,
 
-		private utilityService: UtilityService,
 		private globalEventService: GlobalEventService,
 		private fanoutTimelineService: FanoutTimelineService,
 	) {
@@ -118,6 +120,12 @@ export class AntennaService implements OnApplicationShutdown {
 
 		if (!antenna.withReplies && note.replyId != null) return false;
 
+		const noteUserAcct = AcctEntity.from(noteUser.username, noteUser.host, this.config.host);
+		const antennaUserAccts = antenna.users
+			.map((x) => AcctEntity.parse(x, this.config.host))
+			.filter((x) => x !== null)
+			.map((x) => x);
+
 		if (antenna.src === 'home') {
 			// TODO
 		} else if (antenna.src === 'list') {
@@ -127,17 +135,9 @@ export class AntennaService implements OnApplicationShutdown {
 
 			if (!listUsers.includes(note.userId)) return false;
 		} else if (antenna.src === 'users') {
-			const accts = antenna.users.map(x => {
-				const { username, host } = Acct.parse(x);
-				return this.utilityService.getFullApAccount(username, host).toLowerCase();
-			});
-			if (!accts.includes(this.utilityService.getFullApAccount(noteUser.username, noteUser.host).toLowerCase())) return false;
+			if (!(antennaUserAccts.some((acct) => acct.is(noteUserAcct)))) return false;
 		} else if (antenna.src === 'users_blacklist') {
-			const accts = antenna.users.map(x => {
-				const { username, host } = Acct.parse(x);
-				return this.utilityService.getFullApAccount(username, host).toLowerCase();
-			});
-			if (accts.includes(this.utilityService.getFullApAccount(noteUser.username, noteUser.host).toLowerCase())) return false;
+			if (antennaUserAccts.some((acct) => acct.is(noteUserAcct))) return false;
 		}
 
 		const keywords = antenna.keywords

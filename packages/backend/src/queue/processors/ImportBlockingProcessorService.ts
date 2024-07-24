@@ -8,21 +8,24 @@ import { IsNull } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { UsersRepository, DriveFilesRepository } from '@/models/_.js';
 import type Logger from '@/logger.js';
-import * as Acct from '@/misc/acct.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
 import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { DownloadService } from '@/core/DownloadService.js';
-import { UtilityService } from '@/core/UtilityService.js';
 import { bindThis } from '@/decorators.js';
 import { QueueService } from '@/core/QueueService.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbUserImportJobData, DbUserImportToDbJobData } from '../types.js';
+import type { Config } from '@/config.js';
 
 @Injectable()
 export class ImportBlockingProcessorService {
 	private logger: Logger;
 
 	constructor(
+		@Inject(DI.config)
+		private config: Config,
+
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
@@ -30,7 +33,6 @@ export class ImportBlockingProcessorService {
 		private driveFilesRepository: DriveFilesRepository,
 
 		private queueService: QueueService,
-		private utilityService: UtilityService,
 		private remoteUserResolveService: RemoteUserResolveService,
 		private downloadService: DownloadService,
 		private queueLoggerService: QueueLoggerService,
@@ -68,26 +70,23 @@ export class ImportBlockingProcessorService {
 
 		try {
 			const acct = line.split(',')[0].trim();
-			const { username, host } = Acct.parse(acct);
+			const acctEntity = AcctEntity.parse(acct, this.config.host);
 
-			if (!host) return;
+			// host部分が省略されている：危ない
+			if (acctEntity.omitted) return;
 
-			let target = this.utilityService.isSelfHost(host) ? await this.usersRepository.findOneBy({
-				host: IsNull(),
-				usernameLower: username.toLowerCase(),
-			}) : await this.usersRepository.findOneBy({
-				host: this.utilityService.toPuny(host),
-				usernameLower: username.toLowerCase(),
+			let target = await this.usersRepository.findOneBy({
+				host: acctEntity.host ?? IsNull(),
+				usernameLower: acctEntity.username.toLowerCase(),
 			});
 
-			if (host == null && target == null) return;
-
-			if (target == null) {
-				target = await this.remoteUserResolveService.resolveUser(username, host);
+			// リモート && データベースにない：解決
+			if (acctEntity.host === null && target == null) {
+				target = await this.remoteUserResolveService.resolveUser(acctEntity);
 			}
 
-			if (target == null) {
-				throw new Error(`Unable to resolve user: @${username}@${host}`);
+			if (target === null) {
+				throw new Error(`Unable to resolve user: ${acctEntity.toLongString()}`);
 			}
 
 			// skip myself

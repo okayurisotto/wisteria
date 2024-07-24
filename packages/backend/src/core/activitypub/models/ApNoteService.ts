@@ -37,6 +37,7 @@ import { ApQuestionService } from './ApQuestionService.js';
 import { ApImageService } from './ApImageService.js';
 import type { Resolver } from '../ApResolverService.js';
 import type { IObject, IPost } from '../type.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
 
 @Injectable()
 export class ApNoteService {
@@ -248,10 +249,12 @@ export class ApNoteService {
 			const poll = await this.pollsRepository.findOneByOrFail({ noteId: reply.id });
 
 			const tryCreateVote = async (name: string, index: number): Promise<null> => {
+				const actorAcct = AcctEntity.from(actor.username, actor.host, this.config.host);
+
 				if (poll.expiresAt && Date.now() > new Date(poll.expiresAt).getTime()) {
-					this.logger.warn(`vote to expired poll from AP: actor=${actor.username}@${actor.host}, note=${note.id}, choice=${name}`);
+					this.logger.warn(`vote to expired poll from AP: actor=${actorAcct.toLongString()}, note=${note.id}, choice=${name}`);
 				} else if (index >= 0) {
-					this.logger.info(`vote from AP: actor=${actor.username}@${actor.host}, note=${note.id}, choice=${name}`);
+					this.logger.info(`vote from AP: actor=${actorAcct.toLongString()}, note=${note.id}, choice=${name}`);
 					await this.pollService.vote(actor, reply, index);
 
 					// リモートフォロワーにUpdate配信

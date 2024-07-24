@@ -16,13 +16,7 @@ export class UtilityService {
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
-	) {
-	}
-
-	@bindThis
-	public getFullApAccount(username: string, host: string | null): string {
-		return host ? `${username}@${this.toPuny(host)}` : `${username}@${this.toPuny(this.config.host)}`;
-	}
+	) {}
 
 	@bindThis
 	public isSelfHost(host: string | null): boolean {

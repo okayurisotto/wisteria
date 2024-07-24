@@ -13,16 +13,20 @@ import Logger from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import { bindThis } from '@/decorators.js';
 import { createTemp } from '@/misc/create-temp.js';
-import { UtilityService } from '@/core/UtilityService.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type { DBExportAntennasData } from '../types.js';
 import type * as Bull from 'bullmq';
+import { AcctEntity } from '@/misc/AcctEntity.js';
+import type { Config } from '@/config.js';
 
 @Injectable()
 export class ExportAntennasProcessorService {
 	private logger: Logger;
 
 	constructor (
+		@Inject(DI.config)
+		private config: Config,
+
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
@@ -33,7 +37,6 @@ export class ExportAntennasProcessorService {
 		private userListMembershipsRepository: UserListMembershipsRepository,
 
 		private driveService: DriveService,
-		private utilityService: UtilityService,
 		private queueLoggerService: QueueLoggerService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('export-antennas');
@@ -76,9 +79,9 @@ export class ExportAntennasProcessorService {
 					keywords: antenna.keywords,
 					excludeKeywords: antenna.excludeKeywords,
 					users: antenna.users,
-					userListAccts: typeof users !== 'undefined' ? users.map((u) => {
-						return this.utilityService.getFullApAccount(u.username, u.host); // acct
-					}) : null,
+					userListAccts: typeof users !== 'undefined'
+						? users.map((user) => AcctEntity.from(user.username, user.host, this.config.host).toLongStringLegacy())
+						: null,
 					caseSensitive: antenna.caseSensitive,
 					localOnly: antenna.localOnly,
 					withReplies: antenna.withReplies,
@@ -100,4 +103,3 @@ export class ExportAntennasProcessorService {
 		}
 	}
 }
-

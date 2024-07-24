@@ -12,12 +12,12 @@ import type { UsersRepository } from '@/models/_.js';
 import type { MiLocalUser, MiRemoteUser } from '@/models/User.js';
 import type { Config } from '@/config.js';
 import type Logger from '@/logger.js';
-import { UtilityService } from '@/core/UtilityService.js';
 import { ILink, WebfingerService } from '@/core/WebfingerService.js';
 import { RemoteLoggerService } from '@/core/RemoteLoggerService.js';
 import { ApDbResolverService } from '@/core/activitypub/ApDbResolverService.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
 import { bindThis } from '@/decorators.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
 
 @Injectable()
 export class RemoteUserResolveService {
@@ -30,7 +30,6 @@ export class RemoteUserResolveService {
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
-		private utilityService: UtilityService,
 		private webfingerService: WebfingerService,
 		private remoteLoggerService: RemoteLoggerService,
 		private apDbResolverService: ApDbResolverService,
@@ -39,11 +38,10 @@ export class RemoteUserResolveService {
 		this.logger = this.remoteLoggerService.logger.createSubLogger('resolve-user');
 	}
 
-	@bindThis
-	public async resolveUser(username: string, host: string | null): Promise<MiLocalUser | MiRemoteUser> {
-		const usernameLower = username.toLowerCase();
+	public async resolveUser(acct: AcctEntity): Promise<MiLocalUser | MiRemoteUser> {
+		const usernameLower = acct.username.toLowerCase();
 
-		if (host == null) {
+		if (acct.host === null) {
 			this.logger.info(`return local user: ${usernameLower}`);
 			return await this.usersRepository.findOneBy({ usernameLower, host: IsNull() }).then(u => {
 				if (u == null) {
@@ -54,22 +52,12 @@ export class RemoteUserResolveService {
 			}) as MiLocalUser;
 		}
 
-		host = this.utilityService.toPuny(host);
+		const user = await this.usersRepository.findOneBy({
+			usernameLower,
+			host: acct.host,
+		}) as MiRemoteUser | null;
 
-		if (this.config.host === host) {
-			this.logger.info(`return local user: ${usernameLower}`);
-			return await this.usersRepository.findOneBy({ usernameLower, host: IsNull() }).then(u => {
-				if (u == null) {
-					throw new Error('user not found');
-				} else {
-					return u;
-				}
-			}) as MiLocalUser;
-		}
-
-		const user = await this.usersRepository.findOneBy({ usernameLower, host }) as MiRemoteUser | null;
-
-		const acctLower = `${usernameLower}@${host}`;
+		const acctLower = acct.toLongStringLegacy().toLowerCase();
 
 		if (user == null) {
 			const self = await this.resolveSelf(acctLower);
@@ -107,17 +95,17 @@ export class RemoteUserResolveService {
 			if (user.uri !== self.href) {
 				// if uri mismatch, Fix (user@host <=> AP's Person id(RemoteUser.uri)) mapping.
 				this.logger.info(`uri missmatch: ${acctLower}`);
-				this.logger.info(`recovery missmatch uri for (username=${username}, host=${host}) from ${user.uri} to ${self.href}`);
+				this.logger.info(`recovery missmatch uri for ${acct.toLongString()} from ${user.uri} to ${self.href}`);
 
 				// validate uri
 				const uri = new URL(self.href);
-				if (uri.hostname !== host) {
+				if (uri.hostname !== acct.host) {
 					throw new Error('Invalid uri');
 				}
 
 				await this.usersRepository.update({
 					usernameLower,
-					host: host,
+					host: acct.host,
 				}, {
 					uri: self.href,
 				});

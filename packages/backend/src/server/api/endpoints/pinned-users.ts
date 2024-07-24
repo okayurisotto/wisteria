@@ -6,12 +6,13 @@
 import { IsNull } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository } from '@/models/_.js';
-import * as Acct from '@/misc/acct.js';
-import type { MiUser } from '@/models/User.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { MetaService } from '@/core/MetaService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DI } from '@/di-symbols.js';
+import type { Config } from '@/config.js';
+import { ApiError } from '../error.js';
 
 export const meta = {
 	tags: ['users'],
@@ -38,6 +39,9 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
+		@Inject(DI.config)
+		private config: Config,
+
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
@@ -47,10 +51,17 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		super(meta, paramDef, async (ps, me) => {
 			const meta = await this.metaService.fetch();
 
-			const users = await Promise.all(meta.pinnedUsers.map(acct => Acct.parse(acct)).map(acct => this.usersRepository.findOneBy({
-				usernameLower: acct.username.toLowerCase(),
-				host: acct.host ?? IsNull(),
-			})));
+			const accts = meta.pinnedUsers.map(acct => AcctEntity.parse(acct, this.config.host));
+			if (accts.some((acct) => acct === null)) throw new ApiError();
+
+			const users = await Promise.all(
+				accts
+					.filter((acct) => acct !== null)
+					.map(acct => this.usersRepository.findOneBy({
+						usernameLower: acct.username.toLowerCase(),
+						host: acct.host ?? IsNull(),
+					}))
+			);
 
 			return await this.userEntityService.packMany(users.filter(x => x !== null), me, { schema: 'UserDetailed' });
 		});

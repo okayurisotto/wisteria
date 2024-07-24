@@ -16,6 +16,8 @@ import { RoleUserService } from '@/core/RoleUserService.js';
 import { ApiError } from '../../error.js';
 import { ApiLoggerService } from '../../ApiLoggerService.js';
 import type { FindOptionsWhere } from 'typeorm';
+import type { Config } from '@/config.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
 
 export const meta = {
 	tags: ['users'],
@@ -82,6 +84,9 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
+		@Inject(DI.config)
+		private config: Config,
+
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
@@ -121,7 +126,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			} else {
 				// Lookup user
 				if (typeof ps.host === 'string' && typeof ps.username === 'string') {
-					user = await this.remoteUserResolveService.resolveUser(ps.username, ps.host).catch((err: unknown) => {
+					const acct = AcctEntity.from(ps.username, ps.host, this.config.host);
+
+					user = await this.remoteUserResolveService.resolveUser(acct).catch((err: unknown) => {
 						this.apiLoggerService.logger.warn(`failed to resolve remote user: ${err}`);
 						throw new ApiError(meta.errors.failedToResolveRemoteUser);
 					});

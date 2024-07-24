@@ -12,7 +12,7 @@ import type { UsersRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
 import { escapeAttribute, escapeValue } from '@/misc/prelude/xml.js';
 import type { MiUser } from '@/models/User.js';
-import * as Acct from '@/misc/acct.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
 import { NodeinfoServerService } from './NodeinfoServerService.js';
@@ -64,8 +64,8 @@ export class WellKnownServerService {
 		};
 	};
 
-	private generateQueryFromAcct(acct: Acct.Acct): FindOptionsWhere<MiUser> | null  {
-		if (acct.host === null || acct.host === '' || acct.host === this.config.host.toLowerCase()) {
+	private generateQueryFromAcct(acct: AcctEntity): FindOptionsWhere<MiUser> | null  {
+		if (acct.host === null) {
 			const query: FindOptionsWhere<MiUser> = {
 				usernameLower: acct.username,
 				host: IsNull(),
@@ -83,15 +83,20 @@ export class WellKnownServerService {
 		}
 
 		if (resource.startsWith(`${this.config.url.toLowerCase()}/@`)) {
-			return this.generateQueryFromAcct(Acct.parse(resource.split('/').pop()!));
+			const acct = AcctEntity.parse(resource.split('/').pop()!, this.config.host);
+			if (acct !== null) return this.generateQueryFromAcct(acct);
 		}
 
 		if (resource.startsWith('acct:')) {
 			const trimmed = resource.slice('acct:'.length);
-			return this.generateQueryFromAcct(Acct.parse(trimmed));
+			const acct = AcctEntity.parse(trimmed, this.config.host);
+			if (acct !== null) return this.generateQueryFromAcct(acct);
 		}
 
-		return this.generateQueryFromAcct(Acct.parse(resource));
+		const acct = AcctEntity.parse(resource, this.config.host);
+		if (acct !== null) return this.generateQueryFromAcct(acct);
+
+		return null;
 	};
 
 	@bindThis
@@ -166,7 +171,7 @@ export class WellKnownServerService {
 				return;
 			}
 
-			const subject = `acct:${user.username}@${this.config.host}`;
+			const subject = AcctEntity.from(user.username, user.host, this.config.host).toAcctURI();
 			const self = {
 				rel: 'self',
 				type: 'application/activity+json',

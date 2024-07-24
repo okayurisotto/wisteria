@@ -16,7 +16,7 @@ import type { Config } from '@/config.js';
 import type { EmojisRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import type Logger from '@/logger.js';
-import * as Acct from '@/misc/acct.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import { bindThis } from '@/decorators.js';
@@ -159,11 +159,11 @@ export class ServerService implements OnApplicationShutdown {
 		});
 
 		fastify.get<{ Params: { acct: string } }>('/avatar/@:acct', async (request, reply) => {
-			const { username, host } = Acct.parse(request.params.acct);
+			const acct = AcctEntity.parse(request.params.acct, this.config.host);
 			const user = await this.usersRepository.findOne({
 				where: {
-					usernameLower: username.toLowerCase(),
-					host: (host == null) || (host === this.config.host) ? IsNull() : host,
+					usernameLower: acct.username.toLowerCase(),
+					host: acct.host ?? IsNull(),
 					isSuspended: false,
 				},
 			});

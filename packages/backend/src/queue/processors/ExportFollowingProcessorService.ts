@@ -13,17 +13,21 @@ import type Logger from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import { createTemp } from '@/misc/create-temp.js';
 import type { MiFollowing } from '@/models/Following.js';
-import { UtilityService } from '@/core/UtilityService.js';
 import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbExportFollowingData } from '../types.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
+import type { Config } from '@/config.js';
 
 @Injectable()
 export class ExportFollowingProcessorService {
 	private logger: Logger;
 
 	constructor(
+		@Inject(DI.config)
+		private config: Config,
+
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
@@ -33,7 +37,6 @@ export class ExportFollowingProcessorService {
 		@Inject(DI.mutingsRepository)
 		private mutingsRepository: MutingsRepository,
 
-		private utilityService: UtilityService,
 		private driveService: DriveService,
 		private queueLoggerService: QueueLoggerService,
 	) {
@@ -92,7 +95,7 @@ export class ExportFollowingProcessorService {
 						continue;
 					}
 
-					const content = this.utilityService.getFullApAccount(u.username, u.host);
+					const content = AcctEntity.from(u.username, u.host, this.config.host).toLongStringLegacy();
 					await new Promise<void>((res, rej) => {
 						stream.write(content + '\n', err => {
 							if (err) {

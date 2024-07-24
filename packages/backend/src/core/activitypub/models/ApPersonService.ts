@@ -46,6 +46,7 @@ import type { ApResolverService, Resolver } from '../ApResolverService.js';
 import { ApLoggerService } from '../ApLoggerService.js';
 import { ApImageService } from './ApImageService.js';
 import type { IActor, IObject } from '../type.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
 
 const nameLength = 128;
 const summaryLength = 2048;
@@ -519,14 +520,15 @@ export class ApPersonService implements OnModuleInit {
 			// （Mastodonのクールダウン期間は30日だが若干緩めに設定しておく）
 			exist.movedAt.getTime() + 1000 * 60 * 60 * 24 * 14 < updated.movedAt.getTime()
 		)) {
-			this.logger.info(`Start to process Move of @${updated.username}@${updated.host} (${uri})`);
+			const acct = AcctEntity.from(updated.username, updated.host, this.config.host);
+			this.logger.info(`Start to process Move of ${acct.toLongString()} (${uri})`);
 			return this.processRemoteMove(updated, movePreventUris)
 				.then(result => {
-					this.logger.info(`Processing Move Finished [${result}] @${updated.username}@${updated.host} (${uri})`);
+					this.logger.info(`Processing Move Finished [${result}] ${acct.toLongString()} (${uri})`);
 					return result;
 				})
 				.catch((e: unknown) => {
-					this.logger.info(`Processing Move Failed @${updated.username}@${updated.host} (${uri})`, { stack: e });
+					this.logger.info(`Processing Move Failed ${acct.toLongString()} (${uri})`, { stack: e });
 				});
 		}
 

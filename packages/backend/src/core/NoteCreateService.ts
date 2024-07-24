@@ -794,17 +794,21 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 	@bindThis
 	private async extractMentionedUsers(user: { host: MiUser['host']; }, tokens: mfm.MfmNode[]): Promise<MiUser[]> {
-		if (tokens == null) return [];
+		const mentions = extractMentions(tokens, user.host ?? this.config.host);
 
-		const mentions = extractMentions(tokens);
-		let mentionedUsers = (await Promise.all(mentions.map(m =>
-			this.remoteUserResolveService.resolveUser(m.username, m.host ?? user.host).catch(() => null),
-		))).filter(x => x != null) as MiUser[];
-
-		// Drop duplicate users
-		mentionedUsers = mentionedUsers.filter((u, i, self) =>
-			i === self.findIndex(u2 => u.id === u2.id),
-		);
+		const mentionedUsers = (
+			await Promise.all(
+				mentions.map(async (m) => {
+					try {
+						return await this.remoteUserResolveService.resolveUser(m);
+					} catch {
+						return null;
+					}
+				})
+			)
+		)
+			.filter(x => x !== null)
+			.filter((u, i, self) => i === self.findIndex(u2 => u.id === u2.id));
 
 		return mentionedUsers;
 	}

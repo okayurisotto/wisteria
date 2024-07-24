@@ -12,17 +12,21 @@ import type { UserListMembershipsRepository, UserListsRepository, UsersRepositor
 import type Logger from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import { createTemp } from '@/misc/create-temp.js';
-import { UtilityService } from '@/core/UtilityService.js';
 import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbJobDataWithUser } from '../types.js';
+import { AcctEntity } from '@/misc/AcctEntity.js';
+import type { Config } from '@/config.js';
 
 @Injectable()
 export class ExportUserListsProcessorService {
 	private logger: Logger;
 
 	constructor(
+		@Inject(DI.config)
+		private config: Config,
+
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
@@ -32,7 +36,6 @@ export class ExportUserListsProcessorService {
 		@Inject(DI.userListMembershipsRepository)
 		private userListMembershipsRepository: UserListMembershipsRepository,
 
-		private utilityService: UtilityService,
 		private driveService: DriveService,
 		private queueLoggerService: QueueLoggerService,
 	) {
@@ -67,7 +70,7 @@ export class ExportUserListsProcessorService {
 				});
 
 				for (const u of users) {
-					const acct = this.utilityService.getFullApAccount(u.username, u.host);
+					const acct = AcctEntity.from(u.username, u.host, this.config.host).toLongStringLegacy();
 					const content = `${list.name},${acct}`;
 					await new Promise<void>((res, rej) => {
 						stream.write(content + '\n', err => {
