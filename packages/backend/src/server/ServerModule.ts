@@ -45,6 +45,7 @@ import { UserListChannelService } from './api/stream/channels/user-list.js';
 import { RoleTimelineChannelService } from './api/stream/channels/role-timeline.js';
 import { ReversiChannelService } from './api/stream/channels/reversi.js';
 import { ReversiGameChannelService } from './api/stream/channels/reversi-game.js';
+import { ActivityPubInboxServerService } from './ActivityPubInboxServerService.js';
 
 @Module({
 	imports: [
@@ -90,6 +91,7 @@ import { ReversiGameChannelService } from './api/stream/channels/reversi-game.js
 		UserListChannelService,
 		OpenApiServerService,
 		OAuth2ProviderService,
+		ActivityPubInboxServerService,
 	],
 	exports: [
 		ServerService,

@@ -3,21 +3,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as crypto from 'node:crypto';
 import { IncomingMessage } from 'node:http';
 import { Inject, Injectable } from '@nestjs/common';
 import fastifyAccepts from '@fastify/accepts';
-import httpSignature from '@peertube/http-signature';
 import { Brackets, In, IsNull, LessThan, Not } from 'typeorm';
 import accepts from 'accepts';
 import vary from 'vary';
-import secureJson from 'secure-json-parse';
 import { DI } from '@/di-symbols.js';
 import type { FollowingsRepository, NotesRepository, EmojisRepository, NoteReactionsRepository, UserProfilesRepository, UserNotePiningsRepository, UsersRepository, FollowRequestsRepository } from '@/models/_.js';
 import * as url from '@/misc/prelude/url.js';
 import type { Config } from '@/config.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
-import { QueueService } from '@/core/QueueService.js';
 import type { MiLocalUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import { UserKeypairService } from '@/core/UserKeypairService.js';
 import type { MiFollowing } from '@/models/Following.js';
@@ -27,9 +23,8 @@ import { QueryService } from '@/core/QueryService.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
-import { IActivity } from '@/core/activitypub/type.js';
 import { isPureRenote } from '@/misc/is-pure-renote.js';
-import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginOptions, FastifyBodyParser } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginOptions } from 'fastify';
 import type { FindOptionsWhere } from 'typeorm';
 
 const ACTIVITY_JSON = 'application/activity+json; charset=utf-8';
@@ -68,14 +63,10 @@ export class ActivityPubServerService {
 		private utilityService: UtilityService,
 		private userEntityService: UserEntityService,
 		private apRendererService: ApRendererService,
-		private queueService: QueueService,
 		private userKeypairService: UserKeypairService,
 		private queryService: QueryService,
-	) {
-		//this.createServer = this.createServer.bind(this);
-	}
+	) {}
 
-	@bindThis
 	private setResponseType(request: FastifyRequest, reply: FastifyReply): void {
 		const accept = request.accepts().type([ACTIVITY_JSON, LD_JSON]);
 		if (accept === LD_JSON) {
@@ -89,7 +80,6 @@ export class ActivityPubServerService {
 	 * Pack Create<Note> or Announce Activity
 	 * @param note Note
 	 */
-	@bindThis
 	private async packActivity(note: MiNote): Promise<any> {
 		if (isPureRenote(note)) {
 			const renote = await this.notesRepository.findOneByOrFail({ id: note.renoteId });
@@ -99,75 +89,6 @@ export class ActivityPubServerService {
 		return this.apRendererService.renderCreate(await this.apRendererService.renderNote(note, false), note);
 	}
 
-	@bindThis
-	private inbox(request: FastifyRequest, reply: FastifyReply) {
-		let signature;
-
-		try {
-			signature = httpSignature.parseRequest(request.raw, { 'headers': [] });
-		} catch (e) {
-			reply.code(401);
-			return;
-		}
-
-		if (!signature.params.headers.includes('host')
-			|| request.headers.host !== this.config.host) {
-			// Host not specified or not match.
-			reply.code(401);
-			return;
-		}
-
-		if (!signature.params.headers.includes('digest')) {
-			// Digest not found.
-			reply.code(401);
-		} else {
-			const digest = request.headers.digest;
-
-			if (typeof digest !== 'string') {
-				// Huh?
-				reply.code(401);
-				return;
-			}
-
-			const re = /^([a-zA-Z0-9-]+)=(.+)$/;
-			const match = digest.match(re);
-
-			if (match == null) {
-				// Invalid digest
-				reply.code(401);
-				return;
-			}
-
-			const algo = match[1].toUpperCase();
-			const digestValue = match[2];
-
-			if (algo !== 'SHA-256') {
-				// Unsupported digest algorithm
-				reply.code(401);
-				return;
-			}
-
-			if (request.rawBody == null) {
-				// Bad request
-				reply.code(400);
-				return;
-			}
-
-			const hash = crypto.createHash('sha256').update(request.rawBody).digest('base64');
-
-			if (hash !== digestValue) {
-				// Invalid digest
-				reply.code(401);
-				return;
-			}
-		}
-
-		this.queueService.inbox(request.body as IActivity, signature);
-
-		reply.code(202);
-	}
-
-	@bindThis
 	private async followers(
 		request: FastifyRequest<{ Params: { user: string; }; Querystring: { cursor?: string; page?: string; }; }>,
 		reply: FastifyReply,
@@ -259,7 +180,6 @@ export class ActivityPubServerService {
 		}
 	}
 
-	@bindThis
 	private async following(
 		request: FastifyRequest<{ Params: { user: string; }; Querystring: { cursor?: string; page?: string; }; }>,
 		reply: FastifyReply,
@@ -351,7 +271,6 @@ export class ActivityPubServerService {
 		}
 	}
 
-	@bindThis
 	private async featured(request: FastifyRequest<{ Params: { user: string; }; }>, reply: FastifyReply) {
 		const userId = request.params.user;
 
@@ -389,7 +308,6 @@ export class ActivityPubServerService {
 		return (this.apRendererService.addContext(rendered));
 	}
 
-	@bindThis
 	private async outbox(
 		request: FastifyRequest<{
 			Params: { user: string; };
@@ -479,7 +397,6 @@ export class ActivityPubServerService {
 		}
 	}
 
-	@bindThis
 	private async userInfo(request: FastifyRequest, reply: FastifyReply, user: MiUser | null) {
 		if (user == null) {
 			reply.code(404);
@@ -496,12 +413,12 @@ export class ActivityPubServerService {
 		fastify.addConstraintStrategy({
 			name: 'apOrHtml',
 			storage() {
-				const store = {} as any;
+				const store: Record<string, any> = {};
 				return {
-					get(key: string) {
+					get(key: string): any {
 						return store[key] ?? null;
 					},
-					set(key: string, value: any) {
+					set(key: string, value: any): void {
 						store[key] = value;
 					},
 				};
@@ -513,28 +430,7 @@ export class ActivityPubServerService {
 			},
 		});
 
-		const almostDefaultJsonParser: FastifyBodyParser<Buffer> = function (request, rawBody, done) {
-			if (rawBody.length === 0) {
-				const err = new Error('Body cannot be empty!') as any;
-				err.statusCode = 400;
-				return done(err);
-			}
-
-			try {
-				const json = secureJson.parse(rawBody.toString('utf8'), null, {
-					protoAction: 'ignore',
-					constructorAction: 'ignore',
-				});
-				done(null, json);
-			} catch (err: any) {
-				err.statusCode = 400;
-				return done(err);
-			}
-		};
-
 		fastify.register(fastifyAccepts);
-		fastify.addContentTypeParser('application/activity+json', { parseAs: 'buffer' }, almostDefaultJsonParser);
-		fastify.addContentTypeParser('application/ld+json', { parseAs: 'buffer' }, almostDefaultJsonParser);
 
 		fastify.addHook('onRequest', (request, reply, done) => {
 			reply.header('Access-Control-Allow-Headers', 'Accept');
@@ -543,11 +439,6 @@ export class ActivityPubServerService {
 			reply.header('Access-Control-Expose-Headers', 'Vary');
 			done();
 		});
-
-		//#region Routing
-		// inbox (limit: 64kb)
-		fastify.post('/inbox', { config: { rawBody: true }, bodyLimit: 1024 * 64 }, async (request, reply) => await this.inbox(request, reply));
-		fastify.post('/users/:user/inbox', { config: { rawBody: true }, bodyLimit: 1024 * 64 }, async (request, reply) => await this.inbox(request, reply));
 
 		// note
 		fastify.get<{ Params: { note: string; } }>('/notes/:note', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
@@ -672,7 +563,6 @@ export class ActivityPubServerService {
 
 			return await this.userInfo(request, reply, user);
 		});
-		//#endregion
 
 		// emoji
 		fastify.get<{ Params: { emoji: string; } }>('/emojis/:emoji', async (request, reply) => {
