@@ -9,12 +9,9 @@ import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import Fastify, { FastifyInstance } from 'fastify';
 import fastifyStatic from '@fastify/static';
 import fastifyRawBody from 'fastify-raw-body';
-import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { Config } from '@/config.js';
-import type { UserProfilesRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import type Logger from '@/logger.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import { bindThis } from '@/decorators.js';
 import { ActivityPubServerService } from './ActivityPubServerService.js';
@@ -30,6 +27,7 @@ import { ActivityPubInboxServerService } from './ActivityPubInboxServerService.j
 import { EmojiRedirectServerService } from './EmojiRedirectServerService.js';
 import { AvatarRedirectServerService } from './AvatarRedirectServerService.js';
 import { IdenticonServerService } from './IdenticonServerService.js';
+import { EmailVerificationServerService } from './EmailVerificationServerService.js';
 
 const _dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -42,10 +40,6 @@ export class ServerService implements OnApplicationShutdown {
 		@Inject(DI.config)
 		private config: Config,
 
-		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
-
-		private userEntityService: UserEntityService,
 		private apiServerService: ApiServerService,
 		private openApiServerService: OpenApiServerService,
 		private streamingApiServerService: StreamingApiServerService,
@@ -54,13 +48,13 @@ export class ServerService implements OnApplicationShutdown {
 		private nodeinfoServerService: NodeinfoServerService,
 		private fileServerService: FileServerService,
 		private clientServerService: ClientServerService,
-		private globalEventService: GlobalEventService,
 		private loggerService: LoggerService,
 		private oauth2ProviderService: OAuth2ProviderService,
 		private activityPubInboxServerService: ActivityPubInboxServerService,
 		private emojiRedirectServerService: EmojiRedirectServerService,
 		private avatarRedirectServerService: AvatarRedirectServerService,
 		private identiconServerService: IdenticonServerService,
+		private emailVerificationServerService: EmailVerificationServerService,
 	) {
 		this.logger = this.loggerService.getLogger('server', 'gray');
 	}
@@ -108,31 +102,7 @@ export class ServerService implements OnApplicationShutdown {
 		fastify.register(this.emojiRedirectServerService.createServer);
 		fastify.register(this.avatarRedirectServerService.createServer);
 		fastify.register(this.identiconServerService.createServer);
-
-		fastify.get<{ Params: { code: string } }>('/verify-email/:code', async (request, reply) => {
-			const profile = await this.userProfilesRepository.findOneBy({
-				emailVerifyCode: request.params.code,
-			});
-
-			if (profile != null) {
-				await this.userProfilesRepository.update({ userId: profile.userId }, {
-					emailVerified: true,
-					emailVerifyCode: null,
-				});
-
-				this.globalEventService.publishMainStream(profile.userId, 'meUpdated', await this.userEntityService.pack(profile.userId, { id: profile.userId }, {
-					schema: 'MeDetailed',
-					includeSecrets: true,
-				}));
-
-				reply.code(200).send('Verification succeeded! メールアドレスの認証に成功しました。');
-				return;
-			} else {
-				reply.code(404).send('Verification failed. Please try again. メールアドレスの認証に失敗しました。もう一度お試しください');
-				return;
-			}
-		});
-
+		fastify.register(this.emailVerificationServerService.createServer);
 		fastify.register(this.clientServerService.createServer);
 
 		this.streamingApiServerService.attach(fastify.server);
