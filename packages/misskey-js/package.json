@@ -39,7 +39,7 @@
 		"nodemon": "3.0.3",
 		"tsd": "0.30.4",
 		"tsup": "^8.2.2",
-		"typescript": "5.3.3"
+		"typescript": "5.5.4"
 	},
 	"files": [
 		"built",

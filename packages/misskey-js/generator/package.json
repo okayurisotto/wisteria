@@ -17,7 +17,7 @@
 		"openapi-typescript": "6.7.3",
 		"ts-case-convert": "2.0.2",
 		"tsx": "4.4.0",
-		"typescript": "5.3.3"
+		"typescript": "5.5.4"
 	},
 	"files": [
 		"built"
