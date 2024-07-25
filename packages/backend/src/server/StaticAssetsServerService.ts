@@ -6,6 +6,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import ms from 'ms';
 import fastifyStatic from '@fastify/static';
+import fastifyHttpProxy from '@fastify/http-proxy';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
 import { MetaService } from '@/core/MetaService.js';
@@ -18,7 +19,9 @@ import {
 	STATIC_ASSETS_DIR,
 	SW_ASSETS_DIR,
 	TARBALL_DIR,
+	VITE_OUT_DIR,
 } from '@/path.js';
+import { envOption } from '@/env.js';
 
 @Injectable()
 export class StaticAssetsServerService {
@@ -164,6 +167,30 @@ export class StaticAssetsServerService {
 		fastify.get('/robots.txt', async (_, reply) => {
 			return await reply.sendFile('/robots.txt', STATIC_ASSETS_DIR);
 		});
+
+		//#endregion
+
+		//#region vite assets
+
+		if (this.config.clientManifestExists) {
+			fastify.register((fastify, options, done) => {
+				fastify.register(fastifyStatic, {
+					root: VITE_OUT_DIR,
+					prefix: '/vite/',
+					maxAge: ms('30 days'),
+					immutable: true,
+					decorateReply: false,
+				});
+				fastify.addHook('onRequest', handleRequestRedirectToOmitSearch);
+				done();
+			});
+		} else {
+			fastify.register(fastifyHttpProxy, {
+				upstream: 'http://localhost:' + envOption.VITE_PORT,
+				prefix: '/vite',
+				rewritePrefix: '/vite',
+			});
+		}
 
 		//#endregion
 

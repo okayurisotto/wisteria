@@ -5,13 +5,10 @@
 
 import { randomUUID } from 'node:crypto';
 import { Inject, Injectable } from '@nestjs/common';
-import ms from 'ms';
 import pug from 'pug';
 import { In, IsNull } from 'typeorm';
-import fastifyStatic from '@fastify/static';
 import fastifyView from '@fastify/view';
 import fastifyCookie from '@fastify/cookie';
-import fastifyProxy from '@fastify/http-proxy';
 import vary from 'vary';
 import type { Config } from '@/config.js';
 import { getNoteSummary } from '@/misc/get-note-summary.js';
@@ -25,15 +22,13 @@ import { GalleryPostEntityService } from '@/core/entities/GalleryPostEntityServi
 import { ClipEntityService } from '@/core/entities/ClipEntityService.js';
 import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
 import type { ChannelsRepository, ClipsRepository, FlashsRepository, GalleryPostsRepository, MiMeta, NotesRepository, PagesRepository, ReversiGamesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
-import { handleRequestRedirectToOmitSearch } from '@/misc/fastify-hook-handlers.js';
 import { bindThis } from '@/decorators.js';
 import { FlashEntityService } from '@/core/entities/FlashEntityService.js';
 import { ReversiGameEntityService } from '@/core/entities/ReversiGameEntityService.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
 import { ClientLoggerService } from './ClientLoggerService.js';
 import type { FastifyInstance, FastifyPluginOptions, FastifyReply } from 'fastify';
-import { PUG_DIR, VITE_OUT_DIR } from '@/path.js';
-import { envOption } from '@/env.js';
+import { PUG_DIR } from '@/path.js';
 
 @Injectable()
 export class ClientServerService {
@@ -115,28 +110,6 @@ export class ClientServerService {
 			reply.header('X-Frame-Options', 'DENY');
 			done();
 		});
-
-		//#region vite assets
-		if (this.config.clientManifestExists) {
-			fastify.register((fastify, options, done) => {
-				fastify.register(fastifyStatic, {
-					root: VITE_OUT_DIR,
-					prefix: '/vite/',
-					maxAge: ms('30 days'),
-					immutable: true,
-					decorateReply: false,
-				});
-				fastify.addHook('onRequest', handleRequestRedirectToOmitSearch);
-				done();
-			});
-		} else {
-			fastify.register(fastifyProxy, {
-				upstream: 'http://localhost:' + envOption.VITE_PORT,
-				prefix: '/vite',
-				rewritePrefix: '/vite',
-			});
-		}
-		//#endregion
 
 		const renderBase = async (reply: FastifyReply) => {
 			const meta = await this.metaService.fetch();
