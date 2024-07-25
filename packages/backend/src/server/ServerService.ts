@@ -9,7 +9,6 @@ import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import Fastify, { FastifyInstance } from 'fastify';
 import fastifyStatic from '@fastify/static';
 import fastifyRawBody from 'fastify-raw-body';
-import { generate as generateIdenticon } from "identicon-generator";
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { Config } from '@/config.js';
 import type { UserProfilesRepository } from '@/models/_.js';
@@ -18,7 +17,6 @@ import type Logger from '@/logger.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import { bindThis } from '@/decorators.js';
-import { MetaService } from '@/core/MetaService.js';
 import { ActivityPubServerService } from './ActivityPubServerService.js';
 import { NodeinfoServerService } from './NodeinfoServerService.js';
 import { ApiServerService } from './api/ApiServerService.js';
@@ -31,6 +29,7 @@ import { OAuth2ProviderService } from './oauth/OAuth2ProviderService.js';
 import { ActivityPubInboxServerService } from './ActivityPubInboxServerService.js';
 import { EmojiRedirectServerService } from './EmojiRedirectServerService.js';
 import { AvatarRedirectServerService } from './AvatarRedirectServerService.js';
+import { IdenticonServerService } from './IdenticonServerService.js';
 
 const _dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -46,7 +45,6 @@ export class ServerService implements OnApplicationShutdown {
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
 
-		private metaService: MetaService,
 		private userEntityService: UserEntityService,
 		private apiServerService: ApiServerService,
 		private openApiServerService: OpenApiServerService,
@@ -62,6 +60,7 @@ export class ServerService implements OnApplicationShutdown {
 		private activityPubInboxServerService: ActivityPubInboxServerService,
 		private emojiRedirectServerService: EmojiRedirectServerService,
 		private avatarRedirectServerService: AvatarRedirectServerService,
+		private identiconServerService: IdenticonServerService,
 	) {
 		this.logger = this.loggerService.getLogger('server', 'gray');
 	}
@@ -108,21 +107,7 @@ export class ServerService implements OnApplicationShutdown {
 		fastify.register(this.oauth2ProviderService.createTokenServer, { prefix: '/oauth/token' });
 		fastify.register(this.emojiRedirectServerService.createServer);
 		fastify.register(this.avatarRedirectServerService.createServer);
-
-		fastify.get<{ Params: { x: string } }>('/identicon/:x', async (request, reply) => {
-			reply.header('Content-Type', 'image/png');
-			reply.header('Cache-Control', 'public, max-age=86400');
-
-			if ((await this.metaService.fetch()).enableIdenticonGeneration) {
-				const buffer = await generateIdenticon(
-					request.params.x,
-					{ pixels: 5, cellSize: 12, margin: 30 },
-				);
-				reply.send(buffer);
-			} else {
-				return reply.redirect('/static-assets/avatar.png');
-			}
-		});
+		fastify.register(this.identiconServerService.createServer);
 
 		fastify.get<{ Params: { code: string } }>('/verify-email/:code', async (request, reply) => {
 			const profile = await this.userProfilesRepository.findOneBy({
