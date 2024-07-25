@@ -24,7 +24,6 @@ import { SignupApiService } from './api/SignupApiService.js';
 import { StreamingApiServerService } from './api/StreamingApiServerService.js';
 import { OpenApiServerService } from './api/openapi/OpenApiServerService.js';
 import { ClientServerService } from './web/ClientServerService.js';
-import { FeedService } from './web/FeedService.js';
 import { UrlPreviewService } from './web/UrlPreviewService.js';
 import { ClientLoggerService } from './web/ClientLoggerService.js';
 import { OAuth2ProviderService } from './oauth/OAuth2ProviderService.js';
@@ -51,6 +50,7 @@ import { AvatarRedirectServerService } from './AvatarRedirectServerService.js';
 import { IdenticonServerService } from './IdenticonServerService.js';
 import { EmailVerificationServerService } from './EmailVerificationServerService.js';
 import { StaticAssetsServerService } from './StaticAssetsServerService.js';
+import { UserFeedServerService } from './UserFeedServerService.js';
 
 @Module({
 	imports: [
@@ -60,7 +60,6 @@ import { StaticAssetsServerService } from './StaticAssetsServerService.js';
 	providers: [
 		ClientServerService,
 		ClientLoggerService,
-		FeedService,
 		UrlPreviewService,
 		ActivityPubServerService,
 		FileServerService,
@@ -102,6 +101,7 @@ import { StaticAssetsServerService } from './StaticAssetsServerService.js';
 		IdenticonServerService,
 		EmailVerificationServerService,
 		StaticAssetsServerService,
+		UserFeedServerService,
 	],
 	exports: [
 		ServerService,

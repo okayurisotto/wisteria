@@ -147,6 +147,7 @@ import { CustomEmojiAliasService } from './CustomEmojiAliasService.js';
 import { CustomEmojiPopulateService } from './CustomEmojiPopulateService.js';
 import { AlsoKnownAsValidateService } from './AlsoKnownAsValidateService.js';
 import { NotificationCreateService } from './NotificationCreateService.js';
+import { FeedService } from './FeedService.js';
 
 //#region 文字列ベースでのinjection用(循環参照対応のため)
 const $NotificationCreateService: Provider = { provide: 'NotificationCreateService', useExisting: NotificationCreateService };
@@ -242,6 +243,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		RegistryApiService,
 		ReversiService,
 		AlsoKnownAsValidateService,
+		FeedService,
 
 		ChartLoggerService,
 		FederationChart,
@@ -403,6 +405,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		RegistryApiService,
 		ReversiService,
 		AlsoKnownAsValidateService,
+		FeedService,
 
 		FederationChart,
 		NotesChart,

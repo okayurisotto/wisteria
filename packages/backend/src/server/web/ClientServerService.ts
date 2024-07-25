@@ -35,7 +35,6 @@ import { bindThis } from '@/decorators.js';
 import { FlashEntityService } from '@/core/entities/FlashEntityService.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { ReversiGameEntityService } from '@/core/entities/ReversiGameEntityService.js';
-import { FeedService } from './FeedService.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
 import { ClientLoggerService } from './ClientLoggerService.js';
 import type { FastifyInstance, FastifyPluginOptions, FastifyReply } from 'fastify';
@@ -85,7 +84,6 @@ export class ClientServerService {
 		private reversiGameEntityService: ReversiGameEntityService,
 		private metaService: MetaService,
 		private urlPreviewService: UrlPreviewService,
-		private feedService: FeedService,
 		private roleUserService: RoleUserService,
 		private clientLoggerService: ClientLoggerService,
 
@@ -293,59 +291,6 @@ export class ClientServerService {
 
 		// URL preview endpoint
 		fastify.get<{ Querystring: { url: string; lang: string; } }>('/url', (request, reply) => this.urlPreviewService.handle(request, reply));
-
-		const getFeed = async (acct: string) => {
-			const acctEntity = AcctEntity.parse(acct, this.config.host);
-			if (acctEntity === null) return null;
-
-			const user = await this.usersRepository.findOneBy({
-				usernameLower: acctEntity.username.toLowerCase(),
-				host: acctEntity.host ?? IsNull(),
-				isSuspended: false,
-			});
-			if (user === null) return null;
-
-			return await this.feedService.packFeed(user);
-		};
-
-		// Atom
-		fastify.get<{ Params: { user: string; } }>('/@:user.atom', async (request, reply) => {
-			const feed = await getFeed(request.params.user);
-
-			if (feed) {
-				reply.header('Content-Type', 'application/atom+xml; charset=utf-8');
-				return feed.atom1();
-			} else {
-				reply.code(404);
-				return;
-			}
-		});
-
-		// RSS
-		fastify.get<{ Params: { user: string; } }>('/@:user.rss', async (request, reply) => {
-			const feed = await getFeed(request.params.user);
-
-			if (feed) {
-				reply.header('Content-Type', 'application/rss+xml; charset=utf-8');
-				return feed.rss2();
-			} else {
-				reply.code(404);
-				return;
-			}
-		});
-
-		// JSON
-		fastify.get<{ Params: { user: string; } }>('/@:user.json', async (request, reply) => {
-			const feed = await getFeed(request.params.user);
-
-			if (feed) {
-				reply.header('Content-Type', 'application/json; charset=utf-8');
-				return feed.json1();
-			} else {
-				reply.code(404);
-				return;
-			}
-		});
 
 		//#region SSR (for crawlers)
 		// User
