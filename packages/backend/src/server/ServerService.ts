@@ -9,14 +9,12 @@ import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import Fastify, { FastifyInstance } from 'fastify';
 import fastifyStatic from '@fastify/static';
 import fastifyRawBody from 'fastify-raw-body';
-import { IsNull } from 'typeorm';
 import { generate as generateIdenticon } from "identicon-generator";
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { Config } from '@/config.js';
-import type { UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import type { UserProfilesRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import type Logger from '@/logger.js';
-import { AcctEntity } from '@/misc/AcctEntity.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import { bindThis } from '@/decorators.js';
@@ -32,6 +30,7 @@ import { OpenApiServerService } from './api/openapi/OpenApiServerService.js';
 import { OAuth2ProviderService } from './oauth/OAuth2ProviderService.js';
 import { ActivityPubInboxServerService } from './ActivityPubInboxServerService.js';
 import { EmojiRedirectServerService } from './EmojiRedirectServerService.js';
+import { AvatarRedirectServerService } from './AvatarRedirectServerService.js';
 
 const _dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -43,9 +42,6 @@ export class ServerService implements OnApplicationShutdown {
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
-
-		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
@@ -65,6 +61,7 @@ export class ServerService implements OnApplicationShutdown {
 		private oauth2ProviderService: OAuth2ProviderService,
 		private activityPubInboxServerService: ActivityPubInboxServerService,
 		private emojiRedirectServerService: EmojiRedirectServerService,
+		private avatarRedirectServerService: AvatarRedirectServerService,
 	) {
 		this.logger = this.loggerService.getLogger('server', 'gray');
 	}
@@ -110,25 +107,7 @@ export class ServerService implements OnApplicationShutdown {
 		fastify.register(this.oauth2ProviderService.createServer, { prefix: '/oauth' });
 		fastify.register(this.oauth2ProviderService.createTokenServer, { prefix: '/oauth/token' });
 		fastify.register(this.emojiRedirectServerService.createServer);
-
-		fastify.get<{ Params: { acct: string } }>('/avatar/@:acct', async (request, reply) => {
-			const acct = AcctEntity.parse(request.params.acct, this.config.host);
-			const user = await this.usersRepository.findOne({
-				where: {
-					usernameLower: acct.username.toLowerCase(),
-					host: acct.host ?? IsNull(),
-					isSuspended: false,
-				},
-			});
-
-			reply.header('Cache-Control', 'public, max-age=86400');
-
-			if (user) {
-				reply.redirect(user.avatarUrl ?? this.userEntityService.getIdenticonUrl(user));
-			} else {
-				reply.redirect('/static-assets/user-unknown.png');
-			}
-		});
+		fastify.register(this.avatarRedirectServerService.createServer);
 
 		fastify.get<{ Params: { x: string } }>('/identicon/:x', async (request, reply) => {
 			reply.header('Content-Type', 'image/png');

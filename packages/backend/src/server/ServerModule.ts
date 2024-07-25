@@ -47,6 +47,7 @@ import { ReversiChannelService } from './api/stream/channels/reversi.js';
 import { ReversiGameChannelService } from './api/stream/channels/reversi-game.js';
 import { ActivityPubInboxServerService } from './ActivityPubInboxServerService.js';
 import { EmojiRedirectServerService } from './EmojiRedirectServerService.js';
+import { AvatarRedirectServerService } from './AvatarRedirectServerService.js';
 
 @Module({
 	imports: [
@@ -94,6 +95,7 @@ import { EmojiRedirectServerService } from './EmojiRedirectServerService.js';
 		OAuth2ProviderService,
 		ActivityPubInboxServerService,
 		EmojiRedirectServerService,
+		AvatarRedirectServerService,
 	],
 	exports: [
 		ServerService,
