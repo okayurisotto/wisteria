@@ -31,6 +31,7 @@ import { EmailVerificationServerService } from './EmailVerificationServerService
 import { StaticAssetsServerService } from './StaticAssetsServerService.js';
 import { UserFeedServerService } from './UserFeedServerService.js';
 import { EmojiServerService } from './EmojiServerService.js';
+import { BullDashboardServerService } from './BullDashboardServerService.js';
 
 const _dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -61,6 +62,7 @@ export class ServerService implements OnApplicationShutdown {
 		private staticAssetsServerService: StaticAssetsServerService,
 		private userFeedServerService: UserFeedServerService,
 		private emojiServerService: EmojiServerService,
+		private bullDashboardServerService: BullDashboardServerService,
 	) {
 		this.logger = this.loggerService.getLogger('server', 'gray');
 	}
@@ -112,6 +114,7 @@ export class ServerService implements OnApplicationShutdown {
 		fastify.register(this.staticAssetsServerService.createServer);
 		fastify.register(this.userFeedServerService.createServer);
 		fastify.register(this.emojiServerService.createServer);
+		fastify.register(this.bullDashboardServerService.createServer);
 		fastify.register(this.clientServerService.createServer);
 
 		this.streamingApiServerService.attach(fastify.server);

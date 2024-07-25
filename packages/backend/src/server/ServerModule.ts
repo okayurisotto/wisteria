@@ -52,6 +52,7 @@ import { EmailVerificationServerService } from './EmailVerificationServerService
 import { StaticAssetsServerService } from './StaticAssetsServerService.js';
 import { UserFeedServerService } from './UserFeedServerService.js';
 import { EmojiServerService } from './EmojiServerService.js';
+import { BullDashboardServerService } from './BullDashboardServerService.js';
 
 @Module({
 	imports: [
@@ -104,6 +105,7 @@ import { EmojiServerService } from './EmojiServerService.js';
 		StaticAssetsServerService,
 		UserFeedServerService,
 		EmojiServerService,
+		BullDashboardServerService,
 	],
 	exports: [
 		ServerService,

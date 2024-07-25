@@ -5,9 +5,6 @@
 
 import { randomUUID } from 'node:crypto';
 import { Inject, Injectable } from '@nestjs/common';
-import { createBullBoard } from '@bull-board/api';
-import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
-import { FastifyAdapter } from '@bull-board/fastify';
 import ms from 'ms';
 import pug from 'pug';
 import { In, IsNull } from 'typeorm';
@@ -21,7 +18,6 @@ import { getNoteSummary } from '@/misc/get-note-summary.js';
 import { DI } from '@/di-symbols.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 import { MetaService } from '@/core/MetaService.js';
-import type { DbQueue, DeliverQueue, EndedPollNotificationQueue, InboxQueue, ObjectStorageQueue, RelationshipQueue, SystemQueue, WebhookDeliverQueue } from '@/core/QueueModule.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { PageEntityService } from '@/core/entities/PageEntityService.js';
@@ -32,7 +28,6 @@ import type { ChannelsRepository, ClipsRepository, FlashsRepository, GalleryPost
 import { handleRequestRedirectToOmitSearch } from '@/misc/fastify-hook-handlers.js';
 import { bindThis } from '@/decorators.js';
 import { FlashEntityService } from '@/core/entities/FlashEntityService.js';
-import { RoleUserService } from '@/core/RoleUserService.js';
 import { ReversiGameEntityService } from '@/core/entities/ReversiGameEntityService.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
 import { ClientLoggerService } from './ClientLoggerService.js';
@@ -83,17 +78,7 @@ export class ClientServerService {
 		private reversiGameEntityService: ReversiGameEntityService,
 		private metaService: MetaService,
 		private urlPreviewService: UrlPreviewService,
-		private roleUserService: RoleUserService,
 		private clientLoggerService: ClientLoggerService,
-
-		@Inject('queue:system') public systemQueue: SystemQueue,
-		@Inject('queue:endedPollNotification') public endedPollNotificationQueue: EndedPollNotificationQueue,
-		@Inject('queue:deliver') public deliverQueue: DeliverQueue,
-		@Inject('queue:inbox') public inboxQueue: InboxQueue,
-		@Inject('queue:db') public dbQueue: DbQueue,
-		@Inject('queue:objectStorage') public objectStorageQueue: ObjectStorageQueue,
-		@Inject('queue:webhookDeliver') public webhookDeliverQueue: WebhookDeliverQueue,
-		@Inject('queue:relationship') public relationshipQueue: RelationshipQueue,
 	) {}
 
 	@bindThis
@@ -113,52 +98,6 @@ export class ClientServerService {
 	@bindThis
 	public createServer(fastify: FastifyInstance, options: FastifyPluginOptions, done: (err?: Error) => void) {
 		fastify.register(fastifyCookie, {});
-
-		//#region Bull Dashboard
-		const bullBoardPath = '/queue';
-
-		// Authenticate
-		fastify.addHook('onRequest', async (request, reply) => {
-			// %71ueueとかでリクエストされたら困るため
-			const url = decodeURI(request.routeOptions.url);
-			if (url === bullBoardPath || url.startsWith(bullBoardPath + '/')) {
-				const token = request.cookies.token;
-				if (token == null) {
-					reply.code(401).send('Login required');
-					return;
-				}
-				const user = await this.usersRepository.findOneBy({ token });
-				if (user == null) {
-					reply.code(403).send('No such user');
-					return;
-				}
-				const isAdministrator = await this.roleUserService.isAdministrator(user);
-				if (!isAdministrator) {
-					reply.code(403).send('Access denied');
-					return;
-				}
-			}
-		});
-
-		const serverAdapter = new FastifyAdapter();
-
-		createBullBoard({
-			queues: [
-				this.systemQueue,
-				this.endedPollNotificationQueue,
-				this.deliverQueue,
-				this.inboxQueue,
-				this.dbQueue,
-				this.objectStorageQueue,
-				this.webhookDeliverQueue,
-				this.relationshipQueue,
-			].map(q => new BullMQAdapter(q)),
-			serverAdapter,
-		});
-
-		serverAdapter.setBasePath(bullBoardPath);
-		(fastify.register as any)(serverAdapter.registerPlugin(), { prefix: bullBoardPath });
-		//#endregion
 
 		fastify.register(fastifyView, {
 			root: PUG_DIR,
