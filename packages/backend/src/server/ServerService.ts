@@ -28,6 +28,7 @@ import { EmojiRedirectServerService } from './EmojiRedirectServerService.js';
 import { AvatarRedirectServerService } from './AvatarRedirectServerService.js';
 import { IdenticonServerService } from './IdenticonServerService.js';
 import { EmailVerificationServerService } from './EmailVerificationServerService.js';
+import { StaticAssetsServerService } from './StaticAssetsServerService.js';
 
 const _dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -55,6 +56,7 @@ export class ServerService implements OnApplicationShutdown {
 		private avatarRedirectServerService: AvatarRedirectServerService,
 		private identiconServerService: IdenticonServerService,
 		private emailVerificationServerService: EmailVerificationServerService,
+		private staticAssetsServerService: StaticAssetsServerService,
 	) {
 		this.logger = this.loggerService.getLogger('server', 'gray');
 	}
@@ -103,6 +105,7 @@ export class ServerService implements OnApplicationShutdown {
 		fastify.register(this.avatarRedirectServerService.createServer);
 		fastify.register(this.identiconServerService.createServer);
 		fastify.register(this.emailVerificationServerService.createServer);
+		fastify.register(this.staticAssetsServerService.createServer);
 		fastify.register(this.clientServerService.createServer);
 
 		this.streamingApiServerService.attach(fastify.server);

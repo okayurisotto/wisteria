@@ -50,6 +50,7 @@ import { EmojiRedirectServerService } from './EmojiRedirectServerService.js';
 import { AvatarRedirectServerService } from './AvatarRedirectServerService.js';
 import { IdenticonServerService } from './IdenticonServerService.js';
 import { EmailVerificationServerService } from './EmailVerificationServerService.js';
+import { StaticAssetsServerService } from './StaticAssetsServerService.js';
 
 @Module({
 	imports: [
@@ -100,6 +101,7 @@ import { EmailVerificationServerService } from './EmailVerificationServerService
 		AvatarRedirectServerService,
 		IdenticonServerService,
 		EmailVerificationServerService,
+		StaticAssetsServerService,
 	],
 	exports: [
 		ServerService,
