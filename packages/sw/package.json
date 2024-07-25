@@ -2,9 +2,9 @@
 	"name": "sw",
 	"private": true,
 	"scripts": {
-		"watch": "nodemon -w ../../package.json -e json --exec \"node build.js watch\"",
-		"build": "node build.js",
-		"typecheck": "tsc --noEmit",
+		"watch": "tsup --watch",
+		"build": "tsup",
+		"typecheck": "tsc",
 		"eslint": "eslint --quiet src/**/*.ts",
 		"lint": "pnpm typecheck && pnpm eslint"
 	},
@@ -16,10 +16,9 @@
 		"@misskey-dev/eslint-plugin": "1.0.0",
 		"@types/serviceworker": "0.0.67",
 		"@typescript-eslint/parser": "6.18.1",
-		"esbuild": "0.19.11",
 		"eslint": "8.56.0",
 		"eslint-plugin-import": "2.29.1",
-		"nodemon": "3.0.3",
+		"tsup": "^8.2.2",
 		"typescript": "5.3.3"
 	},
 	"type": "module"
