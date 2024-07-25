@@ -9,7 +9,6 @@ import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { FastifyAdapter } from '@bull-board/fastify';
 import ms from 'ms';
-import sharp from 'sharp';
 import pug from 'pug';
 import { In, IsNull } from 'typeorm';
 import fastifyStatic from '@fastify/static';
@@ -38,7 +37,7 @@ import { ReversiGameEntityService } from '@/core/entities/ReversiGameEntityServi
 import { UrlPreviewService } from './UrlPreviewService.js';
 import { ClientLoggerService } from './ClientLoggerService.js';
 import type { FastifyInstance, FastifyPluginOptions, FastifyReply } from 'fastify';
-import { FLUENT_EMOJI_DIR, PUG_DIR, TWEMOJI_DIR, VITE_OUT_DIR } from '@/path.js';
+import { PUG_DIR, VITE_OUT_DIR } from '@/path.js';
 import { envOption } from '@/env.js';
 
 @Injectable()
@@ -198,83 +197,6 @@ export class ClientServerService {
 				rewritePrefix: '/vite',
 			});
 		}
-		//#endregion
-
-		//#region emojis
-
-		fastify.get<{ Params: { path: string } }>('/fluent-emoji/:path(.*)', async (request, reply) => {
-			const path = request.params.path;
-
-			if (!path.match(/^[0-9a-f-]+\.png$/)) {
-				reply.code(404);
-				return;
-			}
-
-			reply.header('Content-Security-Policy', 'default-src \'none\'; style-src \'unsafe-inline\'');
-
-			return await reply.sendFile(path, FLUENT_EMOJI_DIR, {
-				maxAge: ms('30 days'),
-			});
-		});
-
-		fastify.get<{ Params: { path: string } }>('/twemoji/:path(.*)', async (request, reply) => {
-			const path = request.params.path;
-
-			if (!path.match(/^[0-9a-f-]+\.svg$/)) {
-				reply.code(404);
-				return;
-			}
-
-			reply.header('Content-Security-Policy', 'default-src \'none\'; style-src \'unsafe-inline\'');
-
-			return await reply.sendFile(path, TWEMOJI_DIR, {
-				maxAge: ms('30 days'),
-			});
-		});
-
-		fastify.get<{ Params: { path: string } }>('/twemoji-badge/:path(.*)', async (request, reply) => {
-			const path = request.params.path;
-
-			if (!path.match(/^[0-9a-f-]+\.png$/)) {
-				reply.code(404);
-				return;
-			}
-
-			const mask = await sharp(
-				TWEMOJI_DIR + `/${path.replace('.png', '')}.svg`,
-				{ density: 1000 },
-			)
-				.resize(488, 488)
-				.greyscale()
-				.normalise()
-				.linear(1.75, -(128 * 1.75) + 128) // 1.75x contrast
-				.flatten({ background: '#000' })
-				.extend({
-					top: 12,
-					bottom: 12,
-					left: 12,
-					right: 12,
-					background: '#000',
-				})
-				.toColorspace('b-w')
-				.png()
-				.toBuffer();
-
-			const buffer = await sharp({
-				create: { width: 512, height: 512, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
-			})
-				.pipelineColorspace('b-w')
-				.boolean(mask, 'eor')
-				.resize(96, 96)
-				.png()
-				.toBuffer();
-
-			reply.header('Content-Security-Policy', 'default-src \'none\'; style-src \'unsafe-inline\'');
-			reply.header('Cache-Control', 'max-age=2592000');
-			reply.header('Content-Type', 'image/png');
-			return buffer;
-		});
-
 		//#endregion
 
 		const renderBase = async (reply: FastifyReply) => {

@@ -51,6 +51,7 @@ import { IdenticonServerService } from './IdenticonServerService.js';
 import { EmailVerificationServerService } from './EmailVerificationServerService.js';
 import { StaticAssetsServerService } from './StaticAssetsServerService.js';
 import { UserFeedServerService } from './UserFeedServerService.js';
+import { EmojiServerService } from './EmojiServerService.js';
 
 @Module({
 	imports: [
@@ -102,6 +103,7 @@ import { UserFeedServerService } from './UserFeedServerService.js';
 		EmailVerificationServerService,
 		StaticAssetsServerService,
 		UserFeedServerService,
+		EmojiServerService,
 	],
 	exports: [
 		ServerService,
