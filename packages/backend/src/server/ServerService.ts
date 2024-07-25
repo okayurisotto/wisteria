@@ -13,7 +13,7 @@ import { IsNull } from 'typeorm';
 import { generate as generateIdenticon } from "identicon-generator";
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { Config } from '@/config.js';
-import type { EmojisRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import type { UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import type Logger from '@/logger.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
@@ -31,6 +31,7 @@ import { ClientServerService } from './web/ClientServerService.js';
 import { OpenApiServerService } from './api/openapi/OpenApiServerService.js';
 import { OAuth2ProviderService } from './oauth/OAuth2ProviderService.js';
 import { ActivityPubInboxServerService } from './ActivityPubInboxServerService.js';
+import { EmojiRedirectServerService } from './EmojiRedirectServerService.js';
 
 const _dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -49,9 +50,6 @@ export class ServerService implements OnApplicationShutdown {
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
 
-		@Inject(DI.emojisRepository)
-		private emojisRepository: EmojisRepository,
-
 		private metaService: MetaService,
 		private userEntityService: UserEntityService,
 		private apiServerService: ApiServerService,
@@ -66,6 +64,7 @@ export class ServerService implements OnApplicationShutdown {
 		private loggerService: LoggerService,
 		private oauth2ProviderService: OAuth2ProviderService,
 		private activityPubInboxServerService: ActivityPubInboxServerService,
+		private emojiRedirectServerService: EmojiRedirectServerService,
 	) {
 		this.logger = this.loggerService.getLogger('server', 'gray');
 	}
@@ -110,56 +109,7 @@ export class ServerService implements OnApplicationShutdown {
 		fastify.register(this.wellKnownServerService.createServer);
 		fastify.register(this.oauth2ProviderService.createServer, { prefix: '/oauth' });
 		fastify.register(this.oauth2ProviderService.createTokenServer, { prefix: '/oauth/token' });
-
-		fastify.get<{ Params: { path: string }; Querystring: { static?: any; badge?: any; }; }>('/emoji/:path(.*)', async (request, reply) => {
-			const path = request.params.path;
-
-			reply.header('Cache-Control', 'public, max-age=86400');
-
-			if (!path.match(/^[a-zA-Z0-9\-_@.]+?\.webp$/)) {
-				reply.code(404);
-				return;
-			}
-
-			const name = path.split('@')[0].replace(/\.webp$/i, '');
-			const host = path.split('@')[1]?.replace(/\.webp$/i, '');
-
-			const emoji = await this.emojisRepository.findOneBy({
-				// `@.` is the spec of ReactionService.decodeReaction
-				host: (host == null || host === '.') ? IsNull() : host,
-				name: name,
-			});
-
-			reply.header('Content-Security-Policy', 'default-src \'none\'; style-src \'unsafe-inline\'');
-
-			if (emoji == null) {
-				if ('fallback' in request.query) {
-					return await reply.redirect('/static-assets/emoji-unknown.png');
-				} else {
-					reply.code(404);
-					return;
-				}
-			}
-
-			let url: URL;
-			if ('badge' in request.query) {
-				url = new URL(`${this.config.mediaProxy}/emoji.png`);
-				// || emoji.originalUrl してるのは後方互換性のため（publicUrlはstringなので??はだめ）
-				url.searchParams.set('url', emoji.publicUrl || emoji.originalUrl);
-				url.searchParams.set('badge', '1');
-			} else {
-				url = new URL(`${this.config.mediaProxy}/emoji.webp`);
-				// || emoji.originalUrl してるのは後方互換性のため（publicUrlはstringなので??はだめ）
-				url.searchParams.set('url', emoji.publicUrl || emoji.originalUrl);
-				url.searchParams.set('emoji', '1');
-				if ('static' in request.query) url.searchParams.set('static', '1');
-			}
-
-			return await reply.redirect(
-				301,
-				url.toString(),
-			);
-		});
+		fastify.register(this.emojiRedirectServerService.createServer);
 
 		fastify.get<{ Params: { acct: string } }>('/avatar/@:acct', async (request, reply) => {
 			const acct = AcctEntity.parse(request.params.acct, this.config.host);

@@ -46,6 +46,7 @@ import { RoleTimelineChannelService } from './api/stream/channels/role-timeline.
 import { ReversiChannelService } from './api/stream/channels/reversi.js';
 import { ReversiGameChannelService } from './api/stream/channels/reversi-game.js';
 import { ActivityPubInboxServerService } from './ActivityPubInboxServerService.js';
+import { EmojiRedirectServerService } from './EmojiRedirectServerService.js';
 
 @Module({
 	imports: [
@@ -92,6 +93,7 @@ import { ActivityPubInboxServerService } from './ActivityPubInboxServerService.j
 		OpenApiServerService,
 		OAuth2ProviderService,
 		ActivityPubInboxServerService,
+		EmojiRedirectServerService,
 	],
 	exports: [
 		ServerService,
