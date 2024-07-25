@@ -1,40 +1,11 @@
 {
 	"compilerOptions": {
-		"noEmit": true,
-		"allowJs": true,
-		"noEmitOnError": false,
-		"noImplicitAny": false,
-		"noImplicitReturns": true,
-		"noUnusedParameters": false,
-		"noUnusedLocals": true,
-		"noFallthroughCasesInSwitch": true,
-		"declaration": false,
-		"sourceMap": false,
-		"target": "ES2022",
-		"module": "nodenext",
-		"moduleResolution": "nodenext",
-		"removeComments": false,
-		"noLib": false,
-		"strict": true,
-		"strictNullChecks": true,
-		"experimentalDecorators": true,
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"baseUrl": ".",
+		"lib": ["ESNext", "WebWorker"],
 		"paths": {
 			"@/*": ["./src/*"]
 		},
-		"typeRoots": [
-			"./node_modules/@types",
-			"./src/@types"
-		],
-		"lib": [
-			"esnext",
-			"webworker"
-		]
+		"target": "ES2022"
 	},
-	"compileOnSave": false,
-	"include": [
-		"./**/*.ts"
-	]
+	"extends": ["../../tsconfig.json"],
+	"include": ["src"]
 }

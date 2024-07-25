@@ -2,14 +2,10 @@
 	"compilerOptions": {
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"noEmit": true,
 		"paths": {
 			"@/*": ["./src/*"]
 		}
 	},
-	"extends": [
-		"@tsconfig/strictest/tsconfig.json",
-		"@tsconfig/node-lts/tsconfig.json"
-	],
-	"include": ["eslint.config.js", "generate_api_json.js", "ormconfig.js", "src"]
+	"extends": ["@tsconfig/node-lts/tsconfig.json", "../../tsconfig.json"],
+	"include": ["src"]
 }

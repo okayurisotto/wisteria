@@ -5,7 +5,6 @@
 		"Vue.volar",
 		"Vue.vscode-typescript-vue-plugin",
 		"Orta.vscode-jest",
-		"dbaeumer.vscode-eslint",
 		"mrmlnc.vscode-json5"
 	]
 }
