@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig({
 	entry: ['./src/index.ts'],
-	dts: true,
+	dts: process.env.NODE_ENV !== 'production',
 	format: 'esm',
 	minify: true,
 	outDir: 'built',
