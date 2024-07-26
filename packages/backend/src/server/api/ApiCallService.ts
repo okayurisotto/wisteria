@@ -16,7 +16,7 @@ import { RateLimiterService } from './RateLimiterService.js';
 import { ApiLoggerService } from './ApiLoggerService.js';
 import { AuthenticateService } from './AuthenticateService.js';
 import { AuthenticationError } from '@/misc/AuthenticationError.js';
-import type { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest } from 'fastify';
 import type { IEndpointMeta, IEndpoint } from './endpoints.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { IpAddressLoggingService } from './IpAddressLoggingService.js';
@@ -54,61 +54,63 @@ export class ApiCallService {
 	public async handleRequest(
 		endpoint: IEndpoint & { exec: any },
 		request: FastifyRequest<{ Body: Record<string, unknown> | undefined, Querystring: Record<string, unknown> }>,
-		reply: FastifyReply,
-	): Promise<void> {
+	): Promise<LiteResponse> {
 		const body = request.method === 'GET'
 			? request.query
 			: request.body;
 
 		// https://datatracker.ietf.org/doc/html/rfc6750.html#section-2.1 (case sensitive)
-		const token = request.headers.authorization?.startsWith('Bearer ')
-			? request.headers.authorization.slice(7)
+		const authHeaderValue = request.headers.authorization;
+		const token = authHeaderValue?.startsWith('Bearer ')
+			? authHeaderValue.slice(7)
 			: body?.['i'];
 		if (token != null && typeof token !== 'string') {
-			reply.code(400);
-			return;
+			return LiteResponse.empty(400);
 		}
 
 		try {
 			const [user, app] = await this.authenticateService.authenticate(token);
 
-			try {
-				const result = await this.call({
-					endpoint,
-					user,
-					token: app,
-					data: body,
-					file: null,
-					method: request.method,
-					ip: request.ip,
-					headers: request.headers,
-				});
-
-				if (result.ok) {
-					if (request.method === 'GET' && endpoint.meta.cacheSec && !token && !user) {
-						reply.header('Cache-Control', `public, max-age=${endpoint.meta.cacheSec}`);
-					}
-
-					this.sendData(result.value).reply(reply);
-				} else {
-					throw result.error;
-				}
-			} catch (err: unknown) {
-				if (err instanceof ApiError) {
-					err.serialize().reply(reply);
-				} else {
-					throw err;
-				}
-			}
-
 			if (user) {
 				await this.ipAddressLoggingService.log(request.ip, user);
 			}
+
+			const result = await this.call({
+				endpoint,
+				user,
+				token: app,
+				data: body,
+				file: null,
+				method: request.method,
+				ip: request.ip,
+				headers: request.headers,
+			});
+
+			if (result.ok) {
+				if (request.method === 'GET' && endpoint.meta.cacheSec && token == null && user == null) {
+					const headers = new Map([
+						['Cache-Control', `public, max-age=${endpoint.meta.cacheSec.toString()}`],
+					]);
+					if (result.value == null) {
+						return LiteResponse.empty(200, headers);
+					} else {
+						return LiteResponse.from(200, result.value, headers);
+					}
+				} else {
+					if (result.value == null) {
+						return LiteResponse.empty(204);
+					} else {
+						return LiteResponse.from(200, result.value);
+					}
+				}
+			} else {
+				return result.error.serialize();
+			}
 		} catch (err: unknown) {
 			if (err instanceof AuthenticationError) {
-				err.serialize().reply(reply);
+				return err.serialize();
 			} else {
-				new ApiError().serialize().reply(reply);
+				return new ApiError().serialize();
 			}
 		}
 	}
@@ -116,8 +118,7 @@ export class ApiCallService {
 	public async handleMultipartRequest(
 		endpoint: IEndpoint & { exec: any },
 		request: FastifyRequest<{ Body: Record<string, unknown>, Querystring: Record<string, unknown> }>,
-		reply: FastifyReply,
-	): Promise<void> {
+	): Promise<LiteResponse> {
 		const multipartData = await request.file()
 			.then((data) => data ?? null)
 			.catch(() => {
@@ -126,9 +127,7 @@ export class ApiCallService {
 			});
 
 		if (multipartData === null) {
-			reply.code(400);
-			reply.send();
-			return;
+			return LiteResponse.empty(400);
 		}
 
 		const [path] = await createTemp();
@@ -140,59 +139,47 @@ export class ApiCallService {
 		}
 
 		// https://datatracker.ietf.org/doc/html/rfc6750.html#section-2.1 (case sensitive)
-		const token = request.headers.authorization?.startsWith('Bearer ')
-			? request.headers.authorization.slice(7)
+		const authHeaderValue = request.headers.authorization;
+		const token = authHeaderValue?.startsWith('Bearer ')
+			? authHeaderValue.slice(7)
 			: fields['i'];
 		if (token != null && typeof token !== 'string') {
-			reply.code(400);
-			return;
+			return LiteResponse.empty(400);
 		}
 
 		try {
 			const [user, app] = await this.authenticateService.authenticate(token);
 
-			try {
-				const result = await this.call({
-					endpoint,
-					user,
-					token: app,
-					data: fields,
-					file: { name: multipartData.filename, path: path },
-					method: request.method,
-					ip: request.ip,
-					headers: request.headers,
-				});
-
-				if (result.ok) {
-					this.sendData(result.value).reply(reply);
-				} else {
-					throw result.error;
-				}
-			} catch (err: unknown) {
-				if (err instanceof ApiError) {
-					err.serialize().reply(reply);
-				} else {
-					throw err;
-				}
-			}
-
 			if (user) {
 				await this.ipAddressLoggingService.log(request.ip, user);
 			}
+
+			const result = await this.call({
+				endpoint,
+				user,
+				token: app,
+				data: fields,
+				file: { name: multipartData.filename, path: path },
+				method: request.method,
+				ip: request.ip,
+				headers: request.headers,
+			});
+
+			if (result.ok) {
+				if (result.value == null) {
+					return LiteResponse.empty(204);
+				} else {
+					return LiteResponse.from(200, result.value);
+				}
+			} else {
+				return result.error.serialize();
+			}
 		} catch (err: unknown) {
 			if (err instanceof AuthenticationError) {
-				err.serialize().reply(reply);
+				return err.serialize();
 			} else {
-				new ApiError().serialize().reply(reply);
+				return new ApiError().serialize();
 			}
-		}
-	}
-
-	private sendData(data: unknown): LiteResponse<NonNullable<unknown>> {
-		if (data == null) {
-			return LiteResponse.empty(204);
-		} else {
-			return LiteResponse.from(200, data);
 		}
 	}
 

@@ -1,6 +1,8 @@
 import { FastifyReply } from 'fastify';
 
-export class LiteResponse<T extends NonNullable<unknown>> {
+export class LiteResponse<
+	T extends NonNullable<unknown> = NonNullable<unknown>,
+> {
 	public static empty(
 		code: number,
 		headers = new Map<string, string>(),
@@ -19,7 +21,7 @@ export class LiteResponse<T extends NonNullable<unknown>> {
 	private constructor(
 		private readonly code: number,
 		private readonly data: T | null,
-		private readonly headers: Readonly<Map<string, string>>,
+		private readonly headers: Map<string, string>,
 		private readonly empty: boolean,
 	) {}
 

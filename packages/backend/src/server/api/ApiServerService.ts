@@ -18,6 +18,7 @@ import { ApiCallService } from './ApiCallService.js';
 import { SignupApiService } from './SignupApiService.js';
 import { SigninApiService } from './SigninApiService.js';
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { LiteResponse } from '@/misc/LiteResponse.js';
 
 @Injectable()
 export class ApiServerService {
@@ -77,13 +78,12 @@ export class ApiServerService {
 					Querystring: Record<string, unknown>,
 				}>('/' + endpoint.name, async (request, reply) => {
 					if (request.method === 'GET' && !endpoint.meta.allowGet) {
-						reply.code(405);
-						reply.send();
+						LiteResponse.empty(405).reply(reply);
 						return;
 					}
 
 					// Await so that any error can automatically be translated to HTTP 500
-					await this.apiCallService.handleMultipartRequest(ep, request, reply);
+					(await this.apiCallService.handleMultipartRequest(ep, request)).reply(reply);
 					return reply;
 				});
 			} else {
@@ -93,13 +93,12 @@ export class ApiServerService {
 					Querystring: Record<string, unknown>,
 				}>('/' + endpoint.name, { bodyLimit: 1024 * 1024 }, async (request, reply) => {
 					if (request.method === 'GET' && !endpoint.meta.allowGet) {
-						reply.code(405);
-						reply.send();
+						LiteResponse.empty(405).reply(reply);
 						return;
 					}
 
-					// Await so that any error can automatically be translated to HTTP 500
-					await this.apiCallService.handleRequest(ep, request, reply);
+					const liteResponse = await this.apiCallService.handleRequest(ep, request);
+					liteResponse.reply(reply);
 					return reply;
 				});
 			}
