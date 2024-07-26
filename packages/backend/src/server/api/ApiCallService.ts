@@ -6,22 +6,19 @@
 import { randomUUID } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as stream from 'node:stream/promises';
-import { Inject, Injectable } from '@nestjs/common';
-import { DI } from '@/di-symbols.js';
+import { Injectable } from '@nestjs/common';
 import { getIpHash } from '@/misc/get-ip-hash.js';
-import type { MiLocalUser, MiUser } from '@/models/User.js';
+import type { MiLocalUser } from '@/models/User.js';
 import type { MiAccessToken } from '@/models/AccessToken.js';
-import type { UserIpsRepository } from '@/models/_.js';
-import { MetaService } from '@/core/MetaService.js';
 import { createTemp } from '@/misc/create-temp.js';
 import { ApiError } from './error.js';
 import { RateLimiterService } from './RateLimiterService.js';
 import { ApiLoggerService } from './ApiLoggerService.js';
 import { AuthenticateService, AuthenticationError } from './AuthenticateService.js';
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import type { OnApplicationShutdown } from '@nestjs/common';
 import type { IEndpointMeta, IEndpoint } from './endpoints.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
+import { IpAddressLoggingService } from './IpAddressLoggingService.js';
 
 const accessDenied = {
 	message: 'Access denied.',
@@ -30,24 +27,14 @@ const accessDenied = {
 };
 
 @Injectable()
-export class ApiCallService implements OnApplicationShutdown {
-	private readonly userIpHistories = new Map<MiUser['id'], Set<string>>();
-	private readonly userIpHistoriesClearIntervalId: NodeJS.Timeout;
-
+export class ApiCallService {
 	public constructor(
-		@Inject(DI.userIpsRepository)
-		private readonly userIpsRepository: UserIpsRepository,
-
-		private readonly metaService: MetaService,
 		private readonly authenticateService: AuthenticateService,
 		private readonly rateLimiterService: RateLimiterService,
 		private readonly roleUserService: RoleUserService,
 		private readonly apiLoggerService: ApiLoggerService,
-	) {
-		this.userIpHistoriesClearIntervalId = setInterval(() => {
-			this.userIpHistories.clear();
-		}, 1000 * 60 * 60);
-	}
+		private readonly ipAddressLoggingService: IpAddressLoggingService,
+	) {}
 
 	private sendApiError(reply: FastifyReply, err: ApiError): void {
 		let statusCode = err.httpStatusCode;
@@ -99,7 +86,7 @@ export class ApiCallService implements OnApplicationShutdown {
 			reply.code(400);
 			return;
 		}
-		this.authenticateService.authenticate(token).then(([user, app]) => {
+		this.authenticateService.authenticate(token).then(async ([user, app]) => {
 			this.call(endpoint, user, app, body, null, request).then((res) => {
 				if (request.method === 'GET' && endpoint.meta.cacheSec && !token && !user) {
 					reply.header('Cache-Control', `public, max-age=${endpoint.meta.cacheSec}`);
@@ -110,7 +97,7 @@ export class ApiCallService implements OnApplicationShutdown {
 			});
 
 			if (user) {
-				this.logIp(request, user);
+				await this.ipAddressLoggingService.log(request.ip, user);
 			}
 		}).catch((err: unknown) => {
 			this.sendAuthenticationError(reply, err);
@@ -147,7 +134,7 @@ export class ApiCallService implements OnApplicationShutdown {
 			reply.code(400);
 			return;
 		}
-		this.authenticateService.authenticate(token).then(([user, app]) => {
+		this.authenticateService.authenticate(token).then(async ([user, app]) => {
 			this.call(endpoint, user, app, fields, {
 				name: multipartData.filename,
 				path: path,
@@ -158,7 +145,7 @@ export class ApiCallService implements OnApplicationShutdown {
 			});
 
 			if (user) {
-				this.logIp(request, user);
+				await this.ipAddressLoggingService.log(request.ip, user);
 			}
 		}).catch((err: unknown) => {
 			this.sendAuthenticationError(reply, err);
@@ -186,28 +173,6 @@ export class ApiCallService implements OnApplicationShutdown {
 				...(apiError.info ? { info: apiError.info } : {}),
 			},
 		});
-	}
-
-	private async logIp(request: FastifyRequest, user: MiLocalUser) {
-		const meta = await this.metaService.fetch();
-		if (!meta.enableIpLogging) return;
-		const ip = request.ip;
-		const ips = this.userIpHistories.get(user.id);
-		if (ips == null || !ips.has(ip)) {
-			if (ips == null) {
-				this.userIpHistories.set(user.id, new Set([ip]));
-			} else {
-				ips.add(ip);
-			}
-
-			try {
-				this.userIpsRepository.createQueryBuilder().insert().values({
-					createdAt: new Date(),
-					userId: user.id,
-					ip: ip,
-				}).orIgnore(true).execute();
-			} catch { /* empty */ }
-		}
 	}
 
 	private async call(
@@ -377,9 +342,5 @@ export class ApiCallService implements OnApplicationShutdown {
 				});
 			}
 		});
-	}
-
-	public onApplicationShutdown(): void {
-		clearInterval(this.userIpHistoriesClearIntervalId);
 	}
 }

@@ -53,6 +53,7 @@ import { StaticAssetsServerService } from './StaticAssetsServerService.js';
 import { UserFeedServerService } from './UserFeedServerService.js';
 import { EmojiServerService } from './EmojiServerService.js';
 import { BullDashboardServerService } from './BullDashboardServerService.js';
+import { IpAddressLoggingService } from './api/IpAddressLoggingService.js';
 
 @Module({
 	imports: [
@@ -106,6 +107,7 @@ import { BullDashboardServerService } from './BullDashboardServerService.js';
 		UserFeedServerService,
 		EmojiServerService,
 		BullDashboardServerService,
+		IpAddressLoggingService,
 	],
 	exports: [
 		ServerService,
