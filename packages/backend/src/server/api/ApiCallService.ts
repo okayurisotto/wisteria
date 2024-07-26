@@ -26,6 +26,17 @@ const accessDenied = {
 	id: '56f35758-7dd5-468b-8439-5d6fb8ec9b8e',
 };
 
+type CallInfo = {
+	endpoint: IEndpoint & { exec: unknown };
+	user: MiLocalUser | null;
+	token: MiAccessToken | null;
+	data: unknown;
+	file: { name: string; path: string } | null;
+	method: string;
+	ip: string;
+	headers: Record<string, string | string[] | undefined>;
+};
+
 @Injectable()
 export class ApiCallService {
 	public constructor(
@@ -91,7 +102,16 @@ export class ApiCallService {
 			const [user, app] = await this.authenticateService.authenticate(token);
 
 			try {
-				const res: unknown = await this.call(endpoint, user, app, body, null, request);
+				const res: unknown = await this.call({
+					endpoint,
+					user,
+					token: app,
+					data: body,
+					file: null,
+					method: request.method,
+					ip: request.ip,
+					headers: request.headers,
+				});
 
 				if (request.method === 'GET' && endpoint.meta.cacheSec && !token && !user) {
 					reply.header('Cache-Control', `public, max-age=${endpoint.meta.cacheSec}`);
@@ -131,7 +151,7 @@ export class ApiCallService {
 		const [path] = await createTemp();
 		await stream.pipeline(multipartData.file, fs.createWriteStream(path));
 
-		const fields = {} as Record<string, unknown>;
+		const fields: Record<string, unknown> = {};
 		for (const [k, v] of Object.entries(multipartData.fields)) {
 			fields[k] = typeof v === 'object' && 'value' in v ? v.value : undefined;
 		}
@@ -149,17 +169,16 @@ export class ApiCallService {
 			const [user, app] = await this.authenticateService.authenticate(token);
 
 			try {
-				const res: unknown = await this.call(
+				const res: unknown = await this.call({
 					endpoint,
 					user,
-					app,
-					fields,
-					{
-						name: multipartData.filename,
-						path: path,
-					},
-					request,
-				);
+					token: app,
+					data: fields,
+					file: { name: multipartData.filename, path: path },
+					method: request.method,
+					ip: request.ip,
+					headers: request.headers,
+				});
 
 				this.sendData(reply, res);
 			} catch (err: unknown) {
@@ -197,22 +216,21 @@ export class ApiCallService {
 		});
 	}
 
-	private async call(
-		ep: IEndpoint & { exec: any },
-		user: MiLocalUser | null | undefined,
-		token: MiAccessToken | null | undefined,
-		data: any,
-		file: {
-			name: string;
-			path: string;
-		} | null,
-		request: FastifyRequest<{ Body: Record<string, unknown> | undefined, Querystring: Record<string, unknown> }>,
-	) {
+	private async call({
+		endpoint,
+		user,
+		token,
+		data,
+		file,
+		method,
+		ip,
+		headers,
+	}: CallInfo) {
 		//#region secure
 
 		const isSecure = user != null && token == null;
 
-		if (ep.meta.secure && !isSecure) {
+		if (endpoint.meta.secure && !isSecure) {
 			throw new ApiError(accessDenied);
 		}
 
@@ -220,19 +238,19 @@ export class ApiCallService {
 
 		//#region limit
 
-		if (ep.meta.limit) {
+		if (endpoint.meta.limit) {
 			// koa will automatically load the `X-Forwarded-For` header if `proxy: true` is configured in the app.
 			let limitActor: string;
 			if (user) {
 				limitActor = user.id;
 			} else {
-				limitActor = getIpHash(request.ip);
+				limitActor = getIpHash(ip);
 			}
 
-			const limit = Object.assign({}, ep.meta.limit);
+			const limit = Object.assign({}, endpoint.meta.limit);
 
 			if (limit.key == null) {
-				(limit as any).key = ep.name;
+				(limit as any).key = endpoint.name;
 			}
 
 			// TODO: 毎リクエスト計算するのもあれだしキャッシュしたい
@@ -257,7 +275,7 @@ export class ApiCallService {
 
 		//#region requireCredential / requireModerator / requireAdmin
 
-		if (ep.meta.requireCredential || ep.meta.requireModerator || ep.meta.requireAdmin) {
+		if (endpoint.meta.requireCredential || endpoint.meta.requireModerator || endpoint.meta.requireAdmin) {
 			if (user == null) {
 				throw new ApiError({
 					message: 'Credential required.',
@@ -279,7 +297,7 @@ export class ApiCallService {
 
 		//#region prohibitMoved
 
-		if (ep.meta.prohibitMoved) {
+		if (endpoint.meta.prohibitMoved) {
 			if (user?.movedToUri) {
 				throw new ApiError({
 					message: 'You have moved your account.',
@@ -294,9 +312,9 @@ export class ApiCallService {
 
 		//#region requireModerator / requireAdmin
 
-		if ((ep.meta.requireModerator || ep.meta.requireAdmin) && !user!.isRoot) {
+		if ((endpoint.meta.requireModerator || endpoint.meta.requireAdmin) && !user!.isRoot) {
 			const myRoles = await this.roleUserService.getUserRoles(user!.id);
-			if (ep.meta.requireModerator && !myRoles.some(r => r.isModerator || r.isAdministrator)) {
+			if (endpoint.meta.requireModerator && !myRoles.some(r => r.isModerator || r.isAdministrator)) {
 				throw new ApiError({
 					message: 'You are not assigned to a moderator role.',
 					code: 'ROLE_PERMISSION_DENIED',
@@ -304,7 +322,7 @@ export class ApiCallService {
 					id: 'd33d5333-db36-423d-a8f9-1a2b9549da41',
 				});
 			}
-			if (ep.meta.requireAdmin && !myRoles.some(r => r.isAdministrator)) {
+			if (endpoint.meta.requireAdmin && !myRoles.some(r => r.isAdministrator)) {
 				throw new ApiError({
 					message: 'You are not assigned to an administrator role.',
 					code: 'ROLE_PERMISSION_DENIED',
@@ -318,10 +336,10 @@ export class ApiCallService {
 
 		//#region requireRolePolicy
 
-		if (ep.meta.requireRolePolicy != null && !user!.isRoot) {
+		if (endpoint.meta.requireRolePolicy != null && !user!.isRoot) {
 			const myRoles = await this.roleUserService.getUserRoles(user!.id);
 			const policies = await this.roleUserService.getUserPolicies(user!.id);
-			if (!policies[ep.meta.requireRolePolicy] && !myRoles.some(r => r.isAdministrator)) {
+			if (!policies[endpoint.meta.requireRolePolicy] && !myRoles.some(r => r.isAdministrator)) {
 				throw new ApiError({
 					message: 'You are not assigned to a required role.',
 					code: 'ROLE_PERMISSION_DENIED',
@@ -335,8 +353,8 @@ export class ApiCallService {
 
 		//#region
 
-		if (token && ((ep.meta.kind && !token.permission.some(p => p === ep.meta.kind))
-			|| (!ep.meta.kind && (ep.meta.requireCredential || ep.meta.requireModerator || ep.meta.requireAdmin)))) {
+		if (token && ((endpoint.meta.kind && !token.permission.some(p => p === endpoint.meta.kind))
+			|| (!endpoint.meta.kind && (endpoint.meta.requireCredential || endpoint.meta.requireModerator || endpoint.meta.requireAdmin)))) {
 			throw new ApiError({
 				message: 'Your app does not have the necessary permissions to use this endpoint.',
 				code: 'PERMISSION_DENIED',
@@ -349,9 +367,9 @@ export class ApiCallService {
 
 		//#region Cast non JSON input
 
-		if ((ep.meta.requireFile || request.method === 'GET') && ep.params.properties) {
-			for (const k of Object.keys(ep.params.properties)) {
-				const param = ep.params.properties[k];
+		if ((endpoint.meta.requireFile || method === 'GET') && endpoint.params.properties) {
+			for (const k of Object.keys(endpoint.params.properties)) {
+				const param = endpoint.params.properties[k];
 				if (['boolean', 'number', 'integer'].includes(param.type ?? '') && typeof data[k] === 'string') {
 					try {
 						data[k] = JSON.parse(data[k]);
@@ -373,16 +391,16 @@ export class ApiCallService {
 
 		// API invoking
 		try {
-			const data: unknown = await ep.exec(data, user, token, file, request.ip, request.headers);
-			return data;
+			const result: unknown = await endpoint.exec(data, user, token, file, ip, headers);
+			return result;
 		} catch (err: unknown) {
 			if (err instanceof ApiError) throw err;
 			if (err instanceof AuthenticationError) throw err;
 
 			if (err instanceof Error) {
 				const errId = randomUUID();
-				this.apiLoggerService.logger.error(`Internal error occurred in ${ep.name}: ${err.message}`, {
-					ep: ep.name,
+				this.apiLoggerService.logger.error(`Internal error occurred in ${endpoint.name}: ${err.message}`, {
+					ep: endpoint.name,
 					ps: data,
 					e: {
 						message: err.message,
@@ -401,8 +419,8 @@ export class ApiCallService {
 				});
 			} else {
 				const errId = randomUUID();
-				this.apiLoggerService.logger.error(`Internal error occurred in ${ep.name}`, {
-					ep: ep.name,
+				this.apiLoggerService.logger.error(`Internal error occurred in ${endpoint.name}`, {
+					ep: endpoint.name,
 					ps: data,
 					err,
 					errId,
