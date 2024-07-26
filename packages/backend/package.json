@@ -196,6 +196,7 @@
 		"jest-mock": "29.7.0",
 		"pid-port": "1.0.0",
 		"simple-oauth2": "5.0.0",
+		"type-fest": "^4.23.0",
 		"typescript": "5.5.4"
 	}
 }

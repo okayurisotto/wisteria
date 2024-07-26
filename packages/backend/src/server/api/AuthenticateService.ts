@@ -10,13 +10,7 @@ import type { MiLocalUser } from '@/models/User.js';
 import type { MiAccessToken } from '@/models/AccessToken.js';
 import isNativeToken from '@/misc/is-native-token.js';
 import { bindThis } from '@/decorators.js';
-
-export class AuthenticationError extends Error {
-	constructor(message: string) {
-		super(message);
-		this.name = 'AuthenticationError';
-	}
-}
+import { AuthenticationError } from '@/misc/AuthenticationError.js';
 
 @Injectable()
 export class AuthenticateService {

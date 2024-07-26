@@ -14,11 +14,13 @@ import { createTemp } from '@/misc/create-temp.js';
 import { ApiError } from './error.js';
 import { RateLimiterService } from './RateLimiterService.js';
 import { ApiLoggerService } from './ApiLoggerService.js';
-import { AuthenticateService, AuthenticationError } from './AuthenticateService.js';
+import { AuthenticateService } from './AuthenticateService.js';
+import { AuthenticationError } from '@/misc/AuthenticationError.js';
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import type { IEndpointMeta, IEndpoint } from './endpoints.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { IpAddressLoggingService } from './IpAddressLoggingService.js';
+import { LiteResponse } from '@/misc/LiteResponse.js';
 
 const accessDenied = new ApiError({
 	message: 'Access denied.',
@@ -48,39 +50,6 @@ export class ApiCallService {
 		private readonly apiLoggerService: ApiLoggerService,
 		private readonly ipAddressLoggingService: IpAddressLoggingService,
 	) {}
-
-	private sendApiError(reply: FastifyReply, err: ApiError): void {
-		let statusCode = err.httpStatusCode;
-
-		if (err.httpStatusCode === 401) {
-			reply.header('WWW-Authenticate', 'Bearer realm="Misskey"');
-		} else if (err.kind === 'client') {
-			reply.header('WWW-Authenticate', `Bearer realm="Misskey", error="invalid_request", error_description="${err.message}"`);
-			statusCode = statusCode ?? 400;
-		} else if (err.kind === 'permission') {
-			// (ROLE_PERMISSION_DENIEDは関係ない)
-			if (err.code === 'PERMISSION_DENIED') {
-				reply.header('WWW-Authenticate', `Bearer realm="Misskey", error="insufficient_scope", error_description="${err.message}"`);
-			}
-			statusCode = statusCode ?? 403;
-		}
-
-		this.sendApiErrorWithCode(reply, statusCode ?? 500, err);
-	}
-
-	private sendAuthenticationError(reply: FastifyReply, err: unknown): void {
-		if (err instanceof AuthenticationError) {
-			const message = 'Authentication failed. Please ensure your token is correct.';
-			reply.header('WWW-Authenticate', `Bearer realm="Misskey", error="invalid_token", error_description="${message}"`);
-			this.sendApiErrorWithCode(reply, 401, new ApiError({
-				message: 'Authentication failed. Please ensure your token is correct.',
-				code: 'AUTHENTICATION_FAILED',
-				id: 'b0a7f5f8-dc2f-4171-b91f-de88ad238e14',
-			}));
-		} else {
-			this.sendApiErrorWithCode(reply, 500, new ApiError());
-		}
-	}
 
 	public async handleRequest(
 		endpoint: IEndpoint & { exec: any },
@@ -120,19 +89,27 @@ export class ApiCallService {
 						reply.header('Cache-Control', `public, max-age=${endpoint.meta.cacheSec}`);
 					}
 
-					this.sendData(reply, result.value);
+					this.sendData(result.value).reply(reply);
 				} else {
 					throw result.error;
 				}
 			} catch (err: unknown) {
-				this.sendApiError(reply, err);
+				if (err instanceof ApiError) {
+					err.serialize().reply(reply);
+				} else {
+					throw err;
+				}
 			}
 
 			if (user) {
 				await this.ipAddressLoggingService.log(request.ip, user);
 			}
 		} catch (err: unknown) {
-			this.sendAuthenticationError(reply, err);
+			if (err instanceof AuthenticationError) {
+				err.serialize().reply(reply);
+			} else {
+				new ApiError().serialize().reply(reply);
+			}
 		}
 	}
 
@@ -187,43 +164,36 @@ export class ApiCallService {
 				});
 
 				if (result.ok) {
-					this.sendData(reply, result.value);
+					this.sendData(result.value).reply(reply);
 				} else {
 					throw result.error;
 				}
 			} catch (err: unknown) {
-				this.sendApiError(reply, err);
+				if (err instanceof ApiError) {
+					err.serialize().reply(reply);
+				} else {
+					throw err;
+				}
 			}
 
 			if (user) {
 				await this.ipAddressLoggingService.log(request.ip, user);
 			}
 		} catch (err: unknown) {
-			this.sendAuthenticationError(reply, err);
+			if (err instanceof AuthenticationError) {
+				err.serialize().reply(reply);
+			} else {
+				new ApiError().serialize().reply(reply);
+			}
 		}
 	}
 
-	private sendData(reply: FastifyReply, data: unknown) {
+	private sendData(data: unknown): LiteResponse<NonNullable<unknown>> {
 		if (data == null) {
-			reply.code(204);
-			reply.send();
+			return LiteResponse.empty(204);
 		} else {
-			// 文字列を返す場合は、JSON.stringify通さないとJSONと認識されない
-			reply.send(typeof data === 'string' ? JSON.stringify(data) : data);
+			return LiteResponse.from(200, data);
 		}
-	}
-
-	private sendApiErrorWithCode(reply: FastifyReply, code: number, apiError: ApiError) {
-		reply.code(code);
-		reply.send({
-			error: {
-				message: apiError.message,
-				code: apiError.code,
-				id: apiError.id,
-				kind: apiError.kind,
-				...(apiError.info ? { info: apiError.info } : {}),
-			},
-		});
 	}
 
 	private async call({
