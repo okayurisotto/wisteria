@@ -11,11 +11,9 @@ import { DI } from '@/di-symbols.js';
 import { getIpHash } from '@/misc/get-ip-hash.js';
 import type { MiLocalUser, MiUser } from '@/models/User.js';
 import type { MiAccessToken } from '@/models/AccessToken.js';
-import type Logger from '@/logger.js';
 import type { UserIpsRepository } from '@/models/_.js';
 import { MetaService } from '@/core/MetaService.js';
 import { createTemp } from '@/misc/create-temp.js';
-import { bindThis } from '@/decorators.js';
 import { ApiError } from './error.js';
 import { RateLimiterService } from './RateLimiterService.js';
 import { ApiLoggerService } from './ApiLoggerService.js';
@@ -33,29 +31,25 @@ const accessDenied = {
 
 @Injectable()
 export class ApiCallService implements OnApplicationShutdown {
-	private logger: Logger;
-	private userIpHistories: Map<MiUser['id'], Set<string>>;
-	private userIpHistoriesClearIntervalId: NodeJS.Timeout;
+	private readonly userIpHistories = new Map<MiUser['id'], Set<string>>();
+	private readonly userIpHistoriesClearIntervalId: NodeJS.Timeout;
 
-	constructor(
+	public constructor(
 		@Inject(DI.userIpsRepository)
-		private userIpsRepository: UserIpsRepository,
+		private readonly userIpsRepository: UserIpsRepository,
 
-		private metaService: MetaService,
-		private authenticateService: AuthenticateService,
-		private rateLimiterService: RateLimiterService,
-		private roleUserService: RoleUserService,
-		private apiLoggerService: ApiLoggerService,
+		private readonly metaService: MetaService,
+		private readonly authenticateService: AuthenticateService,
+		private readonly rateLimiterService: RateLimiterService,
+		private readonly roleUserService: RoleUserService,
+		private readonly apiLoggerService: ApiLoggerService,
 	) {
-		this.logger = this.apiLoggerService.logger;
-		this.userIpHistories = new Map<MiUser['id'], Set<string>>();
-
 		this.userIpHistoriesClearIntervalId = setInterval(() => {
 			this.userIpHistories.clear();
 		}, 1000 * 60 * 60);
 	}
 
-	#sendApiError(reply: FastifyReply, err: ApiError): void {
+	private sendApiError(reply: FastifyReply, err: ApiError): void {
 		let statusCode = err.httpStatusCode;
 		if (err.httpStatusCode === 401) {
 			reply.header('WWW-Authenticate', 'Bearer realm="Misskey"');
@@ -74,7 +68,7 @@ export class ApiCallService implements OnApplicationShutdown {
 		this.send(reply, statusCode, err);
 	}
 
-	#sendAuthenticationError(reply: FastifyReply, err: unknown): void {
+	private sendAuthenticationError(reply: FastifyReply, err: unknown): void {
 		if (err instanceof AuthenticationError) {
 			const message = 'Authentication failed. Please ensure your token is correct.';
 			reply.header('WWW-Authenticate', `Bearer realm="Misskey", error="invalid_token", error_description="${message}"`);
@@ -88,7 +82,6 @@ export class ApiCallService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	public handleRequest(
 		endpoint: IEndpoint & { exec: any },
 		request: FastifyRequest<{ Body: Record<string, unknown> | undefined, Querystring: Record<string, unknown> }>,
@@ -113,18 +106,17 @@ export class ApiCallService implements OnApplicationShutdown {
 				}
 				this.send(reply, res);
 			}).catch((err: unknown) => {
-				this.#sendApiError(reply, err);
+				this.sendApiError(reply, err);
 			});
 
 			if (user) {
 				this.logIp(request, user);
 			}
 		}).catch((err: unknown) => {
-			this.#sendAuthenticationError(reply, err);
+			this.sendAuthenticationError(reply, err);
 		});
 	}
 
-	@bindThis
 	public async handleMultipartRequest(
 		endpoint: IEndpoint & { exec: any },
 		request: FastifyRequest<{ Body: Record<string, unknown>, Querystring: Record<string, unknown> }>,
@@ -162,18 +154,17 @@ export class ApiCallService implements OnApplicationShutdown {
 			}, request).then((res) => {
 				this.send(reply, res);
 			}).catch((err: unknown) => {
-				this.#sendApiError(reply, err);
+				this.sendApiError(reply, err);
 			});
 
 			if (user) {
 				this.logIp(request, user);
 			}
 		}).catch((err: unknown) => {
-			this.#sendAuthenticationError(reply, err);
+			this.sendAuthenticationError(reply, err);
 		});
 	}
 
-	@bindThis
 	private send(reply: FastifyReply, x?: any, y?: ApiError) {
 		if (x == null) {
 			reply.code(204);
@@ -195,7 +186,6 @@ export class ApiCallService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	private async logIp(request: FastifyRequest, user: MiLocalUser) {
 		const meta = await this.metaService.fetch();
 		if (!meta.enableIpLogging) return;
@@ -218,7 +208,6 @@ export class ApiCallService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	private async call(
 		ep: IEndpoint & { exec: any },
 		user: MiLocalUser | null | undefined,
@@ -366,7 +355,7 @@ export class ApiCallService implements OnApplicationShutdown {
 				throw err;
 			} else {
 				const errId = randomUUID();
-				this.logger.error(`Internal error occurred in ${ep.name}: ${err.message}`, {
+				this.apiLoggerService.logger.error(`Internal error occurred in ${ep.name}: ${err.message}`, {
 					ep: ep.name,
 					ps: data,
 					e: {
