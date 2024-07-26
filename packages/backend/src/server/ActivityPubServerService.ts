@@ -32,42 +32,42 @@ const LD_JSON = 'application/ld+json; profile="https://www.w3.org/ns/activitystr
 
 @Injectable()
 export class ActivityPubServerService {
-	constructor(
+	public constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.noteReactionsRepository)
-		private noteReactionsRepository: NoteReactionsRepository,
+		private readonly noteReactionsRepository: NoteReactionsRepository,
 
 		@Inject(DI.emojisRepository)
-		private emojisRepository: EmojisRepository,
+		private readonly emojisRepository: EmojisRepository,
 
 		@Inject(DI.userNotePiningsRepository)
-		private userNotePiningsRepository: UserNotePiningsRepository,
+		private readonly userNotePiningsRepository: UserNotePiningsRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
 		@Inject(DI.followRequestsRepository)
-		private followRequestsRepository: FollowRequestsRepository,
+		private readonly followRequestsRepository: FollowRequestsRepository,
 
-		private utilityService: UtilityService,
-		private userEntityService: UserEntityService,
-		private apRendererService: ApRendererService,
-		private userKeypairService: UserKeypairService,
-		private queryService: QueryService,
+		private readonly utilityService: UtilityService,
+		private readonly userEntityService: UserEntityService,
+		private readonly apRendererService: ApRendererService,
+		private readonly userKeypairService: UserKeypairService,
+		private readonly queryService: QueryService,
 	) {}
 
-	private setResponseType(request: FastifyRequest, reply: FastifyReply): void {
+	private setResponseType(request: FastifyRequest, reply: FastifyReply) {
 		const accept = request.accepts().type([ACTIVITY_JSON, LD_JSON]);
 		if (accept === LD_JSON) {
 			reply.type(LD_JSON);
@@ -76,11 +76,7 @@ export class ActivityPubServerService {
 		}
 	}
 
-	/**
-	 * Pack Create<Note> or Announce Activity
-	 * @param note Note
-	 */
-	private async packActivity(note: MiNote): Promise<any> {
+	private async packActivity(note: MiNote) {
 		if (isPureRenote(note)) {
 			const renote = await this.notesRepository.findOneByOrFail({ id: note.renoteId });
 			return this.apRendererService.renderAnnounce(renote.uri ? renote.uri : `${this.config.url}/notes/${renote.id}`, note);
@@ -440,6 +436,8 @@ export class ActivityPubServerService {
 			done();
 		});
 
+		//#region Note
+
 		// note
 		fastify.get<{ Params: { note: string; } }>('/notes/:note', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
 			vary(reply.raw, 'Accept');
@@ -491,28 +489,26 @@ export class ActivityPubServerService {
 			return (this.apRendererService.addContext(await this.packActivity(note)));
 		});
 
-		// outbox
-		fastify.get<{
-			Params: { user: string; };
-			Querystring: { since_id?: string; until_id?: string; page?: string; };
-		}>('/users/:user/outbox', async (request, reply) => await this.outbox(request, reply));
+		//#endregion
 
-		// followers
-		fastify.get<{
-			Params: { user: string; };
-			Querystring: { cursor?: string; page?: string; };
-		}>('/users/:user/followers', async (request, reply) => await this.followers(request, reply));
+		//#region User
 
-		// following
-		fastify.get<{
-			Params: { user: string; };
-			Querystring: { cursor?: string; page?: string; };
-		}>('/users/:user/following', async (request, reply) => await this.following(request, reply));
+		// user
+		fastify.get<{ Params: { user: string; } }>('/users/:user', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
+			vary(reply.raw, 'Accept');
 
-		// featured
-		fastify.get<{ Params: { user: string; }; }>('/users/:user/collections/featured', async (request, reply) => await this.featured(request, reply));
+			const userId = request.params.user;
 
-		// publickey
+			const user = await this.usersRepository.findOneBy({
+				id: userId,
+				host: IsNull(),
+				isSuspended: false,
+			});
+
+			return await this.userInfo(request, reply, user);
+		});
+
+		// user publickey
 		fastify.get<{ Params: { user: string; } }>('/users/:user/publickey', async (request, reply) => {
 			const userId = request.params.user;
 
@@ -538,20 +534,7 @@ export class ActivityPubServerService {
 			}
 		});
 
-		fastify.get<{ Params: { user: string; } }>('/users/:user', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
-			vary(reply.raw, 'Accept');
-
-			const userId = request.params.user;
-
-			const user = await this.usersRepository.findOneBy({
-				id: userId,
-				host: IsNull(),
-				isSuspended: false,
-			});
-
-			return await this.userInfo(request, reply, user);
-		});
-
+		// user
 		fastify.get<{ Params: { user: string; } }>('/@:user', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
 			vary(reply.raw, 'Accept');
 
@@ -564,7 +547,31 @@ export class ActivityPubServerService {
 			return await this.userInfo(request, reply, user);
 		});
 
-		// emoji
+		// user outbox
+		fastify.get<{
+			Params: { user: string; };
+			Querystring: { since_id?: string; until_id?: string; page?: string; };
+		}>('/users/:user/outbox', async (request, reply) => await this.outbox(request, reply));
+
+		// followers
+		fastify.get<{
+			Params: { user: string; };
+			Querystring: { cursor?: string; page?: string; };
+		}>('/users/:user/followers', async (request, reply) => await this.followers(request, reply));
+
+		// following
+		fastify.get<{
+			Params: { user: string; };
+			Querystring: { cursor?: string; page?: string; };
+		}>('/users/:user/following', async (request, reply) => await this.following(request, reply));
+
+		// featured
+		fastify.get<{ Params: { user: string; }; }>('/users/:user/collections/featured', async (request, reply) => await this.featured(request, reply));
+
+		//#endregion
+
+		//#region Emoji
+
 		fastify.get<{ Params: { emoji: string; } }>('/emojis/:emoji', async (request, reply) => {
 			const emoji = await this.emojisRepository.findOneBy({
 				host: IsNull(),
@@ -581,7 +588,10 @@ export class ActivityPubServerService {
 			return (this.apRendererService.addContext(await this.apRendererService.renderEmoji(emoji)));
 		});
 
-		// like
+		//#endregion
+
+		//#region Like
+
 		fastify.get<{ Params: { like: string; } }>('/likes/:like', async (request, reply) => {
 			const reaction = await this.noteReactionsRepository.findOneBy({ id: request.params.like });
 
@@ -602,7 +612,10 @@ export class ActivityPubServerService {
 			return (this.apRendererService.addContext(await this.apRendererService.renderLike(reaction, note)));
 		});
 
-		// follow
+		//#endregion
+
+		//#region Follow
+
 		fastify.get<{ Params: { follower: string; followee: string; } }>('/follows/:follower/:followee', async (request, reply) => {
 			// This may be used before the follow is completed, so we do not
 			// check if the following exists.
@@ -628,7 +641,10 @@ export class ActivityPubServerService {
 			return (this.apRendererService.addContext(this.apRendererService.renderFollow(follower, followee)));
 		});
 
-		// follow
+		//#endregion
+
+		//#region Follow Requests
+
 		fastify.get<{ Params: { followRequestId: string ; } }>('/follows/:followRequestId', async (request, reply) => {
 			// This may be used before the follow is completed, so we do not
 			// check if the following exists and only check if the follow request exists.
@@ -662,6 +678,8 @@ export class ActivityPubServerService {
 			this.setResponseType(request, reply);
 			return (this.apRendererService.addContext(this.apRendererService.renderFollow(follower, followee)));
 		});
+
+		//#endregion
 
 		done();
 	}
