@@ -20,11 +20,13 @@ import type { IEndpointMeta, IEndpoint } from './endpoints.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { IpAddressLoggingService } from './IpAddressLoggingService.js';
 
-const accessDenied = {
+const accessDenied = new ApiError({
 	message: 'Access denied.',
 	code: 'ACCESS_DENIED',
 	id: '56f35758-7dd5-468b-8439-5d6fb8ec9b8e',
-};
+});
+
+type Result<T, U> = { ok: true; value: T } | { ok: false; error: U };
 
 type CallInfo = {
 	endpoint: IEndpoint & { exec: unknown };
@@ -102,7 +104,7 @@ export class ApiCallService {
 			const [user, app] = await this.authenticateService.authenticate(token);
 
 			try {
-				const res: unknown = await this.call({
+				const result = await this.call({
 					endpoint,
 					user,
 					token: app,
@@ -113,11 +115,15 @@ export class ApiCallService {
 					headers: request.headers,
 				});
 
-				if (request.method === 'GET' && endpoint.meta.cacheSec && !token && !user) {
-					reply.header('Cache-Control', `public, max-age=${endpoint.meta.cacheSec}`);
-				}
+				if (result.ok) {
+					if (request.method === 'GET' && endpoint.meta.cacheSec && !token && !user) {
+						reply.header('Cache-Control', `public, max-age=${endpoint.meta.cacheSec}`);
+					}
 
-				this.sendData(reply, res);
+					this.sendData(reply, result.value);
+				} else {
+					throw result.error;
+				}
 			} catch (err: unknown) {
 				this.sendApiError(reply, err);
 			}
@@ -169,7 +175,7 @@ export class ApiCallService {
 			const [user, app] = await this.authenticateService.authenticate(token);
 
 			try {
-				const res: unknown = await this.call({
+				const result = await this.call({
 					endpoint,
 					user,
 					token: app,
@@ -180,7 +186,11 @@ export class ApiCallService {
 					headers: request.headers,
 				});
 
-				this.sendData(reply, res);
+				if (result.ok) {
+					this.sendData(reply, result.value);
+				} else {
+					throw result.error;
+				}
 			} catch (err: unknown) {
 				this.sendApiError(reply, err);
 			}
@@ -225,13 +235,13 @@ export class ApiCallService {
 		method,
 		ip,
 		headers,
-	}: CallInfo) {
+	}: CallInfo): Promise<Result<unknown, ApiError | AuthenticationError>> {
 		//#region secure
 
 		const isSecure = user != null && token == null;
 
 		if (endpoint.meta.secure && !isSecure) {
-			throw new ApiError(accessDenied);
+			return { ok: false, error: accessDenied };
 		}
 
 		//#endregion
@@ -261,12 +271,15 @@ export class ApiCallService {
 				try {
 					await this.rateLimiterService.limit(limit as IEndpointMeta['limit'] & { key: NonNullable<string> }, limitActor, factor);
 				} catch {
-					throw new ApiError({
-						message: 'Rate limit exceeded. Please try again later.',
-						code: 'RATE_LIMIT_EXCEEDED',
-						id: 'd5826d14-3982-4d2e-8011-b9e9f02499ef',
-						httpStatusCode: 429,
-					});
+					return {
+						ok: false,
+						error: new ApiError({
+							message: 'Rate limit exceeded. Please try again later.',
+							code: 'RATE_LIMIT_EXCEEDED',
+							id: 'd5826d14-3982-4d2e-8011-b9e9f02499ef',
+							httpStatusCode: 429,
+						}),
+					};
 				}
 			}
 		}
@@ -277,19 +290,25 @@ export class ApiCallService {
 
 		if (endpoint.meta.requireCredential || endpoint.meta.requireModerator || endpoint.meta.requireAdmin) {
 			if (user == null) {
-				throw new ApiError({
-					message: 'Credential required.',
-					code: 'CREDENTIAL_REQUIRED',
-					id: '1384574d-a912-4b81-8601-c7b1c4085df1',
-					httpStatusCode: 401,
-				});
+				return {
+					ok: false,
+					error: new ApiError({
+						message: 'Credential required.',
+						code: 'CREDENTIAL_REQUIRED',
+						id: '1384574d-a912-4b81-8601-c7b1c4085df1',
+						httpStatusCode: 401,
+					})
+				};
 			} else if (user.isSuspended) {
-				throw new ApiError({
-					message: 'Your account has been suspended.',
-					code: 'YOUR_ACCOUNT_SUSPENDED',
-					kind: 'permission',
-					id: 'a8c724b3-6e9c-4b46-b1a8-bc3ed6258370',
-				});
+				return {
+					ok: false,
+					error: new ApiError({
+						message: 'Your account has been suspended.',
+						code: 'YOUR_ACCOUNT_SUSPENDED',
+						kind: 'permission',
+						id: 'a8c724b3-6e9c-4b46-b1a8-bc3ed6258370',
+					})
+				};
 			}
 		}
 
@@ -299,12 +318,15 @@ export class ApiCallService {
 
 		if (endpoint.meta.prohibitMoved) {
 			if (user?.movedToUri) {
-				throw new ApiError({
-					message: 'You have moved your account.',
-					code: 'YOUR_ACCOUNT_MOVED',
-					kind: 'permission',
-					id: '56f20ec9-fd06-4fa5-841b-edd6d7d4fa31',
-				});
+				return {
+					ok: false,
+					error: new ApiError({
+						message: 'You have moved your account.',
+						code: 'YOUR_ACCOUNT_MOVED',
+						kind: 'permission',
+						id: '56f20ec9-fd06-4fa5-841b-edd6d7d4fa31',
+					}),
+				};
 			}
 		}
 
@@ -315,20 +337,26 @@ export class ApiCallService {
 		if ((endpoint.meta.requireModerator || endpoint.meta.requireAdmin) && !user!.isRoot) {
 			const myRoles = await this.roleUserService.getUserRoles(user!.id);
 			if (endpoint.meta.requireModerator && !myRoles.some(r => r.isModerator || r.isAdministrator)) {
-				throw new ApiError({
-					message: 'You are not assigned to a moderator role.',
-					code: 'ROLE_PERMISSION_DENIED',
-					kind: 'permission',
-					id: 'd33d5333-db36-423d-a8f9-1a2b9549da41',
-				});
+				return {
+					ok: false,
+					error: new ApiError({
+						message: 'You are not assigned to a moderator role.',
+						code: 'ROLE_PERMISSION_DENIED',
+						kind: 'permission',
+						id: 'd33d5333-db36-423d-a8f9-1a2b9549da41',
+					}),
+				};
 			}
 			if (endpoint.meta.requireAdmin && !myRoles.some(r => r.isAdministrator)) {
-				throw new ApiError({
-					message: 'You are not assigned to an administrator role.',
-					code: 'ROLE_PERMISSION_DENIED',
-					kind: 'permission',
-					id: 'c3d38592-54c0-429d-be96-5636b0431a61',
-				});
+				return {
+					ok: false,
+					error: new ApiError({
+						message: 'You are not assigned to an administrator role.',
+						code: 'ROLE_PERMISSION_DENIED',
+						kind: 'permission',
+						id: 'c3d38592-54c0-429d-be96-5636b0431a61',
+					}),
+				};
 			}
 		}
 
@@ -340,12 +368,15 @@ export class ApiCallService {
 			const myRoles = await this.roleUserService.getUserRoles(user!.id);
 			const policies = await this.roleUserService.getUserPolicies(user!.id);
 			if (!policies[endpoint.meta.requireRolePolicy] && !myRoles.some(r => r.isAdministrator)) {
-				throw new ApiError({
-					message: 'You are not assigned to a required role.',
-					code: 'ROLE_PERMISSION_DENIED',
-					kind: 'permission',
-					id: '7f86f06f-7e15-4057-8561-f4b6d4ac755a',
-				});
+				return {
+					ok: false,
+					error: new ApiError({
+						message: 'You are not assigned to a required role.',
+						code: 'ROLE_PERMISSION_DENIED',
+						kind: 'permission',
+						id: '7f86f06f-7e15-4057-8561-f4b6d4ac755a',
+					}),
+				};
 			}
 		}
 
@@ -355,12 +386,15 @@ export class ApiCallService {
 
 		if (token && ((endpoint.meta.kind && !token.permission.some(p => p === endpoint.meta.kind))
 			|| (!endpoint.meta.kind && (endpoint.meta.requireCredential || endpoint.meta.requireModerator || endpoint.meta.requireAdmin)))) {
-			throw new ApiError({
-				message: 'Your app does not have the necessary permissions to use this endpoint.',
-				code: 'PERMISSION_DENIED',
-				kind: 'permission',
-				id: '1370e5b7-d4eb-4566-bb1d-7748ee6a1838',
-			});
+			return {
+				ok: false,
+				error: new ApiError({
+					message: 'Your app does not have the necessary permissions to use this endpoint.',
+					code: 'PERMISSION_DENIED',
+					kind: 'permission',
+					id: '1370e5b7-d4eb-4566-bb1d-7748ee6a1838',
+				}),
+			};
 		}
 
 		//#endregion
@@ -374,14 +408,20 @@ export class ApiCallService {
 					try {
 						data[k] = JSON.parse(data[k]);
 					} catch (e) {
-						throw new ApiError({
-							message: 'Invalid param.',
-							code: 'INVALID_PARAM',
-							id: '0b5f1631-7c1a-41a6-b399-cce335f34d85',
-						}, {
-							param: k,
-							reason: `cannot cast to ${param.type}`,
-						});
+						return {
+							ok: false,
+							error: new ApiError(
+								{
+									message: 'Invalid param.',
+									code: 'INVALID_PARAM',
+									id: '0b5f1631-7c1a-41a6-b399-cce335f34d85',
+								},
+								{
+									param: k,
+									reason: `cannot cast to ${param.type}`,
+								},
+							),
+						}
 					}
 				}
 			}
@@ -391,11 +431,11 @@ export class ApiCallService {
 
 		// API invoking
 		try {
-			const result: unknown = await endpoint.exec(data, user, token, file, ip, headers);
-			return result;
+			const value: unknown = await endpoint.exec(data, user, token, file, ip, headers);
+			return { ok: true, value };
 		} catch (err: unknown) {
-			if (err instanceof ApiError) throw err;
-			if (err instanceof AuthenticationError) throw err;
+			if (err instanceof ApiError) return { ok: false, error: err };
+			if (err instanceof AuthenticationError) return { ok: false, error: err };
 
 			if (err instanceof Error) {
 				const errId = randomUUID();
@@ -410,13 +450,19 @@ export class ApiCallService {
 					},
 				});
 				console.error(err, errId);
-				throw new ApiError(null, {
-					e: {
-						message: err.message,
-						code: err.name,
-						id: errId,
-					},
-				});
+				return {
+					ok: false,
+					error: new ApiError(
+						null,
+						{
+							e: {
+								message: err.message,
+								code: err.name,
+								id: errId,
+							},
+						},
+					),
+				};
 			} else {
 				const errId = randomUUID();
 				this.apiLoggerService.logger.error(`Internal error occurred in ${endpoint.name}`, {
@@ -426,7 +472,10 @@ export class ApiCallService {
 					errId,
 				});
 				console.error(err, errId);
-				throw new ApiError(null, { err, errId });
+				return {
+					ok: false,
+					error: new ApiError(null, { err, errId }),
+				};
 			}
 		}
 	}
