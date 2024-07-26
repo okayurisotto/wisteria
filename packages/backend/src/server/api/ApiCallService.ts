@@ -21,6 +21,7 @@ import type { IEndpointMeta, IEndpoint } from './endpoints.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { IpAddressLoggingService } from './IpAddressLoggingService.js';
 import { LiteResponse } from '@/misc/LiteResponse.js';
+import type { ExecMethodType } from './endpoint-base.js';
 
 const accessDenied = new ApiError({
 	message: 'Access denied.',
@@ -31,14 +32,14 @@ const accessDenied = new ApiError({
 type Result<T, U> = { ok: true; value: T } | { ok: false; error: U };
 
 type CallInfo = {
-	endpoint: IEndpoint & { exec: unknown };
+	endpoint: IEndpoint & { exec: ExecMethodType };
 	user: MiLocalUser | null;
 	token: MiAccessToken | null;
 	data: unknown;
 	file: { name: string; path: string } | null;
 	method: string;
 	ip: string;
-	headers: Record<string, string | string[] | undefined>;
+	headers: Record<string, string>;
 };
 
 @Injectable()
@@ -52,7 +53,7 @@ export class ApiCallService {
 	) {}
 
 	public async handleRequest(
-		endpoint: IEndpoint & { exec: any },
+		endpoint: IEndpoint & { exec: ExecMethodType },
 		request: FastifyRequest<{ Body: Record<string, unknown> | undefined, Querystring: Record<string, unknown> }>,
 	): Promise<LiteResponse> {
 		const body = request.method === 'GET'
@@ -116,7 +117,7 @@ export class ApiCallService {
 	}
 
 	public async handleMultipartRequest(
-		endpoint: IEndpoint & { exec: any },
+		endpoint: IEndpoint & { exec: ExecMethodType },
 		request: FastifyRequest<{ Body: Record<string, unknown>, Querystring: Record<string, unknown> }>,
 	): Promise<LiteResponse> {
 		const multipartData = await request.file()
@@ -214,11 +215,10 @@ export class ApiCallService {
 				limitActor = getIpHash(ip);
 			}
 
-			const limit = Object.assign({}, endpoint.meta.limit);
-
-			if (limit.key == null) {
-				(limit as any).key = endpoint.name;
-			}
+			const limit = {
+				...endpoint.meta.limit,
+				key: endpoint.meta.limit.key ?? endpoint.name,
+			};
 
 			// TODO: 毎リクエスト計算するのもあれだしキャッシュしたい
 			const factor = user ? (await this.roleUserService.getUserPolicies(user.id)).rateLimitFactor : 1;
@@ -291,8 +291,8 @@ export class ApiCallService {
 
 		//#region requireModerator / requireAdmin
 
-		if ((endpoint.meta.requireModerator || endpoint.meta.requireAdmin) && !user!.isRoot) {
-			const myRoles = await this.roleUserService.getUserRoles(user!.id);
+		if ((endpoint.meta.requireModerator || endpoint.meta.requireAdmin) && user !== null && !user.isRoot) {
+			const myRoles = await this.roleUserService.getUserRoles(user.id);
 			if (endpoint.meta.requireModerator && !myRoles.some(r => r.isModerator || r.isAdministrator)) {
 				return {
 					ok: false,
@@ -321,9 +321,9 @@ export class ApiCallService {
 
 		//#region requireRolePolicy
 
-		if (endpoint.meta.requireRolePolicy != null && !user!.isRoot) {
-			const myRoles = await this.roleUserService.getUserRoles(user!.id);
-			const policies = await this.roleUserService.getUserPolicies(user!.id);
+		if (endpoint.meta.requireRolePolicy != null && user !== null && !user.isRoot) {
+			const myRoles = await this.roleUserService.getUserRoles(user.id);
+			const policies = await this.roleUserService.getUserPolicies(user.id);
 			if (!policies[endpoint.meta.requireRolePolicy] && !myRoles.some(r => r.isAdministrator)) {
 				return {
 					ok: false,
@@ -359,11 +359,14 @@ export class ApiCallService {
 		//#region Cast non JSON input
 
 		if ((endpoint.meta.requireFile || method === 'GET') && endpoint.params.properties) {
-			for (const k of Object.keys(endpoint.params.properties)) {
-				const param = endpoint.params.properties[k];
-				if (['boolean', 'number', 'integer'].includes(param.type ?? '') && typeof data[k] === 'string') {
+			for (const [key, param] of Object.entries(endpoint.params.properties)) {
+				const castableType = ['boolean', 'number', 'integer'].includes(param.type ?? '');
+				const castableValue = typeof data[key] === 'string';
+
+				if (castableType && castableValue) {
 					try {
-						data[k] = JSON.parse(data[k]);
+						const casted: unknown = JSON.parse(data[key]);
+						data[key] = casted;
 					} catch (e) {
 						return {
 							ok: false,
@@ -374,8 +377,8 @@ export class ApiCallService {
 									id: '0b5f1631-7c1a-41a6-b399-cce335f34d85',
 								},
 								{
-									param: k,
-									reason: `cannot cast to ${param.type}`,
+									param: key,
+									reason: param.type !== undefined ? `cannot cast to ${param.type}` : 'cannot cast',
 								},
 							),
 						}
@@ -388,7 +391,7 @@ export class ApiCallService {
 
 		// API invoking
 		try {
-			const value: unknown = await endpoint.exec(data, user, token, file, ip, headers);
+			const value: unknown = await endpoint.exec(data, user, token, file ?? undefined, ip, headers);
 			return { ok: true, value };
 		} catch (err: unknown) {
 			if (err instanceof ApiError) return { ok: false, error: err };
