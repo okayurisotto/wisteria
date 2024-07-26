@@ -69,11 +69,11 @@ export class ApiCallService {
 		}
 	}
 
-	public handleRequest(
+	public async handleRequest(
 		endpoint: IEndpoint & { exec: any },
 		request: FastifyRequest<{ Body: Record<string, unknown> | undefined, Querystring: Record<string, unknown> }>,
 		reply: FastifyReply,
-	): void {
+	): Promise<void> {
 		const body = request.method === 'GET'
 			? request.query
 			: request.body;
@@ -86,22 +86,28 @@ export class ApiCallService {
 			reply.code(400);
 			return;
 		}
-		this.authenticateService.authenticate(token).then(async ([user, app]) => {
-			this.call(endpoint, user, app, body, null, request).then((res) => {
+
+		try {
+			const [user, app] = await this.authenticateService.authenticate(token);
+
+			try {
+				const res: unknown = await this.call(endpoint, user, app, body, null, request);
+
 				if (request.method === 'GET' && endpoint.meta.cacheSec && !token && !user) {
 					reply.header('Cache-Control', `public, max-age=${endpoint.meta.cacheSec}`);
 				}
+
 				this.sendData(reply, res);
-			}).catch((err: unknown) => {
+			} catch (err: unknown) {
 				this.sendApiError(reply, err);
-			});
+			}
 
 			if (user) {
 				await this.ipAddressLoggingService.log(request.ip, user);
 			}
-		}).catch((err: unknown) => {
+		} catch (err: unknown) {
 			this.sendAuthenticationError(reply, err);
-		});
+		}
 	}
 
 	public async handleMultipartRequest(
@@ -109,10 +115,14 @@ export class ApiCallService {
 		request: FastifyRequest<{ Body: Record<string, unknown>, Querystring: Record<string, unknown> }>,
 		reply: FastifyReply,
 	): Promise<void> {
-		const multipartData = await request.file().catch(() => {
-			/* Fastify throws if the remote didn't send multipart data. Return 400 below. */
-		});
-		if (multipartData == null) {
+		const multipartData = await request.file()
+			.then((data) => data ?? null)
+			.catch(() => {
+				// Fastify throws if the remote didn't send multipart data. Return 400 below.
+				return null;
+			});
+
+		if (multipartData === null) {
 			reply.code(400);
 			reply.send();
 			return;
@@ -134,22 +144,34 @@ export class ApiCallService {
 			reply.code(400);
 			return;
 		}
-		this.authenticateService.authenticate(token).then(async ([user, app]) => {
-			this.call(endpoint, user, app, fields, {
-				name: multipartData.filename,
-				path: path,
-			}, request).then((res) => {
+
+		try {
+			const [user, app] = await this.authenticateService.authenticate(token);
+
+			try {
+				const res: unknown = await this.call(
+					endpoint,
+					user,
+					app,
+					fields,
+					{
+						name: multipartData.filename,
+						path: path,
+					},
+					request,
+				);
+
 				this.sendData(reply, res);
-			}).catch((err: unknown) => {
+			} catch (err: unknown) {
 				this.sendApiError(reply, err);
-			});
+			}
 
 			if (user) {
 				await this.ipAddressLoggingService.log(request.ip, user);
 			}
-		}).catch((err: unknown) => {
+		} catch (err: unknown) {
 			this.sendAuthenticationError(reply, err);
-		});
+		}
 	}
 
 	private sendData(reply: FastifyReply, data: unknown) {
@@ -212,14 +234,16 @@ export class ApiCallService {
 
 			if (factor > 0) {
 				// Rate limit
-				await this.rateLimiterService.limit(limit as IEndpointMeta['limit'] & { key: NonNullable<string> }, limitActor, factor).catch(() => {
+				try {
+					await this.rateLimiterService.limit(limit as IEndpointMeta['limit'] & { key: NonNullable<string> }, limitActor, factor);
+				} catch {
 					throw new ApiError({
 						message: 'Rate limit exceeded. Please try again later.',
 						code: 'RATE_LIMIT_EXCEEDED',
 						id: 'd5826d14-3982-4d2e-8011-b9e9f02499ef',
 						httpStatusCode: 429,
 					});
-				});
+				}
 			}
 		}
 
@@ -317,10 +341,14 @@ export class ApiCallService {
 		}
 
 		// API invoking
-		return await ep.exec(data, user, token, file, request.ip, request.headers).catch((err: Error) => {
-			if (err instanceof ApiError || err instanceof AuthenticationError) {
-				throw err;
-			} else {
+		try {
+			const data: unknown = await ep.exec(data, user, token, file, request.ip, request.headers);
+			return data;
+		} catch (err: unknown) {
+			if (err instanceof ApiError) throw err;
+			if (err instanceof AuthenticationError) throw err;
+
+			if (err instanceof Error) {
 				const errId = randomUUID();
 				this.apiLoggerService.logger.error(`Internal error occurred in ${ep.name}: ${err.message}`, {
 					ep: ep.name,
@@ -340,7 +368,17 @@ export class ApiCallService {
 						id: errId,
 					},
 				});
+			} else {
+				const errId = randomUUID();
+				this.apiLoggerService.logger.error(`Internal error occurred in ${ep.name}`, {
+					ep: ep.name,
+					ps: data,
+					err,
+					errId,
+				});
+				console.error(err, errId);
+				throw new ApiError(null, { err, errId });
 			}
-		});
+		}
 	}
 }
