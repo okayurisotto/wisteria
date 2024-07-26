@@ -51,6 +51,7 @@ export class ApiCallService implements OnApplicationShutdown {
 
 	private sendApiError(reply: FastifyReply, err: ApiError): void {
 		let statusCode = err.httpStatusCode;
+
 		if (err.httpStatusCode === 401) {
 			reply.header('WWW-Authenticate', 'Bearer realm="Misskey"');
 		} else if (err.kind === 'client') {
@@ -62,23 +63,22 @@ export class ApiCallService implements OnApplicationShutdown {
 				reply.header('WWW-Authenticate', `Bearer realm="Misskey", error="insufficient_scope", error_description="${err.message}"`);
 			}
 			statusCode = statusCode ?? 403;
-		} else if (!statusCode) {
-			statusCode = 500;
 		}
-		this.send(reply, statusCode, err);
+
+		this.sendApiErrorWithCode(reply, statusCode ?? 500, err);
 	}
 
 	private sendAuthenticationError(reply: FastifyReply, err: unknown): void {
 		if (err instanceof AuthenticationError) {
 			const message = 'Authentication failed. Please ensure your token is correct.';
 			reply.header('WWW-Authenticate', `Bearer realm="Misskey", error="invalid_token", error_description="${message}"`);
-			this.send(reply, 401, new ApiError({
+			this.sendApiErrorWithCode(reply, 401, new ApiError({
 				message: 'Authentication failed. Please ensure your token is correct.',
 				code: 'AUTHENTICATION_FAILED',
 				id: 'b0a7f5f8-dc2f-4171-b91f-de88ad238e14',
 			}));
 		} else {
-			this.send(reply, 500, new ApiError());
+			this.sendApiErrorWithCode(reply, 500, new ApiError());
 		}
 	}
 
@@ -104,7 +104,7 @@ export class ApiCallService implements OnApplicationShutdown {
 				if (request.method === 'GET' && endpoint.meta.cacheSec && !token && !user) {
 					reply.header('Cache-Control', `public, max-age=${endpoint.meta.cacheSec}`);
 				}
-				this.send(reply, res);
+				this.sendData(reply, res);
 			}).catch((err: unknown) => {
 				this.sendApiError(reply, err);
 			});
@@ -152,7 +152,7 @@ export class ApiCallService implements OnApplicationShutdown {
 				name: multipartData.filename,
 				path: path,
 			}, request).then((res) => {
-				this.send(reply, res);
+				this.sendData(reply, res);
 			}).catch((err: unknown) => {
 				this.sendApiError(reply, err);
 			});
@@ -165,25 +165,27 @@ export class ApiCallService implements OnApplicationShutdown {
 		});
 	}
 
-	private send(reply: FastifyReply, x?: any, y?: ApiError) {
-		if (x == null) {
+	private sendData(reply: FastifyReply, data: unknown) {
+		if (data == null) {
 			reply.code(204);
 			reply.send();
-		} else if (typeof x === 'number' && y) {
-			reply.code(x);
-			reply.send({
-				error: {
-					message: y.message,
-					code: y.code,
-					id: y.id,
-					kind: y.kind,
-					...(y.info ? { info: y.info } : {}),
-				},
-			});
 		} else {
 			// 文字列を返す場合は、JSON.stringify通さないとJSONと認識されない
-			reply.send(typeof x === 'string' ? JSON.stringify(x) : x);
+			reply.send(typeof data === 'string' ? JSON.stringify(data) : data);
 		}
+	}
+
+	private sendApiErrorWithCode(reply: FastifyReply, code: number, apiError: ApiError) {
+		reply.code(code);
+		reply.send({
+			error: {
+				message: apiError.message,
+				code: apiError.code,
+				id: apiError.id,
+				kind: apiError.kind,
+				...(apiError.info ? { info: apiError.info } : {}),
+			},
+		});
 	}
 
 	private async logIp(request: FastifyRequest, user: MiLocalUser) {
