@@ -208,11 +208,17 @@ export class ApiCallService {
 		} | null,
 		request: FastifyRequest<{ Body: Record<string, unknown> | undefined, Querystring: Record<string, unknown> }>,
 	) {
+		//#region secure
+
 		const isSecure = user != null && token == null;
 
 		if (ep.meta.secure && !isSecure) {
 			throw new ApiError(accessDenied);
 		}
+
+		//#endregion
+
+		//#region limit
 
 		if (ep.meta.limit) {
 			// koa will automatically load the `X-Forwarded-For` header if `proxy: true` is configured in the app.
@@ -247,6 +253,10 @@ export class ApiCallService {
 			}
 		}
 
+		//#endregion
+
+		//#region requireCredential / requireModerator / requireAdmin
+
 		if (ep.meta.requireCredential || ep.meta.requireModerator || ep.meta.requireAdmin) {
 			if (user == null) {
 				throw new ApiError({
@@ -265,6 +275,10 @@ export class ApiCallService {
 			}
 		}
 
+		//#endregion
+
+		//#region prohibitMoved
+
 		if (ep.meta.prohibitMoved) {
 			if (user?.movedToUri) {
 				throw new ApiError({
@@ -275,6 +289,10 @@ export class ApiCallService {
 				});
 			}
 		}
+
+		//#endregion
+
+		//#region requireModerator / requireAdmin
 
 		if ((ep.meta.requireModerator || ep.meta.requireAdmin) && !user!.isRoot) {
 			const myRoles = await this.roleUserService.getUserRoles(user!.id);
@@ -296,6 +314,10 @@ export class ApiCallService {
 			}
 		}
 
+		//#endregion
+
+		//#region requireRolePolicy
+
 		if (ep.meta.requireRolePolicy != null && !user!.isRoot) {
 			const myRoles = await this.roleUserService.getUserRoles(user!.id);
 			const policies = await this.roleUserService.getUserPolicies(user!.id);
@@ -309,6 +331,10 @@ export class ApiCallService {
 			}
 		}
 
+		//#endregion
+
+		//#region
+
 		if (token && ((ep.meta.kind && !token.permission.some(p => p === ep.meta.kind))
 			|| (!ep.meta.kind && (ep.meta.requireCredential || ep.meta.requireModerator || ep.meta.requireAdmin)))) {
 			throw new ApiError({
@@ -319,7 +345,10 @@ export class ApiCallService {
 			});
 		}
 
-		// Cast non JSON input
+		//#endregion
+
+		//#region Cast non JSON input
+
 		if ((ep.meta.requireFile || request.method === 'GET') && ep.params.properties) {
 			for (const k of Object.keys(ep.params.properties)) {
 				const param = ep.params.properties[k];
@@ -339,6 +368,8 @@ export class ApiCallService {
 				}
 			}
 		}
+
+		//#endregion
 
 		// API invoking
 		try {
