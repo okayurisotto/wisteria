@@ -19,7 +19,6 @@ import type {
 } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { genAidx } from '@/misc/id/aidx.js';
-import { CacheService } from '@/core/CacheService.js';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
@@ -67,7 +66,6 @@ describe('AnnouncementService', () => {
 			],
 			providers: [
 				AnnouncementService,
-				CacheService,
 				IdService,
 			],
 		})
@@ -205,4 +203,3 @@ describe('AnnouncementService', () => {
 		// TODO
 	});
 });
-

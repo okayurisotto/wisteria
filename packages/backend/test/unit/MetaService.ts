@@ -38,21 +38,11 @@ describe('MetaService', () => {
 		await app.close();
 	});
 
-	test('fetch (cache)', async () => {
+	test('fetch', async () => {
 		const db = app.get<DataSource>(DI.db);
 		const spy = jest.spyOn(db, 'transaction');
 
 		const result = await metaService.fetch();
-
-		expect(result.id).toBe('x');
-		expect(spy).toHaveBeenCalledTimes(0);
-	});
-
-	test('fetch (force)', async () => {
-		const db = app.get<DataSource>(DI.db);
-		const spy = jest.spyOn(db, 'transaction');
-
-		const result = await metaService.fetch(true);
 
 		expect(result.id).toBe('x');
 		expect(spy).toHaveBeenCalledTimes(1);

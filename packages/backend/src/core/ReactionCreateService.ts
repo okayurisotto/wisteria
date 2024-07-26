@@ -243,7 +243,7 @@ export class ReactionCreateService {
 	}
 
 	@bindThis
-	private normalize(reaction: string | null): string {
+	public normalize(reaction: string | null): string {
 		if (reaction == null) return FALLBACK;
 
 		// 文字列タイプのリアクションを絵文字に変換
