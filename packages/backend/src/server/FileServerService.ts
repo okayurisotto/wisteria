@@ -133,6 +133,98 @@ class RemoteFile extends DownloadedRemoteFile {
 	}
 }
 
+type Range<T> = { start: T; end: T } | { start: T; end: null }
+
+type RangeHeaderValue<T> =
+	| { unit: string; suffix: true; length: T }
+	| { unit: string; suffix: false; ranges: Range<T>[] };
+
+const parseRangeHeaderValue = (value: string): RangeHeaderValue<string> | null => {
+	const [unit, rangesPart] = value.split('=', 2);
+	if (unit === undefined) return null;
+	if (rangesPart === undefined) return null;
+
+	if (rangesPart.startsWith('-')) {
+		// suffix length
+		return {
+			unit,
+			suffix: true,
+			length: rangesPart.substring('-'.length),
+		};
+	}
+
+	const ranges = rangesPart
+		.split(', ')
+		.map<Range<string> | null>((range) => {
+			const [start, end] = range.split('-', 1);
+
+			if (start === undefined) {
+				return null;
+			} else {
+				return { start, end: end ?? null };
+			}
+		})
+		.filter(v => v !== null);
+
+	return { unit, suffix: false, ranges };
+};
+
+const safeParseInt = (value: string, radix = 10): number | null => {
+	const result = parseInt(value, radix);
+	if (Number.isNaN(result)) return null;
+	return result;
+};
+
+const parseBytesRangeHeaderValue = (value: string): RangeHeaderValue<number> | null => {
+	const UNIT = 'bytes';
+
+	const result = parseRangeHeaderValue(value);
+	if (result === null) return null;
+	if (result.unit !== UNIT) return null;
+
+	if (result.suffix) {
+		const length = safeParseInt(result.length, 10);
+		if (length === null) return null;
+
+		return {
+			unit: UNIT,
+			suffix: true,
+			length,
+		};
+	} else {
+		const ranges = result.ranges
+			.map<Range<number> | null>((range) => {
+				const start = safeParseInt(range.start, 10);
+				if (start === null) return null;
+
+				if (range.end === null) {
+					return { start, end: null };
+				} else {
+					const end = safeParseInt(range.end, 10);
+					if (end === null) return null;
+					return { start, end };
+				}
+			})
+			.filter(v => v !== null);
+
+		return {
+			unit: UNIT,
+			suffix: false,
+			ranges: ranges,
+		};
+	}
+};
+
+const chunk = (range: Range<number>, filesize: number) => {
+	const end = range.end !== null ? Math.min(range.end, filesize) : filesize;
+
+	return {
+		start: range.start,
+		end: end,
+		chunksize: end - range.start + 1,
+	};
+};
+
 @Injectable()
 export class FileServerService {
 	private readonly logger: Logger;
@@ -178,7 +270,7 @@ export class FileServerService {
 
 			fastify.get<{ Params: { key: string; } }>('/files/:key', async (request, reply) => {
 				try {
-					return await this.sendDriveFile(request, reply);
+					return await this.sendDriveFile(request.params.key, request.headers.range ?? null, reply);
 				} catch (err: unknown) {
 					this.errorHandler(request, reply, err);
 					return;
@@ -231,8 +323,20 @@ export class FileServerService {
 		return;
 	}
 
-	private async sendDriveFile(request: FastifyRequest<{ Params: { key: string; } }>, reply: FastifyReply): Promise<Readable | Buffer | undefined> {
-		const key = request.params.key;
+	private async sendDriveFile(key: string, range_: string | null, reply: FastifyReply): Promise<Readable | Buffer | undefined> {
+		const range = (() => {
+			if (range_ === null) return null;
+
+			const result = parseBytesRangeHeaderValue(range_);
+			if (result === null) return null;
+
+			// TODO: 末尾からの範囲を指定されたときも処理できるようにする
+			if (result.suffix) return null;
+
+			// TODO: 複数の範囲が指定されたときも処理できるようにする
+			return result.ranges[0] ?? null;
+		})();
+
 		const fileResult = await this.getFileFromKey(key).then();
 
 		if (!fileResult.ok) {
@@ -254,159 +358,136 @@ export class FileServerService {
 
 		const file = fileResult.value;
 
-		try {
-			if (file.state === 'remote') {
-				let image: IImageStreamable | null = null;
+		if (file.state === 'remote') {
+			//#region redirects
 
-				if (file.fileRole === 'thumbnail') {
-					if (isMimeImage(file.mime, 'sharp-convertible-image-with-bmp')) {
-						reply.header('Cache-Control', 'max-age=31536000, immutable');
+			if (
+				file.fileRole === 'thumbnail' &&
+				isMimeImage(file.mime, 'sharp-convertible-image-with-bmp')
+			) {
+				const url = new URL(`${this.config.mediaProxy}/static.webp`);
+				url.searchParams.set('url', file.url);
+				url.searchParams.set('static', '1');
 
-						const url = new URL(`${this.config.mediaProxy}/static.webp`);
-						url.searchParams.set('url', file.url);
-						url.searchParams.set('static', '1');
+				file.cleanup();
 
-						file.cleanup();
-						await reply.redirect(301, url.toString());
-						return;
-					} else if (file.mime.startsWith('video/')) {
-						const externalThumbnail = this.videoProcessingService.getExternalVideoThumbnailUrl(file.url);
-						if (externalThumbnail) {
-							file.cleanup();
-							await reply.redirect(301, externalThumbnail);
-							return;
-						}
+				reply.header('Cache-Control', 'max-age=31536000, immutable');
+				await reply.redirect(301, url.href);
+				return;
+			}
 
-						image = await this.videoProcessingService.generateVideoThumbnail(file.path);
-					}
-				}
+			const externalThumbnail = this.videoProcessingService.getExternalVideoThumbnailUrl(file.url);
 
-				if (file.fileRole === 'webpublic') {
-					if (['image/svg+xml'].includes(file.mime)) {
-						reply.header('Cache-Control', 'max-age=31536000, immutable');
+			if (
+				file.fileRole === 'thumbnail' &&
+				file.mime.startsWith('video/') &&
+				externalThumbnail !== null
+			) {
+				file.cleanup();
+				await reply.redirect(301, externalThumbnail);
+				return;
+			}
 
-						const url = new URL(`${this.config.mediaProxy}/svg.webp`);
-						url.searchParams.set('url', file.url);
+			if (
+				file.fileRole === 'webpublic' &&
+				['image/svg+xml'].includes(file.mime)
+			) {
+				const url = new URL(`${this.config.mediaProxy}/svg.webp`);
+				url.searchParams.set('url', file.url);
 
-						file.cleanup();
-						await reply.redirect(301, url.toString());
-						return;
-					}
-				}
+				file.cleanup();
 
-				if (!image) {
-					if (request.headers.range && file.file.size > 0) {
-						const range = request.headers.range;
-						const parts = range.replace(/bytes=/, '').split('-');
-						const start = parseInt(parts[0], 10);
-						let end = parts[1] ? parseInt(parts[1], 10) : file.file.size - 1;
-						if (end > file.file.size) {
-							end = file.file.size - 1;
-						}
-						const chunksize = end - start + 1;
+				reply.header('Cache-Control', 'max-age=31536000, immutable');
+				await reply.redirect(301, url.toString());
+				return;
+			}
 
-						image = {
-							data: fs.createReadStream(file.path, {
-								start,
-								end,
-							}),
-							ext: file.ext,
-							type: file.mime,
-						};
+			//#endregion
+
+			try {
+				if (file.fileRole === 'thumbnail' && file.mime.startsWith('video/')) {
+					const image = await this.videoProcessingService.generateVideoThumbnail(file.path);
+					file.cleanup();
+					reply.header('Content-Type', FILE_TYPE_BROWSERSAFE.includes(image.type) ? image.type : 'application/octet-stream');
+					reply.header('Content-Disposition', contentDisposition('inline', correctFilename(file.filename, image.ext)));
+					return image.data;
+				} else {
+					if (range === null || file.file.size === 0) {
+						const dataStream = fs.createReadStream(file.path);
+
+						dataStream.on('end', file.cleanup);
+						dataStream.on('close', file.cleanup);
+
+						reply.header('Content-Type', FILE_TYPE_BROWSERSAFE.includes(file.mime) ? file.mime : 'application/octet-stream');
+						reply.header('Content-Disposition', contentDisposition('inline', correctFilename(file.filename, file.ext)));
+
+						return dataStream;
+					} else {
+						const { start, end, chunksize } = chunk(range, file.file.size);
+
+						const dataStream = fs.createReadStream(file.path, { start, end });
+						dataStream.on('end', file.cleanup);
+						dataStream.on('close', file.cleanup);
 
 						reply.header('Content-Range', `bytes ${start}-${end}/${file.file.size}`);
 						reply.header('Accept-Ranges', 'bytes');
 						reply.header('Content-Length', chunksize);
-					} else {
-						image = {
-							data: fs.createReadStream(file.path),
-							ext: file.ext,
-							type: file.mime,
-						};
+						reply.header('Content-Type', FILE_TYPE_BROWSERSAFE.includes(file.mime) ? file.mime : 'application/octet-stream');
+						reply.header('Content-Disposition', contentDisposition('inline', correctFilename(file.filename, file.ext)));
+
+						return dataStream;
 					}
 				}
+			} catch (e) {
+				file.cleanup();
+				throw e;
+			}
+		} else {
+			if (file.fileRole === 'original') {
+				if (range === null || file.file.size === 0) {
+					reply.header('Content-Type', FILE_TYPE_BROWSERSAFE.includes(file.file.type) ? file.file.type : 'application/octet-stream');
+					reply.header('Cache-Control', 'max-age=31536000, immutable');
+					reply.header('Content-Disposition', contentDisposition('inline', file.filename));
 
-				if ('pipe' in image.data && typeof image.data.pipe === 'function') {
-					// image.dataがstreamなら、stream終了後にcleanup
-					image.data.on('end', file.cleanup);
-					image.data.on('close', file.cleanup);
+					return fs.createReadStream(file.path);
 				} else {
-					// image.dataがstreamでないなら直ちにcleanup
-					file.cleanup();
-				}
+					const { start, end, chunksize } = chunk(range, file.file.size);
 
-				reply.header('Content-Type', FILE_TYPE_BROWSERSAFE.includes(image.type) ? image.type : 'application/octet-stream');
-				reply.header('Content-Disposition',
-					contentDisposition(
-						'inline',
-						correctFilename(file.filename, image.ext),
-					),
-				);
-				return image.data;
-			}
+					const fileStream = fs.createReadStream(file.path, { start, end });
 
-			if (file.fileRole !== 'original') {
-				const filename = rename(file.filename, {
-					suffix: file.fileRole === 'thumbnail' ? '-thumb' : '-web',
-					extname: file.ext ? `.${file.ext}` : '.unknown',
-				}).toString();
-
-				reply.header('Content-Type', FILE_TYPE_BROWSERSAFE.includes(file.mime) ? file.mime : 'application/octet-stream');
-				reply.header('Cache-Control', 'max-age=31536000, immutable');
-				reply.header('Content-Disposition', contentDisposition('inline', filename));
-
-				if (request.headers.range && file.file.size > 0) {
-					const range = request.headers.range;
-					const parts = range.replace(/bytes=/, '').split('-');
-					const start = parseInt(parts[0], 10);
-					let end = parts[1] ? parseInt(parts[1], 10) : file.file.size - 1;
-					if (end > file.file.size) {
-						end = file.file.size - 1;
-					}
-					const chunksize = end - start + 1;
-					const fileStream = fs.createReadStream(file.path, {
-						start,
-						end,
-					});
 					reply.header('Content-Range', `bytes ${start}-${end}/${file.file.size}`);
 					reply.header('Accept-Ranges', 'bytes');
 					reply.header('Content-Length', chunksize);
+					reply.header('Content-Type', FILE_TYPE_BROWSERSAFE.includes(file.file.type) ? file.file.type : 'application/octet-stream');
+					reply.header('Cache-Control', 'max-age=31536000, immutable');
+					reply.header('Content-Disposition', contentDisposition('inline', file.filename));
 					reply.code(206);
+
 					return fileStream;
 				}
-
-				return fs.createReadStream(file.path);
 			} else {
-				reply.header('Content-Type', FILE_TYPE_BROWSERSAFE.includes(file.file.type) ? file.file.type : 'application/octet-stream');
-				reply.header('Cache-Control', 'max-age=31536000, immutable');
-				reply.header('Content-Disposition', contentDisposition('inline', file.filename));
+				const suffix = file.fileRole === 'thumbnail' ? '-thumb' : '-web';
+				const extname = file.ext ? `.${file.ext}` : '.unknown';
+				const filename = rename(file.filename, { suffix, extname }).toString();
 
-				if (request.headers.range && file.file.size > 0) {
-					const range = request.headers.range;
-					const parts = range.replace(/bytes=/, '').split('-');
-					const start = parseInt(parts[0], 10);
-					let end = parts[1] ? parseInt(parts[1], 10) : file.file.size - 1;
-					console.log(end);
-					if (end > file.file.size) {
-						end = file.file.size - 1;
-					}
-					const chunksize = end - start + 1;
-					const fileStream = fs.createReadStream(file.path, {
-						start,
-						end,
-					});
+				if (range === null || file.file.size === 0) {
+					reply.header('Content-Type', FILE_TYPE_BROWSERSAFE.includes(file.mime) ? file.mime : 'application/octet-stream');
+					reply.header('Cache-Control', 'max-age=31536000, immutable');
+					reply.header('Content-Disposition', contentDisposition('inline', filename));
+					return fs.createReadStream(file.path);
+				} else {
+					const { start, end, chunksize } = chunk(range, file.file.size);
+					const fileStream = fs.createReadStream(file.path, { start, end });
+					reply.header('Content-Type', FILE_TYPE_BROWSERSAFE.includes(file.mime) ? file.mime : 'application/octet-stream');
+					reply.header('Cache-Control', 'max-age=31536000, immutable');
+					reply.header('Content-Disposition', contentDisposition('inline', filename));
 					reply.header('Content-Range', `bytes ${start}-${end}/${file.file.size}`);
 					reply.header('Accept-Ranges', 'bytes');
 					reply.header('Content-Length', chunksize);
 					reply.code(206);
 					return fileStream;
 				}
-
-				return fs.createReadStream(file.path);
 			}
-		} catch (e) {
-			if (file.state === 'remote') file.cleanup();
-			throw e;
 		}
 	}
 
