@@ -9,7 +9,7 @@
 import * as fs from 'node:fs';
 import { Inject, Injectable } from '@nestjs/common';
 import rename from 'rename';
-import sharp from 'sharp';
+import sharp, { type Sharp } from 'sharp';
 import { sharpBmp } from '@misskey-dev/sharp-read-bmp';
 import type { Config } from '@/config.js';
 import type { MiDriveFile, DriveFilesRepository } from '@/models/_.js';
@@ -19,7 +19,7 @@ import { FILE_TYPE_BROWSERSAFE } from '@/const.js';
 import { StatusError } from '@/misc/status-error.js';
 import type Logger from '@/logger.js';
 import { DownloadService } from '@/core/DownloadService.js';
-import { IImageStreamable, ImageProcessingService, webpDefault } from '@/core/ImageProcessingService.js';
+import { ImageProcessingService, webpDefault } from '@/core/ImageProcessingService.js';
 import { VideoProcessingService } from '@/core/VideoProcessingService.js';
 import { InternalStorageService } from '@/core/InternalStorageService.js';
 import { contentDisposition } from '@/misc/content-disposition.js';
@@ -32,7 +32,7 @@ import { handleRequestRedirectToOmitSearch } from '@/misc/fastify-hook-handlers.
 import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginOptions } from 'fastify';
 import { ASSETS_DIR, DUMMY_PNG_FILE } from '@/path.js';
 import { envOption } from '@/env.js';
-import type { Readable } from 'node:stream';
+import { z } from 'zod';
 
 type Result<T, U> = { ok: true; value: T } | { ok: false, error: U };
 
@@ -323,7 +323,7 @@ export class FileServerService {
 		return;
 	}
 
-	private async sendDriveFile(key: string, range_: string | null, reply: FastifyReply): Promise<Readable | Buffer | undefined> {
+	private async sendDriveFile(key: string, range_: string | null, reply: FastifyReply): Promise<fs.ReadStream | Buffer | undefined> {
 		const range = (() => {
 			if (range_ === null) return null;
 
@@ -491,36 +491,72 @@ export class FileServerService {
 		}
 	}
 
-	private async proxyHandler(request: FastifyRequest<{ Params: { url: string; }; Querystring: { url?: string; }; }>, reply: FastifyReply) {
-		const url = 'url' in request.query ? request.query.url : 'https://' + request.params.url;
+	private async proxyHandler(request: FastifyRequest, reply: FastifyReply) {
+		const query = z.object({
+			url: z.string().optional(),
+			origin: z.string().optional(),
+			emoji: z.string().optional(),
+			avatar: z.string().optional(),
+			static: z.string().optional(),
+			preview: z.string().optional(),
+			badge: z.string().optional(),
+		}).parse(request.query);
 
-		if (typeof url !== 'string') {
+		const params = z.object({
+			url: z.string().optional(),
+		}).parse(request.params);
+
+		const opts = {
+			url: query.url ?? (params.url ? 'https://' + params.url : null),
+			/** アバタークロップなど、どうしてもオリジンである必要がある場合 */
+			mustOrigin: query.origin !== undefined,
+			emoji: query.emoji !== undefined,
+			avatar: query.avatar !== undefined,
+			static: query.static !== undefined,
+			preview: query.preview !== undefined,
+			badge: query.badge !== undefined,
+		} as const;
+
+		if (opts.url === null) {
 			reply.code(400);
 			return;
 		}
 
-		// アバタークロップなど、どうしてもオリジンである必要がある場合
-		const mustOrigin = 'origin' in request.query;
+		const range_ = request.headers.range ?? null;
 
-		if (this.config.externalMediaProxyEnabled && !mustOrigin) {
-			// 外部のメディアプロキシが有効なら、そちらにリダイレクト
+		const range = (() => {
+			if (range_ === null) return null;
 
+			const result = parseBytesRangeHeaderValue(range_);
+			if (result === null) return null;
+
+			// TODO: 末尾からの範囲を指定されたときも処理できるようにする
+			if (result.suffix) return null;
+
+			// TODO: 複数の範囲が指定されたときも処理できるようにする
+			return result.ranges[0] ?? null;
+		})();
+
+		//#region 外部のメディアプロキシが有効なら、そちらにリダイレクト
+
+		if (this.config.externalMediaProxyEnabled && !opts.mustOrigin) {
 			reply.header('Cache-Control', 'public, max-age=259200'); // 3 days
 
-			const url = new URL(`${this.config.mediaProxy}/${request.params.url || ''}`);
+			const url = new URL(`${this.config.mediaProxy}/${params.url ?? ''}`);
 
-			for (const [key, value] of Object.entries(request.query)) {
-				url.searchParams.append(key, value);
-			}
+			if (opts.avatar) url.searchParams.set('avatar', '');
+			if (opts.badge) url.searchParams.set('badge', '');
+			if (opts.emoji) url.searchParams.set('emoji', '');
+			if (opts.preview) url.searchParams.set('preview', '');
+			if (opts.static) url.searchParams.set('static', '');
+			if (opts.url) url.searchParams.set('url', '');
 
-			return await reply.redirect(
-				301,
-				url.toString(),
-			);
+			return await reply.redirect(301, url.href);
 		}
 
-		// Create temp file
-		const fileResult = await this.getStreamAndTypeFromUrl(url);
+		//#endregion
+
+		const fileResult = await this.getFile(opts.url);
 
 		if (!fileResult.ok) {
 			if (fileResult.error instanceof DatabaseRecordNotFoundError) {
@@ -541,36 +577,27 @@ export class FileServerService {
 		}
 
 		const file = fileResult.value;
+		const isConvertibleImage = isMimeImage(file.mime, 'sharp-convertible-image-with-bmp');
+		const isAnimationConvertibleImage = isMimeImage(file.mime, 'sharp-animation-convertible-image-with-bmp');
 
 		try {
-			const isConvertibleImage = isMimeImage(file.mime, 'sharp-convertible-image-with-bmp');
-			const isAnimationConvertibleImage = isMimeImage(file.mime, 'sharp-animation-convertible-image-with-bmp');
-
-			if (
-				'emoji' in request.query ||
-				'avatar' in request.query ||
-				'static' in request.query ||
-				'preview' in request.query ||
-				'badge' in request.query
-			) {
-				if (!isConvertibleImage) {
-					// 画像でないなら404でお茶を濁す
-					throw new StatusError('Unexpected mime', 404);
-				}
+			const imageExpected = opts.emoji || opts.avatar || opts.static || opts.preview || opts.badge;
+			if (imageExpected && !isConvertibleImage) {
+				// 画像でないなら404でお茶を濁す
+				throw new StatusError('Unexpected mime', 404);
 			}
 
-			let image: IImageStreamable | null = null;
-			if ('emoji' in request.query || 'avatar' in request.query) {
-				if (!isAnimationConvertibleImage && !('static' in request.query)) {
-					image = {
-						data: fs.createReadStream(file.path),
-						ext: file.ext,
-						type: file.mime,
-					};
-				} else {
-					const data = (await sharpBmp(file.path, file.mime, { animated: !('static' in request.query) }))
+			let image: {
+				data: Buffer | fs.ReadStream | Sharp;
+				type: string;
+				ext: string | null;
+			} | null = null;
+
+			if (opts.emoji || opts.avatar) {
+				if (isAnimationConvertibleImage || opts.static) {
+					const data = (await sharpBmp(file.path, file.mime, { animated: opts.static }))
 						.resize({
-							height: 'emoji' in request.query ? 128 : 320,
+							height: opts.emoji ? 128 : 320,
 							withoutEnlargement: true,
 						})
 						.webp(webpDefault);
@@ -580,71 +607,6 @@ export class FileServerService {
 						ext: 'webp',
 						type: 'image/webp',
 					};
-				}
-			} else if ('static' in request.query) {
-				image = this.imageProcessingService.convertSharpToWebpStream(await sharpBmp(file.path, file.mime), 498, 422);
-			} else if ('preview' in request.query) {
-				image = this.imageProcessingService.convertSharpToWebpStream(await sharpBmp(file.path, file.mime), 200, 200);
-			} else if ('badge' in request.query) {
-				const mask = (await sharpBmp(file.path, file.mime))
-					.resize(96, 96, {
-						fit: 'contain',
-						position: 'centre',
-						withoutEnlargement: false,
-					})
-					.greyscale()
-					.normalise()
-					.linear(1.75, -(128 * 1.75) + 128) // 1.75x contrast
-					.flatten({ background: '#000' })
-					.toColorspace('b-w');
-
-				const stats = await mask.clone().stats();
-
-				if (stats.entropy < 0.1) {
-					// エントロピーがあまりない場合は404にする
-					throw new StatusError('Skip to provide badge', 404);
-				}
-
-				const data = sharp({
-					create: { width: 96, height: 96, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
-				})
-					.pipelineColorspace('b-w')
-					.boolean(await mask.png().toBuffer(), 'eor');
-
-				image = {
-					data: await data.png().toBuffer(),
-					ext: 'png',
-					type: 'image/png',
-				};
-			} else if (file.mime === 'image/svg+xml') {
-				image = this.imageProcessingService.convertToWebpStream(file.path, 2048, 2048);
-			} else if (!file.mime.startsWith('image/') || !FILE_TYPE_BROWSERSAFE.includes(file.mime)) {
-				throw new StatusError('Rejected type', 403, 'Rejected type');
-			}
-
-			if (!image) {
-				if (request.headers.range && 'file' in file && file.file.size > 0) {
-					const range = request.headers.range;
-					const parts = range.replace(/bytes=/, '').split('-');
-					const start = parseInt(parts[0], 10);
-					let end = parts[1] ? parseInt(parts[1], 10) : file.file.size - 1;
-					if (end > file.file.size) {
-						end = file.file.size - 1;
-					}
-					const chunksize = end - start + 1;
-
-					image = {
-						data: fs.createReadStream(file.path, {
-							start,
-							end,
-						}),
-						ext: file.ext,
-						type: file.mime,
-					};
-
-					reply.header('Content-Range', `bytes ${start}-${end}/${file.file.size}`);
-					reply.header('Accept-Ranges', 'bytes');
-					reply.header('Content-Length', chunksize);
 				} else {
 					image = {
 						data: fs.createReadStream(file.path),
@@ -652,9 +614,70 @@ export class FileServerService {
 						type: file.mime,
 					};
 				}
+			} else {
+				if (opts.static) {
+					image = this.imageProcessingService.convertSharpToWebpStream(await sharpBmp(file.path, file.mime), 498, 422);
+				} else if (opts.preview) {
+					image = this.imageProcessingService.convertSharpToWebpStream(await sharpBmp(file.path, file.mime), 200, 200);
+				} else if (opts.badge) {
+					const mask = (await sharpBmp(file.path, file.mime))
+						.resize(96, 96, {
+							fit: 'contain',
+							position: 'centre',
+							withoutEnlargement: false,
+						})
+						.greyscale()
+						.normalise()
+						.linear(1.75, -(128 * 1.75) + 128) // 1.75x contrast
+						.flatten({ background: '#000' })
+						.toColorspace('b-w');
+
+					const stats = await mask.clone().stats();
+
+					if (stats.entropy < 0.1) {
+						// エントロピーがあまりない場合は404にする
+						throw new StatusError('Skip to provide badge', 404);
+					}
+
+					const data = sharp({
+						create: { width: 96, height: 96, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
+					})
+						.pipelineColorspace('b-w')
+						.boolean(await mask.png().toBuffer(), 'eor');
+
+					image = {
+						data: await data.png().toBuffer(),
+						ext: 'png',
+						type: 'image/png',
+					};
+				} else if (file.mime === 'image/svg+xml') {
+					image = this.imageProcessingService.convertToWebpStream(file.path, 2048, 2048);
+				} else if (!file.mime.startsWith('image/') || !FILE_TYPE_BROWSERSAFE.includes(file.mime)) {
+					throw new StatusError('Rejected type', 403, 'Rejected type');
+				} else {
+					if (range && 'file' in file && file.file.size > 0) {
+						const { start, end, chunksize } = chunk(range, file.file.size);
+
+						image = {
+							data: fs.createReadStream(file.path, { start, end }),
+							ext: file.ext,
+							type: file.mime,
+						};
+
+						reply.header('Content-Range', `bytes ${start}-${end}/${file.file.size}`);
+						reply.header('Accept-Ranges', 'bytes');
+						reply.header('Content-Length', chunksize);
+					} else {
+						image = {
+							data: fs.createReadStream(file.path),
+							ext: file.ext,
+							type: file.mime,
+						};
+					}
+				}
 			}
 
-			if (file instanceof DownloadedRemoteFile) {
+			if (!(file instanceof InternalFile)) {
 				if ('pipe' in image.data && typeof image.data.pipe === 'function') {
 					// image.dataがstreamなら、stream終了後にcleanup
 					image.data.on('end', file.cleanup);
@@ -667,20 +690,15 @@ export class FileServerService {
 
 			reply.header('Content-Type', image.type);
 			reply.header('Cache-Control', 'max-age=31536000, immutable');
-			reply.header('Content-Disposition',
-				contentDisposition(
-					'inline',
-					correctFilename(file.filename, image.ext),
-				),
-			);
+			reply.header('Content-Disposition', contentDisposition('inline', correctFilename(file.filename, image.ext)));
 			return image.data;
 		} catch (e) {
-			if (file instanceof DownloadedRemoteFile) file.cleanup();
+			if (!(file instanceof InternalFile)) file.cleanup();
 			throw e;
 		}
 	}
 
-	private async getStreamAndTypeFromUrl(url: string): Promise<Result<
+	private async getFile(url: string): Promise<Result<
 		InternalFile | DownloadedRemoteFile | RemoteFile,
 		DownloadError | TodoError | DatabaseRecordNotFoundError | InvalidFileKeyError
 	>> {
@@ -696,11 +714,11 @@ export class FileServerService {
 				return await this.getFileFromKey(key);
 			}
 		} else {
-			return await this.downloadAndDetectTypeFromUrl(url);
+			return await this.downloadRemoteFile(url);
 		}
 	}
 
-	private async downloadAndDetectTypeFromUrl(url: string): Promise<Result<DownloadedRemoteFile, DownloadError>> {
+	private async downloadRemoteFile(url: string): Promise<Result<DownloadedRemoteFile, DownloadError>> {
 		const downloadResult = await this.downloadFromUrl(url);
 		if (!downloadResult.ok) return downloadResult;
 
@@ -779,7 +797,7 @@ export class FileServerService {
 				};
 			}
 
-			const result = await this.downloadAndDetectTypeFromUrl(file.uri);
+			const result = await this.downloadRemoteFile(file.uri);
 
 			if (result.ok) {
 				return {

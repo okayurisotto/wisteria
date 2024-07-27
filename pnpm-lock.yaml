@@ -382,6 +382,9 @@ importers:
       xev:
         specifier: 3.0.2
         version: 3.0.2
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
     optionalDependencies:
       '@tensorflow/tfjs':
         specifier: 4.4.0
@@ -928,7 +931,7 @@ importers:
         version: 3.0.8
       tsup:
         specifier: ^8.2.2
-        version: 8.2.2(@microsoft/api-extractor@7.47.3(@types/node@20.14.11))(@swc/core@1.7.1)(postcss@8.4.35)(typescript@5.5.4)
+        version: 8.2.2(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.1)(postcss@8.4.35)(typescript@5.5.4)
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -1014,7 +1017,7 @@ importers:
     devDependencies:
       tsup:
         specifier: ^8.2.2
-        version: 8.2.2(@microsoft/api-extractor@7.47.3(@types/node@20.14.11))(@swc/core@1.7.1)(postcss@8.4.35)(typescript@5.5.4)
+        version: 8.2.2(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.1)(postcss@8.4.35)(typescript@5.5.4)
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -1033,7 +1036,7 @@ importers:
         version: 0.0.67
       tsup:
         specifier: ^8.2.2
-        version: 8.2.2(@microsoft/api-extractor@7.47.3(@types/node@20.14.11))(@swc/core@1.7.1)(postcss@8.4.35)(typescript@5.5.4)
+        version: 8.2.2(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.1)(postcss@8.4.35)(typescript@5.5.4)
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -10586,6 +10589,9 @@ packages:
     resolution: {integrity: sha512-UfZ0oa0C8LI58wJ+moL46BDIMgCQbnsb+2PoiJYtonhBsMh2bq1eRBVkvjfVsqbEHd9/EgKPUuL9saSSsec8OA==}
     engines: {node: '>= 12.0.0'}
 
+  zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
@@ -12644,6 +12650,15 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
+  '@microsoft/api-extractor-model@7.29.3':
+    dependencies:
+      '@microsoft/tsdoc': 0.15.0
+      '@microsoft/tsdoc-config': 0.17.0
+      '@rushstack/node-core-library': 5.5.0(@types/node@20.14.11)
+    transitivePeerDependencies:
+      - '@types/node'
+    optional: true
+
   '@microsoft/api-extractor-model@7.29.3(@types/node@20.14.11)':
     dependencies:
       '@microsoft/tsdoc': 0.15.0
@@ -12669,6 +12684,25 @@ snapshots:
       typescript: 5.3.3
     transitivePeerDependencies:
       - '@types/node'
+
+  '@microsoft/api-extractor@7.47.3':
+    dependencies:
+      '@microsoft/api-extractor-model': 7.29.3
+      '@microsoft/tsdoc': 0.15.0
+      '@microsoft/tsdoc-config': 0.17.0
+      '@rushstack/node-core-library': 5.5.0(@types/node@20.14.11)
+      '@rushstack/rig-package': 0.5.2
+      '@rushstack/terminal': 0.13.2
+      '@rushstack/ts-command-line': 4.22.2
+      lodash: 4.17.21
+      minimatch: 3.0.8
+      resolve: 1.22.8
+      semver: 7.5.4
+      source-map: 0.6.1
+      typescript: 5.4.2
+    transitivePeerDependencies:
+      - '@types/node'
+    optional: true
 
   '@microsoft/api-extractor@7.47.3(@types/node@20.14.11)':
     dependencies:
@@ -13149,6 +13183,12 @@ snapshots:
       strip-json-comments: 3.1.1
     optional: true
 
+  '@rushstack/terminal@0.13.2':
+    dependencies:
+      '@rushstack/node-core-library': 5.5.0(@types/node@20.14.11)
+      supports-color: 8.1.1
+    optional: true
+
   '@rushstack/terminal@0.13.2(@types/node@20.14.11)':
     dependencies:
       '@rushstack/node-core-library': 5.5.0(@types/node@20.14.11)
@@ -13163,6 +13203,16 @@ snapshots:
       argparse: 1.0.10
       colors: 1.2.5
       string-argv: 0.3.1
+
+  '@rushstack/ts-command-line@4.22.2':
+    dependencies:
+      '@rushstack/terminal': 0.13.2
+      '@types/argparse': 1.0.38
+      argparse: 1.0.10
+      string-argv: 0.3.2
+    transitivePeerDependencies:
+      - '@types/node'
+    optional: true
 
   '@rushstack/ts-command-line@4.22.2(@types/node@20.14.11)':
     dependencies:
@@ -15298,7 +15348,7 @@ snapshots:
 
   axios@0.24.0:
     dependencies:
-      follow-redirects: 1.15.2(debug@4.3.4)
+      follow-redirects: 1.15.2
     transitivePeerDependencies:
       - debug
 
@@ -16261,11 +16311,19 @@ snapshots:
     dependencies:
       ms: 2.0.0
 
+  debug@3.2.7:
+    dependencies:
+      ms: 2.1.3
+
   debug@3.2.7(supports-color@8.1.1):
     dependencies:
       ms: 2.1.3
     optionalDependencies:
       supports-color: 8.1.1
+
+  debug@4.3.4:
+    dependencies:
+      ms: 2.1.2
 
   debug@4.3.4(supports-color@5.5.0):
     dependencies:
@@ -17123,6 +17181,8 @@ snapshots:
       async: 3.2.4
       which: 1.3.1
 
+  follow-redirects@1.15.2: {}
+
   follow-redirects@1.15.2(debug@4.3.4):
     optionalDependencies:
       debug: 4.3.4(supports-color@5.5.0)
@@ -17581,7 +17641,7 @@ snapshots:
   https-proxy-agent@2.2.4:
     dependencies:
       agent-base: 4.3.0
-      debug: 3.2.7(supports-color@8.1.1)
+      debug: 3.2.7
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -17693,7 +17753,7 @@ snapshots:
     dependencies:
       '@ioredis/commands': 1.2.0
       cluster-key-slot: 1.1.2
-      debug: 4.3.4(supports-color@5.5.0)
+      debug: 4.3.4
       denque: 2.1.0
       lodash.defaults: 4.2.0
       lodash.isarguments: 3.1.0
@@ -19266,7 +19326,7 @@ snapshots:
 
   needle@2.9.1:
     dependencies:
-      debug: 3.2.7(supports-color@8.1.1)
+      debug: 3.2.7
       iconv-lite: 0.4.24
       sax: 1.2.4
     transitivePeerDependencies:
@@ -20826,7 +20886,7 @@ snapshots:
     dependencies:
       '@hapi/hoek': 10.0.1
       '@hapi/wreck': 18.0.1
-      debug: 4.3.4(supports-color@5.5.0)
+      debug: 4.3.4
       joi: 17.11.0
     transitivePeerDependencies:
       - supports-color
@@ -21504,6 +21564,35 @@ snapshots:
       - tsx
       - yaml
 
+  tsup@8.2.2(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.1)(postcss@8.4.35)(typescript@5.5.4):
+    dependencies:
+      bundle-require: 5.0.0(esbuild@0.23.0)
+      cac: 6.7.14
+      chokidar: 3.5.3
+      consola: 3.2.3
+      debug: 4.3.5
+      esbuild: 0.23.0
+      execa: 5.1.1
+      globby: 11.1.0
+      joycon: 3.1.1
+      picocolors: 1.0.1
+      postcss-load-config: 6.0.1(postcss@8.4.35)
+      resolve-from: 5.0.0
+      rollup: 4.19.0
+      source-map: 0.8.0-beta.0
+      sucrase: 3.35.0
+      tree-kill: 1.2.2
+    optionalDependencies:
+      '@microsoft/api-extractor': 7.47.3
+      '@swc/core': 1.7.1
+      postcss: 8.4.35
+      typescript: 5.5.4
+    transitivePeerDependencies:
+      - jiti
+      - supports-color
+      - tsx
+      - yaml
+
   tsx@4.4.0:
     dependencies:
       esbuild: 0.18.20
@@ -21581,7 +21670,7 @@ snapshots:
       chalk: 4.1.2
       cli-highlight: 2.1.11
       dayjs: 1.11.10
-      debug: 4.3.4(supports-color@5.5.0)
+      debug: 4.3.4
       dotenv: 16.0.3
       glob: 10.3.10
       mkdirp: 2.1.6
@@ -22207,5 +22296,7 @@ snapshots:
       archiver-utils: 4.0.1
       compress-commons: 5.0.1
       readable-stream: 3.6.0
+
+  zod@3.23.8: {}
 
   zwitch@2.0.4: {}
