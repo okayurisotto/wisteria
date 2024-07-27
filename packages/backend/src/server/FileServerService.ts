@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+
 import * as fs from 'node:fs';
 import { Inject, Injectable } from '@nestjs/common';
 import rename from 'rename';
@@ -29,42 +32,143 @@ import { handleRequestRedirectToOmitSearch } from '@/misc/fastify-hook-handlers.
 import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginOptions } from 'fastify';
 import { ASSETS_DIR, DUMMY_PNG_FILE } from '@/path.js';
 import { envOption } from '@/env.js';
+import type { Readable } from 'node:stream';
+
+type Result<T, U> = { ok: true; value: T } | { ok: false, error: U };
+
+class DownloadError extends Error {
+	public readonly symbol = Symbol();
+
+	public constructor(public readonly data: unknown) {
+		super();
+	}
+}
+
+/** 404 */
+class DatabaseRecordNotFoundError extends Error {
+	public readonly symbol = Symbol();
+}
+
+/** 204 */
+class TodoError extends Error {
+	public readonly symbol = Symbol();
+}
+
+/** 400 */
+class InvalidFileKeyError extends Error {
+	public readonly symbol = Symbol();
+}
+
+type FileRole = 'thumbnail' | 'webpublic' | 'original';
+
+class InternalFile {
+	public readonly state = 'stored_internal';
+	public readonly fileRole: FileRole;
+	public readonly file: MiDriveFile;
+	public readonly mime: string;
+	public readonly ext: string | null;
+	public readonly path: string;
+
+	public get filename(): string {
+		return this.file.name;
+	}
+
+	public constructor(opts: {
+		fileRole: FileRole;
+		file: MiDriveFile;
+		mime: string;
+		ext: string | null;
+		path: string;
+	}) {
+		this.fileRole = opts.fileRole;
+		this.file = opts.file;
+		this.mime = opts.mime;
+		this.ext = opts.ext;
+		this.path = opts.path;
+	}
+}
+
+class DownloadedRemoteFile {
+	public readonly state = 'remote';
+	public readonly filename: string;
+	public readonly mime: string;
+	public readonly ext: string | null;
+	public readonly path: string;
+	public readonly cleanup: () => void;
+
+	public constructor(opts: {
+		filename: string;
+		mime: string;
+		ext: string | null;
+		path: string;
+		cleanup: () => void;
+	}) {
+		this.filename = opts.filename;
+		this.mime = opts.mime;
+		this.ext = opts.ext;
+		this.path = opts.path;
+		this.cleanup = opts.cleanup;
+	}
+}
+
+class RemoteFile extends DownloadedRemoteFile {
+	public readonly fileRole: FileRole;
+	public readonly file: MiDriveFile;
+	public readonly url: string;
+
+	public constructor(opts: {
+		filename: string,
+		mime: string,
+		ext: string | null,
+		path: string,
+		cleanup: () => void,
+		fileRole: FileRole,
+		file: MiDriveFile,
+		url: string,
+	}) {
+		super(opts);
+		this.fileRole = opts.fileRole;
+		this.file = opts.file;
+		this.url = opts.url;
+	}
+}
 
 @Injectable()
 export class FileServerService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
-	constructor(
+	public constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private fileInfoService: FileInfoService,
-		private downloadService: DownloadService,
-		private imageProcessingService: ImageProcessingService,
-		private videoProcessingService: VideoProcessingService,
-		private internalStorageService: InternalStorageService,
-		private loggerService: LoggerService,
+		private readonly fileInfoService: FileInfoService,
+		private readonly downloadService: DownloadService,
+		private readonly imageProcessingService: ImageProcessingService,
+		private readonly videoProcessingService: VideoProcessingService,
+		private readonly internalStorageService: InternalStorageService,
+		private readonly loggerService: LoggerService,
 	) {
 		this.logger = this.loggerService.getLogger('server', 'gray');
-
-		//this.createServer = this.createServer.bind(this);
 	}
 
 	@bindThis
 	public createServer(fastify: FastifyInstance, options: FastifyPluginOptions, done: (err?: Error) => void) {
 		fastify.addHook('onRequest', (request, reply, done) => {
 			reply.header('Content-Security-Policy', 'default-src \'none\'; img-src \'self\'; media-src \'self\'; style-src \'unsafe-inline\'');
+
 			if (envOption.isDevelopment) {
 				reply.header('Access-Control-Allow-Origin', '*');
 			}
+
 			done();
 		});
 
 		fastify.register((fastify, options, done) => {
 			fastify.addHook('onRequest', handleRequestRedirectToOmitSearch);
+
 			fastify.get('/files/app-default.jpg', (request, reply) => {
 				const file = fs.createReadStream(DUMMY_PNG_FILE);
 				reply.header('Content-Type', 'image/jpeg');
@@ -73,12 +177,18 @@ export class FileServerService {
 			});
 
 			fastify.get<{ Params: { key: string; } }>('/files/:key', async (request, reply) => {
-				return await this.sendDriveFile(request, reply)
-					.catch((err: unknown) => this.errorHandler(request, reply, err));
+				try {
+					return await this.sendDriveFile(request, reply);
+				} catch (err: unknown) {
+					this.errorHandler(request, reply, err);
+					return;
+				}
 			});
+
 			fastify.get<{ Params: { key: string; } }>('/files/:key/*', async (request, reply) => {
 				return await reply.redirect(301, `${this.config.url}/files/${request.params.key}`);
 			});
+
 			done();
 		});
 
@@ -86,21 +196,30 @@ export class FileServerService {
 			Params: { url: string; };
 			Querystring: { url?: string; };
 		}>('/proxy/:url*', async (request, reply) => {
-			return await this.proxyHandler(request, reply)
-				.catch((err: unknown) => this.errorHandler(request, reply, err));
+			try {
+				return await this.proxyHandler(request, reply);
+			} catch (err: unknown) {
+				this.errorHandler(request, reply, err);
+				return;
+			}
 		});
 
 		done();
 	}
 
-	@bindThis
-	private async errorHandler(request: FastifyRequest<{ Params?: { [x: string]: any }; Querystring?: { [x: string]: any }; }>, reply: FastifyReply, err?: any) {
+	private errorHandler(request: FastifyRequest<{ Params?: { [x: string]: unknown }; Querystring?: { [x: string]: unknown }; }>, reply: FastifyReply, err?: unknown): void {
 		this.logger.error(`${err}`);
 
 		reply.header('Cache-Control', 'max-age=300');
 
 		if (request.query && 'fallback' in request.query) {
-			return reply.sendFile('/dummy.png', ASSETS_DIR);
+			reply.sendFile('/dummy.png', ASSETS_DIR);
+			return;
+		}
+
+		if (err instanceof InvalidFileKeyError) {
+			reply.code(400);
+			return;
 		}
 
 		if (err instanceof StatusError && (err.statusCode === 302 || err.isClientError)) {
@@ -112,22 +231,28 @@ export class FileServerService {
 		return;
 	}
 
-	@bindThis
-	private async sendDriveFile(request: FastifyRequest<{ Params: { key: string; } }>, reply: FastifyReply) {
+	private async sendDriveFile(request: FastifyRequest<{ Params: { key: string; } }>, reply: FastifyReply): Promise<Readable | Buffer | undefined> {
 		const key = request.params.key;
-		const file = await this.getFileFromKey(key).then();
+		const fileResult = await this.getFileFromKey(key).then();
 
-		if (file === '404') {
-			reply.code(404);
-			reply.header('Cache-Control', 'max-age=86400');
-			return reply.sendFile('/dummy.png', ASSETS_DIR);
+		if (!fileResult.ok) {
+			if (fileResult.error instanceof DatabaseRecordNotFoundError) {
+				reply.code(404);
+				reply.header('Cache-Control', 'max-age=86400');
+				reply.sendFile('/dummy.png', ASSETS_DIR);
+				return;
+			} else if (fileResult.error instanceof TodoError) {
+				reply.code(204);
+				reply.header('Cache-Control', 'max-age=86400');
+				return;
+			} else if (fileResult.error instanceof DownloadError) {
+				throw fileResult.error.data;
+			} else {
+				return fileResult.error satisfies never;
+			}
 		}
 
-		if (file === '204') {
-			reply.code(204);
-			reply.header('Cache-Control', 'max-age=86400');
-			return;
-		}
+		const file = fileResult.value;
 
 		try {
 			if (file.state === 'remote') {
@@ -142,12 +267,14 @@ export class FileServerService {
 						url.searchParams.set('static', '1');
 
 						file.cleanup();
-						return await reply.redirect(301, url.toString());
+						await reply.redirect(301, url.toString());
+						return;
 					} else if (file.mime.startsWith('video/')) {
 						const externalThumbnail = this.videoProcessingService.getExternalVideoThumbnailUrl(file.url);
 						if (externalThumbnail) {
 							file.cleanup();
-							return await reply.redirect(301, externalThumbnail);
+							await reply.redirect(301, externalThumbnail);
+							return;
 						}
 
 						image = await this.videoProcessingService.generateVideoThumbnail(file.path);
@@ -162,7 +289,8 @@ export class FileServerService {
 						url.searchParams.set('url', file.url);
 
 						file.cleanup();
-						return await reply.redirect(301, url.toString());
+						await reply.redirect(301, url.toString());
+						return;
 					}
 				}
 
@@ -277,12 +405,11 @@ export class FileServerService {
 				return fs.createReadStream(file.path);
 			}
 		} catch (e) {
-			if ('cleanup' in file) file.cleanup();
+			if (file.state === 'remote') file.cleanup();
 			throw e;
 		}
 	}
 
-	@bindThis
 	private async proxyHandler(request: FastifyRequest<{ Params: { url: string; }; Querystring: { url?: string; }; }>, reply: FastifyReply) {
 		const url = 'url' in request.query ? request.query.url : 'https://' + request.params.url;
 
@@ -312,18 +439,27 @@ export class FileServerService {
 		}
 
 		// Create temp file
-		const file = await this.getStreamAndTypeFromUrl(url);
-		if (file === '404') {
-			reply.code(404);
-			reply.header('Cache-Control', 'max-age=86400');
-			return reply.sendFile('/dummy.png', ASSETS_DIR);
+		const fileResult = await this.getStreamAndTypeFromUrl(url);
+
+		if (!fileResult.ok) {
+			if (fileResult.error instanceof DatabaseRecordNotFoundError) {
+				reply.code(404);
+				reply.header('Cache-Control', 'max-age=86400');
+				return reply.sendFile('/dummy.png', ASSETS_DIR);
+			} else if (fileResult.error instanceof TodoError) {
+				reply.code(204);
+				reply.header('Cache-Control', 'max-age=86400');
+				return;
+			} else if (fileResult.error instanceof DownloadError) {
+				throw fileResult.error.data;
+			} else if (fileResult.error instanceof InvalidFileKeyError) {
+				throw fileResult.error;
+			} else {
+				return fileResult.error satisfies never;
+			}
 		}
 
-		if (file === '204') {
-			reply.code(204);
-			reply.header('Cache-Control', 'max-age=86400');
-			return;
-		}
+		const file = fileResult.value;
 
 		try {
 			const isConvertibleImage = isMimeImage(file.mime, 'sharp-convertible-image-with-bmp');
@@ -406,7 +542,7 @@ export class FileServerService {
 			}
 
 			if (!image) {
-				if (request.headers.range && file.file && file.file.size > 0) {
+				if (request.headers.range && 'file' in file && file.file.size > 0) {
 					const range = request.headers.range;
 					const parts = range.replace(/bytes=/, '').split('-');
 					const start = parseInt(parts[0], 10);
@@ -437,7 +573,7 @@ export class FileServerService {
 				}
 			}
 
-			if ('cleanup' in file) {
+			if (file instanceof DownloadedRemoteFile) {
 				if ('pipe' in image.data && typeof image.data.pipe === 'function') {
 					// image.dataがstreamなら、stream終了後にcleanup
 					image.data.on('end', file.cleanup);
@@ -458,57 +594,62 @@ export class FileServerService {
 			);
 			return image.data;
 		} catch (e) {
-			if ('cleanup' in file) file.cleanup();
+			if (file instanceof DownloadedRemoteFile) file.cleanup();
 			throw e;
 		}
 	}
 
-	@bindThis
-	private async getStreamAndTypeFromUrl(url: string): Promise<
-		{ state: 'remote'; fileRole?: 'thumbnail' | 'webpublic' | 'original'; file?: MiDriveFile; mime: string; ext: string | null; path: string; cleanup: () => void; filename: string; }
-		| { state: 'stored_internal'; fileRole: 'thumbnail' | 'webpublic' | 'original'; file: MiDriveFile; filename: string; mime: string; ext: string | null; path: string; }
-		| '404'
-		| '204'
-	> {
+	private async getStreamAndTypeFromUrl(url: string): Promise<Result<
+		InternalFile | DownloadedRemoteFile | RemoteFile,
+		DownloadError | TodoError | DatabaseRecordNotFoundError | InvalidFileKeyError
+	>> {
 		if (url.startsWith(`${this.config.url}/files/`)) {
-			const key = url.replace(`${this.config.url}/files/`, '').split('/').shift();
-			if (!key) throw new StatusError('Invalid File Key', 400, 'Invalid File Key');
+			const key = url.replace(`${this.config.url}/files/`, '').split('/', 1)[0];
 
-			return await this.getFileFromKey(key);
+			if (key === undefined) {
+				return {
+					ok: false,
+					error: new InvalidFileKeyError(),
+				};
+			} else {
+				return await this.getFileFromKey(key);
+			}
+		} else {
+			return await this.downloadAndDetectTypeFromUrl(url);
 		}
-
-		return await this.downloadAndDetectTypeFromUrl(url);
 	}
 
-	@bindThis
-	private async downloadAndDetectTypeFromUrl(url: string): Promise<
-		{ state: 'remote' ; mime: string; ext: string | null; path: string; cleanup: () => void; filename: string; }
-	> {
+	private async downloadAndDetectTypeFromUrl(url: string): Promise<Result<DownloadedRemoteFile, DownloadError>> {
+		const downloadResult = await this.downloadFromUrl(url);
+		if (!downloadResult.ok) return downloadResult;
+
+		const { mime, ext } = await this.fileInfoService.detectType(downloadResult.value.path);
+
+		return {
+			ok: true,
+			value: new DownloadedRemoteFile({
+				path: downloadResult.value.path,
+				filename: downloadResult.value.filename,
+				mime,
+				ext,
+				cleanup: downloadResult.value.cleanup,
+			}),
+		};
+	}
+
+	private async downloadFromUrl(url: string): Promise<Result<{ path: string; filename: string; cleanup: () => void }, DownloadError>> {
 		const [path, cleanup] = await createTemp();
+
 		try {
 			const { filename } = await this.downloadService.downloadUrl(url, path);
-
-			const { mime, ext } = await this.fileInfoService.detectType(path);
-
-			return {
-				state: 'remote',
-				mime, ext,
-				path, cleanup,
-				filename,
-			};
-		} catch (e) {
+			return { ok: true, value: { path, cleanup, filename } };
+		} catch (error: unknown) {
 			cleanup();
-			throw e;
+			return { ok: false, error: new DownloadError(error) };
 		}
 	}
 
-	@bindThis
-	private async getFileFromKey(key: string): Promise<
-		{ state: 'remote'; fileRole: 'thumbnail' | 'webpublic' | 'original'; file: MiDriveFile; filename: string; url: string; mime: string; ext: string | null; path: string; cleanup: () => void; }
-		| { state: 'stored_internal'; fileRole: 'thumbnail' | 'webpublic' | 'original'; file: MiDriveFile; filename: string; mime: string; ext: string | null; path: string; }
-		| '404'
-		| '204'
-	> {
+	private async getFileFromKey(key: string): Promise<Result<InternalFile | RemoteFile, DownloadError | TodoError | DatabaseRecordNotFoundError>> {
 		// Fetch drive file
 		const file = await this.driveFilesRepository.createQueryBuilder('file')
 			.where('file.accessKey = :accessKey', { accessKey: key })
@@ -516,46 +657,67 @@ export class FileServerService {
 			.orWhere('file.webpublicAccessKey = :webpublicAccessKey', { webpublicAccessKey: key })
 			.getOne();
 
-		if (file == null) return '404';
+		if (file === null) {
+			return {
+				ok: false,
+				error: new DatabaseRecordNotFoundError(),
+			};
+		}
 
-		const isThumbnail = file.thumbnailAccessKey === key;
-		const isWebpublic = file.webpublicAccessKey === key;
+		const fileRole: FileRole = (() => {
+			if (file.accessKey === key) return 'original';
+			if (file.thumbnailAccessKey === key) return 'thumbnail';
+			if (file.webpublicAccessKey === key) return 'webpublic';
 
-		if (!file.storedInternal) {
-			if (!(file.isLink && file.uri)) return '204';
+			// ???
+			throw new Error();
+		})();
+
+		if (file.storedInternal) {
+			const path = this.internalStorageService.resolvePath(key);
+
+			if (fileRole === 'original') {
+				// 古いファイルは修正前のmimeを持っているのでできるだけ修正してあげる
+				const mime = this.fileInfoService.fixMime(file.type);
+				return {
+					ok: true,
+					value: new InternalFile({ fileRole, file, mime, ext: null, path }),
+				};
+			} else {
+				const { mime, ext } = await this.fileInfoService.detectType(path);
+				return {
+					ok: true,
+					value: new InternalFile({ fileRole, file, mime, ext, path }),
+				};
+			}
+		} else {
+			if (!file.isLink || file.uri === null) {
+				return {
+					ok: false,
+					error: new TodoError(),
+				};
+			}
+
 			const result = await this.downloadAndDetectTypeFromUrl(file.uri);
-			return {
-				...result,
-				url: file.uri,
-				fileRole: isThumbnail ? 'thumbnail' : isWebpublic ? 'webpublic' : 'original',
-				file,
-				filename: file.name,
-			};
+
+			if (result.ok) {
+				return {
+					ok: true,
+					value: new RemoteFile({
+						mime: result.value.mime,
+						ext: result.value.ext,
+						path: result.value.path,
+						cleanup: result.value.cleanup,
+
+						url: file.uri,
+						fileRole,
+						file,
+						filename: file.name,
+					}),
+				};
+			} else {
+				return result;
+			}
 		}
-
-		const path = this.internalStorageService.resolvePath(key);
-
-		if (isThumbnail || isWebpublic) {
-			const { mime, ext } = await this.fileInfoService.detectType(path);
-			return {
-				state: 'stored_internal',
-				fileRole: isThumbnail ? 'thumbnail' : 'webpublic',
-				file,
-				filename: file.name,
-				mime, ext,
-				path,
-			};
-		}
-
-		return {
-			state: 'stored_internal',
-			fileRole: 'original',
-			file,
-			filename: file.name,
-			// 古いファイルは修正前のmimeを持っているのでできるだけ修正してあげる
-			mime: this.fileInfoService.fixMime(file.type),
-			ext: null,
-			path,
-		};
 	}
 }
