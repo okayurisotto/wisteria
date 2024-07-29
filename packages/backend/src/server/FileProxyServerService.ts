@@ -245,7 +245,7 @@ export class FileProxyServerService {
 			if (opts.emoji || opts.avatar) {
 				if (isAnimationConvertibleImage || opts.static) {
 					const data = (
-						await sharpBmp(file.path, file.mime, { animated: opts.static })
+						await sharpBmp(file.path, file.mime, { animated: !opts.static })
 					)
 						.resize({
 							height: opts.emoji ? 128 : 320,
