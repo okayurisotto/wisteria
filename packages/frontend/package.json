@@ -96,7 +96,6 @@
 		"@vue/runtime-core": "3.4.18",
 		"acorn": "8.11.3",
 		"astring": "1.8.6",
-		"cypress": "13.6.4",
 		"estree-walker": "3.0.3",
 		"fast-glob": "3.3.2",
 		"happy-dom": "10.0.3",
