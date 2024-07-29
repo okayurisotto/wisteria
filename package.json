@@ -66,8 +66,5 @@
 		"turbo": "^2.0.7",
 		"typescript": "5.5.4",
 		"typescript-eslint": "^7.17.0"
-	},
-	"optionalDependencies": {
-		"@tensorflow/tfjs-core": "4.4.0"
 	}
 }

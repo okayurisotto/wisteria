@@ -26,8 +26,7 @@
 		"generate-api-json": "pnpm build && node ./generate_api_json.js"
 	},
 	"optionalDependencies": {
-		"@tensorflow/tfjs": "4.4.0",
-		"@tensorflow/tfjs-node": "4.4.0",
+		"@tensorflow/tfjs-node": "4.20.0",
 		"bufferutil": "4.0.7",
 		"slacc-android-arm-eabi": "0.0.10",
 		"slacc-android-arm64": "0.0.10",
