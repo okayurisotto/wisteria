@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { MiUser } from './User.js';
-import { MiNote } from './Note.js';
-import { MiAccessToken } from './AccessToken.js';
-import { MiRole } from './Role.js';
+import type { MiUser } from './User.js';
+import type { MiNote } from './Note.js';
+import type { MiAccessToken } from './AccessToken.js';
+import type { MiRole } from './Role.js';
 
 export type MiNotification = {
 	type: 'note';

@@ -1,4 +1,4 @@
-import { FastifyReply } from 'fastify';
+import type { FastifyReply } from 'fastify';
 
 export class LiteResponse<
 	T extends NonNullable<unknown> = NonNullable<unknown>,

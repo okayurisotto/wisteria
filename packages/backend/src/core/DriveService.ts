@@ -9,7 +9,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import sharp from 'sharp';
 import { sharpBmp } from '@misskey-dev/sharp-read-bmp';
 import { IsNull } from 'typeorm';
-import { DeleteObjectCommandInput, PutObjectCommandInput } from '@aws-sdk/client-s3';
+import type { DeleteObjectCommandInput, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { DI } from '@/di-symbols.js';
 import type { DriveFilesRepository, UsersRepository, DriveFoldersRepository, UserProfilesRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';

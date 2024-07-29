@@ -10,7 +10,6 @@ import UsersChart from '@/core/chart/charts/users.js';
 import DriveChart from '@/core/chart/charts/drive.js';
 import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
-import type * as Bull from 'bullmq';
 
 @Injectable()
 export class ResyncChartsProcessorService {

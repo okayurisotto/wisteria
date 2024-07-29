@@ -8,7 +8,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JSDOM } from 'jsdom';
 import httpLinkHeader from 'http-link-header';
 import ipaddr from 'ipaddr.js';
-import oauth2orize, { type OAuth2, AuthorizationError, ValidateFunctionArity2, OAuth2Req, MiddlewareRequest } from 'oauth2orize';
+import oauth2orize, { type OAuth2, AuthorizationError, type ValidateFunctionArity2, type OAuth2Req, type MiddlewareRequest } from 'oauth2orize';
 import oauth2Pkce from 'oauth2orize-pkce';
 import fastifyCors from '@fastify/cors';
 import fastifyView from '@fastify/view';

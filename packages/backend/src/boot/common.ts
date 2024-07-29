@@ -9,7 +9,7 @@ import { QueueStatsService } from '@/daemons/QueueStatsService.js';
 import { ServerStatsService } from '@/daemons/ServerStatsService.js';
 import { ServerService } from '@/server/ServerService.js';
 import { envOption } from '@/env.js';
-import { INestApplicationContext } from '@nestjs/common';
+import type { INestApplicationContext } from '@nestjs/common';
 
 export const server = async (app: INestApplicationContext) => {
 	const serverService = app.get(ServerService);

@@ -10,7 +10,7 @@ import type { Config } from '@/config.js';
 import type { MiUserPublickey } from '@/models/UserPublickey.js';
 import type { MiNote } from '@/models/Note.js';
 import { bindThis } from '@/decorators.js';
-import { MiLocalUser, MiRemoteUser } from '@/models/User.js';
+import type { MiLocalUser, MiRemoteUser } from '@/models/User.js';
 import { getApId } from './type.js';
 import { ApPersonService } from './models/ApPersonService.js';
 import type { IObject } from './type.js';

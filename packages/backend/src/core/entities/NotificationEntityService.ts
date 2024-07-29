@@ -14,7 +14,7 @@ import type { MiNote } from '@/models/Note.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { bindThis } from '@/decorators.js';
 import { isNotNull } from '@/misc/is-not-null.js';
-import { FilterUnionByProperty, notificationTypes } from '@/types.js';
+import { type FilterUnionByProperty, notificationTypes } from '@/types.js';
 import { RoleEntityService } from './RoleEntityService.js';
 import type { OnModuleInit } from '@nestjs/common';
 import type { UserEntityService } from './UserEntityService.js';

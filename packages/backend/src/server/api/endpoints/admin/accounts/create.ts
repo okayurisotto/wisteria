@@ -4,7 +4,6 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { IsNull } from 'typeorm';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { UsersRepository } from '@/models/_.js';
 import { SignupService } from '@/core/SignupService.js';
@@ -12,7 +11,7 @@ import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { InstanceActorService } from '@/core/InstanceActorService.js';
 import { localUsernameSchema, passwordSchema } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
-import { Packed } from '@/misc/json-schema.js';
+import type { Packed } from '@/misc/json-schema.js';
 
 export const meta = {
 	tags: ['admin'],

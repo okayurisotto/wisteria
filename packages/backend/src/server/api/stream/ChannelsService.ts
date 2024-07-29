@@ -21,7 +21,7 @@ import { HashtagChannelService } from './channels/hashtag.js';
 import { RoleTimelineChannelService } from './channels/role-timeline.js';
 import { ReversiChannelService } from './channels/reversi.js';
 import { ReversiGameChannelService } from './channels/reversi-game.js';
-import { type MiChannelService } from './channel.js';
+import type { MiChannelService } from './channel.js';
 
 @Injectable()
 export class ChannelsService {

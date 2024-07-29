@@ -5,7 +5,6 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
-import * as OTPAuth from 'otpauth';
 import { IsNull } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type {

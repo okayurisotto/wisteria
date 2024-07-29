@@ -10,7 +10,7 @@ import {
 	generateRegistrationOptions, verifyAuthenticationResponse,
 	verifyRegistrationResponse,
 } from '@simplewebauthn/server';
-import { AttestationFormat, isoCBOR } from '@simplewebauthn/server/helpers';
+import { type AttestationFormat, isoCBOR } from '@simplewebauthn/server/helpers';
 import { DI } from '@/di-symbols.js';
 import type { UserSecurityKeysRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';

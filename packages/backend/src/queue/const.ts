@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Config } from '@/config.js';
+import type { Config } from '@/config.js';
 import type * as Bull from 'bullmq';
 
 export const QUEUE = {

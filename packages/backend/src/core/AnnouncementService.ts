@@ -9,7 +9,7 @@ import { DI } from '@/di-symbols.js';
 import type { MiUser } from '@/models/User.js';
 import type { AnnouncementReadsRepository, AnnouncementsRepository, MiAnnouncement, MiAnnouncementRead, UsersRepository } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
-import { Packed } from '@/misc/json-schema.js';
+import type { Packed } from '@/misc/json-schema.js';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';

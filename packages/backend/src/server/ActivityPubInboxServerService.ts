@@ -12,7 +12,7 @@ import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { QueueService } from '@/core/QueueService.js';
 import { bindThis } from '@/decorators.js';
-import { IActivity } from '@/core/activitypub/type.js';
+import type { IActivity } from '@/core/activitypub/type.js';
 import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyBodyParser, FastifyPluginOptions } from 'fastify';
 
 const checkHttpSignature = (message: IncomingMessage): httpSignature.IParsedSignature | null => {

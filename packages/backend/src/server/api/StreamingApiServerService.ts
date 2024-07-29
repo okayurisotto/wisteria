@@ -12,7 +12,7 @@ import type { BlockingsRepository, ChannelFollowingsRepository, FollowingsReposi
 import { NoteReadService } from '@/core/NoteReadService.js';
 import { NotificationService } from '@/core/NotificationService.js';
 import { bindThis } from '@/decorators.js';
-import { MiLocalUser } from '@/models/User.js';
+import type { MiLocalUser } from '@/models/User.js';
 import { UserService } from '@/core/UserService.js';
 import { AuthenticateService } from './AuthenticateService.js';
 import { AuthenticationError } from '@/misc/AuthenticationError.js';

@@ -12,7 +12,7 @@ import type { AntennasRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
-import { DBAntennaImportJobData } from '../types.js';
+import type { DBAntennaImportJobData } from '../types.js';
 import type * as Bull from 'bullmq';
 
 const Ajv = _Ajv.default;

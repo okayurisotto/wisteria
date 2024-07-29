@@ -12,7 +12,7 @@ import type { UsersRepository } from '@/models/_.js';
 import type { MiLocalUser, MiRemoteUser } from '@/models/User.js';
 import type { Config } from '@/config.js';
 import type Logger from '@/logger.js';
-import { ILink, WebfingerService } from '@/core/WebfingerService.js';
+import { type ILink, WebfingerService } from '@/core/WebfingerService.js';
 import { RemoteLoggerService } from '@/core/RemoteLoggerService.js';
 import { ApDbResolverService } from '@/core/activitypub/ApDbResolverService.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';

@@ -13,7 +13,7 @@ import * as fileType from 'file-type';
 import FFmpeg from 'fluent-ffmpeg';
 import isSvg from 'is-svg';
 import probeImageSize from 'probe-image-size';
-import { type predictionType } from 'nsfwjs';
+import type { predictionType } from 'nsfwjs';
 import sharp from 'sharp';
 import { encode } from 'blurhash';
 import { createTempDir } from '@/misc/create-temp.js';

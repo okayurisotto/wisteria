@@ -7,7 +7,7 @@
 import pg from 'pg';
 pg.types.setTypeParser(20, Number);
 
-import { DataSource, Logger } from 'typeorm';
+import { DataSource, type Logger } from 'typeorm';
 import * as highlight from 'cli-highlight';
 import { entities as charts } from '@/core/chart/entities.js';
 
@@ -79,7 +79,7 @@ import { MiUserMemo } from '@/models/UserMemo.js';
 import { MiBubbleGameRecord } from '@/models/BubbleGameRecord.js';
 import { MiReversiGame } from '@/models/ReversiGame.js';
 
-import { Config } from '@/config.js';
+import type { Config } from '@/config.js';
 import MisskeyLogger from '@/logger.js';
 import { bindThis } from '@/decorators.js';
 import { DATABASE_MIGRATION_FILES } from './path.js';

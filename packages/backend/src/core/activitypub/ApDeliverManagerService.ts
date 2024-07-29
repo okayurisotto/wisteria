@@ -12,7 +12,7 @@ import { QueueService } from '@/core/QueueService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
 import type { IActivity } from '@/core/activitypub/type.js';
-import { ThinUser } from '@/queue/types.js';
+import type { ThinUser } from '@/queue/types.js';
 
 interface IRecipe {
 	type: string;
