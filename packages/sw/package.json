@@ -14,7 +14,7 @@
 	},
 	"devDependencies": {
 		"@types/serviceworker": "0.0.67",
-		"tsup": "^8.2.2",
+		"tsup": "^8.2.3",
 		"typescript": "5.5.4"
 	},
 	"type": "module"
