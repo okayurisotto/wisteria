@@ -16,7 +16,7 @@
 	},
 	"dependencies": {
 		"@napi-rs/canvas": "^0.1.53",
-		"@types/node": "^20.14.11",
+		"@types/node": "^20.14.13",
 		"@types/random-seed": "0.3.5",
 		"random-seed": "0.3.0",
 		"tsup": "^8.2.2",

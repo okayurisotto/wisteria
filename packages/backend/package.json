@@ -170,7 +170,7 @@
 		"@types/jsonld": "1.5.13",
 		"@types/mime-types": "2.1.4",
 		"@types/ms": "0.7.34",
-		"@types/node": "20.11.17",
+		"@types/node": "^20.14.13",
 		"@types/node-fetch": "3.0.3",
 		"@types/nodemailer": "6.4.14",
 		"@types/oauth2orize": "1.11.3",
