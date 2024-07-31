@@ -60,7 +60,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				.where('following.followerId = :followerId', { followerId: me.id });
 
 			const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), ps.sinceId, ps.untilId)
-				.andWhere(new Brackets(qb => {
+				.andWhere(new Brackets((qb) => {
 					qb // このmeIdAsListパラメータはqueryServiceのgenerateVisibilityQueryでセットされる
 						.where(':meIdAsList <@ note.mentions')
 						.orWhere(':meIdAsList <@ note.visibleUserIds');
@@ -83,7 +83,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			}
 
 			if (ps.following) {
-				query.andWhere(`((note.userId IN (${ followingQuery.getQuery() })) OR (note.userId = :meId))`, { meId: me.id });
+				query.andWhere(`((note.userId IN (${followingQuery.getQuery()})) OR (note.userId = :meId))`, { meId: me.id });
 				query.setParameters(followingQuery.getParameters());
 			}
 

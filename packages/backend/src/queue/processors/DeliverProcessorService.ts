@@ -59,7 +59,7 @@ export class DeliverProcessorService {
 			await this.apRequestService.signedPost(job.data.user, job.data.to, job.data.content, job.data.digest);
 
 			// Update stats
-			this.federatedInstanceService.fetch(host).then(i => {
+			this.federatedInstanceService.fetch(host).then((i) => {
 				if (i.isNotResponding) {
 					this.federatedInstanceService.update(i.id, {
 						isNotResponding: false,
@@ -78,7 +78,7 @@ export class DeliverProcessorService {
 			return 'Success';
 		} catch (res) {
 			// Update stats
-			this.federatedInstanceService.fetch(host).then(i => {
+			this.federatedInstanceService.fetch(host).then((i) => {
 				if (!i.isNotResponding) {
 					this.federatedInstanceService.update(i.id, {
 						isNotResponding: true,
@@ -98,7 +98,7 @@ export class DeliverProcessorService {
 				if (!res.isRetryable) {
 					// 相手が閉鎖していることを明示しているため、配送停止する
 					if (job.data.isSharedInbox && res.statusCode === 410) {
-						this.federatedInstanceService.fetch(host).then(i => {
+						this.federatedInstanceService.fetch(host).then((i) => {
 							this.federatedInstanceService.update(i.id, {
 								isSuspended: true,
 							});

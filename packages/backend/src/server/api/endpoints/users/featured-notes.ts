@@ -89,7 +89,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				.leftJoinAndSelect('renote.user', 'renoteUser')
 				.leftJoinAndSelect('note.channel', 'channel');
 
-			const notes = (await query.getMany()).filter(note => {
+			const notes = (await query.getMany()).filter((note) => {
 				if (me && isUserRelated(note, userIdsWhoBlockingMe, false)) return false;
 				if (me && isUserRelated(note, userIdsWhoMeMuting, true)) return false;
 

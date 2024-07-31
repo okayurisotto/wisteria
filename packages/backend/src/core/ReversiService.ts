@@ -268,7 +268,7 @@ export class ReversiService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	private async matched(parentId: MiUser['id'], childId: MiUser['id'], options: { noIrregularRules: boolean; }): Promise<MiReversiGame> {
+	private async matched(parentId: MiUser['id'], childId: MiUser['id'], options: { noIrregularRules: boolean }): Promise<MiReversiGame> {
 		const game = await this.reversiGamesRepository.insert({
 			id: this.idService.gen(),
 			user1Id: parentId,
@@ -323,7 +323,7 @@ export class ReversiService implements OnApplicationShutdown {
 			.where('id = :id', { id: game.id })
 			.returning('*')
 			.execute()
-			.then((response) => response.raw[0]);
+			.then(response => response.raw[0]);
 		// キャッシュ効率化のためにユーザー情報は再利用
 		updatedGame.user1 = game.user1;
 		updatedGame.user2 = game.user2;
@@ -367,7 +367,7 @@ export class ReversiService implements OnApplicationShutdown {
 			.where('id = :id', { id: game.id })
 			.returning('*')
 			.execute()
-			.then((response) => response.raw[0]);
+			.then(response => response.raw[0]);
 		// キャッシュ効率化のためにユーザー情報は再利用
 		updatedGame.user1 = game.user1;
 		updatedGame.user2 = game.user2;

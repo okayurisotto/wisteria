@@ -63,7 +63,7 @@ export class ExportNotesProcessorService {
 
 			const write = (text: string): Promise<void> => {
 				return new Promise<void>((res, rej) => {
-					stream.write(text, err => {
+					stream.write(text, (err) => {
 						if (err) {
 							this.logger.error(err);
 							rej(err);

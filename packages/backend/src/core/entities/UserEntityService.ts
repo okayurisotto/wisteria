@@ -31,13 +31,13 @@ const Ajv = _Ajv.default;
 const ajv = new Ajv();
 
 function isLocalUser(user: MiUser): user is MiLocalUser;
-function isLocalUser<T extends { host: MiUser['host'] }>(user: T): user is (T & { host: null; });
+function isLocalUser<T extends { host: MiUser['host'] }>(user: T): user is (T & { host: null });
 function isLocalUser(user: MiUser | { host: MiUser['host'] }): boolean {
 	return user.host == null;
 }
 
 function isRemoteUser(user: MiUser): user is MiRemoteUser;
-function isRemoteUser<T extends { host: MiUser['host'] }>(user: T): user is (T & { host: string; });
+function isRemoteUser<T extends { host: MiUser['host'] }>(user: T): user is (T & { host: string });
 function isRemoteUser(user: MiUser | { host: MiUser['host'] }): boolean {
 	return !isLocalUser(user);
 }
@@ -256,9 +256,9 @@ export class UserEntityService implements OnModuleInit {
 		if (user.lastActiveDate == null) return 'unknown';
 		const elapsed = Date.now() - user.lastActiveDate.getTime();
 		return (
-			elapsed < USER_ONLINE_THRESHOLD ? 'online' :
-			elapsed < USER_ACTIVE_THRESHOLD ? 'active' :
-			'offline'
+			elapsed < USER_ONLINE_THRESHOLD ? 'online'
+				: elapsed < USER_ACTIVE_THRESHOLD ? 'active'
+					: 'offline'
 		);
 	}
 
@@ -280,11 +280,11 @@ export class UserEntityService implements OnModuleInit {
 
 	public async pack<S extends 'MeDetailed' | 'UserDetailedNotMe' | 'UserDetailed' | 'UserLite' = 'UserLite'>(
 		src: MiUser['id'] | MiUser,
-		me?: { id: MiUser['id']; } | null | undefined,
+		me?: { id: MiUser['id'] } | null | undefined,
 		options?: {
-			schema?: S,
-			includeSecrets?: boolean,
-			userProfile?: MiUserProfile,
+			schema?: S;
+			includeSecrets?: boolean;
+			userProfile?: MiUserProfile;
 		},
 	): Promise<Packed<S>> {
 		const opts = Object.assign({
@@ -307,23 +307,23 @@ export class UserEntityService implements OnModuleInit {
 			.getMany() : [];
 		const profile = isDetailed ? (opts.userProfile ?? await this.userProfilesRepository.findOneByOrFail({ userId: user.id })) : null;
 
-		const followingCount = profile == null ? null :
-			(profile.followingVisibility === 'public') || isMe ? user.followingCount :
-			(profile.followingVisibility === 'followers') && (relation && relation.isFollowing) ? user.followingCount :
-			null;
+		const followingCount = profile == null ? null
+			: (profile.followingVisibility === 'public') || isMe ? user.followingCount
+					: (profile.followingVisibility === 'followers') && (relation && relation.isFollowing) ? user.followingCount
+							: null;
 
-		const followersCount = profile == null ? null :
-			(profile.followersVisibility === 'public') || isMe ? user.followersCount :
-			(profile.followersVisibility === 'followers') && (relation && relation.isFollowing) ? user.followersCount :
-			null;
+		const followersCount = profile == null ? null
+			: (profile.followersVisibility === 'public') || isMe ? user.followersCount
+					: (profile.followersVisibility === 'followers') && (relation && relation.isFollowing) ? user.followersCount
+							: null;
 
 		const isModerator = isMe && isDetailed ? this.roleUserService.isModerator(user) : null;
 		const isAdmin = isMe && isDetailed ? this.roleUserService.isAdministrator(user) : null;
-		const unreadAnnouncements = isMe && isDetailed ?
-			(await this.announcementService.getUnreadAnnouncements(user)).map((announcement) => ({
-				createdAt: this.idService.parse(announcement.id).date.toISOString(),
-				...announcement,
-			})) : null;
+		const unreadAnnouncements = isMe && isDetailed
+			? (await this.announcementService.getUnreadAnnouncements(user)).map(announcement => ({
+					createdAt: this.idService.parse(announcement.id).date.toISOString(),
+					...announcement,
+				})) : null;
 
 		const notificationsInfo = isMe && isDetailed ? await this.getNotificationsInfo(user.id) : null;
 
@@ -500,8 +500,8 @@ export class UserEntityService implements OnModuleInit {
 		users: (MiUser['id'] | MiUser)[],
 		me?: { id: MiUser['id'] } | null | undefined,
 		options?: {
-			schema?: S,
-			includeSecrets?: boolean,
+			schema?: S;
+			includeSecrets?: boolean;
 		},
 	): Promise<Packed<S>[]> {
 		return Promise.all(users.map(u => this.pack(u, me, options)));

@@ -34,7 +34,7 @@ export class WellKnownServerService {
 		private oauth2ProviderService: OAuth2ProviderService,
 	) {}
 
-	private toXRD(elements: { name: string, value?: string, attributes?: Record<string, string> }[]): string {
+	private toXRD(elements: { name: string; value?: string; attributes?: Record<string, string> }[]): string {
 		const XML_DECL = '<?xml version="1.0" encoding="UTF-8"?>';
 
 		const elementsStr = elements
@@ -64,7 +64,7 @@ export class WellKnownServerService {
 		};
 	};
 
-	private generateQueryFromAcct(acct: AcctEntity): FindOptionsWhere<MiUser> | null  {
+	private generateQueryFromAcct(acct: AcctEntity): FindOptionsWhere<MiUser> | null {
 		if (acct.host === null) {
 			const query: FindOptionsWhere<MiUser> = {
 				usernameLower: acct.username,
@@ -77,7 +77,7 @@ export class WellKnownServerService {
 		}
 	};
 
-	private generateQuery(resource: string): FindOptionsWhere<MiUser> | null  {
+	private generateQuery(resource: string): FindOptionsWhere<MiUser> | null {
 		if (resource.startsWith(`${this.config.url.toLowerCase()}/users/`)) {
 			return this.generateQueryFromId(resource.split('/').at(-1));
 		}

@@ -6,7 +6,7 @@
 import { Writable } from 'node:stream';
 
 export class DevNull extends Writable implements NodeJS.WritableStream {
-	_write (chunk: any, encoding: BufferEncoding, cb: (err?: Error | null) => void) {
+	_write(chunk: any, encoding: BufferEncoding, cb: (err?: Error | null) => void) {
 		setImmediate(cb);
 	}
 }

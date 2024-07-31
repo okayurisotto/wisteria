@@ -36,7 +36,7 @@ export class ServerStatsService implements OnApplicationShutdown {
 
 		const log = [] as any[];
 
-		ev.on('requestServerStatsLog', x => {
+		ev.on('requestServerStatsLog', (x) => {
 			ev.emit(`serverStatsLog:${x.id}`, log.slice(0, x.length));
 		});
 

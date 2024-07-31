@@ -29,7 +29,7 @@ class ServerStatsChannel extends Channel {
 	public onMessage(type: string, body: any) {
 		switch (type) {
 			case 'requestLog':
-				ev.once(`serverStatsLog:${body.id}`, statsLog => {
+				ev.once(`serverStatsLog:${body.id}`, (statsLog) => {
 					this.send('statsLog', statsLog);
 				});
 				ev.emit('requestServerStatsLog', {

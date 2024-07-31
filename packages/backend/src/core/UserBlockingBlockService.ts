@@ -103,7 +103,7 @@ export class UserBlockingBlockService implements OnModuleInit {
 			this.globalEventService.publishMainStream(follower.id, 'unfollow', packedUser);
 
 			const allWebhooks = await this.webhookService.getActiveWebhooks();
-			const webhooks = allWebhooks.filter(webhook => {
+			const webhooks = allWebhooks.filter((webhook) => {
 				return webhook.userId === follower.id && webhook.on.includes('unfollow');
 			});
 			for (const webhook of webhooks) {

@@ -35,7 +35,7 @@ export class HashtagService {
 	}
 
 	@bindThis
-	public async updateHashtags(user: { id: MiUser['id']; host: MiUser['host']; }, tags: string[]) {
+	public async updateHashtags(user: { id: MiUser['id']; host: MiUser['host'] }, tags: string[]) {
 		for (const tag of tags) {
 			await this.updateHashtag(user, tag);
 		}
@@ -53,7 +53,7 @@ export class HashtagService {
 	}
 
 	@bindThis
-	public async updateHashtag(user: { id: MiUser['id']; host: MiUser['host']; }, tag: string, isUserAttached = false, inc = true) {
+	public async updateHashtag(user: { id: MiUser['id']; host: MiUser['host'] }, tag: string, isUserAttached = false, inc = true) {
 		tag = normalizeForSearch(tag);
 
 		// TODO: サンプリング

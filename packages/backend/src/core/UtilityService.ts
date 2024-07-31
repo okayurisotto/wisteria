@@ -43,7 +43,7 @@ export class UtilityService {
 
 		const regexpregexp = /^\/(.+)\/(.*)$/;
 
-		const matched = keyWords.some(filter => {
+		const matched = keyWords.some((filter) => {
 			// represents RegExp
 			const regexp = filter.match(regexpregexp);
 			// This should never happen due to input sanitisation.

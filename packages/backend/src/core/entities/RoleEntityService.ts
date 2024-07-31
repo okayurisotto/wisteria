@@ -36,7 +36,7 @@ export class RoleEntityService {
 
 		const assignedCount = await this.roleAssignmentsRepository.createQueryBuilder('assign')
 			.where('assign.roleId = :roleId', { roleId: role.id })
-			.andWhere(new Brackets(qb => {
+			.andWhere(new Brackets((qb) => {
 				qb
 					.where('assign.expiresAt IS NULL')
 					.orWhere('assign.expiresAt > :now', { now: new Date() });
@@ -82,4 +82,3 @@ export class RoleEntityService {
 		return Promise.all(roles.map(x => this.pack(x, me)));
 	}
 }
-

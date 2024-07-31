@@ -49,4 +49,3 @@ export class ModerationLogEntityService {
 		return Promise.all(reports.map(x => this.pack(x)));
 	}
 }
-

@@ -51,4 +51,3 @@ export class RenoteMutingEntityService {
 		return Promise.all(mutings.map(x => this.pack(x, me)));
 	}
 }
-

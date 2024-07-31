@@ -54,7 +54,7 @@ export class ApiCallService {
 
 	public async handleRequest(
 		endpoint: IEndpoint & { exec: ExecMethodType },
-		request: FastifyRequest<{ Body: Record<string, unknown> | undefined, Querystring: Record<string, unknown> }>,
+		request: FastifyRequest<{ Body: Record<string, unknown> | undefined; Querystring: Record<string, unknown> }>,
 	): Promise<LiteResponse> {
 		const body = request.method === 'GET'
 			? request.query
@@ -118,10 +118,10 @@ export class ApiCallService {
 
 	public async handleMultipartRequest(
 		endpoint: IEndpoint & { exec: ExecMethodType },
-		request: FastifyRequest<{ Body: Record<string, unknown>, Querystring: Record<string, unknown> }>,
+		request: FastifyRequest<{ Body: Record<string, unknown>; Querystring: Record<string, unknown> }>,
 	): Promise<LiteResponse> {
 		const multipartData = await request.file()
-			.then((data) => data ?? null)
+			.then(data => data ?? null)
 			.catch(() => {
 				// Fastify throws if the remote didn't send multipart data. Return 400 below.
 				return null;
@@ -254,7 +254,7 @@ export class ApiCallService {
 						code: 'CREDENTIAL_REQUIRED',
 						id: '1384574d-a912-4b81-8601-c7b1c4085df1',
 						httpStatusCode: 401,
-					})
+					}),
 				};
 			} else if (user.isSuspended) {
 				return {
@@ -264,7 +264,7 @@ export class ApiCallService {
 						code: 'YOUR_ACCOUNT_SUSPENDED',
 						kind: 'permission',
 						id: 'a8c724b3-6e9c-4b46-b1a8-bc3ed6258370',
-					})
+					}),
 				};
 			}
 		}
@@ -341,8 +341,8 @@ export class ApiCallService {
 
 		//#region
 
-		if (token && ((endpoint.meta.kind && !token.permission.some(p => p === endpoint.meta.kind))
-			|| (!endpoint.meta.kind && (endpoint.meta.requireCredential || endpoint.meta.requireModerator || endpoint.meta.requireAdmin)))) {
+		if (token && ((endpoint.meta.kind && !token.permission.some(p => p === endpoint.meta.kind)) ||
+			(!endpoint.meta.kind && (endpoint.meta.requireCredential || endpoint.meta.requireModerator || endpoint.meta.requireAdmin)))) {
 			return {
 				ok: false,
 				error: new ApiError({
@@ -381,7 +381,7 @@ export class ApiCallService {
 									reason: param.type !== undefined ? `cannot cast to ${param.type}` : 'cannot cast',
 								},
 							),
-						}
+						};
 					}
 				}
 			}

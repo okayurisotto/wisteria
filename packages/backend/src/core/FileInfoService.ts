@@ -138,9 +138,9 @@ export class FileInfoService {
 				opts.sensitiveThreshold ?? 0.5,
 				opts.sensitiveThresholdForPorn ?? 0.75,
 				opts.enableSensitiveMediaDetectionForVideos ?? false,
-			).then(value => {
+			).then((value) => {
 				[sensitive, porn] = value;
-			}, error => {
+			}, (error) => {
 				warnings.push(`detectSensitivity failed: ${error}`);
 			});
 		}
@@ -391,12 +391,12 @@ export class FileInfoService {
 	 */
 	@bindThis
 	private async detectImageSize(path: string): Promise<{
-	width: number;
-	height: number;
-	wUnits: string;
-	hUnits: string;
-	orientation?: number;
-}> {
+		width: number;
+		height: number;
+		wUnits: string;
+		hUnits: string;
+		orientation?: number;
+	}> {
 		const readable = fs.createReadStream(path);
 		const imageSize = await probeImageSize(readable);
 		readable.destroy();

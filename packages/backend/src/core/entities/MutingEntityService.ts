@@ -52,4 +52,3 @@ export class MutingEntityService {
 		return Promise.all(mutings.map(x => this.pack(x, me)));
 	}
 }
-

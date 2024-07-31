@@ -187,7 +187,7 @@ export class ApNoteService {
 		// リプライ
 		const reply: MiNote | null = note.inReplyTo
 			? await this.resolveNote(note.inReplyTo, { resolver })
-				.then(x => {
+				.then((x) => {
 					if (x == null) {
 						this.logger.warn('Specified inReplyTo, but not found');
 						throw new Error('inReplyTo not found');
@@ -224,7 +224,7 @@ export class ApNoteService {
 			const uris = unique([note._misskey_quote, note.quoteUrl].filter((x): x is string => typeof x === 'string'));
 			const results = await Promise.all(uris.map(tryResolveNote));
 
-			quote = results.filter((x): x is { status: 'ok', res: MiNote } => x.status === 'ok').map(x => x.res).at(0);
+			quote = results.filter((x): x is { status: 'ok'; res: MiNote } => x.status === 'ok').map(x => x.res).at(0);
 			if (!quote) {
 				if (results.some(x => x.status === 'temperror')) {
 					throw new Error('quote resolve failed');
@@ -316,7 +316,7 @@ export class ApNoteService {
 	 * リモートサーバーからフェッチしてMisskeyに登録しそれを返します。
 	 */
 	@bindThis
-	public async resolveNote(value: string | IObject, options: { sentFrom?: URL, resolver?: Resolver } = {}): Promise<MiNote | null> {
+	public async resolveNote(value: string | IObject, options: { sentFrom?: URL; resolver?: Resolver } = {}): Promise<MiNote | null> {
 		const uri = getApId(value);
 
 		// ブロックしていたら中断
@@ -358,17 +358,17 @@ export class ApNoteService {
 			name: In(eomjiTags.map(tag => tag.name.replaceAll(':', ''))),
 		});
 
-		return await Promise.all(eomjiTags.map(async tag => {
+		return await Promise.all(eomjiTags.map(async (tag) => {
 			const name = tag.name.replaceAll(':', '');
 			tag.icon = toSingle(tag.icon);
 
 			const exists = existingEmojis.find(x => x.name === name);
 
 			if (exists) {
-				if ((exists.updatedAt == null)
-					|| (tag.id != null && exists.uri == null)
-					|| (new Date(tag.updated) > exists.updatedAt)
-					|| (tag.icon.url !== exists.originalUrl)
+				if ((exists.updatedAt == null) ||
+					(tag.id != null && exists.uri == null) ||
+					(new Date(tag.updated) > exists.updatedAt) ||
+					(tag.icon.url !== exists.originalUrl)
 				) {
 					await this.emojisRepository.update({
 						host,

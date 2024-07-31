@@ -173,7 +173,7 @@ export class NotificationEntityService implements OnModuleInit {
 		) : undefined;
 
 		if (notification.type === 'reaction:grouped') {
-			const reactions = await Promise.all(notification.reactions.map(async reaction => {
+			const reactions = await Promise.all(notification.reactions.map(async (reaction) => {
 				const user = hint?.packedUsers != null
 					? hint.packedUsers.get(reaction.userId)!
 					: await this.userEntityService.pack(reaction.userId, { id: meId });
@@ -190,7 +190,7 @@ export class NotificationEntityService implements OnModuleInit {
 				reactions,
 			});
 		} else if (notification.type === 'renote:grouped') {
-			const users = await Promise.all(notification.userIds.map(userId => {
+			const users = await Promise.all(notification.userIds.map((userId) => {
 				const packedUser = hint?.packedUsers != null ? hint.packedUsers.get(userId) : null;
 				if (packedUser) {
 					return packedUser;

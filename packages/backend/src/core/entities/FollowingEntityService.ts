@@ -109,4 +109,3 @@ export class FollowingEntityService {
 		return Promise.all(followings.map(x => this.pack(x, me, opts)));
 	}
 }
-

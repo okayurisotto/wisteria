@@ -111,14 +111,14 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 	}
 
 	private async getFromDb(list: MiUserList, ps: {
-		untilId: string | null,
-		sinceId: string | null,
-		limit: number,
-		includeMyRenotes: boolean,
-		includeRenotedMyNotes: boolean,
-		includeLocalRenotes: boolean,
-		withFiles: boolean,
-		withRenotes: boolean,
+		untilId: string | null;
+		sinceId: string | null;
+		limit: number;
+		includeMyRenotes: boolean;
+		includeRenotedMyNotes: boolean;
+		includeLocalRenotes: boolean;
+		withFiles: boolean;
+		withRenotes: boolean;
 	}, me: MiLocalUser) {
 		//#region Construct query
 		const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), ps.sinceId, ps.untilId)
@@ -130,20 +130,20 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			.leftJoinAndSelect('renote.user', 'renoteUser')
 			.andWhere('userListMemberships.userListId = :userListId', { userListId: list.id })
 			.andWhere('note.channelId IS NULL') // チャンネルノートではない
-			.andWhere(new Brackets(qb => {
+			.andWhere(new Brackets((qb) => {
 				qb
 					.where('note.replyId IS NULL') // 返信ではない
-					.orWhere(new Brackets(qb => {
+					.orWhere(new Brackets((qb) => {
 						qb // 返信だけど投稿者自身への返信
 							.where('note.replyId IS NOT NULL')
 							.andWhere('note.replyUserId = note.userId');
 					}))
-					.orWhere(new Brackets(qb => {
+					.orWhere(new Brackets((qb) => {
 						qb // 返信だけど自分宛ての返信
 							.where('note.replyId IS NOT NULL')
 							.andWhere('note.replyUserId = :meId', { meId: me.id });
 					}))
-					.orWhere(new Brackets(qb => {
+					.orWhere(new Brackets((qb) => {
 						qb // 返信だけどwithRepliesがtrueの場合
 							.where('note.replyId IS NOT NULL')
 							.andWhere('userListMemberships.withReplies = true');
@@ -156,7 +156,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		this.queryService.generateMutedUserRenotesQueryForNotes(query, me);
 
 		if (!ps.includeMyRenotes) {
-			query.andWhere(new Brackets(qb => {
+			query.andWhere(new Brackets((qb) => {
 				qb.orWhere('note.userId != :meId', { meId: me.id });
 				qb.orWhere('note.renoteId IS NULL');
 				qb.orWhere('note.text IS NOT NULL');
@@ -166,7 +166,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		}
 
 		if (!ps.includeRenotedMyNotes) {
-			query.andWhere(new Brackets(qb => {
+			query.andWhere(new Brackets((qb) => {
 				qb.orWhere('note.renoteUserId != :meId', { meId: me.id });
 				qb.orWhere('note.renoteId IS NULL');
 				qb.orWhere('note.text IS NOT NULL');
@@ -176,7 +176,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		}
 
 		if (!ps.includeLocalRenotes) {
-			query.andWhere(new Brackets(qb => {
+			query.andWhere(new Brackets((qb) => {
 				qb.orWhere('note.renoteUserHost IS NOT NULL');
 				qb.orWhere('note.renoteId IS NULL');
 				qb.orWhere('note.text IS NOT NULL');
@@ -186,9 +186,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		}
 
 		if (!ps.withRenotes) {
-			query.andWhere(new Brackets(qb => {
+			query.andWhere(new Brackets((qb) => {
 				qb.orWhere('note.renoteId IS NULL');
-				qb.orWhere(new Brackets(qb => {
+				qb.orWhere(new Brackets((qb) => {
 					qb.orWhere('note.text IS NOT NULL');
 					qb.orWhere('note.fileIds != \'{}\'');
 				}));

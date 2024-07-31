@@ -33,7 +33,7 @@ export function genMeid(t: number): string {
 	return getTime(t) + getRandom();
 }
 
-export function parseMeid(id: string): { date: Date; } {
+export function parseMeid(id: string): { date: Date } {
 	return {
 		date: new Date(parseInt(id.slice(0, 12), 16) - 0x800000000000),
 	};

@@ -20,17 +20,17 @@ import type { Index, MeiliSearch } from 'meilisearch';
 type K = string;
 type V = string | number | boolean;
 type Q =
-	{ op: '=', k: K, v: V } |
-	{ op: '!=', k: K, v: V } |
-	{ op: '>', k: K, v: number } |
-	{ op: '<', k: K, v: number } |
-	{ op: '>=', k: K, v: number } |
-	{ op: '<=', k: K, v: number } |
-	{ op: 'is null', k: K} |
-	{ op: 'is not null', k: K} |
-	{ op: 'and', qs: Q[] } |
-	{ op: 'or', qs: Q[] } |
-	{ op: 'not', q: Q };
+	{ op: '='; k: K; v: V } |
+	{ op: '!='; k: K; v: V } |
+	{ op: '>'; k: K; v: number } |
+	{ op: '<'; k: K; v: number } |
+	{ op: '>='; k: K; v: number } |
+	{ op: '<='; k: K; v: number } |
+	{ op: 'is null'; k: K } |
+	{ op: 'is not null'; k: K } |
+	{ op: 'and'; qs: Q[] } |
+	{ op: 'or'; qs: Q[] } |
+	{ op: 'not'; q: Q };
 
 function compileValue(value: V): string {
 	if (typeof value === 'string') {
@@ -51,8 +51,8 @@ function compileQuery(q: Q): string {
 		case '<': return `(${q.k} < ${compileValue(q.v)})`;
 		case '>=': return `(${q.k} >= ${compileValue(q.v)})`;
 		case '<=': return `(${q.k} <= ${compileValue(q.v)})`;
-		case 'and': return q.qs.length === 0 ? '' : `(${ q.qs.map(_q => compileQuery(_q)).join(' AND ') })`;
-		case 'or': return q.qs.length === 0 ? '' : `(${ q.qs.map(_q => compileQuery(_q)).join(' OR ') })`;
+		case 'and': return q.qs.length === 0 ? '' : `(${q.qs.map(_q => compileQuery(_q)).join(' AND ')})`;
+		case 'or': return q.qs.length === 0 ? '' : `(${q.qs.map(_q => compileQuery(_q)).join(' OR ')})`;
 		case 'is null': return `(${q.k} IS NULL)`;
 		case 'is not null': return `(${q.k} IS NOT NULL)`;
 		case 'not': return `(NOT ${compileQuery(q.q)})`;
@@ -196,13 +196,13 @@ export class SearchService {
 			if (res.hits.length === 0) return [];
 			const [userIdsWhoMeMuting, userIdsWhoBlockingMe] = me
 				? await Promise.all([
-						this.mutingsRepository.find({ where: { muterId: me.id }, select: ['muteeId'] }).then(xs => new Set(xs.map(x => x.muteeId))),
-						this.blockingsRepository.find({ where: { blockeeId: me.id }, select: ['blockerId'] }).then(xs => new Set(xs.map(x => x.blockerId))),
-					])
+					this.mutingsRepository.find({ where: { muterId: me.id }, select: ['muteeId'] }).then(xs => new Set(xs.map(x => x.muteeId))),
+					this.blockingsRepository.find({ where: { blockeeId: me.id }, select: ['blockerId'] }).then(xs => new Set(xs.map(x => x.blockerId))),
+				])
 				: [new Set<string>(), new Set<string>()]
 				;
 			const notes = (await this.notesRepository.findBy({ id: In(res.hits.map(x => x.id)) }))
-				.filter(note => {
+				.filter((note) => {
 					if (me && isUserRelated(note, userIdsWhoMeMuting)) return false;
 					if (me && isUserRelated(note, userIdsWhoBlockingMe)) return false;
 					return true;
@@ -218,7 +218,7 @@ export class SearchService {
 			}
 
 			query
-				.andWhere('note.text ILIKE :q', { q: `%${ sqlLikeEscape(q) }%` })
+				.andWhere('note.text ILIKE :q', { q: `%${sqlLikeEscape(q)}%` })
 				.innerJoinAndSelect('note.user', 'user')
 				.leftJoinAndSelect('note.reply', 'reply')
 				.leftJoinAndSelect('note.renote', 'renote')

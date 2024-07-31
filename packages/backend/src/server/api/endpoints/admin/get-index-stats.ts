@@ -39,8 +39,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private db: DataSource,
 	) {
 		super(meta, paramDef, async () => {
-			const stats = await this.db.query('SELECT * FROM pg_indexes;').then(recs => {
-				const res = [] as { tablename: string; indexname: string; }[];
+			const stats = await this.db.query('SELECT * FROM pg_indexes;').then((recs) => {
+				const res = [] as { tablename: string; indexname: string }[];
 				for (const rec of recs) {
 					res.push(rec);
 				}

@@ -24,9 +24,9 @@ import { UserEntityService } from './UserEntityService.js';
 import { DriveFolderEntityService } from './DriveFolderEntityService.js';
 
 type PackOptions = {
-	detail?: boolean,
-	self?: boolean,
-	withUser?: boolean,
+	detail?: boolean;
+	self?: boolean;
+	withUser?: boolean;
 };
 
 @Injectable()

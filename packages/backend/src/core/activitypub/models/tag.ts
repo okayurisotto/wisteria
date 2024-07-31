@@ -12,7 +12,7 @@ export function extractApHashtags(tags: IObject | IObject[] | null | undefined):
 
 	const hashtags = extractApHashtagObjects(tags);
 
-	return hashtags.map(tag => {
+	return hashtags.map((tag) => {
 		const m = tag.name.match(/^#(.+)/);
 		return m ? m[1] : null;
 	}).filter((x): x is string => x != null);

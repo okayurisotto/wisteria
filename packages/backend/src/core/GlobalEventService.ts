@@ -152,8 +152,8 @@ export interface RoleTimelineEventTypes {
 export interface AdminEventTypes {
 	newAbuseUserReport: {
 		id: MiAbuseUserReport['id'];
-		targetUserId: MiUser['id'],
-		reporterId: MiUser['id'],
+		targetUserId: MiUser['id'];
+		reporterId: MiUser['id'];
 		comment: string;
 	};
 }
@@ -194,10 +194,10 @@ export interface ReversiGameEventTypes {
 // 辞書(interface or type)から{ type, body }ユニオンを定義
 // https://stackoverflow.com/questions/49311989/can-i-infer-the-type-of-a-value-using-extends-keyof-type
 // VS Codeの展開を防止するためにEvents型を定義
-type Events<T extends object> = { [K in keyof T]: { type: K; body: T[K]; } };
+type Events<T extends object> = { [K in keyof T]: { type: K; body: T[K] } };
 type EventUnionFromDictionary<
 	T extends object,
-	U = Events<T>
+	U = Events<T>,
 > = U[keyof U];
 
 type SerializedAll<T> = {
@@ -290,9 +290,9 @@ export class GlobalEventService {
 
 	@bindThis
 	private publish(channel: StreamChannels, type: string | null, value?: any): void {
-		const message = type == null ? value : value == null ?
-			{ type: type, body: null } :
-			{ type: type, body: value };
+		const message = type == null ? value : value == null
+			? { type: type, body: null }
+			: { type: type, body: value };
 
 		this.redisForPub.publish(this.config.host, JSON.stringify({
 			channel: channel,

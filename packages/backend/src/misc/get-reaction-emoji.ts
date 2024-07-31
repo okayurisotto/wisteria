@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-export default function(reaction: string): string {
+export default function (reaction: string): string {
 	switch (reaction) {
 		case 'like': return '👍';
 		case 'love': return '❤️';

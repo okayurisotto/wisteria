@@ -106,7 +106,7 @@ export class RelayService {
 	}
 
 	@bindThis
-	public async deliverToRelays(user: { id: MiUser['id']; host: null; }, activity: any): Promise<void> {
+	public async deliverToRelays(user: { id: MiUser['id']; host: null }, activity: any): Promise<void> {
 		if (activity == null) return;
 
 		const relays = await this.relaysRepository.findBy({

@@ -26,7 +26,7 @@ export default class PerUserPvChart extends Chart<typeof schema> {
 		private appLockService: AppLockService,
 		private chartLoggerService: ChartLoggerService,
 	) {
-		super(db, (k) => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);
+		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);
 	}
 
 	protected async tickMajor(): Promise<Partial<KVs<typeof schema>>> {

@@ -89,10 +89,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 					.where('following.followerId = :followerId', { followerId: me.id });
 
 				const query = setUsernameAndHostQuery()
-					.andWhere(`user.id IN (${ followingQuery.getQuery() })`)
+					.andWhere(`user.id IN (${followingQuery.getQuery()})`)
 					.andWhere('user.id != :meId', { meId: me.id })
 					.andWhere('user.isSuspended = FALSE')
-					.andWhere(new Brackets(qb => {
+					.andWhere(new Brackets((qb) => {
 						qb
 							.where('user.updatedAt IS NULL')
 							.orWhere('user.updatedAt > :activeThreshold', { activeThreshold: activeThreshold });
@@ -107,7 +107,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 				if (users.length < ps.limit) {
 					const otherQuery = setUsernameAndHostQuery()
-						.andWhere(`user.id NOT IN (${ followingQuery.getQuery() })`)
+						.andWhere(`user.id NOT IN (${followingQuery.getQuery()})`)
 						.andWhere('user.isSuspended = FALSE')
 						.andWhere('user.updatedAt IS NOT NULL');
 

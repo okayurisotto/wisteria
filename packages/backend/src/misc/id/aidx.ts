@@ -37,7 +37,7 @@ export function genAidx(t: number): string {
 	return getTime(t) + nodeId + getNoise();
 }
 
-export function parseAidx(id: string): { date: Date; } {
+export function parseAidx(id: string): { date: Date } {
 	const time = parseInt(id.slice(0, TIME_LENGTH), 36) + TIME2000;
 	return { date: new Date(time) };
 }

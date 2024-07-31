@@ -24,7 +24,7 @@ export class UserAuthService {
 	public async twoFactorAuthenticate(profile: MiUserProfile, token: string): Promise<void> {
 		if (profile.twoFactorBackupSecret?.includes(token)) {
 			await this.userProfilesRepository.update({ userId: profile.userId }, {
-				twoFactorBackupSecret: profile.twoFactorBackupSecret.filter((secret) => secret !== token),
+				twoFactorBackupSecret: profile.twoFactorBackupSecret.filter(secret => secret !== token),
 			});
 		} else {
 			const delta = OTPAuth.TOTP.validate({

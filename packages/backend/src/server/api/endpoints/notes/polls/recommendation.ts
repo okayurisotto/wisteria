@@ -58,7 +58,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				.where('poll.userHost IS NULL')
 				.andWhere('poll.userId != :meId', { meId: me.id })
 				.andWhere('poll.noteVisibility = \'public\'')
-				.andWhere(new Brackets(qb => {
+				.andWhere(new Brackets((qb) => {
 					qb
 						.where('poll.expiresAt IS NULL')
 						.orWhere('poll.expiresAt > :now', { now: new Date() });
@@ -70,7 +70,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				.where('vote.userId = :meId', { meId: me.id });
 
 			query
-				.andWhere(`poll.noteId NOT IN (${ votedQuery.getQuery() })`);
+				.andWhere(`poll.noteId NOT IN (${votedQuery.getQuery()})`);
 
 			query.setParameters(votedQuery.getParameters());
 			//#endregion
@@ -81,7 +81,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				.where('muting.muterId = :muterId', { muterId: me.id });
 
 			query
-				.andWhere(`poll.userId NOT IN (${ mutingQuery.getQuery() })`);
+				.andWhere(`poll.userId NOT IN (${mutingQuery.getQuery()})`);
 
 			query.setParameters(mutingQuery.getParameters());
 			//#endregion

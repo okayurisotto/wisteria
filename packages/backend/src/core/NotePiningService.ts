@@ -49,7 +49,7 @@ export class NotePiningService {
 	 * @param noteId
 	 */
 	@bindThis
-	public async addPinned(user: { id: MiUser['id']; host: MiUser['host']; }, noteId: MiNote['id']) {
+	public async addPinned(user: { id: MiUser['id']; host: MiUser['host'] }, noteId: MiNote['id']) {
 	// Fetch pinee
 		const note = await this.notesRepository.findOneBy({
 			id: noteId,
@@ -88,7 +88,7 @@ export class NotePiningService {
 	 * @param noteId
 	 */
 	@bindThis
-	public async removePinned(user: { id: MiUser['id']; host: MiUser['host']; }, noteId: MiNote['id']) {
+	public async removePinned(user: { id: MiUser['id']; host: MiUser['host'] }, noteId: MiNote['id']) {
 	// Fetch unpinee
 		const note = await this.notesRepository.findOneBy({
 			id: noteId,

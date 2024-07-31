@@ -96,7 +96,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			await this.pagesRepository.findBy({
 				userId: me.id,
 				name: ps.name,
-			}).then(result => {
+			}).then((result) => {
 				if (result.length > 0) {
 					throw new ApiError(meta.errors.nameAlreadyExists);
 				}

@@ -62,7 +62,7 @@ export class ExportCustomEmojisProcessorService {
 
 		const writeMeta = (text: string): Promise<void> => {
 			return new Promise<void>((res, rej) => {
-				metaStream.write(text, err => {
+				metaStream.write(text, (err) => {
 					if (err) {
 						this.logger.error(err);
 						rej(err);

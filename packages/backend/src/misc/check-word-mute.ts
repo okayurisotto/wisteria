@@ -44,7 +44,7 @@ export async function checkWordMute(note: NoteLike, me: UserLike | null | undefi
 			return true;
 		}
 
-		const matched = unacable.some(filter => {
+		const matched = unacable.some((filter) => {
 			if (Array.isArray(filter)) {
 				return filter.every(keyword => text.includes(keyword));
 			} else {

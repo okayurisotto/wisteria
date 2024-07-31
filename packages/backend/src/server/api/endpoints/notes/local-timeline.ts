@@ -102,11 +102,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 	}
 
 	private async getFromDb(ps: {
-		sinceId: string | null,
-		untilId: string | null,
-		limit: number,
-		withFiles: boolean,
-		withReplies: boolean,
+		sinceId: string | null;
+		untilId: string | null;
+		limit: number;
+		withFiles: boolean;
+		withReplies: boolean;
 	}, me: MiLocalUser | null) {
 		const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'),
 			ps.sinceId, ps.untilId)
@@ -127,10 +127,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		}
 
 		if (!ps.withReplies) {
-			query.andWhere(new Brackets(qb => {
+			query.andWhere(new Brackets((qb) => {
 				qb
 					.where('note.replyId IS NULL') // 返信ではない
-					.orWhere(new Brackets(qb => {
+					.orWhere(new Brackets((qb) => {
 						qb // 返信だけど投稿者自身への返信
 							.where('note.replyId IS NOT NULL')
 							.andWhere('note.replyUserId = note.userId');

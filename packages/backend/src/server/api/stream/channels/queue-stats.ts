@@ -29,7 +29,7 @@ class QueueStatsChannel extends Channel {
 	public onMessage(type: string, body: any) {
 		switch (type) {
 			case 'requestLog':
-				ev.once(`queueStatsLog:${body.id}`, statsLog => {
+				ev.once(`queueStatsLog:${body.id}`, (statsLog) => {
 					this.send('statsLog', statsLog);
 				});
 				ev.emit('requestQueueStatsLog', {

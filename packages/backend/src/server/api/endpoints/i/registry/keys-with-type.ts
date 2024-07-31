@@ -43,13 +43,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			for (const item of items) {
 				const type = typeof item.value;
 				res[item.key] =
-					item.value === null ? 'null' :
-					Array.isArray(item.value) ? 'array' :
-					type === 'number' ? 'number' :
-					type === 'string' ? 'string' :
-					type === 'boolean' ? 'boolean' :
-					type === 'object' ? 'object' :
-					null as never;
+					item.value === null ? 'null'
+						: Array.isArray(item.value) ? 'array'
+							: type === 'number' ? 'number'
+								: type === 'string' ? 'string'
+									: type === 'boolean' ? 'boolean'
+										: type === 'object' ? 'object'
+											: null as never;
 			}
 
 			return res;

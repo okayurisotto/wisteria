@@ -35,7 +35,7 @@ type PrivateKey = {
 };
 
 export class ApRequestCreator {
-	static createSignedPost(args: { key: PrivateKey, url: string, body: string, digest?: string, additionalHeaders: Record<string, string> }): Signed {
+	static createSignedPost(args: { key: PrivateKey; url: string; body: string; digest?: string; additionalHeaders: Record<string, string> }): Signed {
 		const u = new URL(args.url);
 		const digestHeader = args.digest ?? this.createDigest(args.body);
 
@@ -64,7 +64,7 @@ export class ApRequestCreator {
 		return `SHA-256=${crypto.createHash('sha256').update(body).digest('base64')}`;
 	}
 
-	static createSignedGet(args: { key: PrivateKey, url: string, additionalHeaders: Record<string, string> }): Signed {
+	static createSignedGet(args: { key: PrivateKey; url: string; additionalHeaders: Record<string, string> }): Signed {
 		const u = new URL(args.url);
 
 		const request: Request = {

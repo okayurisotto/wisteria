@@ -136,14 +136,14 @@ export class FileGetService {
 	public async getFromUrl(
 		url: string,
 	): Promise<
-		Result<
+			Result<
 			InternalFile | DownloadedRemoteFile | RemoteFile,
 			| DownloadError
 			| UnknownError
 			| DatabaseRecordNotFoundError
 			| InvalidFileKeyError
-		>
-	> {
+			>
+		> {
 		if (url.startsWith(`${this.config.url}/files/`)) {
 			const key = url.replace(`${this.config.url}/files/`, '').split('/', 1)[0];
 
@@ -166,11 +166,11 @@ export class FileGetService {
 	public async getFromKey(
 		key: string,
 	): Promise<
-		Result<
+			Result<
 			InternalFile | RemoteFile,
 			DownloadError | UnknownError | DatabaseRecordNotFoundError
-		>
-	> {
+			>
+		> {
 		// Fetch drive file
 		const file = await this.driveFilesRepository
 			.createQueryBuilder('file')
@@ -271,11 +271,11 @@ export class FileGetService {
 	private async downloadFromUrl(
 		url: string,
 	): Promise<
-		Result<
-			{ path: string; filename: string; cleanup: () => void },
-			DownloadError
-		>
-	> {
+			Result<
+				{ path: string; filename: string; cleanup: () => void },
+				DownloadError
+			>
+		> {
 		const [path, cleanup] = await createTemp();
 
 		try {

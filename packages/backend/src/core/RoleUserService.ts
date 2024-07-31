@@ -100,10 +100,10 @@ export class RoleUserService {
 		try {
 			switch (value.type) {
 				case 'and': {
-					return value.values.every((v) => this.evalCond(user, v));
+					return value.values.every(v => this.evalCond(user, v));
 				}
 				case 'or': {
-					return value.values.some((v) => this.evalCond(user, v));
+					return value.values.some(v => this.evalCond(user, v));
 				}
 				case 'not': {
 					return !this.evalCond(user, value.value);
@@ -116,14 +116,14 @@ export class RoleUserService {
 				}
 				case 'createdLessThan': {
 					return (
-						this.idService.parse(user.id).date.getTime() >
-						Date.now() - value.sec * 1000
+						this.idService.parse(user.id).date.getTime()
+						> Date.now() - value.sec * 1000
 					);
 				}
 				case 'createdMoreThan': {
 					return (
-						this.idService.parse(user.id).date.getTime() <
-						Date.now() - value.sec * 1000
+						this.idService.parse(user.id).date.getTime()
+						< Date.now() - value.sec * 1000
 					);
 				}
 				case 'followersLessThanOrEq': {
@@ -159,7 +159,7 @@ export class RoleUserService {
 		const assigns = await this.roleAssignmentsRepository.findBy({ userId });
 		return (
 			// 期限切れのロールを除外
-			assigns.filter((a) => a.expiresAt === null || a.expiresAt.getTime() > now)
+			assigns.filter(a => a.expiresAt === null || a.expiresAt.getTime() > now)
 		);
 	}
 
@@ -167,10 +167,10 @@ export class RoleUserService {
 		roles: MiRole[],
 		userId: MiUser['id'],
 	): Promise<MiRole[]> {
-		const condRoles = roles.filter((r) => r.target === 'conditional');
+		const condRoles = roles.filter(r => r.target === 'conditional');
 
 		const assigns = await this.getUserAssigns(userId);
-		const assignedRoleIds = new Set(assigns.map((a) => a.roleId));
+		const assignedRoleIds = new Set(assigns.map(a => a.roleId));
 
 		const assignedRoles = roles.filter((r) => {
 			return assignedRoleIds.has(r.id);
@@ -246,38 +246,38 @@ export class RoleUserService {
 		};
 
 		return {
-			gtlAvailable: calc('gtlAvailable', (vs) => vs.some((v) => v)),
-			ltlAvailable: calc('ltlAvailable', (vs) => vs.some((v) => v)),
-			canPublicNote: calc('canPublicNote', (vs) => vs.some((v) => v)),
-			canInvite: calc('canInvite', (vs) => vs.some((v) => v)),
-			inviteLimit: calc('inviteLimit', (vs) => Math.max(...vs)),
-			inviteLimitCycle: calc('inviteLimitCycle', (vs) => Math.max(...vs)),
-			inviteExpirationTime: calc('inviteExpirationTime', (vs) =>
+			gtlAvailable: calc('gtlAvailable', vs => vs.some(v => v)),
+			ltlAvailable: calc('ltlAvailable', vs => vs.some(v => v)),
+			canPublicNote: calc('canPublicNote', vs => vs.some(v => v)),
+			canInvite: calc('canInvite', vs => vs.some(v => v)),
+			inviteLimit: calc('inviteLimit', vs => Math.max(...vs)),
+			inviteLimitCycle: calc('inviteLimitCycle', vs => Math.max(...vs)),
+			inviteExpirationTime: calc('inviteExpirationTime', vs =>
 				Math.max(...vs),
 			),
-			canManageCustomEmojis: calc('canManageCustomEmojis', (vs) =>
-				vs.some((v) => v),
+			canManageCustomEmojis: calc('canManageCustomEmojis', vs =>
+				vs.some(v => v),
 			),
-			canManageAvatarDecorations: calc('canManageAvatarDecorations', (vs) =>
-				vs.some((v) => v),
+			canManageAvatarDecorations: calc('canManageAvatarDecorations', vs =>
+				vs.some(v => v),
 			),
-			canSearchNotes: calc('canSearchNotes', (vs) => vs.some((v) => v)),
-			canUseTranslator: calc('canUseTranslator', (vs) => vs.some((v) => v)),
-			canHideAds: calc('canHideAds', (vs) => vs.some((v) => v)),
-			driveCapacityMb: calc('driveCapacityMb', (vs) => Math.max(...vs)),
-			alwaysMarkNsfw: calc('alwaysMarkNsfw', (vs) => vs.some((v) => v)),
-			pinLimit: calc('pinLimit', (vs) => Math.max(...vs)),
-			antennaLimit: calc('antennaLimit', (vs) => Math.max(...vs)),
-			wordMuteLimit: calc('wordMuteLimit', (vs) => Math.max(...vs)),
-			webhookLimit: calc('webhookLimit', (vs) => Math.max(...vs)),
-			clipLimit: calc('clipLimit', (vs) => Math.max(...vs)),
-			noteEachClipsLimit: calc('noteEachClipsLimit', (vs) => Math.max(...vs)),
-			userListLimit: calc('userListLimit', (vs) => Math.max(...vs)),
-			userEachUserListsLimit: calc('userEachUserListsLimit', (vs) =>
+			canSearchNotes: calc('canSearchNotes', vs => vs.some(v => v)),
+			canUseTranslator: calc('canUseTranslator', vs => vs.some(v => v)),
+			canHideAds: calc('canHideAds', vs => vs.some(v => v)),
+			driveCapacityMb: calc('driveCapacityMb', vs => Math.max(...vs)),
+			alwaysMarkNsfw: calc('alwaysMarkNsfw', vs => vs.some(v => v)),
+			pinLimit: calc('pinLimit', vs => Math.max(...vs)),
+			antennaLimit: calc('antennaLimit', vs => Math.max(...vs)),
+			wordMuteLimit: calc('wordMuteLimit', vs => Math.max(...vs)),
+			webhookLimit: calc('webhookLimit', vs => Math.max(...vs)),
+			clipLimit: calc('clipLimit', vs => Math.max(...vs)),
+			noteEachClipsLimit: calc('noteEachClipsLimit', vs => Math.max(...vs)),
+			userListLimit: calc('userListLimit', vs => Math.max(...vs)),
+			userEachUserListsLimit: calc('userEachUserListsLimit', vs =>
 				Math.max(...vs),
 			),
-			rateLimitFactor: calc('rateLimitFactor', (vs) => Math.max(...vs)),
-			avatarDecorationLimit: calc('avatarDecorationLimit', (vs) =>
+			rateLimitFactor: calc('rateLimitFactor', vs => Math.max(...vs)),
+			avatarDecorationLimit: calc('avatarDecorationLimit', vs =>
 				Math.max(...vs),
 			),
 		};
@@ -291,7 +291,7 @@ export class RoleUserService {
 		if (user.isRoot) return true;
 
 		const roles = await this.getUserRoles(user.id);
-		return roles.some((r) => r.isModerator || r.isAdministrator);
+		return roles.some(r => r.isModerator || r.isAdministrator);
 	}
 
 	@bindThis
@@ -302,7 +302,7 @@ export class RoleUserService {
 		if (user.isRoot) return true;
 
 		const roles = await this.getUserRoles(user.id);
-		return roles.some((r) => r.isAdministrator);
+		return roles.some(r => r.isAdministrator);
 	}
 
 	@bindThis

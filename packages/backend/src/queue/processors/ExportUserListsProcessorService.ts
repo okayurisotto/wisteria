@@ -73,7 +73,7 @@ export class ExportUserListsProcessorService {
 					const acct = AcctEntity.from(u.username, u.host, this.config.host).toLongStringLegacy();
 					const content = `${list.name},${acct}`;
 					await new Promise<void>((res, rej) => {
-						stream.write(content + '\n', err => {
+						stream.write(content + '\n', (err) => {
 							if (err) {
 								this.logger.error(err);
 								rej(err);

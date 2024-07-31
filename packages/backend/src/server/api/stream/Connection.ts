@@ -69,7 +69,7 @@ export default class Connection {
 			(this.followingsRepository.find({
 				where: { followerId: this.user.id },
 				select: ['followeeId', 'withReplies'],
-			}).then(xs => {
+			}).then((xs) => {
 				const obj: Record<string, Pick<MiFollowing, 'withReplies'> | undefined> = {};
 				for (const x of xs) {
 					obj[x.followeeId] = { withReplies: x.withReplies };
@@ -109,7 +109,7 @@ export default class Connection {
 		this.wsConnection = wsConnection;
 		this.wsConnection.on('message', this.onWsConnectionMessage);
 
-		this.subscriber.on('broadcast', data => {
+		this.subscriber.on('broadcast', (data) => {
 			this.onBroadcastMessage(data);
 		});
 	}
@@ -266,8 +266,8 @@ export default class Connection {
 			return;
 		}
 
-		if (this.token && ((channelService.kind && !this.token.permission.some(p => p === channelService.kind))
-			|| (!channelService.kind && channelService.requireCredential))) {
+		if (this.token && ((channelService.kind && !this.token.permission.some(p => p === channelService.kind)) ||
+			(!channelService.kind && channelService.requireCredential))) {
 			return;
 		}
 

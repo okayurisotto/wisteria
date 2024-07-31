@@ -53,7 +53,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.announcementsRepository.createQueryBuilder('announcement'), ps.sinceId, ps.untilId)
 				.andWhere('announcement.isActive = :isActive', { isActive: ps.isActive })
-				.andWhere(new Brackets(qb => {
+				.andWhere(new Brackets((qb) => {
 					if (me) qb.orWhere('announcement.userId = :meId', { meId: me.id });
 					qb.orWhere('announcement.userId IS NULL');
 				}));

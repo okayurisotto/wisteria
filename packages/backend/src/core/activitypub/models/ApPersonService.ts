@@ -207,7 +207,7 @@ export class ApPersonService implements OnModuleInit {
 	private async resolveAvatarAndBanner(user: MiRemoteUser, icon: any, image: any): Promise<Partial<Pick<MiRemoteUser, 'avatarId' | 'bannerId' | 'avatarUrl' | 'bannerUrl' | 'avatarBlurhash' | 'bannerBlurhash'>>> {
 		if (user == null) throw new Error('failed to create user: user is null');
 
-		const [avatar, banner] = await Promise.all([icon, image].map(img => {
+		const [avatar, banner] = await Promise.all([icon, image].map((img) => {
 			// if we have an explicitly missing image, return an
 			// explicitly-null set of values
 			if ((img == null) || (typeof img === 'object' && img.url == null)) {
@@ -225,12 +225,12 @@ export class ApPersonService implements OnModuleInit {
 			returns the special {id:null}&c value, and we return those
 		*/
 		return {
-			...( avatar ? {
+			...(avatar ? {
 				avatarId: avatar.id,
 				avatarUrl: avatar.url ? this.driveFileEntityService.getPublicUrl(avatar, 'avatar') : null,
 				avatarBlurhash: avatar.blurhash,
 			} : {}),
-			...( banner ? {
+			...(banner ? {
 				bannerId: banner.id,
 				bannerUrl: banner.url ? this.driveFileEntityService.getPublicUrl(banner) : null,
 				bannerBlurhash: banner.blurhash,
@@ -288,7 +288,7 @@ export class ApPersonService implements OnModuleInit {
 
 		try {
 			// Start transaction
-			await this.db.transaction(async transactionalEntityManager => {
+			await this.db.transaction(async (transactionalEntityManager) => {
 				user = await transactionalEntityManager.save(new MiUser({
 					id: this.idService.gen(),
 					avatarId: null,
@@ -357,7 +357,7 @@ export class ApPersonService implements OnModuleInit {
 		if (user == null) throw new Error('failed to create user: user is null');
 
 		// Register host
-		this.federatedInstanceService.fetch(host).then(async i => {
+		this.federatedInstanceService.fetch(host).then(async (i) => {
 			this.instancesRepository.increment({ id: i.id }, 'usersCount', 1);
 			this.fetchInstanceMetadataService.fetchInstanceMetadata(i);
 			if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
@@ -523,7 +523,7 @@ export class ApPersonService implements OnModuleInit {
 			const acct = AcctEntity.from(updated.username, updated.host, this.config.host);
 			this.logger.info(`Start to process Move of ${acct.toLongString()} (${uri})`);
 			return this.processRemoteMove(updated, movePreventUris)
-				.then(result => {
+				.then((result) => {
 					this.logger.info(`Processing Move Finished [${result}] ${acct.toLongString()} (${uri})`);
 					return result;
 				})
@@ -598,7 +598,7 @@ export class ApPersonService implements OnModuleInit {
 				sentFrom: new URL(user.uri),
 			}))));
 
-		await this.db.transaction(async transactionalEntityManager => {
+		await this.db.transaction(async (transactionalEntityManager) => {
 			await transactionalEntityManager.delete(MiUserNotePining, { userId: user.id });
 
 			// とりあえずidを別の時間で生成して順番を維持

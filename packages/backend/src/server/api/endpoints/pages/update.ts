@@ -107,7 +107,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				id: Not(ps.pageId),
 				userId: me.id,
 				name: ps.name,
-			}).then(result => {
+			}).then((result) => {
 				if (result.length > 0) {
 					throw new ApiError(meta.errors.nameAlreadyExists);
 				}

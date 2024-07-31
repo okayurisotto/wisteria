@@ -67,7 +67,7 @@ export class SignupApiService {
 				'g-recaptcha-response'?: string;
 				'turnstile-response'?: string;
 				'm-captcha-response'?: string;
-			}
+			};
 		}>,
 		reply: FastifyReply,
 	) {
@@ -237,7 +237,7 @@ export class SignupApiService {
 	}
 
 	@bindThis
-	public async signupPending(request: FastifyRequest<{ Body: { code: string; } }>, reply: FastifyReply) {
+	public async signupPending(request: FastifyRequest<{ Body: { code: string } }>, reply: FastifyReply) {
 		const body = request.body;
 
 		const code = body['code'];

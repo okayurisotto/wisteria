@@ -30,7 +30,7 @@ export function genAid(t: number): string {
 	return getTime(t) + getNoise();
 }
 
-export function parseAid(id: string): { date: Date; } {
+export function parseAid(id: string): { date: Date } {
 	const time = parseInt(id.slice(0, 8), 36) + TIME2000;
 	return { date: new Date(time) };
 }

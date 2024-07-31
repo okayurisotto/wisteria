@@ -33,7 +33,7 @@ import { envOption } from '@/env.js';
 type Local = MiLocalUser | {
 	id: MiLocalUser['id'];
 	host: MiLocalUser['host'];
-	uri: MiLocalUser['uri']
+	uri: MiLocalUser['uri'];
 };
 type Remote = MiRemoteUser | {
 	id: MiRemoteUser['id'];
@@ -91,9 +91,9 @@ export class UserFollowingService {
 		_follower: { id: MiUser['id'] },
 		_followee: { id: MiUser['id'] },
 		{ requestId, silent = false, withReplies }: {
-			requestId?: string,
-			silent?: boolean,
-			withReplies?: boolean,
+			requestId?: string;
+			silent?: boolean;
+			withReplies?: boolean;
 		} = {},
 	): Promise<void> {
 		const [follower, followee] = await Promise.all([
@@ -189,10 +189,10 @@ export class UserFollowingService {
 	@bindThis
 	private async insertFollowingDoc(
 		followee: {
-			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host']; inbox: MiUser['inbox']; sharedInbox: MiUser['sharedInbox']
+			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host']; inbox: MiUser['inbox']; sharedInbox: MiUser['sharedInbox'];
 		},
 		follower: {
-			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host']; inbox: MiUser['inbox']; sharedInbox: MiUser['sharedInbox']
+			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host']; inbox: MiUser['inbox']; sharedInbox: MiUser['sharedInbox'];
 		},
 		silent = false,
 		withReplies?: boolean,
@@ -259,14 +259,14 @@ export class UserFollowingService {
 
 			//#region Update instance stats
 			if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee)) {
-				this.federatedInstanceService.fetch(follower.host).then(async i => {
+				this.federatedInstanceService.fetch(follower.host).then(async (i) => {
 					this.instancesRepository.increment({ id: i.id }, 'followingCount', 1);
 					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
 						this.instanceChart.updateFollowing(i.host, true);
 					}
 				});
 			} else if (this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee)) {
-				this.federatedInstanceService.fetch(followee.host).then(async i => {
+				this.federatedInstanceService.fetch(followee.host).then(async (i) => {
 					this.instancesRepository.increment({ id: i.id }, 'followersCount', 1);
 					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
 						this.instanceChart.updateFollowers(i.host, true);
@@ -282,7 +282,7 @@ export class UserFollowingService {
 			// Publish follow event
 			this.userEntityService.pack(followee.id, follower, {
 				schema: 'UserDetailedNotMe',
-			}).then(async packed => {
+			}).then(async (packed) => {
 				this.globalEventService.publishMainStream(follower.id, 'follow', packed);
 
 				const webhooks = (await this.webhookService.getActiveWebhooks()).filter(x => x.userId === follower.id && x.on.includes('follow'));
@@ -296,7 +296,7 @@ export class UserFollowingService {
 
 		// Publish followed event
 		if (this.userEntityService.isLocalUser(followee)) {
-			this.userEntityService.pack(follower.id, followee).then(async packed => {
+			this.userEntityService.pack(follower.id, followee).then(async (packed) => {
 				this.globalEventService.publishMainStream(followee.id, 'followed', packed);
 
 				const webhooks = (await this.webhookService.getActiveWebhooks()).filter(x => x.userId === followee.id && x.on.includes('followed'));
@@ -347,7 +347,7 @@ export class UserFollowingService {
 			// Publish unfollow event
 			this.userEntityService.pack(followee.id, follower, {
 				schema: 'UserDetailedNotMe',
-			}).then(async packed => {
+			}).then(async (packed) => {
 				this.globalEventService.publishMainStream(follower.id, 'unfollow', packed);
 
 				const webhooks = (await this.webhookService.getActiveWebhooks()).filter(x => x.userId === follower.id && x.on.includes('unfollow'));
@@ -387,14 +387,14 @@ export class UserFollowingService {
 
 			//#region Update instance stats
 			if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee)) {
-				this.federatedInstanceService.fetch(follower.host).then(async i => {
+				this.federatedInstanceService.fetch(follower.host).then(async (i) => {
 					this.instancesRepository.decrement({ id: i.id }, 'followingCount', 1);
 					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
 						this.instanceChart.updateFollowing(i.host, false);
 					}
 				});
 			} else if (this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee)) {
-				this.federatedInstanceService.fetch(followee.host).then(async i => {
+				this.federatedInstanceService.fetch(followee.host).then(async (i) => {
 					this.instancesRepository.decrement({ id: i.id }, 'followersCount', 1);
 					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
 						this.instanceChart.updateFollowers(i.host, false);
@@ -501,10 +501,10 @@ export class UserFollowingService {
 	@bindThis
 	public async cancelFollowRequest(
 		followee: {
-			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host']; inbox: MiUser['inbox']
+			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host']; inbox: MiUser['inbox'];
 		},
 		follower: {
-			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host']
+			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host'];
 		},
 	): Promise<void> {
 		if (this.userEntityService.isRemoteUser(followee)) {

@@ -116,4 +116,3 @@ export class PageEntityService {
 		return Promise.all(pages.map(x => this.pack(x, me)));
 	}
 }
-

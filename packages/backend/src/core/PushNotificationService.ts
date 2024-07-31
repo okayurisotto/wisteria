@@ -17,7 +17,7 @@ import { bindThis } from '@/decorators.js';
 type PushNotificationsTypes = {
 	'notification': Packed<'Notification'>;
 	'unreadAntennaNote': {
-		antenna: { id: string, name: string };
+		antenna: { id: string; name: string };
 		note: Packed<'Note'>;
 	};
 	'readAllNotifications': undefined;

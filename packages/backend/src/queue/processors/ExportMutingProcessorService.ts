@@ -87,7 +87,7 @@ export class ExportMutingProcessorService {
 
 					const content = AcctEntity.from(u.username, u.host, this.config.host).toLongStringLegacy();
 					await new Promise<void>((res, rej) => {
-						stream.write(content + '\n', err => {
+						stream.write(content + '\n', (err) => {
 							if (err) {
 								this.logger.error(err);
 								rej(err);

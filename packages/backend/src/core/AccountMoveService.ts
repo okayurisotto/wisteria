@@ -172,7 +172,7 @@ export class AccountMoveService {
 			{ muteeId: dst.id, expiresAt: IsNull() },
 		).then(mutings => mutings.map(muting => muting.muterId));
 
-		const newMutings: Map<string, { muterId: string; muteeId: string; expiresAt: Date | null; }> = new Map();
+		const newMutings: Map<string, { muterId: string; muteeId: string; expiresAt: Date | null }> = new Map();
 
 		// 重複しないようにIDを生成
 		const genId = (): string => {
@@ -219,7 +219,7 @@ export class AccountMoveService {
 			},
 		}).then(memberships => memberships.map(membership => membership.userListId));
 
-		const newMemberships: Map<string, { userId: string; userListId: string; userListUserId: string; }> = new Map();
+		const newMemberships: Map<string, { userId: string; userListId: string; userListUserId: string }> = new Map();
 
 		// 重複しないようにIDを生成
 		const genId = (): string => {
@@ -268,7 +268,7 @@ export class AccountMoveService {
 
 		// Update instance stats by decreasing remote followers count by the number of local followers who were following the old account.
 		if (this.userEntityService.isRemoteUser(oldAccount)) {
-			this.federatedInstanceService.fetch(oldAccount.host).then(async i => {
+			this.federatedInstanceService.fetch(oldAccount.host).then(async (i) => {
 				this.instancesRepository.decrement({ id: i.id }, 'followersCount', localFollowerIds.length);
 				if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
 					this.instanceChart.updateFollowers(i.host, false);

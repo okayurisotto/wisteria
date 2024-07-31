@@ -52,15 +52,15 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			const meta = await this.metaService.fetch();
 
 			const accts = meta.pinnedUsers.map(acct => AcctEntity.parse(acct, this.config.host));
-			if (accts.some((acct) => acct === null)) throw new ApiError();
+			if (accts.some(acct => acct === null)) throw new ApiError();
 
 			const users = await Promise.all(
 				accts
-					.filter((acct) => acct !== null)
+					.filter(acct => acct !== null)
 					.map(acct => this.usersRepository.findOneBy({
 						usernameLower: acct.username.toLowerCase(),
 						host: acct.host ?? IsNull(),
-					}))
+					})),
 			);
 
 			return await this.userEntityService.packMany(users.filter(x => x !== null), me, { schema: 'UserDetailed' });

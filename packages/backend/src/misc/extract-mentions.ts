@@ -10,13 +10,13 @@ import { AcctEntity } from './AcctEntity.js';
 
 /** @todo 重複を削除 */
 export const extractMentions = (nodes: mfm.MfmNode[], localhost: string): AcctEntity[] => {
-	const mentionNodes = mfm.extract(nodes, (node) => node.type === 'mention') as mfm.MfmMention[];
+	const mentionNodes = mfm.extract(nodes, node => node.type === 'mention') as mfm.MfmMention[];
 
 	const mentions = mentionNodes
 		.map(x => x.props.acct)
-		.map((acct) => AcctEntity.parse(acct, localhost))
-		.filter((acct) => acct !== null)
-		.map((acct) => acct);
+		.map(acct => AcctEntity.parse(acct, localhost))
+		.filter(acct => acct !== null)
+		.map(acct => acct);
 
 	return mentions;
 };

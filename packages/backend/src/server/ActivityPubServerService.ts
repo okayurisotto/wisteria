@@ -86,7 +86,7 @@ export class ActivityPubServerService {
 	}
 
 	private async followers(
-		request: FastifyRequest<{ Params: { user: string; }; Querystring: { cursor?: string; page?: string; }; }>,
+		request: FastifyRequest<{ Params: { user: string }; Querystring: { cursor?: string; page?: string } }>,
 		reply: FastifyReply,
 	) {
 		const userId = request.params.user;
@@ -177,7 +177,7 @@ export class ActivityPubServerService {
 	}
 
 	private async following(
-		request: FastifyRequest<{ Params: { user: string; }; Querystring: { cursor?: string; page?: string; }; }>,
+		request: FastifyRequest<{ Params: { user: string }; Querystring: { cursor?: string; page?: string } }>,
 		reply: FastifyReply,
 	) {
 		const userId = request.params.user;
@@ -267,7 +267,7 @@ export class ActivityPubServerService {
 		}
 	}
 
-	private async featured(request: FastifyRequest<{ Params: { user: string; }; }>, reply: FastifyReply) {
+	private async featured(request: FastifyRequest<{ Params: { user: string } }>, reply: FastifyReply) {
 		const userId = request.params.user;
 
 		const user = await this.usersRepository.findOneBy({
@@ -306,8 +306,8 @@ export class ActivityPubServerService {
 
 	private async outbox(
 		request: FastifyRequest<{
-			Params: { user: string; };
-			Querystring: { since_id?: string; until_id?: string; page?: string; };
+			Params: { user: string };
+			Querystring: { since_id?: string; until_id?: string; page?: string };
 		}>,
 		reply: FastifyReply,
 	) {
@@ -348,7 +348,7 @@ export class ActivityPubServerService {
 		if (page) {
 			const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), sinceId, untilId)
 				.andWhere('note.userId = :userId', { userId: user.id })
-				.andWhere(new Brackets(qb => {
+				.andWhere(new Brackets((qb) => {
 					qb
 						.where('note.visibility = \'public\'')
 						.orWhere('note.visibility = \'home\'');
@@ -439,7 +439,7 @@ export class ActivityPubServerService {
 		//#region Note
 
 		// note
-		fastify.get<{ Params: { note: string; } }>('/notes/:note', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
+		fastify.get<{ Params: { note: string } }>('/notes/:note', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
 			vary(reply.raw, 'Accept');
 
 			const note = await this.notesRepository.findOneBy({
@@ -469,7 +469,7 @@ export class ActivityPubServerService {
 		});
 
 		// note activity
-		fastify.get<{ Params: { note: string; } }>('/notes/:note/activity', async (request, reply) => {
+		fastify.get<{ Params: { note: string } }>('/notes/:note/activity', async (request, reply) => {
 			vary(reply.raw, 'Accept');
 
 			const note = await this.notesRepository.findOneBy({
@@ -494,7 +494,7 @@ export class ActivityPubServerService {
 		//#region User
 
 		// user
-		fastify.get<{ Params: { user: string; } }>('/users/:user', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
+		fastify.get<{ Params: { user: string } }>('/users/:user', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
 			vary(reply.raw, 'Accept');
 
 			const userId = request.params.user;
@@ -509,7 +509,7 @@ export class ActivityPubServerService {
 		});
 
 		// user publickey
-		fastify.get<{ Params: { user: string; } }>('/users/:user/publickey', async (request, reply) => {
+		fastify.get<{ Params: { user: string } }>('/users/:user/publickey', async (request, reply) => {
 			const userId = request.params.user;
 
 			const user = await this.usersRepository.findOneBy({
@@ -535,7 +535,7 @@ export class ActivityPubServerService {
 		});
 
 		// user
-		fastify.get<{ Params: { user: string; } }>('/@:user', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
+		fastify.get<{ Params: { user: string } }>('/@:user', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
 			vary(reply.raw, 'Accept');
 
 			const user = await this.usersRepository.findOneBy({
@@ -549,30 +549,30 @@ export class ActivityPubServerService {
 
 		// user outbox
 		fastify.get<{
-			Params: { user: string; };
-			Querystring: { since_id?: string; until_id?: string; page?: string; };
+			Params: { user: string };
+			Querystring: { since_id?: string; until_id?: string; page?: string };
 		}>('/users/:user/outbox', async (request, reply) => await this.outbox(request, reply));
 
 		// followers
 		fastify.get<{
-			Params: { user: string; };
-			Querystring: { cursor?: string; page?: string; };
+			Params: { user: string };
+			Querystring: { cursor?: string; page?: string };
 		}>('/users/:user/followers', async (request, reply) => await this.followers(request, reply));
 
 		// following
 		fastify.get<{
-			Params: { user: string; };
-			Querystring: { cursor?: string; page?: string; };
+			Params: { user: string };
+			Querystring: { cursor?: string; page?: string };
 		}>('/users/:user/following', async (request, reply) => await this.following(request, reply));
 
 		// featured
-		fastify.get<{ Params: { user: string; }; }>('/users/:user/collections/featured', async (request, reply) => await this.featured(request, reply));
+		fastify.get<{ Params: { user: string } }>('/users/:user/collections/featured', async (request, reply) => await this.featured(request, reply));
 
 		//#endregion
 
 		//#region Emoji
 
-		fastify.get<{ Params: { emoji: string; } }>('/emojis/:emoji', async (request, reply) => {
+		fastify.get<{ Params: { emoji: string } }>('/emojis/:emoji', async (request, reply) => {
 			const emoji = await this.emojisRepository.findOneBy({
 				host: IsNull(),
 				name: request.params.emoji,
@@ -592,7 +592,7 @@ export class ActivityPubServerService {
 
 		//#region Like
 
-		fastify.get<{ Params: { like: string; } }>('/likes/:like', async (request, reply) => {
+		fastify.get<{ Params: { like: string } }>('/likes/:like', async (request, reply) => {
 			const reaction = await this.noteReactionsRepository.findOneBy({ id: request.params.like });
 
 			if (reaction == null) {
@@ -616,7 +616,7 @@ export class ActivityPubServerService {
 
 		//#region Follow
 
-		fastify.get<{ Params: { follower: string; followee: string; } }>('/follows/:follower/:followee', async (request, reply) => {
+		fastify.get<{ Params: { follower: string; followee: string } }>('/follows/:follower/:followee', async (request, reply) => {
 			// This may be used before the follow is completed, so we do not
 			// check if the following exists.
 
@@ -645,7 +645,7 @@ export class ActivityPubServerService {
 
 		//#region Follow Requests
 
-		fastify.get<{ Params: { followRequestId: string ; } }>('/follows/:followRequestId', async (request, reply) => {
+		fastify.get<{ Params: { followRequestId: string } }>('/follows/:followRequestId', async (request, reply) => {
 			// This may be used before the follow is completed, so we do not
 			// check if the following exists and only check if the follow request exists.
 

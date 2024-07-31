@@ -33,7 +33,7 @@ export const parseRangeHeaderValue = (
 				return { start, end: end ?? null };
 			}
 		})
-		.filter((v) => v !== null);
+		.filter(v => v !== null);
 
 	return { unit, suffix: false, ranges };
 };
@@ -70,7 +70,7 @@ export const parseBytesRangeHeaderValue = (
 					return { start, end };
 				}
 			})
-			.filter((v) => v !== null);
+			.filter(v => v !== null);
 
 		return {
 			unit: UNIT,

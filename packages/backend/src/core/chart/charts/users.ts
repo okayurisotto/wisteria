@@ -32,7 +32,7 @@ export default class UsersChart extends Chart<typeof schema> {
 		private userEntityService: UserEntityService,
 		private chartLoggerService: ChartLoggerService,
 	) {
-		super(db, (k) => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema);
+		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema);
 	}
 
 	protected async tickMajor(): Promise<Partial<KVs<typeof schema>>> {
@@ -52,7 +52,7 @@ export default class UsersChart extends Chart<typeof schema> {
 	}
 
 	@bindThis
-	public async update(user: { id: MiUser['id'], host: MiUser['host'] }, isAdditional: boolean): Promise<void> {
+	public async update(user: { id: MiUser['id']; host: MiUser['host'] }, isAdditional: boolean): Promise<void> {
 		const prefix = this.userEntityService.isLocalUser(user) ? 'local' : 'remote';
 
 		await this.commit({

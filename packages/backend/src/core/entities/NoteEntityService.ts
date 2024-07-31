@@ -164,7 +164,7 @@ export class NoteEntityService implements OnModuleInit {
 	}
 
 	@bindThis
-	public async populateMyReaction(note: { id: MiNote['id']; reactions: MiNote['reactions']; reactionAndUserPairCache?: MiNote['reactionAndUserPairCache']; }, meId: MiUser['id'], _hint_?: {
+	public async populateMyReaction(note: { id: MiNote['id']; reactions: MiNote['reactions']; reactionAndUserPairCache?: MiNote['reactionAndUserPairCache'] }, meId: MiUser['id'], _hint_?: {
 		myReactions: Map<MiNote['id'], string | null>;
 	}) {
 		if (_hint_?.myReactions) {
@@ -453,7 +453,7 @@ export class NoteEntityService implements OnModuleInit {
 
 	@bindThis
 	public aggregateNoteEmojis(notes: MiNote[]) {
-		let emojis: { name: string | null; host: string | null; }[] = [];
+		let emojis: { name: string | null; host: string | null }[] = [];
 		for (const note of notes) {
 			emojis = emojis.concat(note.emojis
 				.map(e => this.customEmojiPopulateService.parseEmojiStr(e, note.userHost)));
@@ -472,7 +472,7 @@ export class NoteEntityService implements OnModuleInit {
 					.map(e => this.customEmojiPopulateService.parseEmojiStr(e, note.userHost)));
 			}
 		}
-		return emojis.filter(x => x.name != null && x.host != null) as { name: string; host: string; }[];
+		return emojis.filter(x => x.name != null && x.host != null) as { name: string; host: string }[];
 	}
 
 	@bindThis

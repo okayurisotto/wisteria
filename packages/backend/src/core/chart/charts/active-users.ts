@@ -32,7 +32,7 @@ export default class ActiveUsersChart extends Chart<typeof schema> {
 		private chartLoggerService: ChartLoggerService,
 		private idService: IdService,
 	) {
-		super(db, (k) => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema);
+		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema);
 	}
 
 	protected async tickMajor(): Promise<Partial<KVs<typeof schema>>> {
@@ -44,7 +44,7 @@ export default class ActiveUsersChart extends Chart<typeof schema> {
 	}
 
 	@bindThis
-	public async read(user: { id: MiUser['id'], host: null }): Promise<void> {
+	public async read(user: { id: MiUser['id']; host: null }): Promise<void> {
 		const createdAt = this.idService.parse(user.id).date;
 		await this.commit({
 			'read': [user.id],
@@ -58,7 +58,7 @@ export default class ActiveUsersChart extends Chart<typeof schema> {
 	}
 
 	@bindThis
-	public async write(user: { id: MiUser['id'], host: null }): Promise<void> {
+	public async write(user: { id: MiUser['id']; host: null }): Promise<void> {
 		await this.commit({
 			'write': [user.id],
 		});

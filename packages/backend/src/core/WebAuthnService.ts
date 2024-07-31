@@ -45,7 +45,7 @@ export class WebAuthnService {
 	}
 
 	@bindThis
-	public async getRelyingParty(): Promise<{ origin: string; rpId: string; rpName: string; rpIcon?: string; }> {
+	public async getRelyingParty(): Promise<{ origin: string; rpId: string; rpName: string; rpIcon?: string }> {
 		const instance = await this.metaService.fetch();
 		return {
 			origin: this.config.url,

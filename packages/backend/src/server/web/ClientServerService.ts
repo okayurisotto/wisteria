@@ -124,19 +124,19 @@ export class ClientServerService {
 		};
 
 		// URL preview endpoint
-		fastify.get<{ Querystring: { url: string; lang: string; } }>('/url', (request, reply) => this.urlPreviewService.handle(request, reply));
+		fastify.get<{ Querystring: { url: string; lang: string } }>('/url', (request, reply) => this.urlPreviewService.handle(request, reply));
 
 		//#region SSR (for crawlers)
 		// User
-		fastify.get<{ Params: { user: string; sub?: string; } }>('/@:user/:sub?', async (request, reply) => {
+		fastify.get<{ Params: { user: string; sub?: string } }>('/@:user/:sub?', async (request, reply) => {
 			const acct = AcctEntity.parse(request.params.user, this.config.host);
 
 			const user = acct !== null
 				? await this.usersRepository.findOneByOrFail({
-						usernameLower: acct.username.toLowerCase(),
-						host: acct.host ?? IsNull(),
-						isSuspended: false,
-					})
+					usernameLower: acct.username.toLowerCase(),
+					host: acct.host ?? IsNull(),
+					isSuspended: false,
+				})
 				: null;
 
 			vary(reply.raw, 'Accept');
@@ -168,7 +168,7 @@ export class ClientServerService {
 			}
 		});
 
-		fastify.get<{ Params: { user: string; } }>('/users/:user', async (request, reply) => {
+		fastify.get<{ Params: { user: string } }>('/users/:user', async (request, reply) => {
 			const user = await this.usersRepository.findOneBy({
 				id: request.params.user,
 				host: IsNull(),
@@ -182,11 +182,11 @@ export class ClientServerService {
 
 			vary(reply.raw, 'Accept');
 
-			reply.redirect(`/@${user.username}${ user.host == null ? '' : '@' + user.host}`);
+			reply.redirect(`/@${user.username}${user.host == null ? '' : '@' + user.host}`);
 		});
 
 		// Note
-		fastify.get<{ Params: { note: string; } }>('/notes/:note', async (request, reply) => {
+		fastify.get<{ Params: { note: string } }>('/notes/:note', async (request, reply) => {
 			vary(reply.raw, 'Accept');
 
 			const note = await this.notesRepository.findOneBy({
@@ -217,7 +217,7 @@ export class ClientServerService {
 		});
 
 		// Page
-		fastify.get<{ Params: { user: string; page: string; } }>('/@:user/pages/:page', async (request, reply) => {
+		fastify.get<{ Params: { user: string; page: string } }>('/@:user/pages/:page', async (request, reply) => {
 			const acct = AcctEntity.parse(request.params.user, this.config.host);
 			if (acct === null) return;
 
@@ -258,7 +258,7 @@ export class ClientServerService {
 		});
 
 		// Flash
-		fastify.get<{ Params: { id: string; } }>('/play/:id', async (request, reply) => {
+		fastify.get<{ Params: { id: string } }>('/play/:id', async (request, reply) => {
 			const flash = await this.flashsRepository.findOneBy({
 				id: request.params.id,
 			});
@@ -284,7 +284,7 @@ export class ClientServerService {
 		});
 
 		// Clip
-		fastify.get<{ Params: { clip: string; } }>('/clips/:clip', async (request, reply) => {
+		fastify.get<{ Params: { clip: string } }>('/clips/:clip', async (request, reply) => {
 			const clip = await this.clipsRepository.findOneBy({
 				id: request.params.clip,
 			});
@@ -310,7 +310,7 @@ export class ClientServerService {
 		});
 
 		// Gallery post
-		fastify.get<{ Params: { post: string; } }>('/gallery/:post', async (request, reply) => {
+		fastify.get<{ Params: { post: string } }>('/gallery/:post', async (request, reply) => {
 			const post = await this.galleryPostsRepository.findOneBy({ id: request.params.post });
 
 			if (post) {
@@ -334,7 +334,7 @@ export class ClientServerService {
 		});
 
 		// Channel
-		fastify.get<{ Params: { channel: string; } }>('/channels/:channel', async (request, reply) => {
+		fastify.get<{ Params: { channel: string } }>('/channels/:channel', async (request, reply) => {
 			const channel = await this.channelsRepository.findOneBy({
 				id: request.params.channel,
 			});
@@ -353,7 +353,7 @@ export class ClientServerService {
 		});
 
 		// Reversi game
-		fastify.get<{ Params: { game: string; } }>('/reversi/g/:game', async (request, reply) => {
+		fastify.get<{ Params: { game: string } }>('/reversi/g/:game', async (request, reply) => {
 			const game = await this.reversiGamesRepository.findOneBy({
 				id: request.params.game,
 			});

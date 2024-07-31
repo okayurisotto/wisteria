@@ -36,7 +36,7 @@ export class QueueStatsService implements OnApplicationShutdown {
 	public start(): void {
 		const log = [] as any[];
 
-		ev.on('requestQueueStatsLog', x => {
+		ev.on('requestQueueStatsLog', (x) => {
 			ev.emit(`queueStatsLog:${x.id}`, log.slice(0, x.length ?? 50));
 		});
 

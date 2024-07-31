@@ -54,7 +54,7 @@ export const paramDef = {
 		private userListEntityService: UserListEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const additionalProperties: Partial<{ likedCount: number, isLiked: boolean }> = {};
+			const additionalProperties: Partial<{ likedCount: number; isLiked: boolean }> = {};
 			// Fetch the list
 			const userList = await this.userListsRepository.findOneBy(!ps.forPublic && me !== null ? {
 				id: ps.listId,

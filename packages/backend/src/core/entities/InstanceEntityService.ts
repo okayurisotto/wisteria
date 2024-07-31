@@ -58,4 +58,3 @@ export class InstanceEntityService {
 		return Promise.all(instances.map(x => this.pack(x)));
 	}
 }
-

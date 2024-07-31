@@ -58,8 +58,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			WHERE nspname NOT IN ('pg_catalog', 'information_schema')
 				AND C.relkind <> 'i'
 				AND nspname !~ '^pg_toast';`)
-				.then(recs => {
-					const res = {} as Record<string, { count: number; size: number; }>;
+				.then((recs) => {
+					const res = {} as Record<string, { count: number; size: number }>;
 					for (const rec of recs) {
 						res[rec.table] = {
 							count: parseInt(rec.count, 10),

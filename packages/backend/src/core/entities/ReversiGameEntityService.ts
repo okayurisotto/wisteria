@@ -117,4 +117,3 @@ export class ReversiGameEntityService {
 		return Promise.all(xs.map(x => this.packLite(x)));
 	}
 }
-

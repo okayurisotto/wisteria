@@ -27,7 +27,7 @@ export default class TestGroupedChart extends Chart<typeof schema> {
 		private appLockService: AppLockService,
 		logger: Logger,
 	) {
-		super(db, (k) => appLockService.getChartInsertLock(k), logger, name, schema, true);
+		super(db, k => appLockService.getChartInsertLock(k), logger, name, schema, true);
 	}
 
 	protected async tickMajor(group: string): Promise<Partial<KVs<typeof schema>>> {

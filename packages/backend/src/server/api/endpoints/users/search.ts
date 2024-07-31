@@ -64,7 +64,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			if (isUsername) {
 				const usernameQuery = this.usersRepository.createQueryBuilder('user')
 					.where('user.usernameLower LIKE :username', { username: sqlLikeEscape(ps.query.replace('@', '').toLowerCase()) + '%' })
-					.andWhere(new Brackets(qb => {
+					.andWhere(new Brackets((qb) => {
 						qb
 							.where('user.updatedAt IS NULL')
 							.orWhere('user.updatedAt > :activeThreshold', { activeThreshold: activeThreshold });
@@ -84,7 +84,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 					.getMany();
 			} else {
 				const nameQuery = this.usersRepository.createQueryBuilder('user')
-					.where(new Brackets(qb => {
+					.where(new Brackets((qb) => {
 						qb.where('user.name ILIKE :query', { query: '%' + sqlLikeEscape(ps.query) + '%' });
 
 						// Also search username if it qualifies as username
@@ -92,7 +92,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 							qb.orWhere('user.usernameLower LIKE :username', { username: '%' + sqlLikeEscape(ps.query.toLowerCase()) + '%' });
 						}
 					}))
-					.andWhere(new Brackets(qb => {
+					.andWhere(new Brackets((qb) => {
 						qb
 							.where('user.updatedAt IS NULL')
 							.orWhere('user.updatedAt > :activeThreshold', { activeThreshold: activeThreshold });
@@ -123,8 +123,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 					}
 
 					const query = this.usersRepository.createQueryBuilder('user')
-						.where(`user.id IN (${ profQuery.getQuery() })`)
-						.andWhere(new Brackets(qb => {
+						.where(`user.id IN (${profQuery.getQuery()})`)
+						.andWhere(new Brackets((qb) => {
 							qb
 								.where('user.updatedAt IS NULL')
 								.orWhere('user.updatedAt > :activeThreshold', { activeThreshold: activeThreshold });

@@ -61,7 +61,7 @@ export class NoteDeleteService {
 	 * @param user 投稿者
 	 * @param note 投稿
 	 */
-	async delete(user: { id: MiUser['id']; uri: MiUser['uri']; host: MiUser['host']; isBot: MiUser['isBot']; }, note: MiNote, quiet = false, deleter?: MiUser) {
+	async delete(user: { id: MiUser['id']; uri: MiUser['uri']; host: MiUser['host']; isBot: MiUser['isBot'] }, note: MiNote, quiet = false, deleter?: MiUser) {
 		const deletedAt = new Date();
 		const cascadingNotes = await this.findCascadingNotes(note);
 
@@ -110,7 +110,7 @@ export class NoteDeleteService {
 			}
 
 			if (this.userEntityService.isRemoteUser(user)) {
-				this.federatedInstanceService.fetch(user.host).then(async i => {
+				this.federatedInstanceService.fetch(user.host).then(async (i) => {
 					this.instancesRepository.decrement({ id: i.id }, 'notesCount', 1);
 					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
 						this.instanceChart.updateNote(i.host, note, false);
@@ -146,7 +146,7 @@ export class NoteDeleteService {
 		const recursive = async (noteId: string): Promise<MiNote[]> => {
 			const query = this.notesRepository.createQueryBuilder('note')
 				.where('note.replyId = :noteId', { noteId })
-				.orWhere(new Brackets(q => {
+				.orWhere(new Brackets((q) => {
 					q.where('note.renoteId = :noteId', { noteId })
 						.andWhere('note.text IS NOT NULL');
 				}))
@@ -191,7 +191,7 @@ export class NoteDeleteService {
 	}
 
 	@bindThis
-	private async deliverToConcerned(user: { id: MiLocalUser['id']; host: null; }, note: MiNote, content: any) {
+	private async deliverToConcerned(user: { id: MiLocalUser['id']; host: null }, note: MiNote, content: any) {
 		this.apDeliverManagerService.deliverToFollowers(user, content);
 		this.relayService.deliverToRelays(user, content);
 		const remoteUsers = await this.getMentionedRemoteUsers(note);

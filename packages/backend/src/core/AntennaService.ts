@@ -94,7 +94,7 @@ export class AntennaService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	public async addNoteToAntennas(note: MiNote, noteUser: { id: MiUser['id']; username: string; host: string | null; }): Promise<void> {
+	public async addNoteToAntennas(note: MiNote, noteUser: { id: MiUser['id']; username: string; host: string | null }): Promise<void> {
 		const antennas = await this.getAntennas();
 		const antennasWithMatchResult = await Promise.all(antennas.map(antenna => this.checkHitAntenna(antenna, note, noteUser).then(hit => [antenna, hit] as const)));
 		const matchedAntennas = antennasWithMatchResult.filter(([, hit]) => hit).map(([antenna]) => antenna);
@@ -112,7 +112,7 @@ export class AntennaService implements OnApplicationShutdown {
 	// NOTE: フォローしているユーザーのノート、リストのユーザーのノート、グループのユーザーのノート指定はパフォーマンス上の理由で無効になっている
 
 	@bindThis
-	public async checkHitAntenna(antenna: MiAntenna, note: (MiNote | Packed<'Note'>), noteUser: { id: MiUser['id']; username: string; host: string | null; }): Promise<boolean> {
+	public async checkHitAntenna(antenna: MiAntenna, note: (MiNote | Packed<'Note'>), noteUser: { id: MiUser['id']; username: string; host: string | null }): Promise<boolean> {
 		if (note.visibility === 'specified') return false;
 		if (note.visibility === 'followers') return false;
 
@@ -122,9 +122,9 @@ export class AntennaService implements OnApplicationShutdown {
 
 		const noteUserAcct = AcctEntity.from(noteUser.username, noteUser.host, this.config.host);
 		const antennaUserAccts = antenna.users
-			.map((x) => AcctEntity.parse(x, this.config.host))
-			.filter((x) => x !== null)
-			.map((x) => x);
+			.map(x => AcctEntity.parse(x, this.config.host))
+			.filter(x => x !== null)
+			.map(x => x);
 
 		if (antenna.src === 'home') {
 			// TODO
@@ -135,9 +135,9 @@ export class AntennaService implements OnApplicationShutdown {
 
 			if (!listUsers.includes(note.userId)) return false;
 		} else if (antenna.src === 'users') {
-			if (!(antennaUserAccts.some((acct) => acct.is(noteUserAcct)))) return false;
+			if (!(antennaUserAccts.some(acct => acct.is(noteUserAcct)))) return false;
 		} else if (antenna.src === 'users_blacklist') {
-			if (antennaUserAccts.some((acct) => acct.is(noteUserAcct))) return false;
+			if (antennaUserAccts.some(acct => acct.is(noteUserAcct))) return false;
 		}
 
 		const keywords = antenna.keywords

@@ -120,7 +120,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			const topRepliedUsers = repliedUsersSorted.slice(0, ps.limit);
 
 			// Make replies object (includes weights)
-			const repliesObj = await Promise.all(topRepliedUsers.map(async (user) => ({
+			const repliesObj = await Promise.all(topRepliedUsers.map(async user => ({
 				user: await this.userEntityService.pack(user, me, { schema: 'UserDetailed' }),
 				weight: repliedUsers[user] / peak,
 			})));

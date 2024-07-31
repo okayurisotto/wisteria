@@ -612,7 +612,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public addContext<T extends IObject>(x: T): T & { '@context': any; id: string; } {
+	public addContext<T extends IObject>(x: T): T & { '@context': any; id: string } {
 		if (typeof x === 'object' && x.id == null) {
 			x.id = `${this.config.url}/${randomUUID()}`;
 		}
@@ -653,7 +653,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public async attachLdSignature(activity: any, user: { id: MiUser['id']; host: null; }): Promise<IActivity> {
+	public async attachLdSignature(activity: any, user: { id: MiUser['id']; host: null }): Promise<IActivity> {
 		const keypair = await this.userKeypairService.getUserKeypair(user.id);
 
 		const ldSignature = this.ldSignatureService.use();

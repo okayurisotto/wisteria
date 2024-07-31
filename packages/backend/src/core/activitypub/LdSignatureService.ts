@@ -138,7 +138,7 @@ class LdSignature {
 				throwErrorWhenResponseNotOk: false,
 				validators: [validateContentTypeSetAsJsonLD],
 			},
-		).then(res => {
+		).then((res) => {
 			if (!res.ok) {
 				throw new Error(`${res.status} ${res.statusText}`);
 			} else {

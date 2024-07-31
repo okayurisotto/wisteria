@@ -80,7 +80,7 @@ export class NotificationCreateService implements OnApplicationShutdown {
 			}
 
 			const mutings = await this.mutingsRepository.find({ where: { muterId: notifieeId }, select: ['muteeId'] });
-			if (mutings.map((muting) => muting.id).includes(notifierId)) {
+			if (mutings.map(muting => muting.id).includes(notifierId)) {
 				return null;
 			}
 

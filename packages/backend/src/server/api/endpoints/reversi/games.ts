@@ -47,7 +47,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				.innerJoinAndSelect('game.user2', 'user2');
 
 			if (ps.my && me) {
-				query.andWhere(new Brackets(qb => {
+				query.andWhere(new Brackets((qb) => {
 					qb
 						.where('game.user1Id = :userId', { userId: me.id })
 						.orWhere('game.user2Id = :userId', { userId: me.id });

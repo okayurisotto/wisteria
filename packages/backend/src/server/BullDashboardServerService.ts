@@ -99,7 +99,7 @@ export class BullDashboardServerService {
 				this.objectStorageQueue,
 				this.webhookDeliverQueue,
 				this.relationshipQueue,
-			].map((q) => new BullMQAdapter(q)),
+			].map(q => new BullMQAdapter(q)),
 			serverAdapter,
 		});
 

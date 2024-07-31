@@ -45,7 +45,7 @@ export class UrlPreviewService {
 
 	@bindThis
 	public async handle(
-		request: FastifyRequest<{ Querystring: { url: string; lang?: string; } }>,
+		request: FastifyRequest<{ Querystring: { url: string; lang?: string } }>,
 		reply: FastifyReply,
 	): Promise<object | undefined> {
 		const url = request.query.url;
@@ -66,13 +66,12 @@ export class UrlPreviewService {
 			? `(Proxy) Getting preview of ${url}@${lang} ...`
 			: `Getting preview of ${url}@${lang} ...`);
 		try {
-			const summary = meta.summalyProxy ?
-				await this.httpRequestService.getJson<ReturnType<typeof summaly>>(`${meta.summalyProxy}?${query({
+			const summary = meta.summalyProxy
+				? await this.httpRequestService.getJson<ReturnType<typeof summaly>>(`${meta.summalyProxy}?${query({
 					url: url,
 					lang: lang ?? 'ja-JP',
 				})}`)
-				:
-				await summaly(url, {
+				: await summaly(url, {
 					followRedirects: false,
 					lang: lang ?? 'ja-JP',
 					agent: this.config.proxy ? {

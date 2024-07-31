@@ -65,4 +65,3 @@ export class GalleryPostEntityService {
 		return Promise.all(posts.map(x => this.pack(x, me)));
 	}
 }
-

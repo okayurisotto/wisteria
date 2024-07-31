@@ -59,4 +59,3 @@ export class FlashEntityService {
 		return Promise.all(flashs.map(x => this.pack(x, me)));
 	}
 }
-

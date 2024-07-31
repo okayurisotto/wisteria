@@ -30,7 +30,7 @@ export default class NotesChart extends Chart<typeof schema> {
 		private appLockService: AppLockService,
 		private chartLoggerService: ChartLoggerService,
 	) {
-		super(db, (k) => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema);
+		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema);
 	}
 
 	protected async tickMajor(): Promise<Partial<KVs<typeof schema>>> {

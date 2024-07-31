@@ -58,4 +58,3 @@ export class ClipEntityService {
 		return Promise.all(clips.map(x => this.pack(x, me)));
 	}
 }
-

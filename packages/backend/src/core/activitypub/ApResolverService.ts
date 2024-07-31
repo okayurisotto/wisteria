@@ -108,9 +108,9 @@ export class Resolver {
 			: await this.httpRequestService.getActivityJson(value));
 
 		if (
-			Array.isArray(object['@context']) ?
-				!(object['@context'] as unknown[]).includes('https://www.w3.org/ns/activitystreams') :
-				object['@context'] !== 'https://www.w3.org/ns/activitystreams'
+			Array.isArray(object['@context'])
+				? !(object['@context'] as unknown[]).includes('https://www.w3.org/ns/activitystreams')
+				: object['@context'] !== 'https://www.w3.org/ns/activitystreams'
 		) {
 			throw new Error('invalid response');
 		}
@@ -126,7 +126,7 @@ export class Resolver {
 		switch (parsed.type) {
 			case 'notes':
 				return this.notesRepository.findOneByOrFail({ id: parsed.id })
-					.then(async note => {
+					.then(async (note) => {
 						if (parsed.rest === 'activity') {
 							// this refers to the create activity and not the note itself
 							return this.apRendererService.addContext(this.apRendererService.renderCreate(await this.apRendererService.renderNote(note), note));
@@ -149,7 +149,7 @@ export class Resolver {
 					this.apRendererService.addContext(await this.apRendererService.renderLike(reaction, { uri: null })));
 			case 'follows':
 				return this.followRequestsRepository.findOneBy({ id: parsed.id })
-					.then(async followRequest => {
+					.then(async (followRequest) => {
 						if (followRequest == null) throw new Error('resolveLocal: invalid follow request ID');
 						const [follower, followee] = await Promise.all([
 							this.usersRepository.findOneBy({

@@ -88,8 +88,8 @@ type Unflatten<T extends Record<string, any>> = UnionToIntersection<
 type ToJsonSchema<S> = {
 	type: 'object';
 	properties: {
-		[K in keyof S]: S[K] extends number[] ? { type: 'array'; items: { type: 'number'; }; } : ToJsonSchema<S[K]>;
-	},
+		[K in keyof S]: S[K] extends number[] ? { type: 'array'; items: { type: 'number' } } : ToJsonSchema<S[K]>;
+	};
 	required: (keyof S)[];
 };
 
@@ -143,11 +143,12 @@ export default abstract class Chart<T extends Schema> {
 		diff: Commit<T>;
 		group: string | null;
 	}[] = [];
+
 	// ↓にしたいけどfindOneとかで型エラーになる
 	//private repositoryForHour: Repository<RawRecord<T>>;
 	//private repositoryForDay: Repository<RawRecord<T>>;
-	private repositoryForHour: Repository<{ id: number; group?: string | null; date: number; }>;
-	private repositoryForDay: Repository<{ id: number; group?: string | null; date: number; }>;
+	private repositoryForHour: Repository<{ id: number; group?: string | null; date: number }>;
+	private repositoryForDay: Repository<{ id: number; group?: string | null; date: number }>;
 
 	/**
 	 * 1日に一回程度実行されれば良いような計算処理を入れる(主にCASCADE削除などアプリケーション側で感知できない変動によるズレの修正用)
@@ -159,8 +160,8 @@ export default abstract class Chart<T extends Schema> {
 	 */
 	protected abstract tickMinor(group: string | null): Promise<Partial<KVs<T>>>;
 
-	private static convertSchemaToColumnDefinitions(schema: Schema): Record<string, { type: string; array?: boolean; default?: any; }> {
-		const columns = {} as Record<string, { type: string; array?: boolean; default?: any; }>;
+	private static convertSchemaToColumnDefinitions(schema: Schema): Record<string, { type: string; array?: boolean; default?: any }> {
+		const columns = {} as Record<string, { type: string; array?: boolean; default?: any }>;
 		for (const [k, v] of Object.entries(schema)) {
 			const name = k.replaceAll('.', COLUMN_DELIMITER);
 			const type = v.range === 'big' ? 'bigint' : v.range === 'small' ? 'smallint' : 'integer';
@@ -205,14 +206,14 @@ export default abstract class Chart<T extends Schema> {
 	}
 
 	public static schemaToEntity(name: string, schema: Schema, grouped = false): {
-		hour: EntitySchema,
-		day: EntitySchema,
+		hour: EntitySchema;
+		day: EntitySchema;
 	} {
 		const createEntity = (span: 'hour' | 'day'): EntitySchema => new EntitySchema({
 			name:
-				span === 'hour' ? `__chart__${camelToSnake(name)}` :
-				span === 'day' ? `__chart_day__${camelToSnake(name)}` :
-				new Error('not happen') as never,
+				span === 'hour' ? `__chart__${camelToSnake(name)}`
+					: span === 'day' ? `__chart_day__${camelToSnake(name)}`
+						: new Error('not happen') as never,
 			columns: {
 				id: {
 					type: 'integer',
@@ -270,14 +271,14 @@ export default abstract class Chart<T extends Schema> {
 		this.logger = logger;
 
 		const { hour, day } = Chart.schemaToEntity(name, schema, grouped);
-		this.repositoryForHour = db.getRepository<{ id: number; group?: string | null; date: number; }>(hour);
-		this.repositoryForDay = db.getRepository<{ id: number; group?: string | null; date: number; }>(day);
+		this.repositoryForHour = db.getRepository<{ id: number; group?: string | null; date: number }>(hour);
+		this.repositoryForDay = db.getRepository<{ id: number; group?: string | null; date: number }>(day);
 	}
 
 	@bindThis
 	private convertRawRecord(x: RawRecord<T>): KVs<T> {
 		const kvs = {} as Record<string, number>;
-		for (const k of Object.keys(x).filter((k) => k.startsWith(COLUMN_PREFIX)) as (keyof Columns<T>)[]) {
+		for (const k of Object.keys(x).filter(k => k.startsWith(COLUMN_PREFIX)) as (keyof Columns<T>)[]) {
 			kvs[(k as string).substring(COLUMN_PREFIX.length).split(COLUMN_DELIMITER).join('.')] = x[k] as unknown as number;
 		}
 		return kvs as KVs<T>;
@@ -299,9 +300,9 @@ export default abstract class Chart<T extends Schema> {
 	@bindThis
 	private getLatestLog(group: string | null, span: 'hour' | 'day'): Promise<RawRecord<T> | null> {
 		const repository =
-			span === 'hour' ? this.repositoryForHour :
-			span === 'day' ? this.repositoryForDay :
-			new Error('not happen') as never;
+			span === 'hour' ? this.repositoryForHour
+				: span === 'day' ? this.repositoryForDay
+					: new Error('not happen') as never;
 
 		return repository.findOne({
 			where: group ? {
@@ -321,14 +322,14 @@ export default abstract class Chart<T extends Schema> {
 		const [y, m, d, h] = Chart.getCurrentDate();
 
 		const current = dateUTC(
-			span === 'hour' ? [y, m, d, h] :
-			span === 'day' ? [y, m, d] :
-			new Error('not happen') as never);
+			span === 'hour' ? [y, m, d, h]
+				: span === 'day' ? [y, m, d]
+					: new Error('not happen') as never);
 
 		const repository =
-			span === 'hour' ? this.repositoryForHour :
-			span === 'day' ? this.repositoryForDay :
-			new Error('not happen') as never;
+			span === 'hour' ? this.repositoryForHour
+				: span === 'day' ? this.repositoryForDay
+					: new Error('not happen') as never;
 
 		// 現在(=今のHour or Day)のログ
 		const currentLog = await repository.findOneBy({
@@ -485,10 +486,10 @@ export default abstract class Chart<T extends Schema> {
 						const targetValues = finalDiffs[targetKey] as string[] | undefined;
 						const targetValuesForHour = new Set([...(targetValues ?? []), ...(logHour[targetTempColumnName] as unknown as string[])]);
 						const targetValuesForDay = new Set([...(targetValues ?? []), ...(logDay[targetTempColumnName] as unknown as string[])]);
-						currentValuesForHour.forEach(v => {
+						currentValuesForHour.forEach((v) => {
 							if (!targetValuesForHour.has(v)) currentValuesForHour.delete(v);
 						});
-						currentValuesForDay.forEach(v => {
+						currentValuesForDay.forEach((v) => {
 							if (!targetValuesForDay.has(v)) currentValuesForDay.delete(v);
 						});
 					}
@@ -613,14 +614,14 @@ export default abstract class Chart<T extends Schema> {
 		const lt = dateUTC([y, m, d, h, _m, _s, _ms]);
 
 		const gt =
-			span === 'day' ? subtractTime(cursor ? dateUTC([y2, m2, d2, 0]) : dateUTC([y, m, d, 0]), amount - 1, 'day') :
-			span === 'hour' ? subtractTime(cursor ? dateUTC([y2, m2, d2, h2]) : dateUTC([y, m, d, h]), amount - 1, 'hour') :
-			new Error('not happen') as never;
+			span === 'day' ? subtractTime(cursor ? dateUTC([y2, m2, d2, 0]) : dateUTC([y, m, d, 0]), amount - 1, 'day')
+				: span === 'hour' ? subtractTime(cursor ? dateUTC([y2, m2, d2, h2]) : dateUTC([y, m, d, h]), amount - 1, 'hour')
+					: new Error('not happen') as never;
 
 		const repository =
-			span === 'hour' ? this.repositoryForHour :
-			span === 'day' ? this.repositoryForDay :
-			new Error('not happen') as never;
+			span === 'hour' ? this.repositoryForHour
+				: span === 'day' ? this.repositoryForDay
+					: new Error('not happen') as never;
 
 		// ログ取得
 		let logs = await repository.find({
@@ -673,9 +674,9 @@ export default abstract class Chart<T extends Schema> {
 
 		for (let i = (amount - 1); i >= 0; i--) {
 			const current =
-				span === 'hour' ? subtractTime(dateUTC([y, m, d, h]), i, 'hour') :
-				span === 'day' ? subtractTime(dateUTC([y, m, d]), i, 'day') :
-				new Error('not happen') as never;
+				span === 'hour' ? subtractTime(dateUTC([y, m, d, h]), i, 'hour')
+					: span === 'day' ? subtractTime(dateUTC([y, m, d]), i, 'day')
+						: new Error('not happen') as never;
 
 			const log = logs.find(l => isTimeSame(new Date(l.date * 1000), current));
 

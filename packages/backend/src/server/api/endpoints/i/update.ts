@@ -382,7 +382,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			if (ps.fields) {
 				profileUpdates.fields = ps.fields
 					.filter(x => typeof x.name === 'string' && x.name.trim() !== '' && typeof x.value === 'string' && x.value.trim() !== '')
-					.map(x => {
+					.map((x) => {
 						return { name: x.name.trim(), value: x.value.trim() };
 					});
 			}

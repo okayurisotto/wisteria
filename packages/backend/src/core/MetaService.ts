@@ -23,7 +23,7 @@ export class MetaService {
 
 	@bindThis
 	public async fetch(): Promise<MiMeta> {
-		return await this.db.transaction(async transactionalEntityManager => {
+		return await this.db.transaction(async (transactionalEntityManager) => {
 			// 過去のバグでレコードが複数出来てしまっている可能性があるので新しいIDを優先する
 			const metas = await transactionalEntityManager.find(MiMeta, {
 				order: {
@@ -45,7 +45,7 @@ export class MetaService {
 						},
 						['id'],
 					)
-					.then((x) => transactionalEntityManager.findOneByOrFail(MiMeta, x.identifiers[0]));
+					.then(x => transactionalEntityManager.findOneByOrFail(MiMeta, x.identifiers[0]));
 
 				return saved;
 			}
@@ -56,7 +56,7 @@ export class MetaService {
 	public async update(data: Partial<MiMeta>): Promise<MiMeta> {
 		let before: MiMeta | undefined;
 
-		const updated = await this.db.transaction(async transactionalEntityManager => {
+		const updated = await this.db.transaction(async (transactionalEntityManager) => {
 			const metas = await transactionalEntityManager.find(MiMeta, {
 				order: {
 					id: 'DESC',

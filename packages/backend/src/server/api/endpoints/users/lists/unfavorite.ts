@@ -36,7 +36,7 @@ export const paramDef = {
 } as const;
 
 @Injectable() export default class extends Endpoint<typeof meta, typeof paramDef> {
-	constructor (
+	constructor(
 		@Inject(DI.userListsRepository)
 		private userListsRepository: UserListsRepository,
 

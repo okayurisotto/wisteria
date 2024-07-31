@@ -78,16 +78,16 @@ export class QueryService {
 		// 投稿の返信先の作者にブロックされていない かつ
 		// 投稿の引用元の作者にブロックされていない
 		q
-			.andWhere(`note.userId NOT IN (${ blockingQuery.getQuery() })`)
-			.andWhere(new Brackets(qb => {
+			.andWhere(`note.userId NOT IN (${blockingQuery.getQuery()})`)
+			.andWhere(new Brackets((qb) => {
 				qb
 					.where('note.replyUserId IS NULL')
-					.orWhere(`note.replyUserId NOT IN (${ blockingQuery.getQuery() })`);
+					.orWhere(`note.replyUserId NOT IN (${blockingQuery.getQuery()})`);
 			}))
-			.andWhere(new Brackets(qb => {
+			.andWhere(new Brackets((qb) => {
 				qb
 					.where('note.renoteUserId IS NULL')
-					.orWhere(`note.renoteUserId NOT IN (${ blockingQuery.getQuery() })`);
+					.orWhere(`note.renoteUserId NOT IN (${blockingQuery.getQuery()})`);
 			}));
 
 		q.setParameters(blockingQuery.getParameters());
@@ -103,10 +103,10 @@ export class QueryService {
 			.select('blocking.blockerId')
 			.where('blocking.blockeeId = :blockeeId', { blockeeId: me.id });
 
-		q.andWhere(`user.id NOT IN (${ blockingQuery.getQuery() })`);
+		q.andWhere(`user.id NOT IN (${blockingQuery.getQuery()})`);
 		q.setParameters(blockingQuery.getParameters());
 
-		q.andWhere(`user.id NOT IN (${ blockedQuery.getQuery() })`);
+		q.andWhere(`user.id NOT IN (${blockedQuery.getQuery()})`);
 		q.setParameters(blockedQuery.getParameters());
 	}
 
@@ -116,11 +116,11 @@ export class QueryService {
 			.select('threadMuted.threadId')
 			.where('threadMuted.userId = :userId', { userId: me.id });
 
-		q.andWhere(`note.id NOT IN (${ mutedQuery.getQuery() })`);
-		q.andWhere(new Brackets(qb => {
+		q.andWhere(`note.id NOT IN (${mutedQuery.getQuery()})`);
+		q.andWhere(new Brackets((qb) => {
 			qb
 				.where('note.threadId IS NULL')
-				.orWhere(`note.threadId NOT IN (${ mutedQuery.getQuery() })`);
+				.orWhere(`note.threadId NOT IN (${mutedQuery.getQuery()})`);
 		}));
 
 		q.setParameters(mutedQuery.getParameters());
@@ -144,32 +144,32 @@ export class QueryService {
 		// 投稿の返信先の作者をミュートしていない かつ
 		// 投稿の引用元の作者をミュートしていない
 		q
-			.andWhere(`note.userId NOT IN (${ mutingQuery.getQuery() })`)
-			.andWhere(new Brackets(qb => {
+			.andWhere(`note.userId NOT IN (${mutingQuery.getQuery()})`)
+			.andWhere(new Brackets((qb) => {
 				qb
 					.where('note.replyUserId IS NULL')
-					.orWhere(`note.replyUserId NOT IN (${ mutingQuery.getQuery() })`);
+					.orWhere(`note.replyUserId NOT IN (${mutingQuery.getQuery()})`);
 			}))
-			.andWhere(new Brackets(qb => {
+			.andWhere(new Brackets((qb) => {
 				qb
 					.where('note.renoteUserId IS NULL')
-					.orWhere(`note.renoteUserId NOT IN (${ mutingQuery.getQuery() })`);
+					.orWhere(`note.renoteUserId NOT IN (${mutingQuery.getQuery()})`);
 			}))
 			// mute instances
-			.andWhere(new Brackets(qb => {
+			.andWhere(new Brackets((qb) => {
 				qb
 					.andWhere('note.userHost IS NULL')
-					.orWhere(`NOT ((${ mutingInstanceQuery.getQuery() })::jsonb ? note.userHost)`);
+					.orWhere(`NOT ((${mutingInstanceQuery.getQuery()})::jsonb ? note.userHost)`);
 			}))
-			.andWhere(new Brackets(qb => {
+			.andWhere(new Brackets((qb) => {
 				qb
 					.where('note.replyUserHost IS NULL')
-					.orWhere(`NOT ((${ mutingInstanceQuery.getQuery() })::jsonb ? note.replyUserHost)`);
+					.orWhere(`NOT ((${mutingInstanceQuery.getQuery()})::jsonb ? note.replyUserHost)`);
 			}))
-			.andWhere(new Brackets(qb => {
+			.andWhere(new Brackets((qb) => {
 				qb
 					.where('note.renoteUserHost IS NULL')
-					.orWhere(`NOT ((${ mutingInstanceQuery.getQuery() })::jsonb ? note.renoteUserHost)`);
+					.orWhere(`NOT ((${mutingInstanceQuery.getQuery()})::jsonb ? note.renoteUserHost)`);
 			}));
 
 		q.setParameters(mutingQuery.getParameters());
@@ -182,7 +182,7 @@ export class QueryService {
 			.select('muting.muteeId')
 			.where('muting.muterId = :muterId', { muterId: me.id });
 
-		q.andWhere(`user.id NOT IN (${ mutingQuery.getQuery() })`);
+		q.andWhere(`user.id NOT IN (${mutingQuery.getQuery()})`);
 
 		q.setParameters(mutingQuery.getParameters());
 	}
@@ -191,7 +191,7 @@ export class QueryService {
 	public generateVisibilityQuery(q: SelectQueryBuilder<any>, me?: { id: MiUser['id'] } | null): void {
 		// This code must always be synchronized with the checks in Notes.isVisibleForMe.
 		if (me == null) {
-			q.andWhere(new Brackets(qb => {
+			q.andWhere(new Brackets((qb) => {
 				qb
 					.where('note.visibility = \'public\'')
 					.orWhere('note.visibility = \'home\'');
@@ -201,10 +201,10 @@ export class QueryService {
 				.select('following.followeeId')
 				.where('following.followerId = :meId');
 
-			q.andWhere(new Brackets(qb => {
+			q.andWhere(new Brackets((qb) => {
 				qb
 				// 公開投稿である
-					.where(new Brackets(qb => {
+					.where(new Brackets((qb) => {
 						qb
 							.where('note.visibility = \'public\'')
 							.orWhere('note.visibility = \'home\'');
@@ -214,14 +214,14 @@ export class QueryService {
 				// または 自分宛て
 					.orWhere(':meIdAsList <@ note.visibleUserIds')
 					.orWhere(':meIdAsList <@ note.mentions')
-					.orWhere(new Brackets(qb => {
+					.orWhere(new Brackets((qb) => {
 						qb
 						// または フォロワー宛ての投稿であり、
 							.where('note.visibility = \'followers\'')
-							.andWhere(new Brackets(qb => {
+							.andWhere(new Brackets((qb) => {
 								qb
 								// 自分がフォロワーである
-									.where(`note.userId IN (${ followingQuery.getQuery() })`)
+									.where(`note.userId IN (${followingQuery.getQuery()})`)
 								// または 自分の投稿へのリプライ
 									.orWhere('note.replyUserId = :meId');
 							}));
@@ -238,12 +238,12 @@ export class QueryService {
 			.select('renote_muting.muteeId')
 			.where('renote_muting.muterId = :muterId', { muterId: me.id });
 
-		q.andWhere(new Brackets(qb => {
+		q.andWhere(new Brackets((qb) => {
 			qb
-				.where(new Brackets(qb => {
+				.where(new Brackets((qb) => {
 					qb.where('note.renoteId IS NOT NULL');
 					qb.andWhere('note.text IS NULL');
-					qb.andWhere(`note.userId NOT IN (${ mutingQuery.getQuery() })`);
+					qb.andWhere(`note.userId NOT IN (${mutingQuery.getQuery()})`);
 				}))
 				.orWhere('note.renoteId IS NULL')
 				.orWhere('note.text IS NOT NULL');

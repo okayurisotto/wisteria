@@ -21,7 +21,7 @@ export function bindThis(target: any, key: string, descriptor: any) {
 		configurable: true,
 		get() {
 			if (this === target.prototype || this.hasOwnProperty(key) ||
-        typeof fn !== 'function') {
+				typeof fn !== 'function') {
 				return fn;
 			}
 

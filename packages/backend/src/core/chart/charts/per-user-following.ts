@@ -32,7 +32,7 @@ export default class PerUserFollowingChart extends Chart<typeof schema> {
 		private userEntityService: UserEntityService,
 		private chartLoggerService: ChartLoggerService,
 	) {
-		super(db, (k) => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);
+		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);
 	}
 
 	protected async tickMajor(group: string): Promise<Partial<KVs<typeof schema>>> {
@@ -61,7 +61,7 @@ export default class PerUserFollowingChart extends Chart<typeof schema> {
 	}
 
 	@bindThis
-	public async update(follower: { id: MiUser['id']; host: MiUser['host']; }, followee: { id: MiUser['id']; host: MiUser['host']; }, isFollow: boolean): Promise<void> {
+	public async update(follower: { id: MiUser['id']; host: MiUser['host'] }, followee: { id: MiUser['id']; host: MiUser['host'] }, isFollow: boolean): Promise<void> {
 		const prefixFollower = this.userEntityService.isLocalUser(follower) ? 'local' : 'remote';
 		const prefixFollowee = this.userEntityService.isLocalUser(followee) ? 'local' : 'remote';
 

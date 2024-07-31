@@ -29,7 +29,7 @@ export default class PerUserReactionsChart extends Chart<typeof schema> {
 		private userEntityService: UserEntityService,
 		private chartLoggerService: ChartLoggerService,
 	) {
-		super(db, (k) => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);
+		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);
 	}
 
 	protected async tickMajor(group: string): Promise<Partial<KVs<typeof schema>>> {
@@ -41,7 +41,7 @@ export default class PerUserReactionsChart extends Chart<typeof schema> {
 	}
 
 	@bindThis
-	public async update(user: { id: MiUser['id'], host: MiUser['host'] }, note: MiNote): Promise<void> {
+	public async update(user: { id: MiUser['id']; host: MiUser['host'] }, note: MiNote): Promise<void> {
 		const prefix = this.userEntityService.isLocalUser(user) ? 'local' : 'remote';
 		this.commit({
 			[`${prefix}.count`]: 1,

@@ -102,13 +102,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 	}
 
 	private async getFromDb(ps: {
-		untilId: string | null,
-		sinceId: string | null,
-		limit: number,
-		userId: string,
-		withChannelNotes: boolean,
-		withFiles: boolean,
-		withRenotes: boolean,
+		untilId: string | null;
+		sinceId: string | null;
+		limit: number;
+		userId: string;
+		withChannelNotes: boolean;
+		withFiles: boolean;
+		withRenotes: boolean;
 	}, me: MiLocalUser | null) {
 		const isSelf = me && (me.id === ps.userId);
 
@@ -122,7 +122,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			.leftJoinAndSelect('renote.user', 'renoteUser');
 
 		if (ps.withChannelNotes) {
-			if (!isSelf) query.andWhere(new Brackets(qb => {
+			if (!isSelf) query.andWhere(new Brackets((qb) => {
 				qb.orWhere('note.channelId IS NULL');
 				qb.orWhere('channel.isSensitive = false');
 			}));
@@ -141,7 +141,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		}
 
 		if (!ps.withRenotes) {
-			query.andWhere(new Brackets(qb => {
+			query.andWhere(new Brackets((qb) => {
 				qb.orWhere('note.userId != :userId', { userId: ps.userId });
 				qb.orWhere('note.renoteId IS NULL');
 				qb.orWhere('note.text IS NOT NULL');

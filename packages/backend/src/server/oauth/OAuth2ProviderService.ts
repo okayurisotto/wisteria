@@ -47,7 +47,9 @@ function validateClientId(raw: string): URL {
 	const url = ((): URL => {
 		try {
 			return new URL(raw);
-		} catch { throw new AuthorizationError('client_id must be a valid URL', 'invalid_request'); }
+		} catch {
+			throw new AuthorizationError('client_id must be a valid URL', 'invalid_request');
+		}
 	})();
 
 	// "Client identifier URLs MUST have either an https or http scheme"
@@ -166,7 +168,7 @@ interface OAuth2DecisionRequest extends MiddlewareRequest {
 		transaction_id: string;
 		cancel: boolean;
 		login_token: string;
-	}
+	};
 }
 
 function getQueryMode(issuerUrl: string): oauth2orize.grant.Options['modes'] {
@@ -230,6 +232,7 @@ export class OAuth2ProviderService {
 	#server = oauth2orize.createServer({
 		store: new OAuth2Store(),
 	});
+
 	#logger: Logger;
 
 	constructor(
@@ -246,16 +249,16 @@ export class OAuth2ProviderService {
 		this.#logger = loggerService.getLogger('oauth');
 
 		const grantCodeCache = new MemoryKVCache<{
-			clientId: string,
-			userId: string,
-			redirectUri: string,
-			codeChallenge: string,
-			scopes: string[],
+			clientId: string;
+			userId: string;
+			redirectUri: string;
+			codeChallenge: string;
+			scopes: string[];
 
 			// fields to prevent multiple code use
-			grantedToken?: string,
-			revoked?: boolean,
-			used?: boolean,
+			grantedToken?: string;
+			revoked?: boolean;
+			used?: boolean;
 		}>(1000 * 60 * 5); // expires after 5m
 
 		// https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics

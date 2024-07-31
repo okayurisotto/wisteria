@@ -43,10 +43,10 @@ export class ApiError extends Error {
 		this.id = err.id;
 		this.kind = err.kind ?? 'client';
 		this.httpStatusCode =
-			err.httpStatusCode ??
-			(this.kind === 'client' ? 400 : undefined) ??
-			(this.kind === 'permission' ? 403 : undefined) ??
-			500;
+			err.httpStatusCode
+			?? (this.kind === 'client' ? 400 : undefined)
+			?? (this.kind === 'permission' ? 403 : undefined)
+			?? 500;
 	}
 
 	public serialize(): LiteResponse<NonNullable<Jsonifiable>> {

@@ -25,7 +25,7 @@ export default class TestIntersectionChart extends Chart<typeof schema> {
 		private appLockService: AppLockService,
 		logger: Logger,
 	) {
-		super(db, (k) => appLockService.getChartInsertLock(k), logger, name, schema);
+		super(db, k => appLockService.getChartInsertLock(k), logger, name, schema);
 	}
 
 	protected async tickMajor(): Promise<Partial<KVs<typeof schema>>> {

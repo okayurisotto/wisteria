@@ -159,11 +159,11 @@ export class HttpRequestService {
 	public async send(
 		url: string,
 		args: {
-			method?: string,
-			body?: string,
-			headers?: Record<string, string>,
-			timeout?: number,
-			size?: number,
+			method?: string;
+			body?: string;
+			headers?: Record<string, string>;
+			timeout?: number;
+			size?: number;
 		} = {},
 		extra: HttpRequestSendOptions = {
 			throwErrorWhenResponseNotOk: true,
@@ -185,7 +185,7 @@ export class HttpRequestService {
 			},
 			body: args.body,
 			size: args.size ?? 10 * 1024 * 1024,
-			agent: (url) => this.getAgentByUrl(url),
+			agent: url => this.getAgentByUrl(url),
 			signal: controller.signal,
 		});
 

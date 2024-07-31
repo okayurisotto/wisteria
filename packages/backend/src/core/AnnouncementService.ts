@@ -48,15 +48,15 @@ export class AnnouncementService {
 		const q = this.announcementsRepository.createQueryBuilder('announcement')
 			.where('announcement.isActive = true')
 			.andWhere('announcement.silence = false')
-			.andWhere(new Brackets(qb => {
+			.andWhere(new Brackets((qb) => {
 				qb.orWhere('announcement.userId = :userId', { userId: user.id });
 				qb.orWhere('announcement.userId IS NULL');
 			}))
-			.andWhere(new Brackets(qb => {
+			.andWhere(new Brackets((qb) => {
 				qb.orWhere('announcement.forExistingUsers = false');
 				qb.orWhere('announcement.id > :userId', { userId: user.id });
 			}))
-			.andWhere(`announcement.id NOT IN (${ readsQuery.getQuery() })`);
+			.andWhere(`announcement.id NOT IN (${readsQuery.getQuery()})`);
 
 		q.setParameters(readsQuery.getParameters());
 

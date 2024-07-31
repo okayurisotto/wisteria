@@ -23,7 +23,7 @@ import type { Config } from '@/config.js';
 export class ExportAntennasProcessorService {
 	private logger: Logger;
 
-	constructor (
+	constructor(
 		@Inject(DI.config)
 		private config: Config,
 
@@ -52,7 +52,7 @@ export class ExportAntennasProcessorService {
 		const stream = fs.createWriteStream(path, { flags: 'a' });
 		const write = (input: string): Promise<void> => {
 			return new Promise((resolve, reject) => {
-				stream.write(input, err => {
+				stream.write(input, (err) => {
 					if (err) {
 						this.logger.error(err);
 						reject();
@@ -80,7 +80,7 @@ export class ExportAntennasProcessorService {
 					excludeKeywords: antenna.excludeKeywords,
 					users: antenna.users,
 					userListAccts: typeof users !== 'undefined'
-						? users.map((user) => AcctEntity.from(user.username, user.host, this.config.host).toLongStringLegacy())
+						? users.map(user => AcctEntity.from(user.username, user.host, this.config.host).toLongStringLegacy())
 						: null,
 					caseSensitive: antenna.caseSensitive,
 					localOnly: antenna.localOnly,

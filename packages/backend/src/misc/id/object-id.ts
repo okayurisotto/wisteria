@@ -33,7 +33,7 @@ export function genObjectId(t: number): string {
 	return getTime(t) + getRandom();
 }
 
-export function parseObjectId(id: string): { date: Date; } {
+export function parseObjectId(id: string): { date: Date } {
 	return {
 		date: new Date(parseInt(id.slice(0, 8), 16) * 1000),
 	};

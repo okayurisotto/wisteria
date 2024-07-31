@@ -69,7 +69,7 @@ export class EmailService {
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>${ subject }</title>
+		<title>${subject}</title>
 		<style>
 			html {
 				background: #eee;
@@ -130,18 +130,18 @@ export class EmailService {
 	<body>
 		<main>
 			<header>
-				<img src="${ meta.logoImageUrl ?? meta.iconUrl ?? iconUrl }"/>
+				<img src="${meta.logoImageUrl ?? meta.iconUrl ?? iconUrl}"/>
 			</header>
 			<article>
-				<h1>${ subject }</h1>
-				<div>${ html }</div>
+				<h1>${subject}</h1>
+				<div>${html}</div>
 			</article>
 			<footer>
-				<a href="${ emailSettingUrl }">Email setting</a>
+				<a href="${emailSettingUrl}">Email setting</a>
 			</footer>
 		</main>
 		<nav>
-			<a href="${ this.config.url }">${ this.config.host }</a>
+			<a href="${this.config.url}">${this.config.host}</a>
 		</nav>
 	</body>
 </html>`,
@@ -174,8 +174,8 @@ export class EmailService {
 		}
 
 		let validated: {
-			valid: boolean,
-			reason?: string | null,
+			valid: boolean;
+			reason?: string | null;
 		} = { valid: true, reason: null };
 
 		if (meta.enableActiveEmailValidation) {

@@ -82,4 +82,4 @@ export type MiChannelService<T extends boolean> = {
 	requireCredential: T;
 	kind: T extends true ? string : string | null | undefined;
 	create: (id: string, connection: Connection) => Channel;
-}
+};

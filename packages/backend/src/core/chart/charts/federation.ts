@@ -34,7 +34,7 @@ export default class FederationChart extends Chart<typeof schema> {
 		private appLockService: AppLockService,
 		private chartLoggerService: ChartLoggerService,
 	) {
-		super(db, (k) => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema);
+		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema);
 	}
 
 	protected async tickMajor(): Promise<Partial<KVs<typeof schema>>> {
@@ -66,28 +66,28 @@ export default class FederationChart extends Chart<typeof schema> {
 				.select('COUNT(DISTINCT following.followeeHost)')
 				.where('following.followeeHost IS NOT NULL')
 				.andWhere(meta.blockedHosts.length === 0 ? '1=1' : 'following.followeeHost NOT ILIKE ANY(ARRAY[:...blocked])', { blocked: meta.blockedHosts.flatMap(x => [x, `%.${x}`]) })
-				.andWhere(`following.followeeHost NOT IN (${ suspendedInstancesQuery.getQuery() })`)
+				.andWhere(`following.followeeHost NOT IN (${suspendedInstancesQuery.getQuery()})`)
 				.getRawOne()
 				.then(x => parseInt(x.count, 10)),
 			this.followingsRepository.createQueryBuilder('following')
 				.select('COUNT(DISTINCT following.followerHost)')
 				.where('following.followerHost IS NOT NULL')
 				.andWhere(meta.blockedHosts.length === 0 ? '1=1' : 'following.followerHost NOT ILIKE ANY(ARRAY[:...blocked])', { blocked: meta.blockedHosts.flatMap(x => [x, `%.${x}`]) })
-				.andWhere(`following.followerHost NOT IN (${ suspendedInstancesQuery.getQuery() })`)
+				.andWhere(`following.followerHost NOT IN (${suspendedInstancesQuery.getQuery()})`)
 				.getRawOne()
 				.then(x => parseInt(x.count, 10)),
 			this.followingsRepository.createQueryBuilder('following')
 				.select('COUNT(DISTINCT following.followeeHost)')
 				.where('following.followeeHost IS NOT NULL')
 				.andWhere(meta.blockedHosts.length === 0 ? '1=1' : 'following.followeeHost NOT ILIKE ANY(ARRAY[:...blocked])', { blocked: meta.blockedHosts.flatMap(x => [x, `%.${x}`]) })
-				.andWhere(`following.followeeHost NOT IN (${ suspendedInstancesQuery.getQuery() })`)
-				.andWhere(`following.followeeHost IN (${ pubsubSubQuery.getQuery() })`)
+				.andWhere(`following.followeeHost NOT IN (${suspendedInstancesQuery.getQuery()})`)
+				.andWhere(`following.followeeHost IN (${pubsubSubQuery.getQuery()})`)
 				.setParameters(pubsubSubQuery.getParameters())
 				.getRawOne()
 				.then(x => parseInt(x.count, 10)),
 			this.instancesRepository.createQueryBuilder('instance')
 				.select('COUNT(instance.id)')
-				.where(`instance.host IN (${ subInstancesQuery.getQuery() })`)
+				.where(`instance.host IN (${subInstancesQuery.getQuery()})`)
 				.andWhere(meta.blockedHosts.length === 0 ? '1=1' : 'instance.host NOT ILIKE ANY(ARRAY[:...blocked])', { blocked: meta.blockedHosts.flatMap(x => [x, `%.${x}`]) })
 				.andWhere('instance.isSuspended = false')
 				.andWhere('instance.isNotResponding = false')
@@ -95,7 +95,7 @@ export default class FederationChart extends Chart<typeof schema> {
 				.then(x => parseInt(x.count, 10)),
 			this.instancesRepository.createQueryBuilder('instance')
 				.select('COUNT(instance.id)')
-				.where(`instance.host IN (${ pubInstancesQuery.getQuery() })`)
+				.where(`instance.host IN (${pubInstancesQuery.getQuery()})`)
 				.andWhere(meta.blockedHosts.length === 0 ? '1=1' : 'instance.host NOT ILIKE ANY(ARRAY[:...blocked])', { blocked: meta.blockedHosts.flatMap(x => [x, `%.${x}`]) })
 				.andWhere('instance.isSuspended = false')
 				.andWhere('instance.isNotResponding = false')

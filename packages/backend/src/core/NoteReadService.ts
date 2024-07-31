@@ -111,7 +111,7 @@ export class NoteReadService implements OnApplicationShutdown {
 			trackPromise(this.noteUnreadsRepository.countBy({
 				userId: userId,
 				isMentioned: true,
-			}).then(mentionsCount => {
+			}).then((mentionsCount) => {
 				if (mentionsCount === 0) {
 					// 全て既読になったイベントを発行
 					this.globalEventService.publishMainStream(userId, 'readAllUnreadMentions');
@@ -121,7 +121,7 @@ export class NoteReadService implements OnApplicationShutdown {
 			trackPromise(this.noteUnreadsRepository.countBy({
 				userId: userId,
 				isSpecified: true,
-			}).then(specifiedCount => {
+			}).then((specifiedCount) => {
 				if (specifiedCount === 0) {
 					// 全て既読になったイベントを発行
 					this.globalEventService.publishMainStream(userId, 'readAllUnreadSpecifiedNotes');

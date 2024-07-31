@@ -57,7 +57,7 @@ import { NotificationCreateService } from './NotificationCreateService.js';
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention';
 
 class NotificationManager {
-	private notifier: { id: MiUser['id']; };
+	private notifier: { id: MiUser['id'] };
 	private note: MiNote;
 	private queue: {
 		target: MiLocalUser['id'];
@@ -66,7 +66,7 @@ class NotificationManager {
 
 	constructor(
 		private notificationCreateService: NotificationCreateService,
-		notifier: { id: MiUser['id']; },
+		notifier: { id: MiUser['id'] },
 		note: MiNote,
 	) {
 		this.notifier = notifier;
@@ -374,7 +374,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	private async insertNote(user: { id: MiUser['id']; host: MiUser['host']; }, data: Option, tags: string[], emojis: string[], mentionedUsers: MinimumUser[]) {
+	private async insertNote(user: { id: MiUser['id']; host: MiUser['host'] }, data: Option, tags: string[], emojis: string[], mentionedUsers: MinimumUser[]) {
 		const insert = new MiNote({
 			id: this.idService.gen(data.createdAt?.getTime()),
 			fileIds: data.files ? data.files.map(file => file.id) : [],
@@ -419,7 +419,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		if (mentionedUsers.length > 0) {
 			insert.mentions = mentionedUsers.map(u => u.id);
 			const profiles = await this.userProfilesRepository.findBy({ userId: In(insert.mentions) });
-			insert.mentionedRemoteUsers = JSON.stringify(mentionedUsers.filter(u => this.userEntityService.isRemoteUser(u)).map(u => {
+			insert.mentionedRemoteUsers = JSON.stringify(mentionedUsers.filter(u => this.userEntityService.isRemoteUser(u)).map((u) => {
 				const profile = profiles.find(p => p.userId === u.id);
 				const url = profile != null ? profile.url : null;
 				return {
@@ -435,7 +435,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		try {
 			if (insert.hasPoll) {
 				// Start transaction
-				await this.db.transaction(async transactionalEntityManager => {
+				await this.db.transaction(async (transactionalEntityManager) => {
 					await transactionalEntityManager.insert(MiNote, insert);
 
 					const poll = new MiPoll({
@@ -486,7 +486,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 		// Register host
 		if (this.userEntityService.isRemoteUser(user)) {
-			this.federatedInstanceService.fetch(user.host).then(async i => {
+			this.federatedInstanceService.fetch(user.host).then(async (i) => {
 				this.instancesRepository.increment({ id: i.id }, 'notesCount', 1);
 				if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
 					this.instanceChart.updateNote(i.host, note, true);
@@ -513,7 +513,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			this.followingsRepository.findBy({
 				followeeId: user.id,
 				notify: 'normal',
-			}).then(followings => {
+			}).then((followings) => {
 				if (note.visibility !== 'specified') {
 					for (const following of followings) {
 						// TODO: ワードミュート考慮
@@ -574,7 +574,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 			this.roleUserService.addNoteToRoleTimeline(noteObj);
 
-			this.webhookService.getActiveWebhooks().then(webhooks => {
+			this.webhookService.getActiveWebhooks().then((webhooks) => {
 				webhooks = webhooks.filter(x => x.userId === user.id && x.on.includes('note'));
 				for (const webhook of webhooks) {
 					this.queueService.webhookDeliver(webhook, 'note', {
@@ -683,7 +683,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			this.notesRepository.countBy({
 				userId: user.id,
 				channelId: data.channel.id,
-			}).then(count => {
+			}).then((count) => {
 				// この処理が行われるのはノート作成後なので、ノートが一つしかなかったら最初の投稿だと判断できる
 				// TODO: とはいえノートを削除して何回も投稿すればその分だけインクリメントされる雑さもあるのでどうにかしたい
 				if (count === 1) {
@@ -782,7 +782,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	private incNotesCountOfUser(user: { id: MiUser['id']; }) {
+	private incNotesCountOfUser(user: { id: MiUser['id'] }) {
 		this.usersRepository.createQueryBuilder().update()
 			.set({
 				updatedAt: new Date(),
@@ -793,7 +793,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	private async extractMentionedUsers(user: { host: MiUser['host']; }, tokens: mfm.MfmNode[]): Promise<MiUser[]> {
+	private async extractMentionedUsers(user: { host: MiUser['host'] }, tokens: mfm.MfmNode[]): Promise<MiUser[]> {
 		const mentions = extractMentions(tokens, user.host ?? this.config.host);
 
 		const mentionedUsers = (
@@ -804,7 +804,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 					} catch {
 						return null;
 					}
-				})
+				}),
 			)
 		)
 			.filter(x => x !== null)

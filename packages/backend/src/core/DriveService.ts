@@ -169,11 +169,11 @@ export class DriveService {
 			}
 
 			const baseUrl = meta.objectStorageBaseUrl
-				?? `${ meta.objectStorageUseSSL ? 'https' : 'http' }://${ meta.objectStorageEndpoint }${ meta.objectStoragePort ? `:${meta.objectStoragePort}` : '' }/${ meta.objectStorageBucket }`;
+				?? `${meta.objectStorageUseSSL ? 'https' : 'http'}://${meta.objectStorageEndpoint}${meta.objectStoragePort ? `:${meta.objectStoragePort}` : ''}/${meta.objectStorageBucket}`;
 
 			// for original
 			const key = `${meta.objectStoragePrefix}/${randomUUID()}${ext}`;
-			const url = `${ baseUrl }/${ key }`;
+			const url = `${baseUrl}/${key}`;
 
 			// for alts
 			let webpublicKey: string | null = null;
@@ -190,7 +190,7 @@ export class DriveService {
 
 			if (alts.webpublic) {
 				webpublicKey = `${meta.objectStoragePrefix}/webpublic-${randomUUID()}.${alts.webpublic.ext}`;
-				webpublicUrl = `${ baseUrl }/${ webpublicKey }`;
+				webpublicUrl = `${baseUrl}/${webpublicKey}`;
 
 				this.registerLogger.info(`uploading webpublic: ${webpublicKey}`);
 				uploads.push(this.upload(webpublicKey, alts.webpublic.data, alts.webpublic.type, alts.webpublic.ext, name));
@@ -198,7 +198,7 @@ export class DriveService {
 
 			if (alts.thumbnail) {
 				thumbnailKey = `${meta.objectStoragePrefix}/thumbnail-${randomUUID()}.${alts.thumbnail.ext}`;
-				thumbnailUrl = `${ baseUrl }/${ thumbnailKey }`;
+				thumbnailUrl = `${baseUrl}/${thumbnailKey}`;
 
 				this.registerLogger.info(`uploading thumbnail: ${thumbnailKey}`);
 				uploads.push(this.upload(thumbnailKey, alts.thumbnail.data, alts.thumbnail.type, alts.thumbnail.ext, `${name}.thumbnail`));
@@ -310,9 +310,9 @@ export class DriveService {
 			satisfyWebpublic = !!(
 				type !== 'image/svg+xml' && // security reason
 				type !== 'image/avif' && // not supported by Mastodon and MS Edge
-			!(metadata.exif ?? metadata.iptc ?? metadata.xmp ?? metadata.tifftagPhotoshop) &&
-			metadata.width && metadata.width <= 2048 &&
-			metadata.height && metadata.height <= 2048
+				!(metadata.exif ?? metadata.iptc ?? metadata.xmp ?? metadata.tifftagPhotoshop) &&
+				metadata.width && metadata.width <= 2048 &&
+				metadata.height && metadata.height <= 2048
 			);
 		} catch (err) {
 			this.registerLogger.warn(`sharp failed: ${err}`);
@@ -394,7 +394,7 @@ export class DriveService {
 
 		await this.s3Service.upload(meta, params)
 			.then(
-				result => {
+				(result) => {
 					if ('Bucket' in result) { // CompleteMultipartUploadCommandOutput
 						this.registerLogger.debug(`Uploaded: ${result.Bucket}/${result.Key} => ${result.Location}`);
 					} else { // AbortMultipartUploadCommandOutput
@@ -472,11 +472,11 @@ export class DriveService {
 		const info = await this.fileInfoService.getFileInfo(path, {
 			skipSensitiveDetection: skipNsfwCheck,
 			sensitiveThreshold: // 感度が高いほどしきい値は低くすることになる
-			instance.sensitiveMediaDetectionSensitivity === 'veryHigh' ? 0.1 :
-			instance.sensitiveMediaDetectionSensitivity === 'high' ? 0.3 :
-			instance.sensitiveMediaDetectionSensitivity === 'low' ? 0.7 :
-			instance.sensitiveMediaDetectionSensitivity === 'veryLow' ? 0.9 :
-			0.5,
+			instance.sensitiveMediaDetectionSensitivity === 'veryHigh' ? 0.1
+				: instance.sensitiveMediaDetectionSensitivity === 'high' ? 0.3
+					: instance.sensitiveMediaDetectionSensitivity === 'low' ? 0.7
+						: instance.sensitiveMediaDetectionSensitivity === 'veryLow' ? 0.9
+							: 0.5,
 			sensitiveThresholdForPorn: 0.75,
 			enableSensitiveMediaDetectionForVideos: instance.enableSensitiveMediaDetectionForVideos,
 		});
@@ -577,8 +577,8 @@ export class DriveService {
 		file.maybeSensitive = info.sensitive;
 		file.maybePorn = info.porn;
 		file.isSensitive = user
-			? this.userEntityService.isLocalUser(user) && profile!.alwaysMarkNsfw ? true :
-			sensitive ?? false
+			? this.userEntityService.isLocalUser(user) && profile!.alwaysMarkNsfw ? true
+				: sensitive ?? false
 			: false;
 
 		if (info.sensitive && profile!.autoSensitive) file.isSensitive = true;
@@ -631,7 +631,7 @@ export class DriveService {
 		this.registerLogger.succ(`drive file has been created ${file.id}`);
 
 		if (user) {
-			this.driveFileEntityService.pack(file, { self: true }).then(packedFile => {
+			this.driveFileEntityService.pack(file, { self: true }).then((packedFile) => {
 				// Publish driveFileCreated event
 				this.globalEventService.publishMainStream(user.id, 'driveFileCreated', packedFile);
 				this.globalEventService.publishDriveStream(user.id, 'fileCreated', packedFile);

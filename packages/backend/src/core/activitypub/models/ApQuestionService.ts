@@ -49,11 +49,11 @@ export class ApQuestionService {
 		const expiresAt = question.endTime ? new Date(question.endTime) : question.closed ? new Date(question.closed) : null;
 
 		const choices = question[multiple ? 'anyOf' : 'oneOf']
-			?.map((x) => x.name)
+			?.map(x => x.name)
 			.filter((x): x is string => typeof x === 'string')
 			?? [];
 
-		const votes = question[multiple ? 'anyOf' : 'oneOf']?.map((x) => x.replies?.totalItems ?? x._misskey_votes ?? 0);
+		const votes = question[multiple ? 'anyOf' : 'oneOf']?.map(x => x.replies?.totalItems ?? x._misskey_votes ?? 0);
 
 		return { choices, votes, multiple, expiresAt };
 	}

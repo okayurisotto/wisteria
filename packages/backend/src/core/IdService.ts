@@ -59,7 +59,7 @@ export class IdService {
 	}
 
 	@bindThis
-	public parse(id: string): { date: Date; } {
+	public parse(id: string): { date: Date } {
 		switch (this.method) {
 			case 'aid': return parseAid(id);
 			case 'aidx': return parseAidx(id);
