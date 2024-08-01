@@ -16,7 +16,6 @@ import { AcctEntity } from '@/misc/AcctEntity.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
 import { NodeinfoServerService } from './NodeinfoServerService.js';
-import { OAuth2ProviderService } from './oauth/OAuth2ProviderService.js';
 import type { FindOptionsWhere } from 'typeorm';
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
@@ -31,7 +30,6 @@ export class WellKnownServerService {
 
 		private nodeinfoServerService: NodeinfoServerService,
 		private userEntityService: UserEntityService,
-		private oauth2ProviderService: OAuth2ProviderService,
 	) {}
 
 	private toXRD(elements: { name: string; value?: string; attributes?: Record<string, string> }[]): string {
@@ -145,10 +143,6 @@ export class WellKnownServerService {
 
 		fastify.get('/.well-known/nodeinfo', async (request, reply) => {
 			return { links: this.nodeinfoServerService.getLinks() };
-		});
-
-		fastify.get('/.well-known/oauth-authorization-server', async () => {
-			return this.oauth2ProviderService.generateRFC8414();
 		});
 
 		fastify.get<{ Querystring: { resource: string } }>(WEB_FINGER_PATH, async (request, reply) => {

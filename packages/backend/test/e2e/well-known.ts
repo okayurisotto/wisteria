@@ -89,15 +89,4 @@ describe('.well-known', () => {
 			}],
 		});
 	});
-
-	test('oauth-authorization-server', async () => {
-		const res = await relativeFetch('.well-known/oauth-authorization-server');
-		assert.ok(res.ok);
-		assert.strictEqual(res.headers.get('Access-Control-Allow-Origin'), '*');
-
-		const serverInfo = await res.json() as any;
-		assert.strictEqual(serverInfo.issuer, origin);
-		assert.strictEqual(serverInfo.authorization_endpoint, `${origin}/oauth/authorize`);
-		assert.strictEqual(serverInfo.token_endpoint, `${origin}/oauth/token`);
-	});
 });

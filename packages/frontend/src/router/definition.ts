@@ -258,9 +258,6 @@ const routes: RouteDef[] = [{
 		permission: 'permission',
 	},
 }, {
-	path: '/oauth/authorize',
-	component: page(() => import('@/pages/oauth.vue')),
-}, {
 	path: '/tags/:tag',
 	component: page(() => import('@/pages/tag.vue')),
 }, {

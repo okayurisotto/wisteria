@@ -485,14 +485,6 @@ const activitystreams = {
 			'@id': 'as:liked',
 			'@type': '@id',
 		},
-		'oauthAuthorizationEndpoint': {
-			'@id': 'as:oauthAuthorizationEndpoint',
-			'@type': '@id',
-		},
-		'oauthTokenEndpoint': {
-			'@id': 'as:oauthTokenEndpoint',
-			'@type': '@id',
-		},
 		'provideClientKey': {
 			'@id': 'as:provideClientKey',
 			'@type': '@id',

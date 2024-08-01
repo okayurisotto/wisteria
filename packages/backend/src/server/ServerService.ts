@@ -22,7 +22,6 @@ import { WellKnownServerService } from './WellKnownServerService.js';
 import { FileServerService } from './FileServerService.js';
 import { ClientServerService } from './web/ClientServerService.js';
 import { OpenApiServerService } from './api/openapi/OpenApiServerService.js';
-import { OAuth2ProviderService } from './oauth/OAuth2ProviderService.js';
 import { ActivityPubInboxServerService } from './ActivityPubInboxServerService.js';
 import { EmojiRedirectServerService } from './EmojiRedirectServerService.js';
 import { AvatarRedirectServerService } from './AvatarRedirectServerService.js';
@@ -54,7 +53,6 @@ export class ServerService implements OnApplicationShutdown {
 		private fileServerService: FileServerService,
 		private clientServerService: ClientServerService,
 		private loggerService: LoggerService,
-		private oauth2ProviderService: OAuth2ProviderService,
 		private activityPubInboxServerService: ActivityPubInboxServerService,
 		private emojiRedirectServerService: EmojiRedirectServerService,
 		private avatarRedirectServerService: AvatarRedirectServerService,
@@ -108,8 +106,6 @@ export class ServerService implements OnApplicationShutdown {
 		fastify.register(this.activityPubInboxServerService.createServer);
 		fastify.register(this.nodeinfoServerService.createServer);
 		fastify.register(this.wellKnownServerService.createServer);
-		fastify.register(this.oauth2ProviderService.createServer, { prefix: '/oauth' });
-		fastify.register(this.oauth2ProviderService.createTokenServer, { prefix: '/oauth/token' });
 		fastify.register(this.emojiRedirectServerService.createServer);
 		fastify.register(this.avatarRedirectServerService.createServer);
 		fastify.register(this.identiconServerService.createServer);

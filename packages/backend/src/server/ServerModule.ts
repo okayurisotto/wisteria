@@ -26,7 +26,6 @@ import { OpenApiServerService } from './api/openapi/OpenApiServerService.js';
 import { ClientServerService } from './web/ClientServerService.js';
 import { UrlPreviewService } from './web/UrlPreviewService.js';
 import { ClientLoggerService } from './web/ClientLoggerService.js';
-import { OAuth2ProviderService } from './oauth/OAuth2ProviderService.js';
 
 import { MainChannelService } from './api/stream/channels/main.js';
 import { AdminChannelService } from './api/stream/channels/admin.js';
@@ -98,7 +97,6 @@ import { FileProxyServerService } from './FileProxyServerService.js';
 		ServerStatsChannelService,
 		UserListChannelService,
 		OpenApiServerService,
-		OAuth2ProviderService,
 		ActivityPubInboxServerService,
 		EmojiRedirectServerService,
 		AvatarRedirectServerService,
