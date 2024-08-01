@@ -7,3 +7,4 @@ packages:
  - 'packages/misskey-reversi'
  - 'packages/misskey-bubble-game'
  - 'packages/identicon-generator'
+ - 'packages/http-signature'
