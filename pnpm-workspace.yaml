@@ -9,3 +9,4 @@ packages:
  - 'packages/identicon-generator'
  - 'packages/http-signature'
  - 'packages/parcom'
+ - 'packages/hono-serve-static'

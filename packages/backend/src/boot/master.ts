@@ -109,10 +109,11 @@ export const initialize = async () => {
 	});
 
 	if (envOption.MK_ONLY_SERVER) {
-		await server(app);
+		server(app);
 	} else if (envOption.MK_ONLY_QUEUE) {
 		await jobQueue(app);
 	} else {
-		await Promise.all([server(app), jobQueue(app)]);
+		server(app);
+		await jobQueue(app);
 	}
 };

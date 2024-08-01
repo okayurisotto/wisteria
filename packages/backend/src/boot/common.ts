@@ -11,9 +11,9 @@ import { ServerService } from '@/server/ServerService.js';
 import { envOption } from '@/env.js';
 import type { INestApplicationContext } from '@nestjs/common';
 
-export const server = async (app: INestApplicationContext) => {
+export const server = (app: INestApplicationContext) => {
 	const serverService = app.get(ServerService);
-	await serverService.launch();
+	serverService.launch();
 
 	if (!envOption.isTest) {
 		app.get(ChartManagementService).start();

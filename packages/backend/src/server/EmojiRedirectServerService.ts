@@ -6,10 +6,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
-import { bindThis } from '@/decorators.js';
-import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import type { EmojisRepository, MiEmoji } from '@/models/_.js';
 import { IsNull } from 'typeorm';
+import { Hono } from 'hono';
 
 const parseEmoji = (
 	value: string,
@@ -94,40 +93,29 @@ export class EmojiRedirectServerService {
 		}
 	}
 
-	@bindThis
-	public createServer(
-		fastify: FastifyInstance,
-		options: FastifyPluginOptions,
-		done: (err?: Error) => void,
-	) {
-		fastify.get<{
-			Params: { path: string };
-			Querystring: { static?: unknown; badge?: unknown; fallback?: unknown };
-		}>('/emoji/:path(.*)', async (request, reply) => {
+	public createServer(): Hono {
+		return new Hono().get('/:path', async (c) => {
 			const proxiedUrl = await this.getProxiedUrl(
-				request.params.path,
-				'badge' in request.query ? 'badge' : 'emoji',
-				'static' in request.query,
+				c.req.param('path'),
+				c.req.query('badge') !== undefined ? 'badge' : 'emoji',
+				c.req.query('static') !== undefined,
 			);
 
-			reply.header('Cache-Control', 'public, max-age=86400');
-			reply.header(
+			c.header('Cache-Control', 'public, max-age=86400');
+			c.header(
 				'Content-Security-Policy',
-				"default-src 'none'; style-src 'unsafe-inline'",
+				'default-src \'none\'; style-src \'unsafe-inline\'',
 			);
 
 			if (proxiedUrl !== null) {
-				return await reply.redirect(proxiedUrl.href);
+				return c.redirect(proxiedUrl.href);
 			} else {
-				if ('fallback' in request.query) {
-					return await reply.redirect(this.fallbackUrl.href);
+				if (c.req.query('fallback') !== undefined) {
+					return c.redirect(this.fallbackUrl.href);
 				} else {
-					reply.code(404);
-					return;
+					return c.notFound();
 				}
 			}
 		});
-
-		done();
 	}
 }

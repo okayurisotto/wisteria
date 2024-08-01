@@ -3,16 +3,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import path from 'node:path';
 import { Inject, Injectable } from '@nestjs/common';
-import ms from 'ms';
-import fastifyStatic from '@fastify/static';
-import fastifyHttpProxy from '@fastify/http-proxy';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
 import { MetaService } from '@/core/MetaService.js';
-import { handleRequestRedirectToOmitSearch } from '@/misc/fastify-hook-handlers.js';
-import { bindThis } from '@/decorators.js';
-import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import {
 	FRONTEND_ASSETS_DIR,
 	FRONTEND_DIST_ASSETS_DIR,
@@ -21,7 +16,9 @@ import {
 	TARBALL_DIR,
 	VITE_OUT_DIR,
 } from '@/path.js';
-import { envOption } from '@/env.js';
+import { Hono } from 'hono';
+import { serveStaticDir, serveStaticFile } from 'hono-serve-static';
+import { omitSearch } from './omitSearch.js';
 
 @Injectable()
 export class StaticAssetsServerService {
@@ -107,103 +104,129 @@ export class StaticAssetsServerService {
 		return content;
 	}
 
-	@bindThis
-	public createServer(
-		fastify: FastifyInstance,
-		options: FastifyPluginOptions,
-		done: (err?: Error) => void,
-	) {
-		fastify.addHook('onRequest', handleRequestRedirectToOmitSearch);
+	public createServer(): Hono {
+		const hono = new Hono();
 
-		//#region Fastify Static
+		// #region serveStaticDir
 
-		fastify.register(fastifyStatic, {
-			root: STATIC_ASSETS_DIR,
-			prefix: '/static-assets/',
-			maxAge: ms('7 days'),
-			decorateReply: false,
+		hono.get(
+			'/static-assets/*',
+			omitSearch,
+			async (c, next) => {
+				c.header('Cache-Control', `max-age=${7 * 24 * 60 * 60}`);
+				await next();
+			},
+			serveStaticDir({
+				path: STATIC_ASSETS_DIR,
+				mountpoint: '/static-assets/',
+				index: null,
+			}),
+		);
+
+		hono.get(
+			'/client-assets/*',
+			omitSearch,
+			async (c, next) => {
+				c.header('Cache-Control', `max-age=${7 * 24 * 60 * 60}`);
+				await next();
+			},
+			serveStaticDir({
+				path: FRONTEND_ASSETS_DIR,
+				mountpoint: '/client-assets/',
+				index: null,
+			}),
+		);
+
+		hono.get(
+			'/assets/*',
+			omitSearch,
+			async (c, next) => {
+				c.header('Cache-Control', `max-age=${7 * 24 * 60 * 60}`);
+				await next();
+			},
+			serveStaticDir({
+				path: FRONTEND_DIST_ASSETS_DIR,
+				mountpoint: '/assets/',
+				index: null,
+			}),
+		);
+
+		hono.get(
+			'/tarball/*',
+			omitSearch,
+			async (c, next) => {
+				c.header('Cache-Control', `max-age=${30 * 24 * 60 * 60}, immutable`);
+				await next();
+			},
+			serveStaticDir({
+				path: TARBALL_DIR,
+				mountpoint: '/tarball/',
+				index: null,
+			}),
+		);
+
+		// #endregion
+
+		// #region serveStaticFile
+
+		hono.get(
+			'/favicon.ico',
+			omitSearch,
+			serveStaticFile({ path: path.join(STATIC_ASSETS_DIR, 'favicon.ico') }),
+		);
+
+		hono.get(
+			'/apple-touch-icon.png',
+			omitSearch,
+			serveStaticFile({ path: path.join(STATIC_ASSETS_DIR, 'apple-touch-icon.png') }),
+		);
+
+		hono.get(
+			'/robots.txt',
+			omitSearch,
+			serveStaticFile({ path: path.join(STATIC_ASSETS_DIR, 'robots.txt') }),
+		);
+
+		hono.get(
+			'/sw.js',
+			omitSearch,
+			async (c, next) => {
+				c.header('Cache-Control', `max-age=${10 * 60}`);
+				await next();
+			},
+			serveStaticFile({ path: path.join(SW_ASSETS_DIR, '/sw.js') }),
+		);
+
+		// #endregion
+
+		// #region vite assets
+
+		hono.get(
+			'/vite/*',
+			omitSearch,
+			async (c, next) => {
+				c.header('Cache-Control', `max-age=${30 * 24 * 60 * 60}, immutable`);
+				await next();
+			},
+			serveStaticDir({
+				mountpoint: '/vite/',
+				path: VITE_OUT_DIR,
+				index: null,
+			}),
+		);
+
+		// #endregion
+
+		hono.get('/manifest.json', (c) => {
+			c.header('Cache-Control', 'max-age=300');
+			return c.json(this.manifestHandler());
 		});
 
-		fastify.register(fastifyStatic, {
-			root: FRONTEND_ASSETS_DIR,
-			prefix: '/client-assets/',
-			maxAge: ms('7 days'),
-			decorateReply: false,
+		hono.get('/opensearch.xml', async (c) => {
+			c.header('Content-Type', 'application/opensearchdescription+xml');
+			return c.body(await this.opensearchHandler());
 		});
 
-		fastify.register(fastifyStatic, {
-			root: FRONTEND_DIST_ASSETS_DIR,
-			prefix: '/assets/',
-			maxAge: ms('7 days'),
-			decorateReply: false,
-		});
-
-		fastify.register(fastifyStatic, {
-			root: TARBALL_DIR,
-			prefix: '/tarball/',
-			maxAge: ms('30 days'),
-			immutable: true,
-			decorateReply: false,
-		});
-
-		//#endregion
-
-		//#region reply.sendFile()
-
-		fastify.get('/favicon.ico', async (_, reply) => {
-			return reply.sendFile('/favicon.ico', STATIC_ASSETS_DIR);
-		});
-
-		fastify.get('/apple-touch-icon.png', async (_, reply) => {
-			return reply.sendFile('/apple-touch-icon.png', STATIC_ASSETS_DIR);
-		});
-
-		fastify.get('/sw.js', async (_, reply) => {
-			return await reply.sendFile('/sw.js', SW_ASSETS_DIR, {
-				maxAge: ms('10 minutes'),
-			});
-		});
-
-		fastify.get('/robots.txt', async (_, reply) => {
-			return await reply.sendFile('/robots.txt', STATIC_ASSETS_DIR);
-		});
-
-		//#endregion
-
-		//#region vite assets
-
-		if (this.config.clientManifestExists) {
-			fastify.register((fastify, options, done) => {
-				fastify.register(fastifyStatic, {
-					root: VITE_OUT_DIR,
-					prefix: '/vite/',
-					maxAge: ms('30 days'),
-					immutable: true,
-					decorateReply: false,
-				});
-				fastify.addHook('onRequest', handleRequestRedirectToOmitSearch);
-				done();
-			});
-		} else {
-			fastify.register(fastifyHttpProxy, {
-				upstream: 'http://localhost:' + envOption.VITE_PORT,
-				prefix: '/vite',
-				rewritePrefix: '/vite',
-			});
-		}
-
-		//#endregion
-
-		fastify.get('/manifest.json', async (_, reply) => {
-			reply.header('Cache-Control', 'max-age=300');
-			return await this.manifestHandler();
-		});
-
-		fastify.get('/opensearch.xml', async (_, reply) => {
-			reply.header('Content-Type', 'application/opensearchdescription+xml');
-			return await this.opensearchHandler();
-		});
-
-		done();
+		return hono;
 	}
 }

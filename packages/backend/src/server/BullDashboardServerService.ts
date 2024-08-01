@@ -4,10 +4,12 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
+import { Hono, type MiddlewareHandler } from 'hono';
+import { getCookie } from 'hono/cookie';
+import { serveStatic } from '@hono/node-server/serve-static';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
-import { FastifyAdapter } from '@bull-board/fastify';
-import fastifyCookie from '@fastify/cookie';
+import { HonoAdapter } from '@bull-board/hono';
 import { DI } from '@/di-symbols.js';
 import type {
 	DbQueue,
@@ -22,7 +24,6 @@ import type {
 import type { UsersRepository } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
-import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
 @Injectable()
 export class BullDashboardServerService {
@@ -51,43 +52,26 @@ export class BullDashboardServerService {
 	) {}
 
 	@bindThis
-	public createServer(
-		fastify: FastifyInstance,
-		options: FastifyPluginOptions,
-		done: (err?: Error) => void,
-	) {
-		fastify.register(fastifyCookie, {});
-
+	public createServer(): Hono {
 		const bullBoardPath = '/queue';
 
-		// Authenticate
-		fastify.addHook('onRequest', async (request, reply) => {
-			// `request.url`は`/%71ueue`などでリクエストされたときに困るため使わない
-			const url = request.routeOptions.url;
+		const hono = new Hono();
 
-			if (url === bullBoardPath || url.startsWith(bullBoardPath + '/')) {
-				const token = request.cookies['token'];
-				if (token === undefined) {
-					reply.code(401).send('Login required');
-					return;
-				}
+		const authenticate: MiddlewareHandler = async (c, next) => {
+			const token = getCookie(c, 'token');
+			if (token === undefined) return c.text('Login required', 401);
 
-				const user = await this.usersRepository.findOneBy({ token });
-				if (user == null) {
-					reply.code(403).send('No such user');
-					return;
-				}
+			const user = await this.usersRepository.findOneBy({ token });
+			if (user === null) return c.text('No such user', 403);
 
-				const isAdministrator =
-					await this.roleUserService.isAdministrator(user);
-				if (!isAdministrator) {
-					reply.code(403).send('Access denied');
-					return;
-				}
-			}
-		});
+			const isAdministrator = await this.roleUserService.isAdministrator(user);
+			if (!isAdministrator) return c.text('Access denied', 403);
 
-		const serverAdapter = new FastifyAdapter();
+			await next();
+			return;
+		};
+
+		const serverAdapter = new HonoAdapter(serveStatic);
 
 		createBullBoard({
 			queues: [
@@ -104,10 +88,7 @@ export class BullDashboardServerService {
 		});
 
 		serverAdapter.setBasePath(bullBoardPath);
-		(fastify.register as any)(serverAdapter.registerPlugin(), {
-			prefix: bullBoardPath,
-		});
 
-		done();
+		return hono.use(authenticate).route('/', serverAdapter.registerPlugin());
 	}
 }

@@ -1,4 +1,4 @@
-import type { FastifyReply } from 'fastify';
+import type { Context } from 'hono';
 
 export class LiteResponse<
 	T extends NonNullable<unknown> = NonNullable<unknown>,
@@ -25,22 +25,17 @@ export class LiteResponse<
 		private readonly empty: boolean,
 	) {}
 
-	public reply(reply: FastifyReply): void {
-		void reply.code(this.code);
+	public reply(c: Context): Response {
+		c.status(this.code); // TODO
 
 		for (const [key, value] of this.headers) {
-			void reply.header(key, value);
+			c.header(key, value);
 		}
 
 		if (this.empty) {
-			void reply.send();
+			return c.body(null);
 		} else {
-			if (typeof this.data === 'string') {
-				// 文字列を返す場合は、`JSON.stringify()`を通さなければFastifyにJSONと認識されない
-				void reply.send(JSON.stringify(this.data));
-			} else {
-				void reply.send(this.data);
-			}
+			return c.json(this.data);
 		}
 	}
 }

@@ -10,8 +10,8 @@ import { IdService } from '@/core/IdService.js';
 import type { MiLocalUser } from '@/models/User.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { SigninEntityService } from '@/core/entities/SigninEntityService.js';
-import { bindThis } from '@/decorators.js';
-import type { FastifyRequest, FastifyReply } from 'fastify';
+import type { Context } from 'hono';
+import { getConnInfo } from '@hono/node-server/conninfo';
 
 @Injectable()
 export class SigninService {
@@ -22,29 +22,25 @@ export class SigninService {
 		private signinEntityService: SigninEntityService,
 		private idService: IdService,
 		private globalEventService: GlobalEventService,
-	) {
-	}
+	) {}
 
-	@bindThis
-	public signin(request: FastifyRequest, reply: FastifyReply, user: MiLocalUser) {
-		setImmediate(async () => {
-			// Append signin history
-			const record = await this.signinsRepository.insert({
-				id: this.idService.gen(),
-				userId: user.id,
-				ip: request.ip,
-				headers: request.headers as any,
-				success: true,
-			}).then(x => this.signinsRepository.findOneByOrFail(x.identifiers[0]));
+	public signin(c: Context, user: MiLocalUser) {
+		setImmediate(() => {
+			void (async () => {
+				// Append signin history
+				const record = await this.signinsRepository.insert({
+					id: this.idService.gen(),
+					userId: user.id,
+					ip: getConnInfo(c).remote.address,
+					headers: c.req.header(),
+					success: true,
+				}).then(x => this.signinsRepository.findOneByOrFail(x.identifiers[0]));
 
-			// Publish signin event
-			this.globalEventService.publishMainStream(user.id, 'signin', await this.signinEntityService.pack(record));
+				// Publish signin event
+				this.globalEventService.publishMainStream(user.id, 'signin', await this.signinEntityService.pack(record));
+			})();
 		});
 
-		reply.code(200);
-		return {
-			id: user.id,
-			i: user.token,
-		};
+		return c.json({ id: user.id, i: user.token }, 200);
 	}
 }

@@ -48,6 +48,7 @@ COPY --link ./packages/backend/ormconfig.js             ./packages/backend/ormco
 COPY --link ./packages/backend/package.json             ./packages/backend/package.json
 COPY --link ./packages/frontend/assets                  ./packages/frontend/assets
 COPY --link ./packages/frontend/package.json            ./packages/frontend/package.json
+COPY --link ./packages/hono-serve-static/package.json   ./packages/hono-serve-static/package.json
 COPY --link ./packages/http-signature/package.json      ./packages/http-signature/package.json
 COPY --link ./packages/identicon-generator/package.json ./packages/identicon-generator/package.json
 COPY --link ./packages/misskey-bubble-game/package.json ./packages/misskey-bubble-game/package.json
@@ -62,6 +63,7 @@ RUN pnpm install --prod --offline --frozen-lockfile
 COPY --link --from=builder /misskey/built                              ./built
 COPY --link --from=builder /misskey/fluent-emojis                      ./fluent-emojis
 COPY --link --from=builder /misskey/packages/backend/built             ./packages/backend/built
+COPY --link --from=builder /misskey/packages/hono-serve-static/built   ./packages/hono-serve-static/built
 COPY --link --from=builder /misskey/packages/http-signature/built      ./packages/http-signature/built
 COPY --link --from=builder /misskey/packages/identicon-generator/built ./packages/identicon-generator/built
 COPY --link --from=builder /misskey/packages/misskey-bubble-game/built ./packages/misskey-bubble-game/built

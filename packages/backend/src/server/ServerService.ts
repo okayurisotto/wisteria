@@ -3,12 +3,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { Server } from 'node:http';
 import { Inject, Injectable, type OnApplicationShutdown } from '@nestjs/common';
-import Fastify, { type FastifyInstance } from 'fastify';
-import fastifyStatic from '@fastify/static';
-import fastifyRawBody from 'fastify-raw-body';
+import { Hono } from 'hono';
+import { serve, type ServerType } from '@hono/node-server';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
 import type Logger from '@/logger.js';
@@ -33,12 +31,10 @@ import { EmojiServerService } from './EmojiServerService.js';
 import { BullDashboardServerService } from './BullDashboardServerService.js';
 import { FileProxyServerService } from './FileProxyServerService.js';
 
-const _dirname = fileURLToPath(new URL('.', import.meta.url));
-
 @Injectable()
 export class ServerService implements OnApplicationShutdown {
 	private logger: Logger;
-	#fastify: FastifyInstance;
+	private server: ServerType | null = null;
 
 	constructor(
 		@Inject(DI.config)
@@ -68,101 +64,57 @@ export class ServerService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	public async launch(): Promise<void> {
-		const fastify = Fastify({
-			trustProxy: true,
-			logger: false,
-		});
-		this.#fastify = fastify;
+	public launch(): void {
+		const hono = new Hono();
 
 		// HSTS
-		// 6months (15552000sec)
 		if (this.config.url.startsWith('https') && !this.config.disableHsts) {
-			fastify.addHook('onRequest', (request, reply, done) => {
-				reply.header('strict-transport-security', 'max-age=15552000; preload');
-				done();
+			hono.use(async (c, next) => {
+				// 6months (15552000sec)
+				c.header('strict-transport-security', 'max-age=15552000; preload');
+				await next();
 			});
 		}
 
-		// Register raw-body parser for ActivityPub HTTP signature validation.
-		await fastify.register(fastifyRawBody, {
-			global: false,
-			encoding: null,
-			runFirst: true,
+		hono.route('/.well-known', this.wellKnownServerService.createServer());
+		hono.route('/api', this.apiServerService.createServer());
+		hono.route('/avatar', this.avatarRedirectServerService.createServer());
+		hono.route('/emoji', this.emojiRedirectServerService.createServer());
+		hono.route('/files', this.fileServerService.createServer());
+		hono.route('/identicon', this.identiconServerService.createServer());
+		hono.route('/nodeinfo', this.nodeinfoServerService.createServer());
+		hono.route('/proxy', this.fileProxyServerService.createServer());
+		hono.route('/queue', this.bullDashboardServerService.createServer());
+		hono.route('/verify-email', this.emailVerificationServerService.createServer());
+
+		hono.route('/', this.openApiServerService.createServer());
+		hono.route('/', this.activityPubInboxServerService.createServer());
+		hono.route('/', this.activityPubServerService.createServer());
+		hono.route('/', this.staticAssetsServerService.createServer());
+		hono.route('/', this.userFeedServerService.createServer());
+		hono.route('/', this.emojiServerService.createServer());
+		hono.route('/', this.clientServerService.createServer());
+
+		const server = serve({
+			fetch: hono.fetch,
+			port: this.config.port,
 		});
+		this.server = server;
 
-		// Register non-serving static server so that the child services can use reply.sendFile.
-		// `root` here is just a placeholder and each call must use its own `rootPath`.
-		fastify.register(fastifyStatic, {
-			root: _dirname,
-			serve: false,
-		});
+		server.on('listening', () => {
+			this.logLaunch();
 
-		fastify.register(this.apiServerService.createServer, { prefix: '/api' });
-		fastify.register(this.openApiServerService.createServer);
-		fastify.register(this.fileServerService.createServer);
-		fastify.register(this.fileProxyServerService.createServer);
-		fastify.register(this.activityPubServerService.createServer);
-		fastify.register(this.activityPubInboxServerService.createServer);
-		fastify.register(this.nodeinfoServerService.createServer);
-		fastify.register(this.wellKnownServerService.createServer);
-		fastify.register(this.emojiRedirectServerService.createServer);
-		fastify.register(this.avatarRedirectServerService.createServer);
-		fastify.register(this.identiconServerService.createServer);
-		fastify.register(this.emailVerificationServerService.createServer);
-		fastify.register(this.staticAssetsServerService.createServer);
-		fastify.register(this.userFeedServerService.createServer);
-		fastify.register(this.emojiServerService.createServer);
-		fastify.register(this.bullDashboardServerService.createServer);
-		fastify.register(this.clientServerService.createServer);
-
-		this.streamingApiServerService.attach(fastify.server);
-
-		fastify.server.on('error', (err) => {
-			switch ((err as any).code) {
-				case 'EACCES':
-					this.logger.error(`You do not have permission to listen on port ${this.config.port}.`);
-					break;
-				case 'EADDRINUSE':
-					this.logger.error(`Port ${this.config.port} is already in use by another process.`);
-					break;
-				default:
-					this.logger.error(err);
-					break;
+			if (this.server instanceof Server) {
+				this.streamingApiServerService.attach(this.server);
+			} else {
+				this.logger.error('Couldn\'t attach WebSocket server.');
 			}
-
-			process.exit(1);
 		});
-
-		if (this.config.socket) {
-			if (fs.existsSync(this.config.socket)) {
-				fs.unlinkSync(this.config.socket);
-			}
-			fastify.listen({ path: this.config.socket },
-				() => {
-					if (this.config.chmodSocket) {
-						fs.chmodSync(this.config.socket!, this.config.chmodSocket);
-					}
-					this.logLaunch();
-				},
-			);
-		} else {
-			fastify.listen(
-				{ port: this.config.port, host: '0.0.0.0' },
-				() => {
-					this.logLaunch();
-				},
-			);
-		}
-
-		await fastify.ready();
 	}
 
 	private logLaunch(): void {
 		this.logger.succ(
-			this.config.socket
-				? `Now listening on socket ${this.config.socket} on ${this.config.url}`
-				: `Now listening on port ${this.config.port.toString()} on ${this.config.url}`,
+			`Now listening on port ${this.config.port.toString()} on ${this.config.url}`,
 			null,
 			true,
 		);
@@ -171,11 +123,11 @@ export class ServerService implements OnApplicationShutdown {
 	@bindThis
 	public async dispose(): Promise<void> {
 		await this.streamingApiServerService.detach();
-		await this.#fastify.close();
+		this.server?.close();
 	}
 
 	@bindThis
-	async onApplicationShutdown(signal: string): Promise<void> {
+	async onApplicationShutdown(): Promise<void> {
 		await this.dispose();
 	}
 }

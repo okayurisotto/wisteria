@@ -3,13 +3,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import fs from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { Inject, Injectable } from '@nestjs/common';
-import pug from 'pug';
+import pug, { type compileTemplate } from 'pug';
 import { In, IsNull } from 'typeorm';
-import fastifyView from '@fastify/view';
-import fastifyCookie from '@fastify/cookie';
-import vary from 'vary';
 import type { Config } from '@/config.js';
 import { getNoteSummary } from '@/misc/get-note-summary.js';
 import { DI } from '@/di-symbols.js';
@@ -27,8 +25,18 @@ import { FlashEntityService } from '@/core/entities/FlashEntityService.js';
 import { ReversiGameEntityService } from '@/core/entities/ReversiGameEntityService.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
 import { ClientLoggerService } from './ClientLoggerService.js';
-import type { FastifyInstance, FastifyPluginOptions, FastifyReply } from 'fastify';
 import { PUG_DIR } from '@/path.js';
+import { Hono, type MiddlewareHandler } from 'hono';
+import path from 'node:path';
+
+declare module 'hono' {
+	interface ContextRenderer {
+		(
+			name: 'base' | 'bios' | 'channel' | 'cli' | 'clip' | 'error' | 'flash' | 'flush' | 'gallery-post' | 'note' | 'page' | 'reversi-game' | 'user',
+			locals: Record<string, unknown>
+		): Response | Promise<Response>;
+	}
+}
 
 @Injectable()
 export class ClientServerService {
@@ -90,46 +98,71 @@ export class ClientServerService {
 		};
 	}
 
-	@bindThis
-	public createServer(fastify: FastifyInstance, options: FastifyPluginOptions, done: (err?: Error) => void) {
-		fastify.register(fastifyCookie, {});
+	public createServer(): Hono {
+		const hono = new Hono();
 
-		fastify.register(fastifyView, {
-			root: PUG_DIR,
-			engine: {
-				pug: pug,
-			},
-			defaultContext: {
+		// クリックジャッキング防止のため
+		const noIframe: MiddlewareHandler = async (c, next) => {
+			c.header('X-Frame-Options', 'DENY');
+			await next();
+		};
+
+		const usePug: MiddlewareHandler = async (c, next) => {
+			const templates = new Map<string, compileTemplate>();
+
+			c.setRenderer(async (name, locals) => {
+				c.header('Cache-Control', 'public, max-age=30');
+
+				const template = await (async () => {
+					const cached = templates.get(name);
+					if (cached !== undefined) return cached;
+
+					const filepath = path.join(PUG_DIR, `${name}.pug`);
+					const content = await fs.readFile(filepath, { encoding: 'utf-8' });
+					const template = pug.compile(content, { basedir: PUG_DIR, filename: filepath });
+
+					templates.set(name, template);
+
+					return template;
+				})();
+
+				return c.html(template(locals));
+			});
+
+			await next();
+		};
+
+		const renderBase: MiddlewareHandler = async (c) => {
+			const meta = await this.metaService.fetch();
+			const locals = {
+				...this.generateCommonPugData(meta),
 				version: this.config.version,
 				config: this.config,
-			},
-		});
-
-		fastify.addHook('onRequest', (request, reply, done) => {
-			// クリックジャッキング防止のためiFrameの中に入れられないようにする
-			reply.header('X-Frame-Options', 'DENY');
-			done();
-		});
-
-		const renderBase = async (reply: FastifyReply) => {
-			const meta = await this.metaService.fetch();
-			reply.header('Cache-Control', 'public, max-age=30');
-			return await reply.view('base', {
 				img: meta.bannerUrl,
 				url: this.config.url,
 				title: meta.name ?? 'Wisteria',
 				desc: meta.description,
-				...this.generateCommonPugData(meta),
-			});
+			};
+
+			return c.render('base', locals);
 		};
 
 		// URL preview endpoint
-		fastify.get<{ Querystring: { url: string; lang: string } }>('/url', (request, reply) => this.urlPreviewService.handle(request, reply));
+		hono.get('/url', async (c) => {
+			return await this.urlPreviewService.handle(c);
+		});
 
-		//#region SSR (for crawlers)
+		// #region SSR (for crawlers)
+
 		// User
-		fastify.get<{ Params: { user: string; sub?: string } }>('/@:user/:sub?', async (request, reply) => {
-			const acct = AcctEntity.parse(request.params.user, this.config.host);
+		hono.get('/:user/:sub?', noIframe, usePug, async (c, next) => {
+			const acctString = c.req.param('user');
+			if (!acctString.startsWith('@')) {
+				await next();
+				return;
+			}
+
+			const acct = AcctEntity.parse(acctString, this.config.host);
 
 			const user = acct !== null
 				? await this.usersRepository.findOneByOrFail({
@@ -139,284 +172,334 @@ export class ClientServerService {
 				})
 				: null;
 
-			vary(reply.raw, 'Accept');
-
-			if (user != null) {
-				const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
-				const meta = await this.metaService.fetch();
-				const me = profile.fields
-					? profile.fields
-						.filter(filed => filed.value != null && filed.value.match(/^https?:/))
-						.map(field => field.value)
-					: [];
-
-				reply.header('Cache-Control', 'public, max-age=15');
-				if (profile.preventAiLearning) {
-					reply.header('X-Robots-Tag', 'noimageai');
-					reply.header('X-Robots-Tag', 'noai');
-				}
-				return await reply.view('user', {
-					user, profile, me,
-					avatarUrl: user.avatarUrl ?? this.userEntityService.getIdenticonUrl(user),
-					sub: request.params.sub,
-					...this.generateCommonPugData(meta),
-				});
-			} else {
-				// リモートユーザーなので
-				// モデレータがAPI経由で参照可能にするために404にはしない
-				return await renderBase(reply);
-			}
-		});
-
-		fastify.get<{ Params: { user: string } }>('/users/:user', async (request, reply) => {
-			const user = await this.usersRepository.findOneBy({
-				id: request.params.user,
-				host: IsNull(),
-				isSuspended: false,
-			});
-
-			if (user == null) {
-				reply.code(404);
+			if (user === null) {
+				await next();
 				return;
 			}
 
-			vary(reply.raw, 'Accept');
+			c.header('Cache-Control', 'public, max-age=15');
 
-			reply.redirect(`/@${user.username}${user.host == null ? '' : '@' + user.host}`);
+			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
+			if (profile.preventAiLearning) {
+				c.header('X-Robots-Tag', 'noimageai');
+				c.header('X-Robots-Tag', 'noai');
+			}
+
+			const meta = await this.metaService.fetch();
+			const me = profile.fields
+				.filter(filed => URL.canParse(filed.value))
+				.map(field => field.value);
+			return await c.render('user', {
+				...this.generateCommonPugData(meta),
+				version: this.config.version,
+				config: this.config,
+				user,
+				profile,
+				me,
+				avatarUrl: user.avatarUrl ?? this.userEntityService.getIdenticonUrl(user),
+				sub: c.req.param('sub'),
+			});
+		});
+
+		// User by ID
+		hono.get('/users/:user', async (c) => {
+			const user = await this.usersRepository.findOneBy({
+				id: c.req.param('user'),
+				host: IsNull(),
+				isSuspended: false,
+			});
+			if (user === null) return c.notFound();
+
+			const acct = AcctEntity.from(user.username, user.host, this.config.host);
+			return c.redirect(`/@${acct.toShortString()}`);
 		});
 
 		// Note
-		fastify.get<{ Params: { note: string } }>('/notes/:note', async (request, reply) => {
-			vary(reply.raw, 'Accept');
-
+		hono.get('/notes/:note', noIframe, usePug, async (c, next) => {
 			const note = await this.notesRepository.findOneBy({
-				id: request.params.note,
+				id: c.req.param('note'),
 				visibility: In(['public', 'home']),
 			});
 
-			if (note) {
-				const _note = await this.noteEntityService.pack(note);
-				const profile = await this.userProfilesRepository.findOneByOrFail({ userId: note.userId });
-				const meta = await this.metaService.fetch();
-				reply.header('Cache-Control', 'public, max-age=15');
-				if (profile.preventAiLearning) {
-					reply.header('X-Robots-Tag', 'noimageai');
-					reply.header('X-Robots-Tag', 'noai');
-				}
-				return await reply.view('note', {
-					note: _note,
-					profile,
-					avatarUrl: _note.user.avatarUrl,
-					// TODO: Let locale changeable by instance setting
-					summary: getNoteSummary(_note),
-					...this.generateCommonPugData(meta),
-				});
-			} else {
-				return await renderBase(reply);
+			if (note === null) {
+				await next();
+				return;
 			}
+
+			c.header('Cache-Control', 'public, max-age=15');
+
+			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: note.userId });
+			if (profile.preventAiLearning) {
+				c.header('X-Robots-Tag', 'noimageai');
+				c.header('X-Robots-Tag', 'noai');
+			}
+
+			const packedNote = await this.noteEntityService.pack(note);
+			const meta = await this.metaService.fetch();
+			return await c.render('note', {
+				...this.generateCommonPugData(meta),
+				version: this.config.version,
+				config: this.config,
+				note: packedNote,
+				profile,
+				avatarUrl: packedNote.user.avatarUrl,
+				summary: getNoteSummary(packedNote),
+			});
 		});
 
 		// Page
-		fastify.get<{ Params: { user: string; page: string } }>('/@:user/pages/:page', async (request, reply) => {
-			const acct = AcctEntity.parse(request.params.user, this.config.host);
-			if (acct === null) return;
+		hono.get('/:user{^@\\S+$}/pages/:page', noIframe, usePug, async (c, next) => {
+			const acct = AcctEntity.parse(c.req.param('user'), this.config.host);
+			if (acct === null) {
+				await next();
+				return;
+			}
 
 			const user = await this.usersRepository.findOneBy({
 				usernameLower: acct.username.toLowerCase(),
 				host: acct.host ?? IsNull(),
 			});
 
-			if (user === null) return;
+			if (user === null) {
+				await next();
+				return;
+			}
 
 			const page = await this.pagesRepository.findOneBy({
-				name: request.params.page,
+				name: c.req.param('page'),
 				userId: user.id,
 			});
-
-			if (page) {
-				const _page = await this.pageEntityService.pack(page);
-				const profile = await this.userProfilesRepository.findOneByOrFail({ userId: page.userId });
-				const meta = await this.metaService.fetch();
-				if (['public'].includes(page.visibility)) {
-					reply.header('Cache-Control', 'public, max-age=15');
-				} else {
-					reply.header('Cache-Control', 'private, max-age=0, must-revalidate');
-				}
-				if (profile.preventAiLearning) {
-					reply.header('X-Robots-Tag', 'noimageai');
-					reply.header('X-Robots-Tag', 'noai');
-				}
-				return await reply.view('page', {
-					page: _page,
-					profile,
-					avatarUrl: _page.user.avatarUrl,
-					...this.generateCommonPugData(meta),
-				});
-			} else {
-				return await renderBase(reply);
+			if (page === null) {
+				await next();
+				return;
 			}
+
+			if (['public'].includes(page.visibility)) {
+				c.header('Cache-Control', 'public, max-age=15');
+			} else {
+				c.header('Cache-Control', 'private, max-age=0, must-revalidate');
+			}
+
+			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: page.userId });
+			if (profile.preventAiLearning) {
+				c.header('X-Robots-Tag', 'noimageai');
+				c.header('X-Robots-Tag', 'noai');
+			}
+
+			const packedPage = await this.pageEntityService.pack(page);
+			const meta = await this.metaService.fetch();
+			return await c.render('page', {
+				...this.generateCommonPugData(meta),
+				version: this.config.version,
+				config: this.config,
+				page: packedPage,
+				profile,
+				avatarUrl: packedPage.user.avatarUrl,
+			});
 		});
 
 		// Flash
-		fastify.get<{ Params: { id: string } }>('/play/:id', async (request, reply) => {
+		hono.get('/play/:id', noIframe, usePug, async (c, next) => {
 			const flash = await this.flashsRepository.findOneBy({
-				id: request.params.id,
+				id: c.req.param('id'),
 			});
 
-			if (flash) {
-				const _flash = await this.flashEntityService.pack(flash);
-				const profile = await this.userProfilesRepository.findOneByOrFail({ userId: flash.userId });
-				const meta = await this.metaService.fetch();
-				reply.header('Cache-Control', 'public, max-age=15');
-				if (profile.preventAiLearning) {
-					reply.header('X-Robots-Tag', 'noimageai');
-					reply.header('X-Robots-Tag', 'noai');
-				}
-				return await reply.view('flash', {
-					flash: _flash,
-					profile,
-					avatarUrl: _flash.user.avatarUrl,
-					...this.generateCommonPugData(meta),
-				});
-			} else {
-				return await renderBase(reply);
+			if (flash === null) {
+				await next();
+				return;
 			}
+
+			c.header('Cache-Control', 'public, max-age=15');
+
+			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: flash.userId });
+			if (profile.preventAiLearning) {
+				c.header('X-Robots-Tag', 'noimageai');
+				c.header('X-Robots-Tag', 'noai');
+			}
+
+			const packedFlash = await this.flashEntityService.pack(flash);
+			const meta = await this.metaService.fetch();
+			return await c.render('flash', {
+				...this.generateCommonPugData(meta),
+				version: this.config.version,
+				config: this.config,
+				flash: packedFlash,
+				profile,
+				avatarUrl: packedFlash.user.avatarUrl,
+			});
 		});
 
 		// Clip
-		fastify.get<{ Params: { clip: string } }>('/clips/:clip', async (request, reply) => {
+		hono.get('/clips/:clip', noIframe, usePug, async (c, next) => {
 			const clip = await this.clipsRepository.findOneBy({
-				id: request.params.clip,
+				id: c.req.param('clip'),
+				isPublic: true,
 			});
 
-			if (clip && clip.isPublic) {
-				const _clip = await this.clipEntityService.pack(clip);
-				const profile = await this.userProfilesRepository.findOneByOrFail({ userId: clip.userId });
-				const meta = await this.metaService.fetch();
-				reply.header('Cache-Control', 'public, max-age=15');
-				if (profile.preventAiLearning) {
-					reply.header('X-Robots-Tag', 'noimageai');
-					reply.header('X-Robots-Tag', 'noai');
-				}
-				return await reply.view('clip', {
-					clip: _clip,
-					profile,
-					avatarUrl: _clip.user.avatarUrl,
-					...this.generateCommonPugData(meta),
-				});
-			} else {
-				return await renderBase(reply);
+			if (clip === null) {
+				await next();
+				return;
 			}
+
+			c.header('Cache-Control', 'public, max-age=15');
+
+			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: clip.userId });
+			if (profile.preventAiLearning) {
+				c.header('X-Robots-Tag', 'noimageai');
+				c.header('X-Robots-Tag', 'noai');
+			}
+
+			const packedClip = await this.clipEntityService.pack(clip);
+			const meta = await this.metaService.fetch();
+			return await c.render('clip', {
+				...this.generateCommonPugData(meta),
+				version: this.config.version,
+				config: this.config,
+				clip: packedClip,
+				profile,
+				avatarUrl: packedClip.user.avatarUrl,
+			});
 		});
 
 		// Gallery post
-		fastify.get<{ Params: { post: string } }>('/gallery/:post', async (request, reply) => {
-			const post = await this.galleryPostsRepository.findOneBy({ id: request.params.post });
+		hono.get('/gallery/:post', noIframe, usePug, async (c, next) => {
+			const post = await this.galleryPostsRepository.findOneBy({
+				id: c.req.param('post'),
+			});
 
-			if (post) {
-				const _post = await this.galleryPostEntityService.pack(post);
-				const profile = await this.userProfilesRepository.findOneByOrFail({ userId: post.userId });
-				const meta = await this.metaService.fetch();
-				reply.header('Cache-Control', 'public, max-age=15');
-				if (profile.preventAiLearning) {
-					reply.header('X-Robots-Tag', 'noimageai');
-					reply.header('X-Robots-Tag', 'noai');
-				}
-				return await reply.view('gallery-post', {
-					post: _post,
-					profile,
-					avatarUrl: _post.user.avatarUrl,
-					...this.generateCommonPugData(meta),
-				});
-			} else {
-				return await renderBase(reply);
+			if (post === null) {
+				await next();
+				return;
 			}
+
+			c.header('Cache-Control', 'public, max-age=15');
+
+			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: post.userId });
+			if (profile.preventAiLearning) {
+				c.header('X-Robots-Tag', 'noimageai');
+				c.header('X-Robots-Tag', 'noai');
+			}
+
+			const packedPost = await this.galleryPostEntityService.pack(post);
+			const meta = await this.metaService.fetch();
+			return await c.render('gallery-post', {
+				...this.generateCommonPugData(meta),
+				version: this.config.version,
+				config: this.config,
+				post: packedPost,
+				profile,
+				avatarUrl: packedPost.user.avatarUrl,
+			});
 		});
 
 		// Channel
-		fastify.get<{ Params: { channel: string } }>('/channels/:channel', async (request, reply) => {
+		hono.get('/channels/:channel', noIframe, usePug, async (c, next) => {
 			const channel = await this.channelsRepository.findOneBy({
-				id: request.params.channel,
+				id: c.req.param('channel'),
 			});
 
-			if (channel) {
-				const _channel = await this.channelEntityService.pack(channel);
-				const meta = await this.metaService.fetch();
-				reply.header('Cache-Control', 'public, max-age=15');
-				return await reply.view('channel', {
-					channel: _channel,
-					...this.generateCommonPugData(meta),
-				});
-			} else {
-				return await renderBase(reply);
+			if (channel === null) {
+				await next();
+				return;
 			}
+
+			c.header('Cache-Control', 'public, max-age=15');
+
+			const packedChannel = await this.channelEntityService.pack(channel);
+			const meta = await this.metaService.fetch();
+			return await c.render('channel', {
+				...this.generateCommonPugData(meta),
+				version: this.config.version,
+				config: this.config,
+				channel: packedChannel,
+			});
 		});
 
 		// Reversi game
-		fastify.get<{ Params: { game: string } }>('/reversi/g/:game', async (request, reply) => {
+		hono.get('/reversi/g/:game', noIframe, usePug, async (c, next) => {
 			const game = await this.reversiGamesRepository.findOneBy({
-				id: request.params.game,
+				id: c.req.param('game'),
 			});
 
-			if (game) {
-				const _game = await this.reversiGameEntityService.packDetail(game);
-				const meta = await this.metaService.fetch();
-				reply.header('Cache-Control', 'public, max-age=3600');
-				return await reply.view('reversi-game', {
-					game: _game,
-					...this.generateCommonPugData(meta),
-				});
-			} else {
-				return await renderBase(reply);
+			if (game === null) {
+				await next();
+				return;
 			}
-		});
-		//#endregion
 
-		fastify.get('/bios', async (request, reply) => {
-			return await reply.view('bios', {
+			c.header('Cache-Control', 'public, max-age=3600');
+
+			const packedGame = await this.reversiGameEntityService.packDetail(game);
+			const meta = await this.metaService.fetch();
+			return await c.render('reversi-game', {
+				...this.generateCommonPugData(meta),
 				version: this.config.version,
+				config: this.config,
+				game: packedGame,
 			});
 		});
 
-		fastify.get('/cli', async (request, reply) => {
-			return await reply.view('cli', {
+		// #endregion
+
+		// BIOS
+		hono.get('/bios', noIframe, usePug, async (c) => {
+			return c.render('bios', {
 				version: this.config.version,
+				config: this.config,
 			});
 		});
 
-		fastify.get('/flush', async (request, reply) => {
-			return await reply.view('flush');
+		// CLI
+		hono.get('/cli', noIframe, usePug, async (c) => {
+			return c.render('cli', {
+				version: this.config.version,
+				config: this.config,
+			});
 		});
 
-		// streamingに非WebSocketリクエストが来た場合にbase htmlをキャシュ付きで返すと、Proxy等でそのパスがキャッシュされておかしくなる
-		fastify.get('/streaming', async (request, reply) => {
-			reply.code(503);
-			reply.header('Cache-Control', 'private, max-age=0');
+		// Flush
+		hono.get('/flush', noIframe, usePug, async (c) => {
+			return c.render('flush', {
+				version: this.config.version,
+				config: this.config,
+			});
+		});
+
+		// `/streaming`に非WebSocketリクエストが来た場合にbase htmlをキャシュ付きで返すと、Proxy等でそのパスがキャッシュされておかしくなる
+		hono.get('/streaming', (c) => {
+			return c.body(null, 503, {
+				'Cache-Control': 'private, max-age=0',
+			});
 		});
 
 		// Render base html for all requests
-		fastify.get('*', async (request, reply) => {
-			return await renderBase(reply);
-		});
+		hono.get('*', noIframe, usePug, renderBase);
 
-		fastify.setErrorHandler(async (error, request, reply) => {
+		hono.onError(async (error, c) => {
 			const errId = randomUUID();
-			this.clientLoggerService.logger.error(`Internal error occurred in ${request.routeOptions.url}: ${error.message}`, {
-				path: request.routeOptions.url,
-				params: request.params,
-				query: request.query,
+
+			this.clientLoggerService.logger.error(`Internal error occurred in ${c.req.routePath}: ${error.message}`, {
+				path: c.req.routePath,
+				params: c.req.param(),
+				query: c.req.queries(),
 				code: error.name,
 				stack: error.stack,
 				id: errId,
 			});
-			reply.code(500);
-			reply.header('Cache-Control', 'max-age=10, must-revalidate');
-			return await reply.view('error', {
-				code: error.code,
+
+			const meta = await this.metaService.fetch();
+			const locals = {
+				version: this.config.version,
+				config: this.config,
+				code: 'UNKNOWN',
 				id: errId,
-			});
+				...this.generateCommonPugData(meta),
+			};
+
+			c.status(500);
+			c.header('Cache-Control', 'max-age=10, must-revalidate');
+			return await c.render('error', locals);
 		});
 
-		done();
+		return hono;
 	}
 }

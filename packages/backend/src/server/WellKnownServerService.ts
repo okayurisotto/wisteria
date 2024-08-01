@@ -5,8 +5,6 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { IsNull } from 'typeorm';
-import vary from 'vary';
-import fastifyAccepts from '@fastify/accepts';
 import { DI } from '@/di-symbols.js';
 import type { UsersRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
@@ -14,10 +12,10 @@ import { escapeAttribute, escapeValue } from '@/misc/prelude/xml.js';
 import type { MiUser } from '@/models/User.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { bindThis } from '@/decorators.js';
 import { NodeinfoServerService } from './NodeinfoServerService.js';
 import type { FindOptionsWhere } from 'typeorm';
-import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { Hono, type MiddlewareHandler } from 'hono';
+import { accepts } from 'hono/accepts';
 
 @Injectable()
 export class WellKnownServerService {
@@ -97,73 +95,63 @@ export class WellKnownServerService {
 		return null;
 	};
 
-	@bindThis
-	public createServer(fastify: FastifyInstance, options: FastifyPluginOptions, done: (err?: Error) => void) {
-		const ALL_PATH = '/.well-known/*';
-		const WEB_FINGER_PATH = '/.well-known/webfinger';
+	public createServer(): Hono {
+		const ALL_PATH = '/*';
+		const WEB_FINGER_PATH = `${this.config.url}/.well-known/webfinger`;
 		const JRD_MIMETYPE = 'application/jrd+json';
 		const XRD_MIMETYPE = 'application/xrd+xml';
 
-		fastify.register(fastifyAccepts);
+		const hono = new Hono();
 
-		fastify.addHook('onRequest', (request, reply, done) => {
-			reply.header('Access-Control-Allow-Headers', 'Accept');
-			reply.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
-			reply.header('Access-Control-Allow-Origin', '*');
-			reply.header('Access-Control-Expose-Headers', 'Vary');
-			done();
+		const setWellKnownHeaders: MiddlewareHandler = async (c, next) => {
+			c.header('Access-Control-Allow-Headers', 'Accept');
+			c.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+			c.header('Access-Control-Allow-Origin', '*');
+			c.header('Access-Control-Expose-Headers', 'Vary');
+
+			await next();
+		};
+
+		hono.options(ALL_PATH, setWellKnownHeaders, (c) => {
+			return c.body(null, 204);
 		});
 
-		fastify.options(ALL_PATH, async (request, reply) => {
-			reply.code(204);
-		});
+		hono.get('/host-meta', setWellKnownHeaders, (c) => {
+			c.header('Content-Type', XRD_MIMETYPE);
 
-		fastify.get('/.well-known/host-meta', async (request, reply) => {
-			reply.header('Content-Type', XRD_MIMETYPE);
-			return this.toXRD([{
+			return c.body(this.toXRD([{
 				name: 'Link',
 				attributes: {
 					rel: 'lrdd',
 					type: XRD_MIMETYPE,
-					template: `${this.config.url}${WEB_FINGER_PATH}?resource={uri}`,
+					template: `${WEB_FINGER_PATH}?resource={uri}`,
 				},
-			}]);
+			}]));
 		});
 
-		fastify.get('/.well-known/host-meta.json', async (request, reply) => {
-			reply.header('Content-Type', 'application/json');
-			return {
+		hono.get('/host-meta.json', setWellKnownHeaders, (c) => {
+			return c.json({
 				links: [{
 					rel: 'lrdd',
 					type: JRD_MIMETYPE,
-					template: `${this.config.url}${WEB_FINGER_PATH}?resource={uri}`,
+					template: `${WEB_FINGER_PATH}?resource={uri}`,
 				}],
-			};
+			});
 		});
 
-		fastify.get('/.well-known/nodeinfo', async (request, reply) => {
-			return { links: this.nodeinfoServerService.getLinks() };
+		hono.get('/nodeinfo', setWellKnownHeaders, (c) => {
+			return c.json({ links: this.nodeinfoServerService.getLinks() });
 		});
 
-		fastify.get<{ Querystring: { resource: string } }>(WEB_FINGER_PATH, async (request, reply) => {
-			if (typeof request.query.resource !== 'string') {
-				reply.code(400);
-				return;
-			}
+		hono.get(`/webfinger`, setWellKnownHeaders, async (c) => {
+			const resource = c.req.query('resource');
+			if (typeof resource !== 'string') return c.body(null, 400);
 
-			const query = this.generateQuery(request.query.resource.toLowerCase());
-
-			if (query === null) {
-				reply.code(422);
-				return;
-			}
+			const query = this.generateQuery(resource.toLowerCase());
+			if (query === null) return c.body(null, 422);
 
 			const user = await this.usersRepository.findOneBy(query);
-
-			if (user === null) {
-				reply.code(404);
-				return;
-			}
+			if (user === null) return c.notFound();
 
 			const subject = AcctEntity.from(user.username, user.host, this.config.host).toAcctURI();
 			const self = {
@@ -181,26 +169,36 @@ export class WellKnownServerService {
 				template: `${this.config.url}/authorize-follow?acct={uri}`,
 			};
 
-			vary(reply.raw, 'Accept');
-			reply.header('Cache-Control', 'public, max-age=180');
+			const accepted = accepts(c, {
+				header: 'Accept',
+				supports: [JRD_MIMETYPE, XRD_MIMETYPE],
+				default: JRD_MIMETYPE,
+			});
+			c.header('Cache-Control', 'public, max-age=180');
 
-			if (request.accepts().type([JRD_MIMETYPE, XRD_MIMETYPE]) === XRD_MIMETYPE) {
-				reply.type(XRD_MIMETYPE);
-				return this.toXRD([
-					{ name: 'Subject', value: subject },
-					{ name: 'Link', attributes: self },
-					{ name: 'Link', attributes: profilePage },
-					{ name: 'Link', attributes: subscribe },
-				]);
-			} else {
-				reply.type(JRD_MIMETYPE);
-				return {
-					subject,
-					links: [self, profilePage, subscribe],
-				};
+			switch (accepted) {
+				case JRD_MIMETYPE: {
+					c.header('Content-Type', JRD_MIMETYPE);
+					return c.json({
+						subject,
+						links: [self, profilePage, subscribe],
+					});
+				}
+				case XRD_MIMETYPE: {
+					c.header('Content-Type', XRD_MIMETYPE);
+					return c.text(this.toXRD([
+						{ name: 'Subject', value: subject },
+						{ name: 'Link', attributes: self },
+						{ name: 'Link', attributes: profilePage },
+						{ name: 'Link', attributes: subscribe },
+					]));
+				}
+				default: {
+					return c.body(null, 400);
+				}
 			}
 		});
 
-		done();
+		return hono;
 	}
 }

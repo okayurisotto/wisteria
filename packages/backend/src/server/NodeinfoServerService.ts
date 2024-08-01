@@ -13,7 +13,7 @@ import { bindThis } from '@/decorators.js';
 import NotesChart from '@/core/chart/charts/notes.js';
 import UsersChart from '@/core/chart/charts/users.js';
 import { DEFAULT_POLICIES } from '@/core/RoleService.js';
-import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { Hono } from 'hono';
 
 const nodeinfo2_1path = '/nodeinfo/2.1';
 const nodeinfo2_0path = '/nodeinfo/2.0';
@@ -112,40 +112,31 @@ export class NodeinfoServerService {
 		} as const;
 	};
 
-	@bindThis
-	public createServer(fastify: FastifyInstance, options: FastifyPluginOptions, done: (err?: Error) => void) {
-		fastify.get(nodeinfo2_1path, async (request, reply) => {
-			const data = await this.nodeinfo2('2.1');
+	public createServer(): Hono {
+		return new Hono()
+			.get('/2.1', async (c) => {
+				const data = await this.nodeinfo2('2.1');
 
-			reply
-				.type(
-					'application/json; profile="http://nodeinfo.diaspora.software/ns/schema/2.1#"',
-				)
-				.header('Cache-Control', 'public, max-age=600')
-				.header('Access-Control-Allow-Headers', 'Accept')
-				.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-				.header('Access-Control-Allow-Origin', '*')
-				.header('Access-Control-Expose-Headers', 'Vary');
+				c.header('Content-Type', 'application/json; profile="http://nodeinfo.diaspora.software/ns/schema/2.1#"');
+				c.header('Cache-Control', 'public, max-age=600');
+				c.header('Access-Control-Allow-Headers', 'Accept');
+				c.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+				c.header('Access-Control-Allow-Origin', '*');
+				c.header('Access-Control-Expose-Headers', 'Vary');
 
-			return data;
-		});
+				return c.json(data);
+			})
+			.get('/2.0', async (c) => {
+				const data = await this.nodeinfo2('2.0');
 
-		fastify.get(nodeinfo2_0path, async (request, reply) => {
-			const data = await this.nodeinfo2('2.0');
+				c.header('Content-Type', 'application/json; profile="http://nodeinfo.diaspora.software/ns/schema/2.0#"');
+				c.header('Cache-Control', 'public, max-age=600');
+				c.header('Access-Control-Allow-Headers', 'Accept');
+				c.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+				c.header('Access-Control-Allow-Origin', '*');
+				c.header('Access-Control-Expose-Headers', 'Vary');
 
-			reply
-				.type(
-					'application/json; profile="http://nodeinfo.diaspora.software/ns/schema/2.0#"',
-				)
-				.header('Cache-Control', 'public, max-age=600')
-				.header('Access-Control-Allow-Headers', 'Accept')
-				.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-				.header('Access-Control-Allow-Origin', '*')
-				.header('Access-Control-Expose-Headers', 'Vary');
-
-			return data;
-		});
-
-		done();
+				return c.json(data);
+			});
 	}
 }

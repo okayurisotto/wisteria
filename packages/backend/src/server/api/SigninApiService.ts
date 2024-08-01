@@ -16,13 +16,13 @@ import type { Config } from '@/config.js';
 import { getIpHash } from '@/misc/get-ip-hash.js';
 import type { MiLocalUser } from '@/models/User.js';
 import { IdService } from '@/core/IdService.js';
-import { bindThis } from '@/decorators.js';
 import { WebAuthnService } from '@/core/WebAuthnService.js';
 import { UserAuthService } from '@/core/UserAuthService.js';
 import { RateLimiterService } from './RateLimiterService.js';
 import { SigninService } from './SigninService.js';
-import type { AuthenticationResponseJSON } from '@simplewebauthn/types';
-import type { FastifyReply, FastifyRequest } from 'fastify';
+import type { Context } from 'hono';
+import { z } from 'zod';
+import { getConnInfo } from '@hono/node-server/conninfo';
 
 @Injectable()
 export class SigninApiService {
@@ -47,99 +47,73 @@ export class SigninApiService {
 	) {
 	}
 
-	@bindThis
-	public async signin(
-		request: FastifyRequest<{
-			Body: {
-				username: string;
-				password: string;
-				token?: string;
-				credential?: AuthenticationResponseJSON;
-			};
-		}>,
-		reply: FastifyReply,
-	) {
-		reply.header('Access-Control-Allow-Origin', this.config.url);
-		reply.header('Access-Control-Allow-Credentials', 'true');
+	public async signin(c: Context): Promise<Response> {
+		c.header('Access-Control-Allow-Origin', this.config.url);
+		c.header('Access-Control-Allow-Credentials', 'true');
 
-		const body = request.body;
-		const username = body['username'];
-		const password = body['password'];
-		const token = body['token'];
+		const body = z.object({
+			username: z.string(),
+			password: z.string(),
+			token: z.string().nullish(),
+			credential: z.unknown(),
+		}).safeParse(await c.req.json()).data;
+		if (body === undefined) return c.body(null, 400);
 
-		function error(status: number, error: { id: string }) {
-			reply.code(status);
-			return { error };
-		}
+		const remoteAddress = getConnInfo(c).remote.address;
 
-		try {
-		// not more than 1 attempt per second and not more than 10 attempts per hour
-			await this.rateLimiterService.limit({ key: 'signin', duration: 60 * 60 * 1000, max: 10, minInterval: 1000 }, getIpHash(request.ip));
-		} catch (err) {
-			reply.code(429);
-			return {
-				error: {
-					message: 'Too many failed attempts to sign in. Try again later.',
-					code: 'TOO_MANY_AUTHENTICATION_FAILURES',
-					id: '22d05606-fbcf-421a-a2db-b32610dcfd1b',
-				},
-			};
-		}
-
-		if (typeof username !== 'string') {
-			reply.code(400);
-			return;
-		}
-
-		if (typeof password !== 'string') {
-			reply.code(400);
-			return;
-		}
-
-		if (token != null && typeof token !== 'string') {
-			reply.code(400);
-			return;
+		if (remoteAddress !== undefined) {
+			try {
+				// not more than 1 attempt per second and not more than 10 attempts per hour
+				await this.rateLimiterService.limit(
+					{ key: 'signin', duration: 60 * 60 * 1000, max: 10, minInterval: 1000 },
+					getIpHash(remoteAddress),
+				);
+			} catch {
+				return c.json({
+					error: {
+						message: 'Too many failed attempts to sign in. Try again later.',
+						code: 'TOO_MANY_AUTHENTICATION_FAILURES',
+						id: '22d05606-fbcf-421a-a2db-b32610dcfd1b',
+					},
+				}, 429);
+			}
 		}
 
 		// Fetch user
 		const user = await this.usersRepository.findOneBy({
-			usernameLower: username.toLowerCase(),
+			usernameLower: body.username.toLowerCase(),
 			host: IsNull(),
-		}) as MiLocalUser;
+		}) as MiLocalUser | null;
 
-		if (user == null) {
-			return error(404, {
-				id: '6cc579cc-885d-43d8-95c2-b8c7fc963280',
-			});
+		if (user === null) {
+			return c.json({ error: { id: '6cc579cc-885d-43d8-95c2-b8c7fc963280' } }, 404);
 		}
 
 		if (user.isSuspended) {
-			return error(403, {
-				id: 'e03a5f46-d309-4865-9b69-56282d94e1eb',
-			});
+			return c.json({ error: { id: 'e03a5f46-d309-4865-9b69-56282d94e1eb' } }, 403);
 		}
 
 		const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
 
 		// Compare password
-		const same = await bcrypt.compare(password, profile.password!);
+		const same = await bcrypt.compare(body.password, profile.password!);
 
 		const fail = async (status?: number, failure?: { id: string }) => {
 			// Append signin history
 			await this.signinsRepository.insert({
 				id: this.idService.gen(),
 				userId: user.id,
-				ip: request.ip,
-				headers: request.headers as any,
+				ip: remoteAddress,
+				headers: c.req.header(),
 				success: false,
 			});
 
-			return error(status ?? 500, failure ?? { id: '4e30e80c-e338-45a0-8c8f-44455efa3b76' });
+			return c.json({ error: failure ?? { id: '4e30e80c-e338-45a0-8c8f-44455efa3b76' } }, status ?? 500);
 		};
 
 		if (!profile.twoFactorEnabled) {
 			if (same) {
-				return this.signinService.signin(request, reply, user);
+				return this.signinService.signin(c, user);
 			} else {
 				return await fail(403, {
 					id: '932c904e-9460-45b7-9ce6-7ed33be7eb2c',
@@ -147,7 +121,7 @@ export class SigninApiService {
 			}
 		}
 
-		if (token) {
+		if (body.token) {
 			if (!same) {
 				return await fail(403, {
 					id: '932c904e-9460-45b7-9ce6-7ed33be7eb2c',
@@ -155,14 +129,14 @@ export class SigninApiService {
 			}
 
 			try {
-				await this.userAuthService.twoFactorAuthenticate(profile, token);
+				await this.userAuthService.twoFactorAuthenticate(profile, body.token);
 			} catch (e) {
 				return await fail(403, {
 					id: 'cdf1235b-ac71-46d4-a3a6-84ccce48df6f',
 				});
 			}
 
-			return this.signinService.signin(request, reply, user);
+			return this.signinService.signin(c, user);
 		} else if (body.credential) {
 			if (!same && !profile.usePasswordLessLogin) {
 				return await fail(403, {
@@ -173,7 +147,7 @@ export class SigninApiService {
 			const authorized = await this.webAuthnService.verifyAuthentication(user.id, body.credential);
 
 			if (authorized) {
-				return this.signinService.signin(request, reply, user);
+				return this.signinService.signin(c, user);
 			} else {
 				return await fail(403, {
 					id: '93b86c4b-72f9-40eb-9815-798928603d1e',
@@ -187,10 +161,9 @@ export class SigninApiService {
 			}
 
 			const authRequest = await this.webAuthnService.initiateAuthentication(user.id);
-
-			reply.code(200);
-			return authRequest;
+			return c.json(authRequest, 200);
 		}
+
 		// never get here
 	}
 }

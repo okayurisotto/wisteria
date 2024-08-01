@@ -3,32 +3,28 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { IncomingMessage } from 'node:http';
 import { Inject, Injectable } from '@nestjs/common';
-import fastifyAccepts from '@fastify/accepts';
 import { Brackets, In, IsNull, LessThan, Not } from 'typeorm';
-import accepts from 'accepts';
-import vary from 'vary';
 import { DI } from '@/di-symbols.js';
 import type { FollowingsRepository, NotesRepository, EmojisRepository, NoteReactionsRepository, UserProfilesRepository, UserNotePiningsRepository, UsersRepository, FollowRequestsRepository } from '@/models/_.js';
 import * as url from '@/misc/prelude/url.js';
 import type { Config } from '@/config.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
-import type { MiLocalUser, MiRemoteUser, MiUser } from '@/models/User.js';
+import type { MiLocalUser, MiRemoteUser } from '@/models/User.js';
 import { UserKeypairService } from '@/core/UserKeypairService.js';
 import type { MiFollowing } from '@/models/Following.js';
-import { countIf } from '@/misc/prelude/array.js';
 import type { MiNote } from '@/models/Note.js';
 import { QueryService } from '@/core/QueryService.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { bindThis } from '@/decorators.js';
 import { isPureRenote } from '@/misc/is-pure-renote.js';
-import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginOptions } from 'fastify';
 import type { FindOptionsWhere } from 'typeorm';
+import { Hono, type Context } from 'hono';
+import { AcctEntity } from '@/misc/AcctEntity.js';
 
 const ACTIVITY_JSON = 'application/activity+json; charset=utf-8';
 const LD_JSON = 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"; charset=utf-8';
+const HTML = 'text/html';
 
 @Injectable()
 export class ActivityPubServerService {
@@ -67,15 +63,6 @@ export class ActivityPubServerService {
 		private readonly queryService: QueryService,
 	) {}
 
-	private setResponseType(request: FastifyRequest, reply: FastifyReply) {
-		const accept = request.accepts().type([ACTIVITY_JSON, LD_JSON]);
-		if (accept === LD_JSON) {
-			reply.type(LD_JSON);
-		} else {
-			reply.type(ACTIVITY_JSON);
-		}
-	}
-
 	private async packActivity(note: MiNote) {
 		if (isPureRenote(note)) {
 			const renote = await this.notesRepository.findOneByOrFail({ id: note.renoteId });
@@ -85,578 +72,558 @@ export class ActivityPubServerService {
 		return this.apRendererService.renderCreate(await this.apRendererService.renderNote(note, false), note);
 	}
 
-	private async followers(
-		request: FastifyRequest<{ Params: { user: string }; Querystring: { cursor?: string; page?: string } }>,
-		reply: FastifyReply,
-	) {
-		const userId = request.params.user;
+	public createServer(): Hono {
+		const hono = new Hono();
 
-		const cursor = request.query.cursor;
-		if (cursor != null && typeof cursor !== 'string') {
-			reply.code(400);
-			return;
-		}
+		const setApHeaders = (c: Context) => {
+			c.header('Access-Control-Allow-Headers', 'Accept');
+			c.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+			c.header('Access-Control-Allow-Origin', '*');
+			c.header('Access-Control-Expose-Headers', 'Vary');
+		};
 
-		const page = request.query.page === 'true';
+		// #region Note
 
-		const user = await this.usersRepository.findOneBy({
-			id: userId,
-			host: IsNull(),
-		});
+		const accepts = (c: Context) => {
+			const value = c.req.header('Accept');
+			if (value === undefined) return HTML;
 
-		if (user == null) {
-			reply.code(404);
-			return;
-		}
-
-		//#region Check ff visibility
-		const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
-
-		if (profile.followersVisibility === 'private') {
-			reply.code(403);
-			reply.header('Cache-Control', 'public, max-age=30');
-			return;
-		} else if (profile.followersVisibility === 'followers') {
-			reply.code(403);
-			reply.header('Cache-Control', 'public, max-age=30');
-			return;
-		}
-		//#endregion
-
-		const limit = 10;
-		const partOf = `${this.config.url}/users/${userId}/followers`;
-
-		if (page) {
-			const query = {
-				followeeId: user.id,
-			} as FindOptionsWhere<MiFollowing>;
-
-			// カーソルが指定されている場合
-			if (cursor) {
-				query.id = LessThan(cursor);
+			if (value === 'application/activity+json' ||
+				value.startsWith('application/activity+json;') ||
+				value.startsWith('application/activity+json,')) {
+				return ACTIVITY_JSON;
 			}
 
-			// Get followers
-			const followings = await this.followingsRepository.find({
-				where: query,
-				take: limit + 1,
-				order: { id: -1 },
-			});
-
-			// 「次のページ」があるかどうか
-			const inStock = followings.length === limit + 1;
-			if (inStock) followings.pop();
-
-			const renderedFollowers = await Promise.all(followings.map(following => this.apRendererService.renderFollowUser(following.followerId)));
-			const rendered = this.apRendererService.renderOrderedCollectionPage(
-				`${partOf}?${url.query({
-					page: 'true',
-					cursor,
-				})}`,
-				user.followersCount, renderedFollowers, partOf,
-				undefined,
-				inStock ? `${partOf}?${url.query({
-					page: 'true',
-					cursor: followings.at(-1)!.id,
-				})}` : undefined,
-			);
-
-			this.setResponseType(request, reply);
-			return (this.apRendererService.addContext(rendered));
-		} else {
-			// index page
-			const rendered = this.apRendererService.renderOrderedCollection(
-				partOf,
-				user.followersCount,
-				`${partOf}?page=true`,
-			);
-			reply.header('Cache-Control', 'public, max-age=180');
-			this.setResponseType(request, reply);
-			return (this.apRendererService.addContext(rendered));
-		}
-	}
-
-	private async following(
-		request: FastifyRequest<{ Params: { user: string }; Querystring: { cursor?: string; page?: string } }>,
-		reply: FastifyReply,
-	) {
-		const userId = request.params.user;
-
-		const cursor = request.query.cursor;
-		if (cursor != null && typeof cursor !== 'string') {
-			reply.code(400);
-			return;
-		}
-
-		const page = request.query.page === 'true';
-
-		const user = await this.usersRepository.findOneBy({
-			id: userId,
-			host: IsNull(),
-		});
-
-		if (user == null) {
-			reply.code(404);
-			return;
-		}
-
-		//#region Check ff visibility
-		const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
-
-		if (profile.followingVisibility === 'private') {
-			reply.code(403);
-			reply.header('Cache-Control', 'public, max-age=30');
-			return;
-		} else if (profile.followingVisibility === 'followers') {
-			reply.code(403);
-			reply.header('Cache-Control', 'public, max-age=30');
-			return;
-		}
-		//#endregion
-
-		const limit = 10;
-		const partOf = `${this.config.url}/users/${userId}/following`;
-
-		if (page) {
-			const query = {
-				followerId: user.id,
-			} as FindOptionsWhere<MiFollowing>;
-
-			// カーソルが指定されている場合
-			if (cursor) {
-				query.id = LessThan(cursor);
+			if (value === 'application/ld+json' ||
+				value.startsWith('application/ld+json;') ||
+				value.startsWith('application/ld+json,')) {
+				return LD_JSON;
 			}
 
-			// Get followings
-			const followings = await this.followingsRepository.find({
-				where: query,
-				take: limit + 1,
-				order: { id: -1 },
-			});
-
-			// 「次のページ」があるかどうか
-			const inStock = followings.length === limit + 1;
-			if (inStock) followings.pop();
-
-			const renderedFollowees = await Promise.all(followings.map(following => this.apRendererService.renderFollowUser(following.followeeId)));
-			const rendered = this.apRendererService.renderOrderedCollectionPage(
-				`${partOf}?${url.query({
-					page: 'true',
-					cursor,
-				})}`,
-				user.followingCount, renderedFollowees, partOf,
-				undefined,
-				inStock ? `${partOf}?${url.query({
-					page: 'true',
-					cursor: followings.at(-1)!.id,
-				})}` : undefined,
-			);
-
-			this.setResponseType(request, reply);
-			return (this.apRendererService.addContext(rendered));
-		} else {
-			// index page
-			const rendered = this.apRendererService.renderOrderedCollection(
-				partOf,
-				user.followingCount,
-				`${partOf}?page=true`,
-			);
-			reply.header('Cache-Control', 'public, max-age=180');
-			this.setResponseType(request, reply);
-			return (this.apRendererService.addContext(rendered));
-		}
-	}
-
-	private async featured(request: FastifyRequest<{ Params: { user: string } }>, reply: FastifyReply) {
-		const userId = request.params.user;
-
-		const user = await this.usersRepository.findOneBy({
-			id: userId,
-			host: IsNull(),
-		});
-
-		if (user == null) {
-			reply.code(404);
-			return;
-		}
-
-		const pinings = await this.userNotePiningsRepository.find({
-			where: { userId: user.id },
-			order: { id: 'DESC' },
-		});
-
-		const pinnedNotes = (await Promise.all(pinings.map(pining =>
-			this.notesRepository.findOneByOrFail({ id: pining.noteId }))))
-			.filter(note => !note.localOnly && ['public', 'home'].includes(note.visibility));
-
-		const renderedNotes = await Promise.all(pinnedNotes.map(note => this.apRendererService.renderNote(note)));
-
-		const rendered = this.apRendererService.renderOrderedCollection(
-			`${this.config.url}/users/${userId}/collections/featured`,
-			renderedNotes.length,
-			undefined,
-			undefined,
-			renderedNotes,
-		);
-
-		reply.header('Cache-Control', 'public, max-age=180');
-		this.setResponseType(request, reply);
-		return (this.apRendererService.addContext(rendered));
-	}
-
-	private async outbox(
-		request: FastifyRequest<{
-			Params: { user: string };
-			Querystring: { since_id?: string; until_id?: string; page?: string };
-		}>,
-		reply: FastifyReply,
-	) {
-		const userId = request.params.user;
-
-		const sinceId = request.query.since_id;
-		if (sinceId != null && typeof sinceId !== 'string') {
-			reply.code(400);
-			return;
-		}
-
-		const untilId = request.query.until_id;
-		if (untilId != null && typeof untilId !== 'string') {
-			reply.code(400);
-			return;
-		}
-
-		const page = request.query.page === 'true';
-
-		if (countIf(x => x != null, [sinceId, untilId]) > 1) {
-			reply.code(400);
-			return;
-		}
-
-		const user = await this.usersRepository.findOneBy({
-			id: userId,
-			host: IsNull(),
-		});
-
-		if (user == null) {
-			reply.code(404);
-			return;
-		}
-
-		const limit = 20;
-		const partOf = `${this.config.url}/users/${userId}/outbox`;
-
-		if (page) {
-			const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), sinceId, untilId)
-				.andWhere('note.userId = :userId', { userId: user.id })
-				.andWhere(new Brackets((qb) => {
-					qb
-						.where('note.visibility = \'public\'')
-						.orWhere('note.visibility = \'home\'');
-				}))
-				.andWhere('note.localOnly = FALSE');
-
-			const notes = await query.limit(limit).getMany();
-
-			if (sinceId) notes.reverse();
-
-			const activities = await Promise.all(notes.map(note => this.packActivity(note)));
-			const rendered = this.apRendererService.renderOrderedCollectionPage(
-				`${partOf}?${url.query({
-					page: 'true',
-					since_id: sinceId,
-					until_id: untilId,
-				})}`,
-				user.notesCount, activities, partOf,
-				notes.length ? `${partOf}?${url.query({
-					page: 'true',
-					since_id: notes[0].id,
-				})}` : undefined,
-				notes.length ? `${partOf}?${url.query({
-					page: 'true',
-					until_id: notes.at(-1)!.id,
-				})}` : undefined,
-			);
-
-			this.setResponseType(request, reply);
-			return (this.apRendererService.addContext(rendered));
-		} else {
-			// index page
-			const rendered = this.apRendererService.renderOrderedCollection(
-				partOf,
-				user.notesCount,
-				`${partOf}?page=true`,
-				`${partOf}?page=true&since_id=000000000000000000000000`,
-			);
-			reply.header('Cache-Control', 'public, max-age=180');
-			this.setResponseType(request, reply);
-			return (this.apRendererService.addContext(rendered));
-		}
-	}
-
-	private async userInfo(request: FastifyRequest, reply: FastifyReply, user: MiUser | null) {
-		if (user == null) {
-			reply.code(404);
-			return;
-		}
-
-		reply.header('Cache-Control', 'public, max-age=180');
-		this.setResponseType(request, reply);
-		return (this.apRendererService.addContext(await this.apRendererService.renderPerson(user as MiLocalUser)));
-	}
-
-	@bindThis
-	public createServer(fastify: FastifyInstance, options: FastifyPluginOptions, done: (err?: Error) => void) {
-		fastify.addConstraintStrategy({
-			name: 'apOrHtml',
-			storage() {
-				const store: Record<string, any> = {};
-				return {
-					get(key: string): any {
-						return store[key] ?? null;
-					},
-					set(key: string, value: any): void {
-						store[key] = value;
-					},
-				};
-			},
-			deriveConstraint(request: IncomingMessage) {
-				const accepted = accepts(request).type(['html', ACTIVITY_JSON, LD_JSON]);
-				const isAp = typeof accepted === 'string' && !accepted.match(/html/);
-				return isAp ? 'ap' : 'html';
-			},
-		});
-
-		fastify.register(fastifyAccepts);
-
-		fastify.addHook('onRequest', (request, reply, done) => {
-			reply.header('Access-Control-Allow-Headers', 'Accept');
-			reply.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
-			reply.header('Access-Control-Allow-Origin', '*');
-			reply.header('Access-Control-Expose-Headers', 'Vary');
-			done();
-		});
-
-		//#region Note
+			return HTML;
+		};
 
 		// note
-		fastify.get<{ Params: { note: string } }>('/notes/:note', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
-			vary(reply.raw, 'Accept');
+		hono.get('/notes/:note', async (c, next) => {
+			const accepted = accepts(c);
+			if (accepted === HTML) {
+				await next();
+				return;
+			}
+
+			setApHeaders(c);
 
 			const note = await this.notesRepository.findOneBy({
-				id: request.params.note,
+				id: c.req.param('note'),
 				visibility: In(['public', 'home']),
 				localOnly: false,
 			});
-
-			if (note == null) {
-				reply.code(404);
-				return;
-			}
+			if (note === null) return c.notFound();
 
 			// リモートだったらリダイレクト
-			if (note.userHost != null) {
-				if (note.uri == null || this.utilityService.isSelfHost(note.userHost)) {
-					reply.code(500);
-					return;
+			if (note.userHost !== null) {
+				if (note.uri === null || this.utilityService.isSelfHost(note.userHost)) {
+					return c.body(null, 500);
+				} else {
+					return c.redirect(note.uri);
 				}
-				reply.redirect(note.uri);
-				return;
 			}
 
-			reply.header('Cache-Control', 'public, max-age=180');
-			this.setResponseType(request, reply);
-			return this.apRendererService.addContext(await this.apRendererService.renderNote(note, false));
+			c.header('Cache-Control', 'public, max-age=180');
+			c.header('Content-Type', accepted);
+			return c.body(JSON.stringify(this.apRendererService.addContext(await this.apRendererService.renderNote(note, false))));
 		});
 
 		// note activity
-		fastify.get<{ Params: { note: string } }>('/notes/:note/activity', async (request, reply) => {
-			vary(reply.raw, 'Accept');
+		hono.get('/notes/:note/activity', async (c, next) => {
+			const accepted = accepts(c);
+			if (accepted === HTML) {
+				await next();
+				return;
+			}
+
+			setApHeaders(c);
 
 			const note = await this.notesRepository.findOneBy({
-				id: request.params.note,
+				id: c.req.param('note'),
 				userHost: IsNull(),
 				visibility: In(['public', 'home']),
 				localOnly: false,
 			});
+			if (note === null) return c.notFound();
 
-			if (note == null) {
-				reply.code(404);
+			c.header('Cache-Control', 'public, max-age=180');
+			c.header('Content-Type', accepted);
+			return c.body(JSON.stringify(this.apRendererService.addContext(await this.packActivity(note))));
+		});
+
+		// #endregion
+
+		// #region User
+
+		// user
+		hono.get('/users/:user', async (c, next) => {
+			const accepted = accepts(c);
+			if (accepted === HTML) {
+				await next();
 				return;
 			}
 
-			reply.header('Cache-Control', 'public, max-age=180');
-			this.setResponseType(request, reply);
-			return (this.apRendererService.addContext(await this.packActivity(note)));
-		});
-
-		//#endregion
-
-		//#region User
-
-		// user
-		fastify.get<{ Params: { user: string } }>('/users/:user', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
-			vary(reply.raw, 'Accept');
-
-			const userId = request.params.user;
+			setApHeaders(c);
 
 			const user = await this.usersRepository.findOneBy({
-				id: userId,
+				id: c.req.param('user'),
 				host: IsNull(),
 				isSuspended: false,
 			});
+			if (user === null) return c.notFound();
 
-			return await this.userInfo(request, reply, user);
+			c.header('Content-Type', accepted);
+			c.header('Cache-Control', 'public, max-age=180');
+			return c.body(JSON.stringify(this.apRendererService.addContext(await this.apRendererService.renderPerson(user as MiLocalUser))));
 		});
 
 		// user publickey
-		fastify.get<{ Params: { user: string } }>('/users/:user/publickey', async (request, reply) => {
-			const userId = request.params.user;
-
-			const user = await this.usersRepository.findOneBy({
-				id: userId,
-				host: IsNull(),
-			});
-
-			if (user == null) {
-				reply.code(404);
+		hono.get('/users/:user/publickey', async (c, next) => {
+			const accepted = accepts(c);
+			if (accepted === HTML) {
+				await next();
 				return;
 			}
+
+			setApHeaders(c);
+
+			const user = await this.usersRepository.findOneBy({
+				id: c.req.param('user'),
+				host: IsNull(),
+			});
+			if (user === null) return c.notFound();
 
 			const keypair = await this.userKeypairService.getUserKeypair(user.id);
 
 			if (this.userEntityService.isLocalUser(user)) {
-				reply.header('Cache-Control', 'public, max-age=180');
-				this.setResponseType(request, reply);
-				return (this.apRendererService.addContext(this.apRendererService.renderKey(user, keypair)));
+				c.header('Content-Type', accepted);
+				c.header('Cache-Control', 'public, max-age=180');
+				return c.body(JSON.stringify(this.apRendererService.addContext(this.apRendererService.renderKey(user, keypair))));
 			} else {
-				reply.code(400);
-				return;
+				return c.body(null, 400);
 			}
 		});
 
 		// user
-		fastify.get<{ Params: { user: string } }>('/@:user', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
-			vary(reply.raw, 'Accept');
+		hono.get('/:user{^@\\S+$}', async (c, next) => {
+			const accepted = accepts(c);
+			if (accepted === HTML) {
+				await next();
+				return;
+			}
+
+			const acct = AcctEntity.parse(c.req.param('user'), this.config.host);
+			if (acct === null || acct.host !== null) {
+				await next();
+				return;
+			}
+
+			setApHeaders(c);
 
 			const user = await this.usersRepository.findOneBy({
-				usernameLower: request.params.user.toLowerCase(),
+				usernameLower: acct.username,
 				host: IsNull(),
 				isSuspended: false,
 			});
+			if (user === null) return c.notFound();
 
-			return await this.userInfo(request, reply, user);
+			c.header('Content-Type', accepted);
+			c.header('Cache-Control', 'public, max-age=180');
+			return c.body(JSON.stringify(this.apRendererService.addContext(await this.apRendererService.renderPerson(user as MiLocalUser))));
 		});
 
 		// user outbox
-		fastify.get<{
-			Params: { user: string };
-			Querystring: { since_id?: string; until_id?: string; page?: string };
-		}>('/users/:user/outbox', async (request, reply) => await this.outbox(request, reply));
+		hono.get('/users/:user/outbox', async (c, next) => {
+			const accepted = accepts(c);
+			if (accepted === HTML) {
+				await next();
+				return;
+			}
+
+			setApHeaders(c);
+
+			const userId = c.req.param('user');
+
+			const page = c.req.query('page') === 'true';
+
+			const sinceId = c.req.query('since_id');
+			const untilId = c.req.query('until_id');
+			if (sinceId !== undefined && untilId !== undefined) return c.body(null, 400);
+
+			const user = await this.usersRepository.findOneBy({
+				id: userId,
+				host: IsNull(),
+			});
+			if (user === null) return c.notFound();
+
+			const limit = 20;
+			const partOf = `${this.config.url}/users/${userId}/outbox`;
+
+			if (page) {
+				const query = this.queryService.makePaginationQuery(
+					this.notesRepository.createQueryBuilder('note'),
+					sinceId,
+					untilId,
+				)
+					.andWhere('note.userId = :userId', { userId: user.id })
+					.andWhere(new Brackets((qb) => {
+						qb
+							.where('note.visibility = \'public\'')
+							.orWhere('note.visibility = \'home\'');
+					}))
+					.andWhere('note.localOnly = FALSE');
+
+				const notes = await query.limit(limit).getMany();
+
+				if (sinceId) notes.reverse();
+
+				const activities = await Promise.all(notes.map(note => this.packActivity(note)));
+
+				const rendered: unknown = this.apRendererService.renderOrderedCollectionPage(
+					`${partOf}?${url.query({ page: 'true', since_id: sinceId, until_id: untilId })}`,
+					user.notesCount,
+					activities,
+					partOf,
+					notes.length
+						? `${partOf}?${url.query({ page: 'true', since_id: notes[0].id })}`
+						: undefined,
+					notes.length
+						? `${partOf}?${url.query({ page: 'true', until_id: notes.at(-1)!.id })}`
+						: undefined,
+				);
+
+				c.header('Content-Type', accepted);
+				return c.body(JSON.stringify(this.apRendererService.addContext(rendered)));
+			} else {
+				// index page
+				const rendered: unknown = this.apRendererService.renderOrderedCollection(
+					partOf,
+					user.notesCount,
+					`${partOf}?page=true`,
+					`${partOf}?page=true&since_id=000000000000000000000000`,
+				);
+
+				c.header('Content-Type', accepted);
+				c.header('Cache-Control', 'public, max-age=180');
+				return c.body(JSON.stringify(this.apRendererService.addContext(rendered)));
+			}
+		});
 
 		// followers
-		fastify.get<{
-			Params: { user: string };
-			Querystring: { cursor?: string; page?: string };
-		}>('/users/:user/followers', async (request, reply) => await this.followers(request, reply));
+		hono.get('/users/:user/followers', async (c, next) => {
+			const accepted = accepts(c);
+			if (accepted === HTML) {
+				await next();
+				return;
+			}
+
+			setApHeaders(c);
+
+			const userId = c.req.param('user');
+			const cursor = c.req.query('cursor');
+			const page = c.req.query('page') === 'true';
+
+			const user = await this.usersRepository.findOneBy({
+				id: userId,
+				host: IsNull(),
+			});
+			if (user === null) return c.notFound();
+
+			// #region Check ff visibility
+
+			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
+
+			if (profile.followersVisibility === 'private' || profile.followersVisibility === 'followers') {
+				return c.body(null, 403, { 'Cache-Control': 'public, max-age=30' });
+			}
+
+			// #endregion
+
+			const limit = 10;
+			const partOf = `${this.config.url}/users/${userId}/followers`;
+
+			if (page) {
+				const query: FindOptionsWhere<MiFollowing> = {
+					followeeId: user.id,
+				};
+
+				// カーソルが指定されている場合
+				if (cursor) {
+					query.id = LessThan(cursor);
+				}
+
+				// Get followers
+				const followings = await this.followingsRepository.find({
+					where: query,
+					take: limit + 1,
+					order: { id: -1 },
+				});
+
+				// 「次のページ」があるかどうか
+				const inStock = followings.length === limit + 1;
+				if (inStock) followings.pop();
+
+				const renderedFollowers = await Promise.all(
+					followings.map(following => this.apRendererService.renderFollowUser(following.followerId)),
+				);
+
+				const rendered: unknown = this.apRendererService.renderOrderedCollectionPage(
+					`${partOf}?${url.query({ page: 'true', cursor })}`,
+					user.followersCount, renderedFollowers, partOf,
+					undefined,
+					inStock
+						? `${partOf}?${url.query({ page: 'true', cursor: followings.at(-1)!.id })}`
+						: undefined,
+				);
+
+				c.header('Content-Type', accepted);
+				return c.body(JSON.stringify(this.apRendererService.addContext(rendered)));
+			} else {
+				// index page
+				const rendered: unknown = this.apRendererService.renderOrderedCollection(
+					partOf,
+					user.followersCount,
+					`${partOf}?page=true`,
+				);
+
+				c.header('Content-Type', accepted);
+				c.header('Cache-Control', 'public, max-age=180');
+				return c.body(JSON.stringify(this.apRendererService.addContext(rendered)));
+			}
+		});
 
 		// following
-		fastify.get<{
-			Params: { user: string };
-			Querystring: { cursor?: string; page?: string };
-		}>('/users/:user/following', async (request, reply) => await this.following(request, reply));
+		hono.get('/users/:user/following', async (c, next) => {
+			const accepted = accepts(c);
+			if (accepted === HTML) {
+				await next();
+				return;
+			}
+
+			setApHeaders(c);
+
+			const userId = c.req.param('user');
+			const cursor = c.req.query('cursor');
+			const page = c.req.query('page') === 'true';
+
+			const user = await this.usersRepository.findOneBy({
+				id: userId,
+				host: IsNull(),
+			});
+			if (user === null) return c.notFound();
+
+			// #region Check ff visibility
+
+			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
+
+			if (profile.followingVisibility === 'private' || profile.followingVisibility === 'followers') {
+				return c.body(null, 403, { 'Cache-Control': 'public, max-age=30' });
+			}
+
+			// #endregion
+
+			const limit = 10;
+			const partOf = `${this.config.url}/users/${userId}/following`;
+
+			if (page) {
+				const query: FindOptionsWhere<MiFollowing> = {
+					followerId: user.id,
+				};
+
+				// カーソルが指定されている場合
+				if (cursor) {
+					query.id = LessThan(cursor);
+				}
+
+				// Get followings
+				const followings = await this.followingsRepository.find({
+					where: query,
+					take: limit + 1,
+					order: { id: -1 },
+				});
+
+				// 「次のページ」があるかどうか
+				const inStock = followings.length === limit + 1;
+				if (inStock) followings.pop();
+
+				const renderedFollowees = await Promise.all(followings.map(following => this.apRendererService.renderFollowUser(following.followeeId)));
+				const rendered: unknown = this.apRendererService.renderOrderedCollectionPage(
+					`${partOf}?${url.query({ page: 'true', cursor })}`,
+					user.followingCount, renderedFollowees, partOf,
+					undefined,
+					inStock
+						? `${partOf}?${url.query({ page: 'true', cursor: followings.at(-1)!.id })}`
+						: undefined,
+				);
+
+				c.header('Content-Type', accepted);
+				return c.body(JSON.stringify(this.apRendererService.addContext(rendered)));
+			} else {
+				// index page
+				const rendered = this.apRendererService.renderOrderedCollection(
+					partOf,
+					user.followingCount,
+					`${partOf}?page=true`,
+				);
+
+				c.header('Content-Type', accepted);
+				c.header('Cache-Control', 'public, max-age=180');
+				return c.body(JSON.stringify(this.apRendererService.addContext(rendered)));
+			}
+		});
 
 		// featured
-		fastify.get<{ Params: { user: string } }>('/users/:user/collections/featured', async (request, reply) => await this.featured(request, reply));
+		hono.get('/users/:user/collections/featured', async (c, next) => {
+			const accepted = accepts(c);
+			if (accepted === HTML) {
+				await next();
+				return;
+			}
 
-		//#endregion
+			setApHeaders(c);
 
-		//#region Emoji
+			const userId = c.req.param('user');
 
-		fastify.get<{ Params: { emoji: string } }>('/emojis/:emoji', async (request, reply) => {
-			const emoji = await this.emojisRepository.findOneBy({
+			const user = await this.usersRepository.findOneBy({
+				id: userId,
 				host: IsNull(),
-				name: request.params.emoji,
+			});
+			if (user === null) return c.notFound();
+
+			const pinings = await this.userNotePiningsRepository.find({
+				where: { userId: user.id },
+				order: { id: 'DESC' },
 			});
 
-			if (emoji == null || emoji.localOnly) {
-				reply.code(404);
-				return;
-			}
+			const pinnedNotes = (await Promise.all(
+				pinings.map((pining) => {
+					return this.notesRepository.findOneByOrFail({ id: pining.noteId });
+				}),
+			)).filter(note => !note.localOnly && ['public', 'home'].includes(note.visibility));
 
-			reply.header('Cache-Control', 'public, max-age=180');
-			this.setResponseType(request, reply);
-			return (this.apRendererService.addContext(await this.apRendererService.renderEmoji(emoji)));
+			const renderedNotes = await Promise.all(pinnedNotes.map(note => this.apRendererService.renderNote(note)));
+
+			const rendered: unknown = this.apRendererService.renderOrderedCollection(
+				`${this.config.url}/users/${userId}/collections/featured`,
+				renderedNotes.length,
+				undefined,
+				undefined,
+				renderedNotes,
+			);
+
+			c.header('Content-Type', accepted);
+			c.header('Cache-Control', 'public, max-age=180');
+			return c.body(JSON.stringify(this.apRendererService.addContext(rendered)));
 		});
 
-		//#endregion
+		// #endregion
 
-		//#region Like
+		// #region Emoji
 
-		fastify.get<{ Params: { like: string } }>('/likes/:like', async (request, reply) => {
-			const reaction = await this.noteReactionsRepository.findOneBy({ id: request.params.like });
-
-			if (reaction == null) {
-				reply.code(404);
+		hono.get('/emojis/:emoji', async (c, next) => {
+			const accepted = accepts(c);
+			if (accepted === HTML) {
+				await next();
 				return;
 			}
+
+			setApHeaders(c);
+
+			const emoji = await this.emojisRepository.findOneBy({
+				host: IsNull(),
+				name: c.req.param('emoji'),
+			});
+			if (emoji === null || emoji.localOnly) return c.notFound();
+
+			c.header('Content-Type', accepted);
+			c.header('Cache-Control', 'public, max-age=180');
+			return c.body(JSON.stringify(this.apRendererService.addContext(this.apRendererService.renderEmoji(emoji))));
+		});
+
+		// #endregion
+
+		// #region Like
+
+		hono.get('/likes/:like', async (c, next) => {
+			const accepted = accepts(c);
+			if (accepted === HTML) {
+				await next();
+				return;
+			}
+
+			setApHeaders(c);
+
+			const reaction = await this.noteReactionsRepository.findOneBy({
+				id: c.req.param('like'),
+			});
+			if (reaction === null) return c.notFound();
 
 			const note = await this.notesRepository.findOneBy({ id: reaction.noteId });
+			if (note === null) return c.notFound();
 
-			if (note == null) {
-				reply.code(404);
+			c.header('Content-Type', accepted);
+			c.header('Cache-Control', 'public, max-age=180');
+			return c.body(JSON.stringify(this.apRendererService.addContext(await this.apRendererService.renderLike(reaction, note))));
+		});
+
+		// #endregion
+
+		// #region Follow
+
+		// This may be used before the follow is completed, so we do not
+		// check if the following exists.
+		hono.get('/follows/:follower/:followee', async (c, next) => {
+			const accepted = accepts(c);
+			if (accepted === HTML) {
+				await next();
 				return;
 			}
 
-			reply.header('Cache-Control', 'public, max-age=180');
-			this.setResponseType(request, reply);
-			return (this.apRendererService.addContext(await this.apRendererService.renderLike(reaction, note)));
-		});
-
-		//#endregion
-
-		//#region Follow
-
-		fastify.get<{ Params: { follower: string; followee: string } }>('/follows/:follower/:followee', async (request, reply) => {
-			// This may be used before the follow is completed, so we do not
-			// check if the following exists.
+			setApHeaders(c);
 
 			const [follower, followee] = await Promise.all([
 				this.usersRepository.findOneBy({
-					id: request.params.follower,
+					id: c.req.param('follower'),
 					host: IsNull(),
 				}),
 				this.usersRepository.findOneBy({
-					id: request.params.followee,
+					id: c.req.param('followee'),
 					host: Not(IsNull()),
 				}),
 			]) as [MiLocalUser | MiRemoteUser | null, MiLocalUser | MiRemoteUser | null];
+			if (follower == null || followee == null) return c.notFound();
 
-			if (follower == null || followee == null) {
-				reply.code(404);
+			c.header('Content-Type', accepted);
+			c.header('Cache-Control', 'public, max-age=180');
+			return c.body(JSON.stringify(this.apRendererService.addContext(this.apRendererService.renderFollow(follower, followee))));
+		});
+
+		// #endregion
+
+		// #region Follow Requests
+
+		hono.get('/follows/:followRequestId', async (c, next) => {
+			const accepted = accepts(c);
+			if (accepted === HTML) {
+				await next();
 				return;
 			}
 
-			reply.header('Cache-Control', 'public, max-age=180');
-			this.setResponseType(request, reply);
-			return (this.apRendererService.addContext(this.apRendererService.renderFollow(follower, followee)));
-		});
+			setApHeaders(c);
 
-		//#endregion
-
-		//#region Follow Requests
-
-		fastify.get<{ Params: { followRequestId: string } }>('/follows/:followRequestId', async (request, reply) => {
 			// This may be used before the follow is completed, so we do not
 			// check if the following exists and only check if the follow request exists.
 
 			const followRequest = await this.followRequestsRepository.findOneBy({
-				id: request.params.followRequestId,
+				id: c.req.param('followRequestId'),
 			});
-
-			if (followRequest == null) {
-				reply.code(404);
-				return;
-			}
+			if (followRequest === null) return c.notFound();
 
 			const [follower, followee] = await Promise.all([
 				this.usersRepository.findOneBy({
@@ -668,19 +635,15 @@ export class ActivityPubServerService {
 					host: Not(IsNull()),
 				}),
 			]) as [MiLocalUser | MiRemoteUser | null, MiLocalUser | MiRemoteUser | null];
+			if (follower == null || followee == null) return c.notFound();
 
-			if (follower == null || followee == null) {
-				reply.code(404);
-				return;
-			}
-
-			reply.header('Cache-Control', 'public, max-age=180');
-			this.setResponseType(request, reply);
-			return (this.apRendererService.addContext(this.apRendererService.renderFollow(follower, followee)));
+			c.header('Content-Type', accepted);
+			c.header('Cache-Control', 'public, max-age=180');
+			return c.body(JSON.stringify(this.apRendererService.addContext(this.apRendererService.renderFollow(follower, followee))));
 		});
 
-		//#endregion
+		// #endregion
 
-		done();
+		return hono;
 	}
 }

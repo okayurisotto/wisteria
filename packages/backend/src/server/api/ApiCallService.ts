@@ -5,7 +5,6 @@
 
 import { randomUUID } from 'node:crypto';
 import * as fs from 'node:fs';
-import * as stream from 'node:stream/promises';
 import { Injectable } from '@nestjs/common';
 import { getIpHash } from '@/misc/get-ip-hash.js';
 import type { MiLocalUser } from '@/models/User.js';
@@ -16,12 +15,15 @@ import { RateLimiterService } from './RateLimiterService.js';
 import { ApiLoggerService } from './ApiLoggerService.js';
 import { AuthenticateService } from './AuthenticateService.js';
 import { AuthenticationError } from '@/misc/AuthenticationError.js';
-import type { FastifyRequest } from 'fastify';
 import type { IEndpointMeta, IEndpoint } from './endpoints.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { IpAddressLoggingService } from './IpAddressLoggingService.js';
 import { LiteResponse } from '@/misc/LiteResponse.js';
 import type { ExecMethodType } from './endpoint-base.js';
+import { Stream } from 'node:stream';
+import type { Context } from 'hono';
+import { getConnInfo } from '@hono/node-server/conninfo';
+import { z } from 'zod';
 
 const accessDenied = new ApiError({
 	message: 'Access denied.',
@@ -54,26 +56,61 @@ export class ApiCallService {
 
 	public async handleRequest(
 		endpoint: IEndpoint & { exec: ExecMethodType },
-		request: FastifyRequest<{ Body: Record<string, unknown> | undefined; Querystring: Record<string, unknown> }>,
+		c: Context,
 	): Promise<LiteResponse> {
-		const body = request.method === 'GET'
-			? request.query
-			: request.body;
+		let body: Record<string, unknown>;
+		let file: { name: string; path: string } | null;
 
-		// https://datatracker.ietf.org/doc/html/rfc6750.html#section-2.1 (case sensitive)
-		const authHeaderValue = request.headers.authorization;
+		switch (c.req.method) {
+			case 'GET': {
+				body = c.req.query();
+				file = null;
+				break;
+			}
+			case 'POST': {
+				if (endpoint.meta.requireFile) {
+					const data = await c.req.parseBody();
+					body = data;
+
+					const file_ = Object.values(data).find(v => v instanceof File) ?? null;
+					if (file_ === null) return LiteResponse.empty(400);
+
+					const [path] = await createTemp();
+					await file_.stream().pipeTo(Stream.Writable.toWeb(fs.createWriteStream(path)));
+
+					file = {
+						name: file_.name,
+						path,
+					};
+				} else {
+					if (c.req.header('Content-Type') === 'application/json') {
+						const json = z.record(z.string(), z.unknown()).safeParse(await c.req.json());
+						if (!json.success) return LiteResponse.empty(400);
+						body = json.data;
+						file = null;
+					} else {
+						return LiteResponse.empty(400);
+					}
+				}
+				break;
+			}
+			default: {
+				return LiteResponse.empty(400);
+			}
+		}
+
+		const authHeaderValue = c.req.header('authorization');
 		const token = authHeaderValue?.startsWith('Bearer ')
 			? authHeaderValue.slice(7)
-			: body?.['i'];
-		if (token != null && typeof token !== 'string') {
-			return LiteResponse.empty(400);
-		}
+			: z.object({ i: z.string().nullish() }).safeParse(body).data?.i;
+
+		const remoteAddress = getConnInfo(c).remote.address;
 
 		try {
 			const [user, app] = await this.authenticateService.authenticate(token);
 
-			if (user) {
-				await this.ipAddressLoggingService.log(request.ip, user);
+			if (user !== null && remoteAddress !== undefined) {
+				await this.ipAddressLoggingService.log(remoteAddress, user);
 			}
 
 			const result = await this.call({
@@ -81,19 +118,19 @@ export class ApiCallService {
 				user,
 				token: app,
 				data: body,
-				file: null,
-				method: request.method,
-				ip: request.ip,
-				headers: request.headers,
+				file,
+				method: c.req.method,
+				ip: remoteAddress, // TODO
+				headers: c.req.header(),
 			});
 
 			if (result.ok) {
-				if (request.method === 'GET' && endpoint.meta.cacheSec && token == null && user == null) {
+				if (c.req.method === 'GET' && endpoint.meta.cacheSec && token == null && user == null) {
 					const headers = new Map([
 						['Cache-Control', `public, max-age=${endpoint.meta.cacheSec.toString()}`],
 					]);
 					if (result.value == null) {
-						return LiteResponse.empty(200, headers);
+						return LiteResponse.empty(204, headers);
 					} else {
 						return LiteResponse.from(200, result.value, headers);
 					}
@@ -103,74 +140,6 @@ export class ApiCallService {
 					} else {
 						return LiteResponse.from(200, result.value);
 					}
-				}
-			} else {
-				return result.error.serialize();
-			}
-		} catch (err: unknown) {
-			if (err instanceof AuthenticationError) {
-				return err.serialize();
-			} else {
-				return new ApiError().serialize();
-			}
-		}
-	}
-
-	public async handleMultipartRequest(
-		endpoint: IEndpoint & { exec: ExecMethodType },
-		request: FastifyRequest<{ Body: Record<string, unknown>; Querystring: Record<string, unknown> }>,
-	): Promise<LiteResponse> {
-		const multipartData = await request.file()
-			.then(data => data ?? null)
-			.catch(() => {
-				// Fastify throws if the remote didn't send multipart data. Return 400 below.
-				return null;
-			});
-
-		if (multipartData === null) {
-			return LiteResponse.empty(400);
-		}
-
-		const [path] = await createTemp();
-		await stream.pipeline(multipartData.file, fs.createWriteStream(path));
-
-		const fields: Record<string, unknown> = {};
-		for (const [k, v] of Object.entries(multipartData.fields)) {
-			fields[k] = typeof v === 'object' && 'value' in v ? v.value : undefined;
-		}
-
-		// https://datatracker.ietf.org/doc/html/rfc6750.html#section-2.1 (case sensitive)
-		const authHeaderValue = request.headers.authorization;
-		const token = authHeaderValue?.startsWith('Bearer ')
-			? authHeaderValue.slice(7)
-			: fields['i'];
-		if (token != null && typeof token !== 'string') {
-			return LiteResponse.empty(400);
-		}
-
-		try {
-			const [user, app] = await this.authenticateService.authenticate(token);
-
-			if (user) {
-				await this.ipAddressLoggingService.log(request.ip, user);
-			}
-
-			const result = await this.call({
-				endpoint,
-				user,
-				token: app,
-				data: fields,
-				file: { name: multipartData.filename, path: path },
-				method: request.method,
-				ip: request.ip,
-				headers: request.headers,
-			});
-
-			if (result.ok) {
-				if (result.value == null) {
-					return LiteResponse.empty(204);
-				} else {
-					return LiteResponse.from(200, result.value);
 				}
 			} else {
 				return result.error.serialize();
@@ -194,7 +163,7 @@ export class ApiCallService {
 		ip,
 		headers,
 	}: CallInfo): Promise<Result<unknown, ApiError | AuthenticationError>> {
-		//#region secure
+		// #region secure
 
 		const isSecure = user != null && token == null;
 
@@ -202,9 +171,9 @@ export class ApiCallService {
 			return { ok: false, error: accessDenied };
 		}
 
-		//#endregion
+		// #endregion
 
-		//#region limit
+		// #region limit
 
 		if (endpoint.meta.limit) {
 			// koa will automatically load the `X-Forwarded-For` header if `proxy: true` is configured in the app.
@@ -241,9 +210,9 @@ export class ApiCallService {
 			}
 		}
 
-		//#endregion
+		// #endregion
 
-		//#region requireCredential / requireModerator / requireAdmin
+		// #region requireCredential / requireModerator / requireAdmin
 
 		if (endpoint.meta.requireCredential || endpoint.meta.requireModerator || endpoint.meta.requireAdmin) {
 			if (user == null) {
@@ -269,9 +238,9 @@ export class ApiCallService {
 			}
 		}
 
-		//#endregion
+		// #endregion
 
-		//#region prohibitMoved
+		// #region prohibitMoved
 
 		if (endpoint.meta.prohibitMoved) {
 			if (user?.movedToUri) {
@@ -287,9 +256,9 @@ export class ApiCallService {
 			}
 		}
 
-		//#endregion
+		// #endregion
 
-		//#region requireModerator / requireAdmin
+		// #region requireModerator / requireAdmin
 
 		if ((endpoint.meta.requireModerator || endpoint.meta.requireAdmin) && user !== null && !user.isRoot) {
 			const myRoles = await this.roleUserService.getUserRoles(user.id);
@@ -317,9 +286,9 @@ export class ApiCallService {
 			}
 		}
 
-		//#endregion
+		// #endregion
 
-		//#region requireRolePolicy
+		// #region requireRolePolicy
 
 		if (endpoint.meta.requireRolePolicy != null && user !== null && !user.isRoot) {
 			const myRoles = await this.roleUserService.getUserRoles(user.id);
@@ -337,9 +306,9 @@ export class ApiCallService {
 			}
 		}
 
-		//#endregion
+		// #endregion
 
-		//#region
+		// #region
 
 		if (token && ((endpoint.meta.kind && !token.permission.some(p => p === endpoint.meta.kind)) ||
 			(!endpoint.meta.kind && (endpoint.meta.requireCredential || endpoint.meta.requireModerator || endpoint.meta.requireAdmin)))) {
@@ -354,9 +323,9 @@ export class ApiCallService {
 			};
 		}
 
-		//#endregion
+		// #endregion
 
-		//#region Cast non JSON input
+		// #region Cast non JSON input
 
 		if ((endpoint.meta.requireFile || method === 'GET') && endpoint.params.properties) {
 			for (const [key, param] of Object.entries(endpoint.params.properties)) {
@@ -387,7 +356,7 @@ export class ApiCallService {
 			}
 		}
 
-		//#endregion
+		// #endregion
 
 		// API invoking
 		try {

@@ -4,12 +4,11 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import type { UserProfilesRepository } from '@/models/_.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { Hono } from 'hono';
 
 const FAILED_MESSAGE =
 	'Verification failed. Please try again. メールアドレスの認証に失敗しました。もう一度お試しください';
@@ -56,25 +55,15 @@ export class EmailVerificationServerService {
 		return true;
 	}
 
-	@bindThis
-	public createServer(
-		fastify: FastifyInstance,
-		options: FastifyPluginOptions,
-		done: (err?: Error) => void,
-	) {
-		fastify.get<{ Params: { code: string } }>(
-			'/verify-email/:code',
-			async (request, reply) => {
-				const verified = await this.verify(request.params.code);
+	public createServer(): Hono {
+		return new Hono().get('/:code', async (c) => {
+			const verified = await this.verify(c.req.param('code'));
 
-				if (verified) {
-					reply.code(200).send(SUCCEEDED_MESSAGE);
-				} else {
-					reply.code(404).send(FAILED_MESSAGE);
-				}
-			},
-		);
-
-		done();
+			if (verified) {
+				return c.text(SUCCEEDED_MESSAGE, 200);
+			} else {
+				return c.text(FAILED_MESSAGE, 404);
+			}
+		});
 	}
 }

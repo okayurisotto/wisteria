@@ -24,8 +24,6 @@ type RedisOptionsSource = Partial<RedisOptions> & {
 type Source = {
 	url: string;
 	port?: number;
-	socket?: string;
-	chmodSocket?: string;
 	disableHsts?: boolean;
 	db: {
 		host: string;
@@ -96,8 +94,6 @@ type Source = {
 export type Config = {
 	url: string;
 	port: number;
-	socket: string | undefined;
-	chmodSocket: string | undefined;
 	disableHsts: boolean | undefined;
 	db: {
 		host: string;
@@ -195,8 +191,6 @@ export function loadConfig(): Config {
 		publishTarballInsteadOfProvideRepositoryUrl: !!config.publishTarballInsteadOfProvideRepositoryUrl,
 		url: url.origin,
 		port: config.port ?? envOption.PORT ?? 3000,
-		socket: config.socket,
-		chmodSocket: config.chmodSocket,
 		disableHsts: config.disableHsts,
 		host,
 		hostname,

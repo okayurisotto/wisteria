@@ -4,32 +4,15 @@
  */
 
 import * as crypto from 'node:crypto';
-import { IncomingMessage } from 'node:http';
 import { Inject, Injectable } from '@nestjs/common';
-import { parseRequest, type Signature } from 'http-signature/node';
+import * as httpSignature from 'http-signature/web';
 import secureJson from 'secure-json-parse';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { QueueService } from '@/core/QueueService.js';
-import { bindThis } from '@/decorators.js';
 import type { IActivity } from '@/core/activitypub/type.js';
-import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyBodyParser, FastifyPluginOptions } from 'fastify';
-
-const checkHttpSignature = (message: IncomingMessage): { signature: Signature; signingString: string } | null => {
-	const result = parseRequest(message);
-
-	if (!result.ok) return null;
-
-	if (!result.value.signature.isValidAt(Date.now() / 1000)) return null;
-
-	const hasRequiredHeaders = result.value.signature.has([
-		{ name: 'host', special: false },
-		{ name: 'digest', special: false },
-	]);
-	if (!hasRequiredHeaders) return null;
-
-	return result.value;
-};
+import { Hono, type Context, type MiddlewareHandler } from 'hono';
+import { bodyLimit } from 'hono/body-limit';
 
 const parseDigestHeaderValue = (value: string): { algo: string; hash: string } | null => {
 	const digestPattern = /^([a-zA-Z0-9-]+)=(.+)$/;
@@ -69,97 +52,77 @@ export class ActivityPubInboxServerService {
 		private queueService: QueueService,
 	) {}
 
-	private async inbox(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-		if (request.headers.host !== this.config.host) {
-			reply.code(401);
-			return;
+	private async inbox(c: Context) {
+		if (c.req.header('host') !== this.config.host) {
+			return c.body(null, 401);
 		}
 
-		if (request.rawBody === undefined) {
-			reply.code(400);
-			return;
+		const body = Buffer.from(await c.req.arrayBuffer());
+
+		// #region HTTP Signature
+
+		const signature = httpSignature.parseRequest(c.req.raw);
+
+		if (!signature.ok) {
+			return c.body(null, 401);
 		}
 
-		//#region HTTP Signature
+		// #endregion
 
-		const result = checkHttpSignature(request.raw);
+		// #region Digest Header
 
-		if (result === null) {
-			reply.code(401);
-			return;
-		}
-
-		const { signature, signingString } = result;
-
-		//#endregion
-
-		//#region Digest Header
-
-		const digest = request.headers['digest'];
+		const digest = c.req.header('digest');
 
 		if (typeof digest !== 'string') {
-			reply.code(401);
-			return;
+			return c.body(null, 401);
 		}
 
 		const parsedDigest = parseDigestHeaderValue(digest);
 		if (parsedDigest === null) {
-			reply.code(401);
-			return;
+			return c.body(null, 401);
 		}
 
-		const isOk = checkDigest(parsedDigest.algo, parsedDigest.hash, request.rawBody);
+		const isOk = checkDigest(parsedDigest.algo, parsedDigest.hash, body);
 		if (!isOk) {
-			reply.code(401);
-			return;
+			return c.body(null, 401);
 		}
 
-		//#endregion
+		// #endregion
 
-		await this.queueService.inbox(request.body as IActivity, signature, signingString);
-		reply.code(202);
+		let data: unknown;
+		try {
+			data = secureJson.parse(body, null, {
+				constructorAction: 'ignore',
+				protoAction: 'ignore',
+			});
+		} catch {
+			return c.body(null, 400);
+		}
+
+		await this.queueService.inbox(data as IActivity, signature.value.signature, signature.value.signingString);
+		return c.body(null, 202);
 	}
 
-	@bindThis
-	public createServer(fastify: FastifyInstance, options: FastifyPluginOptions, done: (err?: Error) => void) {
-		const almostDefaultJsonParser: FastifyBodyParser<Buffer> = function (request, rawBody, done) {
-			if (rawBody.length === 0) {
-				const err = new Error('Body cannot be empty!') as any;
-				err.statusCode = 400;
-				return done(err);
-			}
+	public createServer(): Hono {
+		const hono = new Hono();
 
-			try {
-				const json = secureJson.parse(rawBody.toString('utf8'), null, {
-					protoAction: 'ignore',
-					constructorAction: 'ignore',
-				});
-				done(null, json);
-			} catch (err: any) {
-				err.statusCode = 400;
-				return done(err);
-			}
+		const setInboxHeaders: MiddlewareHandler = async (c, next) => {
+			c.header('Access-Control-Allow-Headers', 'Accept');
+			c.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+			c.header('Access-Control-Allow-Origin', '*');
+			c.header('Access-Control-Expose-Headers', 'Vary');
+
+			await next();
 		};
 
-		fastify.addContentTypeParser('application/activity+json', { parseAs: 'buffer' }, almostDefaultJsonParser);
-		fastify.addContentTypeParser('application/ld+json', { parseAs: 'buffer' }, almostDefaultJsonParser);
-
-		fastify.addHook('onRequest', (request, reply, done) => {
-			reply.header('Access-Control-Allow-Headers', 'Accept');
-			reply.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
-			reply.header('Access-Control-Allow-Origin', '*');
-			reply.header('Access-Control-Expose-Headers', 'Vary');
-			done();
+		hono.post('/inbox', bodyLimit({ maxSize: 1024 * 64 }), setInboxHeaders, async (c) => {
+			return await this.inbox(c);
 		});
 
-		fastify.post('/inbox', { config: { rawBody: true }, bodyLimit: 1024 * 64 }, async (request, reply) => {
-			return await this.inbox(request, reply);
+		hono.post('/users/:user/inbox', bodyLimit({ maxSize: 1024 * 64 }), setInboxHeaders, async (c) => {
+			return await this.inbox(c);
 		});
 
-		fastify.post('/users/:user/inbox', { config: { rawBody: true }, bodyLimit: 1024 * 64 }, async (request, reply) => {
-			return await this.inbox(request, reply);
-		});
-
-		done();
+		return hono;
 	}
 }

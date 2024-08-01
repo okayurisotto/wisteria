@@ -4,12 +4,11 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { generate } from 'identicon-generator';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
-import { bindThis } from '@/decorators.js';
 import { MetaService } from '@/core/MetaService.js';
+import { Hono } from 'hono';
 
 @Injectable()
 export class IdenticonServerService {
@@ -27,32 +26,22 @@ export class IdenticonServerService {
 		).href;
 	}
 
-	@bindThis
-	public createServer(
-		fastify: FastifyInstance,
-		options: FastifyPluginOptions,
-		done: (err?: Error) => void,
-	) {
-		fastify.get<{ Params: { x: string } }>(
-			'/identicon/:x',
-			async (request, reply) => {
-				reply.header('Content-Type', 'image/png');
-				reply.header('Cache-Control', 'public, max-age=86400');
+	public createServer(): Hono {
+		return new Hono().get('/:seed', async (c) => {
+			c.header('Content-Type', 'image/png');
+			c.header('Cache-Control', 'public, max-age=86400');
 
-				const meta = await this.metaService.fetch();
-				if (meta.enableIdenticonGeneration) {
-					const buffer = await generate(request.params.x, {
-						pixels: 5,
-						cellSize: 12,
-						margin: 30,
-					});
-					reply.send(buffer);
-				} else {
-					return reply.redirect(this.fallbackUrl);
-				}
-			},
-		);
-
-		done();
+			const meta = await this.metaService.fetch();
+			if (meta.enableIdenticonGeneration) {
+				const buffer = await generate(c.req.param('seed'), {
+					pixels: 5,
+					cellSize: 12,
+					margin: 30,
+				});
+				return c.body(buffer);
+			} else {
+				return c.redirect(this.fallbackUrl);
+			}
+		});
 	}
 }

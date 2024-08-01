@@ -6,12 +6,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
-import { bindThis } from '@/decorators.js';
-import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { IsNull } from 'typeorm';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 import type { UsersRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { Hono } from 'hono';
 
 @Injectable()
 export class AvatarRedirectServerService {
@@ -52,25 +51,15 @@ export class AvatarRedirectServerService {
 		return this.userEntityService.getIdenticonUrl(user);
 	}
 
-	@bindThis
-	public createServer(
-		fastify: FastifyInstance,
-		options: FastifyPluginOptions,
-		done: (err?: Error) => void,
-	) {
-		fastify.get<{ Params: { acct: string } }>(
-			'/avatar/@:acct',
-			async (request, reply) => {
-				const url = await this.getAvatarUrl(
-					request.params.acct,
-					this.config.host,
-				);
+	public createServer(): Hono {
+		return new Hono().get('/:acct', async (c) => {
+			const url = await this.getAvatarUrl(
+				c.req.param('acct'),
+				this.config.host,
+			);
 
-				reply.header('Cache-Control', 'public, max-age=86400');
-				return reply.redirect(url ?? this.fallbackUrl);
-			},
-		);
-
-		done();
+			c.header('Cache-Control', 'public, max-age=86400');
+			return c.redirect(url ?? this.fallbackUrl);
+		});
 	}
 }

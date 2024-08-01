@@ -6,14 +6,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IsNull } from 'typeorm';
 import type { Feed } from 'feed';
-import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import fastifyCookie from '@fastify/cookie';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 import type { UsersRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 import { FeedService } from '@/core/FeedService.js';
+import { Hono } from 'hono';
 
 @Injectable()
 export class UserFeedServerService {
@@ -41,62 +39,40 @@ export class UserFeedServerService {
 		return await this.feedService.packFeed(user);
 	}
 
-	@bindThis
-	public createServer(
-		fastify: FastifyInstance,
-		options: FastifyPluginOptions,
-		done: (err?: Error) => void,
-	) {
-		fastify.register(fastifyCookie, {});
+	public createServer(): Hono {
+		return new Hono().get('/:user{^@\\S+\\.(atom)|(rss)|(json)$}', async (c, next) => {
+			const matchResult = c.req.param('user').match(/^@(\S+)\.((?:atom)|(?:rss)|(?:json))$/);
+			if (matchResult === null) {
+				await next();
+				return;
+			}
 
-		// Atom
-		fastify.get<{ Params: { user: string } }>(
-			'/@:user.atom',
-			async (request, reply) => {
-				const feed = await this.getFeed(request.params.user);
+			const acct = matchResult[1];
+			if (acct === undefined) return c.body(null, 500);
 
-				if (feed) {
-					reply.header('Content-Type', 'application/atom+xml; charset=utf-8');
-					return feed.atom1();
-				} else {
-					reply.code(404);
-					return;
+			const type = matchResult[2];
+			if (type === undefined) return c.body(null, 500);
+
+			const feed = await this.getFeed(acct);
+			if (feed === null) return c.notFound();
+
+			switch (type) {
+				case 'atom': {
+					c.header('Content-Type', 'application/atom+xml; charset=utf-8');
+					return c.body(feed.atom1());
 				}
-			},
-		);
-
-		// RSS
-		fastify.get<{ Params: { user: string } }>(
-			'/@:user.rss',
-			async (request, reply) => {
-				const feed = await this.getFeed(request.params.user);
-
-				if (feed) {
-					reply.header('Content-Type', 'application/rss+xml; charset=utf-8');
-					return feed.rss2();
-				} else {
-					reply.code(404);
-					return;
+				case 'rss': {
+					c.header('Content-Type', 'application/rss+xml; charset=utf-8');
+					return c.body(feed.rss2());
 				}
-			},
-		);
-
-		// JSON
-		fastify.get<{ Params: { user: string } }>(
-			'/@:user.json',
-			async (request, reply) => {
-				const feed = await this.getFeed(request.params.user);
-
-				if (feed) {
-					reply.header('Content-Type', 'application/json; charset=utf-8');
-					return feed.json1();
-				} else {
-					reply.code(404);
-					return;
+				case 'json': {
+					c.header('Content-Type', 'application/json; charset=utf-8');
+					return c.body(feed.json1());
 				}
-			},
-		);
-
-		done();
+				default: {
+					return c.body(null, 500);
+				}
+			}
+		});
 	}
 }

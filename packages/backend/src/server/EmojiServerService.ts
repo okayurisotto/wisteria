@@ -4,74 +4,52 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import ms from 'ms';
 import sharp from 'sharp';
-import { bindThis } from '@/decorators.js';
-import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { FLUENT_EMOJI_DIR, TWEMOJI_DIR } from '@/path.js';
+import path from 'node:path';
+import { Hono, type MiddlewareHandler } from 'hono';
+import { serveStaticDir } from 'hono-serve-static';
 
 @Injectable()
 export class EmojiServerService {
-	@bindThis
-	public createServer(
-		fastify: FastifyInstance,
-		options: FastifyPluginOptions,
-		done: (err?: Error) => void,
-	) {
-		fastify.get<{ Params: { path: string } }>(
-			'/fluent-emoji/:path(.*)',
-			async (request, reply) => {
-				const path = request.params.path;
+	public createServer(): Hono {
+		const hono = new Hono();
 
-				if (!path.match(/^[0-9a-f-]+\.png$/)) {
-					reply.code(404);
-					return;
-				}
+		const setEmojiHeaders: MiddlewareHandler = async (c, next) => {
+			c.header('Content-Security-Policy', 'default-src \'none\'; style-src \'unsafe-inline\'');
+			c.header('Cache-Control', `max-age=${30 * 24 * 60 * 60}`);
+			await next();
+		};
 
-				reply.header(
-					'Content-Security-Policy',
-					"default-src 'none'; style-src 'unsafe-inline'",
-				);
-
-				return await reply.sendFile(path, FLUENT_EMOJI_DIR, {
-					maxAge: ms('30 days'),
-				});
-			},
+		hono.get(
+			'/fluent-emoji/:path',
+			setEmojiHeaders,
+			serveStaticDir({
+				path: FLUENT_EMOJI_DIR,
+				mountpoint: '/fluent-emoji/',
+				index: null,
+			}),
 		);
 
-		fastify.get<{ Params: { path: string } }>(
-			'/twemoji/:path(.*)',
-			async (request, reply) => {
-				const path = request.params.path;
-
-				if (!path.match(/^[0-9a-f-]+\.svg$/)) {
-					reply.code(404);
-					return;
-				}
-
-				reply.header(
-					'Content-Security-Policy',
-					"default-src 'none'; style-src 'unsafe-inline'",
-				);
-
-				return await reply.sendFile(path, TWEMOJI_DIR, {
-					maxAge: ms('30 days'),
-				});
-			},
+		hono.get(
+			'/twemoji/:path',
+			setEmojiHeaders,
+			serveStaticDir({
+				path: TWEMOJI_DIR,
+				mountpoint: '/twemoji/',
+				index: null,
+			}),
 		);
 
-		fastify.get<{ Params: { path: string } }>(
-			'/twemoji-badge/:path(.*)',
-			async (request, reply) => {
-				const path = request.params.path;
-
-				if (!path.match(/^[0-9a-f-]+\.png$/)) {
-					reply.code(404);
-					return;
-				}
+		hono.get(
+			'/twemoji-badge/:path',
+			setEmojiHeaders,
+			async (c) => {
+				const filepath = c.req.param('path');
+				if (!filepath.match(/^[0-9a-f-]+\.png$/)) return c.notFound();
 
 				const mask = await sharp(
-					TWEMOJI_DIR + `/${path.replace('.png', '')}.svg`,
+					path.join(TWEMOJI_DIR, filepath.replace(/\.png$/, '.svg')),
 					{ density: 1000 },
 				)
 					.resize(488, 488)
@@ -104,16 +82,11 @@ export class EmojiServerService {
 					.png()
 					.toBuffer();
 
-				reply.header(
-					'Content-Security-Policy',
-					"default-src 'none'; style-src 'unsafe-inline'",
-				);
-				reply.header('Cache-Control', 'max-age=2592000');
-				reply.header('Content-Type', 'image/png');
-				return buffer;
+				c.header('Content-Type', 'image/png');
+				return c.body(buffer);
 			},
 		);
 
-		done();
+		return hono;
 	}
 }

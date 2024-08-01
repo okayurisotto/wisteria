@@ -3,9 +3,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-
 import * as fs from 'node:fs';
 import { Inject, Injectable } from '@nestjs/common';
 import sharp, { type Sharp } from 'sharp';
@@ -21,16 +18,8 @@ import {
 } from '@/core/ImageProcessingService.js';
 import { contentDisposition } from '@/misc/content-disposition.js';
 import { LoggerService } from '@/core/LoggerService.js';
-import { bindThis } from '@/decorators.js';
 import { isMimeImage } from '@/misc/is-mime-image.js';
 import { correctFilename } from '@/misc/correct-filename.js';
-import type {
-	FastifyInstance,
-	FastifyRequest,
-	FastifyReply,
-	FastifyPluginOptions,
-} from 'fastify';
-import { ASSETS_DIR } from '@/path.js';
 import { envOption } from '@/env.js';
 import { z } from 'zod';
 import {
@@ -45,6 +34,7 @@ import {
 	chunk,
 	parseBytesRangeHeaderValue,
 } from '@/misc/range-header-value.js';
+import { Hono, type Context } from 'hono';
 
 @Injectable()
 export class FileProxyServerService {
@@ -61,75 +51,52 @@ export class FileProxyServerService {
 		this.logger = this.loggerService.getLogger('server', 'gray');
 	}
 
-	@bindThis
-	public createServer(
-		fastify: FastifyInstance,
-		options: FastifyPluginOptions,
-		done: (err?: Error) => void,
-	) {
-		fastify.addHook('onRequest', (request, reply, done) => {
-			reply.header(
-				'Content-Security-Policy',
-				"default-src 'none'; img-src 'self'; media-src 'self'; style-src 'unsafe-inline'",
-			);
+	public createServer(): Hono {
+		return new Hono().get(
+			'/:url?',
+			async (c, next) => {
+				c.header('Content-Security-Policy', 'default-src \'none\'; img-src \'self\'; media-src \'self\'; style-src \'unsafe-inline\'');
 
-			if (envOption.isDevelopment) {
-				reply.header('Access-Control-Allow-Origin', '*');
-			}
+				if (!envOption.isProduction) {
+					c.header('Access-Control-Allow-Origin', '*');
+				}
 
-			done();
-		});
-
-		fastify.get<{
-			Params: { url: string };
-			Querystring: { url?: string };
-		}>('/proxy/:url*', async (request, reply) => {
-			try {
-				return await this.proxyHandler(request, reply);
-			} catch (err: unknown) {
-				this.errorHandler(request, reply, err);
-				return;
-			}
-		});
-
-		done();
+				await next();
+			},
+			async (c) => {
+				try {
+					return await this.proxyHandler(c);
+				} catch (err: unknown) {
+					return this.errorHandler(c, err);
+				}
+			},
+		);
 	}
 
-	private errorHandler(
-		request: FastifyRequest<{
-			Params?: { [x: string]: unknown };
-			Querystring?: { [x: string]: unknown };
-		}>,
-		reply: FastifyReply,
-		err?: unknown,
-	): void {
+	private errorHandler(c: Context, err?: unknown): Response {
 		this.logger.error(`${err}`);
 
-		reply.header('Cache-Control', 'max-age=300');
+		c.header('Cache-Control', 'max-age=300');
 
-		if (request.query && 'fallback' in request.query) {
-			reply.sendFile('/dummy.png', ASSETS_DIR);
-			return;
+		if (c.req.query('fallback') !== undefined) {
+			// TODO
+			// return c.body('/dummy.png', ASSETS_DIR);
+
+			return c.body(null);
 		}
 
 		if (err instanceof InvalidFileKeyError) {
-			reply.code(400);
-			return;
+			return c.body(null, 400);
 		}
 
-		if (
-			err instanceof StatusError &&
-			(err.statusCode === 302 || err.isClientError)
-		) {
-			reply.code(err.statusCode);
-			return;
+		if (err instanceof StatusError && (err.statusCode === 302 || err.isClientError)) {
+			return c.body(null, err.statusCode);
 		}
 
-		reply.code(500);
-		return;
+		return c.body(null, 500);
 	}
 
-	private async proxyHandler(request: FastifyRequest, reply: FastifyReply) {
+	private async proxyHandler(c: Context) {
 		const query = z
 			.object({
 				url: z.string().optional(),
@@ -140,13 +107,13 @@ export class FileProxyServerService {
 				preview: z.string().optional(),
 				badge: z.string().optional(),
 			})
-			.parse(request.query);
+			.parse(c.req.query());
 
 		const params = z
 			.object({
 				url: z.string().optional(),
 			})
-			.parse(request.params);
+			.parse(c.req.param());
 
 		const opts = {
 			url: query.url ?? (params.url ? 'https://' + params.url : null),
@@ -160,11 +127,10 @@ export class FileProxyServerService {
 		} as const;
 
 		if (opts.url === null) {
-			reply.code(400);
-			return;
+			return c.body(null, 400);
 		}
 
-		const range_ = request.headers.range ?? null;
+		const range_ = c.req.header('range') ?? null;
 
 		const range = (() => {
 			if (range_ === null) return null;
@@ -179,10 +145,10 @@ export class FileProxyServerService {
 			return result.ranges[0] ?? null;
 		})();
 
-		//#region 外部のメディアプロキシが有効なら、そちらにリダイレクト
+		// #region 外部のメディアプロキシが有効なら、そちらにリダイレクト
 
 		if (this.config.externalMediaProxyEnabled && !opts.mustOrigin) {
-			reply.header('Cache-Control', 'public, max-age=259200'); // 3 days
+			c.header('Cache-Control', 'public, max-age=259200'); // 3 days
 
 			const url = new URL(`${this.config.mediaProxy}/${params.url ?? ''}`);
 
@@ -193,22 +159,23 @@ export class FileProxyServerService {
 			if (opts.static) url.searchParams.set('static', '');
 			if (opts.url) url.searchParams.set('url', '');
 
-			return await reply.redirect(301, url.href);
+			return c.redirect(url.href, 301);
 		}
 
-		//#endregion
+		// #endregion
 
 		const fileResult = await this.fileGetService.getFromUrl(opts.url);
 
 		if (!fileResult.ok) {
 			if (fileResult.error instanceof DatabaseRecordNotFoundError) {
-				reply.code(404);
-				reply.header('Cache-Control', 'max-age=86400');
-				return reply.sendFile('/dummy.png', ASSETS_DIR);
+				// TODO
+				// c.code(404);
+				// c.header('Cache-Control', 'max-age=86400');
+				// return c.sendFile('/dummy.png', ASSETS_DIR);
+
+				return c.notFound();
 			} else if (fileResult.error instanceof UnknownError) {
-				reply.code(204);
-				reply.header('Cache-Control', 'max-age=86400');
-				return;
+				return c.body(null, 204, { 'Cache-Control': 'max-age=86400' });
 			} else if (fileResult.error instanceof DownloadError) {
 				throw fileResult.error.data;
 			} else if (fileResult.error instanceof InvalidFileKeyError) {
@@ -254,7 +221,7 @@ export class FileProxyServerService {
 						.webp(webpDefault);
 
 					image = {
-						data,
+						data: await data.toBuffer(),
 						ext: 'webp',
 						type: 'image/webp',
 					};
@@ -335,12 +302,12 @@ export class FileProxyServerService {
 							type: file.mime,
 						};
 
-						reply.header(
+						c.header(
 							'Content-Range',
 							`bytes ${start}-${end}/${file.file.size}`,
 						);
-						reply.header('Accept-Ranges', 'bytes');
-						reply.header('Content-Length', chunksize);
+						c.header('Accept-Ranges', 'bytes');
+						c.header('Content-Length', chunksize.toString());
 					} else {
 						image = {
 							data: fs.createReadStream(file.path),
@@ -362,13 +329,11 @@ export class FileProxyServerService {
 				}
 			}
 
-			reply.header('Content-Type', image.type);
-			reply.header('Cache-Control', 'max-age=31536000, immutable');
-			reply.header(
-				'Content-Disposition',
-				contentDisposition('inline', correctFilename(file.filename, image.ext)),
-			);
-			return image.data;
+			c.header('Content-Type', image.type);
+			c.header('Cache-Control', 'max-age=31536000, immutable');
+			c.header('Content-Disposition', contentDisposition('inline', correctFilename(file.filename, image.ext)));
+
+			return c.body(image.data);
 		} catch (e) {
 			if (!(file instanceof InternalFile)) file.cleanup();
 			throw e;

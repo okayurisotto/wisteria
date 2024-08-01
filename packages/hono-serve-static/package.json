@@ -1,0 +1,21 @@
+{
+	"name": "hono-serve-static",
+	"type": "module",
+	"license": "MIT",
+	"scripts": {
+		"build": "tsup"
+	},
+	"exports": {
+		"import": "./built/index.js",
+		"types": "./built/index.d.ts"
+	},
+	"devDependencies": {
+		"@tsconfig/node-lts": "^20.1.3",
+		"@types/node": "^20.14.13",
+		"tsup": "^8.2.3"
+	},
+	"dependencies": {
+		"hono": "^4.5.3",
+		"mime": "^4.0.4"
+	}
+}

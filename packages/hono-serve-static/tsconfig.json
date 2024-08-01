@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"noEmit": true
+	},
+	"extends": [
+		"@tsconfig/strictest/tsconfig.json",
+		"@tsconfig/node-lts/tsconfig.json"
+	],
+	"include": ["src"]
+}

@@ -16,12 +16,11 @@ import { SignupService } from '@/core/SignupService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { EmailService } from '@/core/EmailService.js';
 import type { MiLocalUser } from '@/models/User.js';
-import { FastifyReplyError } from '@/misc/fastify-reply-error.js';
-import { bindThis } from '@/decorators.js';
 import { L_CHARS, secureRndstr } from '@/misc/secure-rndstr.js';
 import { SigninService } from './SigninService.js';
-import type { FastifyRequest, FastifyReply } from 'fastify';
 import { envOption } from '@/env.js';
+import type { Context } from 'hono';
+import { z } from 'zod';
 
 @Injectable()
 export class SignupApiService {
@@ -51,27 +50,24 @@ export class SignupApiService {
 		private signupService: SignupService,
 		private signinService: SigninService,
 		private emailService: EmailService,
-	) {
-	}
+	) {}
 
-	@bindThis
-	public async signup(
-		request: FastifyRequest<{
-			Body: {
-				username: string;
-				password: string;
-				host?: string;
-				invitationCode?: string;
-				emailAddress?: string;
-				'hcaptcha-response'?: string;
-				'g-recaptcha-response'?: string;
-				'turnstile-response'?: string;
-				'm-captcha-response'?: string;
-			};
-		}>,
-		reply: FastifyReply,
-	) {
-		const body = request.body;
+	public async signup(c: Context): Promise<Response> {
+		const body = z.object({
+			'username': z.string(),
+			'password': z.string(),
+			'host': z.string().nullish(),
+			'invitationCode': z.string().nullish(),
+			'emailAddress': z.string().nullish(),
+			'hcaptcha-response': z.string().nullish(),
+			'm-captcha-response': z.string().nullish(),
+			'g-recaptcha-response': z.string().nullish(),
+			'turnstile-response': z.string().nullish(),
+		}).safeParse(await c.req.json()).data;
+
+		if (body === undefined) {
+			return c.json(null, 400);
+		}
 
 		const instance = await this.metaService.fetch();
 
@@ -79,26 +75,26 @@ export class SignupApiService {
 		// ただしテスト時はこの機構は障害となるため無効にする
 		if (!envOption.isTest) {
 			if (instance.enableHcaptcha && instance.hcaptchaSecretKey) {
-				await this.captchaService.verifyHcaptcha(instance.hcaptchaSecretKey, body['hcaptcha-response']).catch((err: unknown) => {
-					throw new FastifyReplyError(400, err);
+				await this.captchaService.verifyHcaptcha(instance.hcaptchaSecretKey, body['hcaptcha-response']).catch(() => {
+					return c.text('UNKNOWN_ERROR', 400);
 				});
 			}
 
 			if (instance.enableMcaptcha && instance.mcaptchaSecretKey && instance.mcaptchaSitekey && instance.mcaptchaInstanceUrl) {
-				await this.captchaService.verifyMcaptcha(instance.mcaptchaSecretKey, instance.mcaptchaSitekey, instance.mcaptchaInstanceUrl, body['m-captcha-response']).catch((err: unknown) => {
-					throw new FastifyReplyError(400, err);
+				await this.captchaService.verifyMcaptcha(instance.mcaptchaSecretKey, instance.mcaptchaSitekey, instance.mcaptchaInstanceUrl, body['m-captcha-response']).catch(() => {
+					return c.text('UNKNOWN_ERROR', 400);
 				});
 			}
 
 			if (instance.enableRecaptcha && instance.recaptchaSecretKey) {
-				await this.captchaService.verifyRecaptcha(instance.recaptchaSecretKey, body['g-recaptcha-response']).catch((err: unknown) => {
-					throw new FastifyReplyError(400, err);
+				await this.captchaService.verifyRecaptcha(instance.recaptchaSecretKey, body['g-recaptcha-response']).catch(() => {
+					return c.text('UNKNOWN_ERROR', 400);
 				});
 			}
 
 			if (instance.enableTurnstile && instance.turnstileSecretKey) {
-				await this.captchaService.verifyTurnstile(instance.turnstileSecretKey, body['turnstile-response']).catch((err: unknown) => {
-					throw new FastifyReplyError(400, err);
+				await this.captchaService.verifyTurnstile(instance.turnstileSecretKey, body['turnstile-response']).catch(() => {
+					return c.text('UNKNOWN_ERROR', 400);
 				});
 			}
 		}
@@ -110,24 +106,21 @@ export class SignupApiService {
 		const emailAddress = body['emailAddress'];
 
 		if (instance.emailRequiredForSignup) {
-			if (emailAddress == null || typeof emailAddress !== 'string') {
-				reply.code(400);
-				return;
+			if (emailAddress == null) {
+				return c.text('UNKNOWN_ERROR', 400);
 			}
 
 			const res = await this.emailService.validateEmailForAccount(emailAddress);
 			if (!res.available) {
-				reply.code(400);
-				return;
+				return c.text('UNKNOWN_ERROR', 400);
 			}
 		}
 
 		let ticket: MiRegistrationTicket | null = null;
 
 		if (instance.disableRegistration) {
-			if (invitationCode == null || typeof invitationCode !== 'string') {
-				reply.code(400);
-				return;
+			if (invitationCode == null) {
+				return c.text('UNKNOWN_ERROR', 400);
 			}
 
 			ticket = await this.registrationTicketsRepository.findOneBy({
@@ -135,47 +128,42 @@ export class SignupApiService {
 			});
 
 			if (ticket == null || ticket.usedById != null) {
-				reply.code(400);
-				return;
+				return c.text('UNKNOWN_ERROR', 400);
 			}
 
 			if (ticket.expiresAt && ticket.expiresAt < new Date()) {
-				reply.code(400);
-				return;
+				return c.text('UNKNOWN_ERROR', 400);
 			}
 
 			// メアド認証が有効の場合
 			if (instance.emailRequiredForSignup) {
 				// メアド認証済みならエラー
 				if (ticket.usedBy) {
-					reply.code(400);
-					return;
+					return c.text('UNKNOWN_ERROR', 400);
 				}
 
 				// 認証しておらず、メール送信から30分以内ならエラー
 				if (ticket.usedAt && ticket.usedAt.getTime() + (1000 * 60 * 30) > Date.now()) {
-					reply.code(400);
-					return;
+					return c.text('UNKNOWN_ERROR', 400);
 				}
 			} else if (ticket.usedAt) {
-				reply.code(400);
-				return;
+				return c.text('UNKNOWN_ERROR', 400);
 			}
 		}
 
 		if (instance.emailRequiredForSignup) {
 			if (await this.usersRepository.exists({ where: { usernameLower: username.toLowerCase(), host: IsNull() } })) {
-				throw new FastifyReplyError(400, 'DUPLICATED_USERNAME');
+				return c.text('DUPLICATED_USERNAME', 400);
 			}
 
 			// Check deleted username duplication
 			if (await this.usedUsernamesRepository.exists({ where: { username: username.toLowerCase() } })) {
-				throw new FastifyReplyError(400, 'USED_USERNAME');
+				return c.text('USED_USERNAME', 400);
 			}
 
 			const isPreserved = instance.preservedUsernames.map(x => x.toLowerCase()).includes(username.toLowerCase());
 			if (isPreserved) {
-				throw new FastifyReplyError(400, 'DENIED_USERNAME');
+				return c.text('DENIED_USERNAME', 400);
 			}
 
 			const code = secureRndstr(16, { chars: L_CHARS });
@@ -187,7 +175,7 @@ export class SignupApiService {
 			const pendingUser = await this.userPendingsRepository.insert({
 				id: this.idService.gen(),
 				code,
-				email: emailAddress!,
+				email: emailAddress,
 				username: username,
 				password: hash,
 			}).then(x => this.userPendingsRepository.findOneByOrFail(x.identifiers[0]));
@@ -205,8 +193,7 @@ export class SignupApiService {
 				});
 			}
 
-			reply.code(204);
-			return;
+			return c.body(null, 204);
 		} else {
 			try {
 				const { account, secret } = await this.signupService.signup({
@@ -226,35 +213,33 @@ export class SignupApiService {
 					});
 				}
 
-				return {
+				return c.json({
 					...res,
 					token: secret,
-				};
+				});
 			} catch (err) {
-				throw new FastifyReplyError(400, typeof err === 'string' ? err : (err as Error).toString());
+				return c.text(typeof err === 'string' ? err : 'UNKNOWN_ERROR', 400);
 			}
 		}
 	}
 
-	@bindThis
-	public async signupPending(request: FastifyRequest<{ Body: { code: string } }>, reply: FastifyReply) {
-		const body = request.body;
-
-		const code = body['code'];
+	public async signupPending(c: Context): Promise<Response> {
+		const body = z.object({ code: z.string() }).safeParse(await c.req.json()).data;
+		if (body === undefined) return c.text('UNKNOWN_ERROR', 400);
 
 		try {
-			const pendingUser = await this.userPendingsRepository.findOneByOrFail({ code });
+			const pendingUser = await this.userPendingsRepository.findOneByOrFail({ code: body.code });
 
 			if (this.idService.parse(pendingUser.id).date.getTime() + (1000 * 60 * 30) < Date.now()) {
-				throw new FastifyReplyError(400, 'EXPIRED');
+				return c.text('EXPIRED', 400);
 			}
 
-			const { account, secret } = await this.signupService.signup({
+			const { account } = await this.signupService.signup({
 				username: pendingUser.username,
 				passwordHash: pendingUser.password,
 			});
 
-			this.userPendingsRepository.delete({
+			await this.userPendingsRepository.delete({
 				id: pendingUser.id,
 			});
 
@@ -275,9 +260,9 @@ export class SignupApiService {
 				});
 			}
 
-			return this.signinService.signin(request, reply, account as MiLocalUser);
+			return this.signinService.signin(c, account as MiLocalUser);
 		} catch (err) {
-			throw new FastifyReplyError(400, typeof err === 'string' ? err : (err as Error).toString());
+			return c.text(typeof err === 'string' ? err : 'UNKNOWN_ERROR', 400);
 		}
 	}
 }

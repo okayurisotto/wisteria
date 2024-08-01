@@ -14,7 +14,7 @@ import { query } from '@/misc/prelude/url.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import { bindThis } from '@/decorators.js';
 import { ApiError } from '@/server/api/error.js';
-import type { FastifyRequest, FastifyReply } from 'fastify';
+import type { Context } from 'hono';
 
 @Injectable()
 export class UrlPreviewService {
@@ -43,41 +43,33 @@ export class UrlPreviewService {
 			: null;
 	}
 
-	@bindThis
-	public async handle(
-		request: FastifyRequest<{ Querystring: { url: string; lang?: string } }>,
-		reply: FastifyReply,
-	): Promise<object | undefined> {
-		const url = request.query.url;
-		if (typeof url !== 'string') {
-			reply.code(400);
-			return;
-		}
+	public async handle(c: Context): Promise<Response> {
+		const url = c.req.query('url');
+		if (typeof url !== 'string') return c.body(null, 400);
 
-		const lang = request.query.lang;
-		if (Array.isArray(lang)) {
-			reply.code(400);
-			return;
-		}
+		const lang = c.req.query('lang') ?? 'ja-JP';
 
 		const meta = await this.metaService.fetch();
 
-		this.logger.info(meta.summalyProxy
-			? `(Proxy) Getting preview of ${url}@${lang} ...`
-			: `Getting preview of ${url}@${lang} ...`);
+		this.logger.info(
+			meta.summalyProxy
+				? `(Proxy) Getting preview of ${url}@${lang} ...`
+				: `Getting preview of ${url}@${lang} ...`,
+		);
+
 		try {
 			const summary = meta.summalyProxy
-				? await this.httpRequestService.getJson<ReturnType<typeof summaly>>(`${meta.summalyProxy}?${query({
-					url: url,
-					lang: lang ?? 'ja-JP',
-				})}`)
+				? await this.httpRequestService.getJson<ReturnType<typeof summaly>>(
+					`${meta.summalyProxy}?${query({ url: url, lang: lang })}`)
 				: await summaly(url, {
 					followRedirects: false,
-					lang: lang ?? 'ja-JP',
-					agent: this.config.proxy ? {
-						http: this.httpRequestService.httpAgent,
-						https: this.httpRequestService.httpsAgent,
-					} : undefined,
+					lang: lang,
+					agent: this.config.proxy
+						? {
+								http: this.httpRequestService.httpAgent,
+								https: this.httpRequestService.httpsAgent,
+							}
+						: {},
 				});
 
 			this.logger.succ(`Got preview of ${url}: ${summary.title}`);
@@ -94,20 +86,18 @@ export class UrlPreviewService {
 			summary.thumbnail = this.wrap(summary.thumbnail);
 
 			// Cache 7days
-			reply.header('Cache-Control', 'max-age=604800, immutable');
+			c.header('Cache-Control', 'max-age=604800, immutable');
 
-			return summary;
+			return c.json(summary);
 		} catch (err) {
 			this.logger.warn(`Failed to get preview of ${url}: ${err}`);
-			reply.code(422);
-			reply.header('Cache-Control', 'max-age=86400, immutable');
-			return {
-				error: new ApiError({
-					message: 'Failed to get preview',
-					code: 'URL_PREVIEW_FAILED',
-					id: '09d01cb5-53b9-4856-82e5-38a50c290a3b',
-				}),
-			};
+
+			return new ApiError({
+				message: 'Failed to get preview',
+				code: 'URL_PREVIEW_FAILED',
+				id: '09d01cb5-53b9-4856-82e5-38a50c290a3b',
+				httpStatusCode: 422,
+			}).serialize().reply(c);
 		}
 	}
 }
