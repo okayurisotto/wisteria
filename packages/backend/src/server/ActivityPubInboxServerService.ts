@@ -6,7 +6,7 @@
 import * as crypto from 'node:crypto';
 import { IncomingMessage } from 'node:http';
 import { Inject, Injectable } from '@nestjs/common';
-import httpSignature from '@peertube/http-signature';
+import httpSignature from 'http-signature';
 import secureJson from 'secure-json-parse';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';

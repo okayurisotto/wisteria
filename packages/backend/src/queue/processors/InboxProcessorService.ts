@@ -5,7 +5,7 @@
 
 import { URL } from 'node:url';
 import { Injectable } from '@nestjs/common';
-import httpSignature from '@peertube/http-signature';
+import httpSignature from 'http-signature';
 import * as Bull from 'bullmq';
 import type Logger from '@/logger.js';
 import { MetaService } from '@/core/MetaService.js';

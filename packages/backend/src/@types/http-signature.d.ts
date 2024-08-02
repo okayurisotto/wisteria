@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-declare module '@peertube/http-signature' {
+declare module 'http-signature' {
 	import type { IncomingMessage, ClientRequest } from 'node:http';
 
 	interface ISignature {
