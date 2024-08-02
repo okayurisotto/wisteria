@@ -853,12 +853,15 @@ importers:
         specifier: ^1.14.1
         version: 1.17.0
     devDependencies:
+      '@types/node':
+        specifier: ^20.14.13
+        version: 20.14.13
       tap:
         specifier: ^16.2.0
         version: 16.3.10(typescript@5.5.4)
       tsup:
         specifier: ^8.2.3
-        version: 8.2.3(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
+        version: 8.2.3(@microsoft/api-extractor@7.47.3(@types/node@20.14.13))(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
       uuid:
         specifier: ^8.3.2
         version: 8.3.2
@@ -879,7 +882,7 @@ importers:
         version: 0.3.0
       tsup:
         specifier: ^8.2.3
-        version: 8.2.3(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
+        version: 8.2.3(@microsoft/api-extractor@7.47.3(@types/node@20.14.13))(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
@@ -904,7 +907,7 @@ importers:
         version: 3.0.8
       tsup:
         specifier: ^8.2.3
-        version: 8.2.3(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
+        version: 8.2.3(@microsoft/api-extractor@7.47.3(@types/node@20.14.13))(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -990,7 +993,7 @@ importers:
     devDependencies:
       tsup:
         specifier: ^8.2.3
-        version: 8.2.3(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
+        version: 8.2.3(@microsoft/api-extractor@7.47.3(@types/node@20.14.13))(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -1009,7 +1012,7 @@ importers:
         version: 0.0.67
       tsup:
         specifier: ^8.2.3
-        version: 8.2.3(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
+        version: 8.2.3(@microsoft/api-extractor@7.47.3(@types/node@20.14.13))(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -21574,7 +21577,7 @@ snapshots:
       - tsx
       - yaml
 
-  tsup@8.2.3(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4):
+  tsup@8.2.3(@microsoft/api-extractor@7.47.3(@types/node@20.14.13))(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4):
     dependencies:
       bundle-require: 5.0.0(esbuild@0.23.0)
       cac: 6.7.14

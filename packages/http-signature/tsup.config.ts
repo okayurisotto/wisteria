@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-	entry: ['./lib/index.js'],
+	entry: ['./lib/index.ts'],
 	format: 'cjs',
 	keepNames: true,
 	minify: true,

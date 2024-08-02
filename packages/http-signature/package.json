@@ -16,6 +16,7 @@
 		"sshpk": "^1.14.1"
 	},
 	"devDependencies": {
+		"@types/node": "^20.14.13",
 		"tap": "^16.2.0",
 		"tsup": "^8.2.3",
 		"uuid": "^8.3.2"
