@@ -3,7 +3,7 @@
 import assert from 'assert-plus';
 import crypto from 'crypto';
 import sshpk from 'sshpk';
-import utils from './utils';
+import utils from './utils.js';
 
 var HASH_ALGOS = utils.HASH_ALGOS;
 var PK_ALGOS = utils.PK_ALGOS;
@@ -13,7 +13,7 @@ var validateAlgorithm = utils.validateAlgorithm;
 
 ///--- Exported API
 
-module.exports = {
+export default {
   /**
    * Verify RSA/DSA signature against public key.  You are expected to pass in
    * an object that was returned from `parse()`.

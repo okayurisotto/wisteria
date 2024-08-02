@@ -1,29 +1,44 @@
 // Copyright 2015 Joyent, Inc.
 
-import parser from './parser';
-import signer from './signer';
-import verify from './verify';
-import utils from './utils';
+import parser from './parser.js';
+import signer from './signer.js';
+import verify_ from './verify.js';
+import utils from './utils.js';
 
 
 
 ///--- API
 
-module.exports = {
+export default {
+	parse: parser.parseRequest,
+	parseRequest: parser.parseRequest,
 
-  parse: parser.parseRequest,
-  parseRequest: parser.parseRequest,
+	sign: signer.signRequest,
+	signRequest: signer.signRequest,
+	createSigner: signer.createSigner,
+	isSigner: signer.isSigner,
 
-  sign: signer.signRequest,
-  signRequest: signer.signRequest,
-  createSigner: signer.createSigner,
-  isSigner: signer.isSigner,
+	sshKeyToPEM: utils.sshKeyToPEM,
+	sshKeyFingerprint: utils.fingerprint,
+	pemToRsaSSHKey: utils.pemToRsaSSHKey,
 
-  sshKeyToPEM: utils.sshKeyToPEM,
-  sshKeyFingerprint: utils.fingerprint,
-  pemToRsaSSHKey: utils.pemToRsaSSHKey,
-
-  verify: verify.verifySignature,
-  verifySignature: verify.verifySignature,
-  verifyHMAC: verify.verifyHMAC
+	verify: verify_.verifySignature,
+	verifySignature: verify_.verifySignature,
+	verifyHMAC: verify_.verifyHMAC,
 };
+
+export const parse = parser.parseRequest;
+export const parseRequest = parser.parseRequest;
+
+export const sign = signer.signRequest;
+export const signRequest = signer.signRequest;
+export const createSigner = signer.createSigner;
+export const isSigner = signer.isSigner;
+
+export const sshKeyToPEM = utils.sshKeyToPEM;
+export const sshKeyFingerprint = utils.fingerprint;
+export const pemToRsaSSHKey = utils.pemToRsaSSHKey;
+
+export const verify = verify_.verifySignature;
+export const verifySignature = verify_.verifySignature;
+export const verifyHMAC = verify_.verifyHMAC;

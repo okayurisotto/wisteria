@@ -1,14 +1,14 @@
 // Copyright 2011 Joyent, Inc.  All rights reserved.
 
-var crypto = require('crypto');
-var fs = require('fs');
-var http = require('http');
-var sshpk = require('sshpk');
+import { generateKeyPairSync } from 'crypto';
+import { readFileSync } from 'fs';
+import { createServer, request } from 'http';
+import sshpk from 'sshpk';
 
-var test = require('tap').test;
-var uuid = require('uuid').v4;
+import { test } from 'tap';
+import { v4 as uuid } from 'uuid';
 
-var httpSignature = require('../built/index');
+import { sign as _sign, createSigner } from '../built/index.js';
 
 
 
@@ -31,13 +31,13 @@ var socket = null;
 
 
 test('setup', function(t) {
-  rsaPrivate = fs.readFileSync(__dirname + '/rsa_private.pem', 'ascii');
-  rsaPrivateEncrypted = fs.readFileSync(__dirname + '/rsa_private_encrypted.pem', 'ascii');
-  dsaPrivate = fs.readFileSync(__dirname + '/dsa_private.pem', 'ascii');
-  ecdsaPrivate = fs.readFileSync(__dirname + '/ecdsa_private.pem', 'ascii');
+  rsaPrivate = readFileSync(import.meta.dirname + '/rsa_private.pem', 'ascii');
+  rsaPrivateEncrypted = readFileSync(import.meta.dirname + '/rsa_private_encrypted.pem', 'ascii');
+  dsaPrivate = readFileSync(import.meta.dirname + '/dsa_private.pem', 'ascii');
+  ecdsaPrivate = readFileSync(import.meta.dirname + '/ecdsa_private.pem', 'ascii');
 
   {
-    const { privateKey } = crypto.generateKeyPairSync('ed25519', {
+    const { privateKey } = generateKeyPairSync('ed25519', {
         publicKeyEncoding: {
           type: 'spki',
           format: 'pem'
@@ -59,7 +59,7 @@ test('setup', function(t) {
 
   socket = '/tmp/.' + uuid();
 
-  server = http.createServer(function(req, res) {
+  server = createServer(function(req, res) {
     res.writeHead(200);
     res.end();
   });
@@ -84,11 +84,11 @@ test('setup', function(t) {
 
 
 test('defaults', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   req._stringToSign = null;
-  t.ok(httpSignature.sign(req, signOptions));
+  t.ok(_sign(req, signOptions));
   var authz = req.getHeader('Authorization');
   t.ok(authz);
 
@@ -104,13 +104,13 @@ test('defaults', function(t) {
 });
 
 test('with custom authorizationHeaderName', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   req._stringToSign = null;
   var opts = Object.create(signOptions);
   opts.authorizationHeaderName = 'x-auths';
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   var authz = req.getHeader('x-auths');
   t.ok(authz);
 
@@ -127,7 +127,7 @@ test('with custom authorizationHeaderName', function(t) {
 
 
 test('request line strict unspecified', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -137,7 +137,7 @@ test('request line strict unspecified', function(t) {
   };
 
   req._stringToSign = null;
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   t.equal(typeof (req._stringToSign), 'string');
   t.ok(req._stringToSign.match(/^date: [^\n]*\nGET \/ HTTP\/1.1$/));
@@ -147,7 +147,7 @@ test('request line strict unspecified', function(t) {
 });
 
 test('request line strict false', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -157,7 +157,7 @@ test('request line strict false', function(t) {
     strict: false
   };
 
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   t.ok(!req.hasOwnProperty('_stringToSign'));
   t.ok(req._stringToSign === undefined);
@@ -166,7 +166,7 @@ test('request line strict false', function(t) {
 });
 
 test('request line strict true', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -177,13 +177,13 @@ test('request line strict true', function(t) {
   };
 
   t.throws(function() {
-     httpSignature.sign(req, opts)
+     _sign(req, opts)
    });
   req.end();
 });
 
 test('request target', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -193,7 +193,7 @@ test('request target', function(t) {
   };
 
   req._stringToSign = null;
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   t.equal(typeof (req._stringToSign), 'string');
   t.ok(req._stringToSign.match(/^date: [^\n]*\n\(request-target\): get \/$/));
@@ -202,7 +202,7 @@ test('request target', function(t) {
 });
 
 test('keyid', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -212,7 +212,7 @@ test('keyid', function(t) {
   };
 
   req._stringToSign = null;
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   t.equal(typeof (req._stringToSign), 'string');
   t.ok(req._stringToSign.match(/^date: [^\n]*\n\(keyid\): unit$/));
@@ -221,7 +221,7 @@ test('keyid', function(t) {
 });
 
 test('signing algorithm', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -232,7 +232,7 @@ test('signing algorithm', function(t) {
   };
 
   req._stringToSign = null;
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   t.equal(typeof (opts.algorithm), 'string');
   t.equal(opts.algorithm, 'rsa-sha256');
@@ -243,7 +243,7 @@ test('signing algorithm', function(t) {
 });
 
 test('signing with unspecified algorithm', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -253,7 +253,7 @@ test('signing with unspecified algorithm', function(t) {
   };
 
   req._stringToSign = null;
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   t.equal(typeof (opts.algorithm), 'string');
   t.equal(typeof (req._stringToSign), 'string');
@@ -263,7 +263,7 @@ test('signing with unspecified algorithm', function(t) {
 });
 
 test('hide algorithm (unspecified algorithm)', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -274,7 +274,7 @@ test('hide algorithm (unspecified algorithm)', function(t) {
   };
 
   req._stringToSign = null;
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   t.equal(typeof (opts.algorithm), 'string');
   t.equal(opts.algorithm, 'hs2019');
@@ -285,7 +285,7 @@ test('hide algorithm (unspecified algorithm)', function(t) {
 });
 
 test('signing opaque param', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -296,7 +296,7 @@ test('signing opaque param', function(t) {
   };
 
   req._stringToSign = null;
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   t.equal(typeof (opts.algorithm), 'string');
   t.equal(typeof (req._stringToSign), 'string');
@@ -306,7 +306,7 @@ test('signing opaque param', function(t) {
 });
 
 test('signing with key protected with passphrase', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -317,7 +317,7 @@ test('signing with key protected with passphrase', function(t) {
   };
 
   req._stringToSign = null;
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   t.equal(typeof (opts.algorithm), 'string');
   t.equal(typeof (req._stringToSign), 'string');
@@ -327,7 +327,7 @@ test('signing with key protected with passphrase', function(t) {
 });
 
 test('request-target with dsa key', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -336,14 +336,14 @@ test('request-target with dsa key', function(t) {
     headers: ['date', '(request-target)']
   };
 
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   console.log('> ' + req.getHeader('Authorization'));
   req.end();
 });
 
 test('request-target with ecdsa key', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -352,14 +352,14 @@ test('request-target with ecdsa key', function(t) {
     headers: ['date', '(request-target)']
   };
 
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   console.log('> ' + req.getHeader('Authorization'));
   req.end();
 });
 
 test('hmac', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -368,14 +368,14 @@ test('hmac', function(t) {
     algorithm: 'hmac-sha1'
   };
 
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   console.log('> ' + req.getHeader('Authorization'));
   req.end();
 });
 
 test('createSigner with RSA key', function(t) {
-  var s = httpSignature.createSigner({
+  var s = createSigner({
     keyId: 'foo',
     key: rsaPrivate,
     algorithm: 'rsa-sha1'
@@ -385,7 +385,7 @@ test('createSigner with RSA key', function(t) {
   s.sign(function (err, authz) {
     t.error(err);
     console.log('> ' + authz);
-    var req = http.request(httpOptions, function(res) {
+    var req = request(httpOptions, function(res) {
       t.end();
     });
     req.setHeader('date', date);
@@ -395,7 +395,7 @@ test('createSigner with RSA key', function(t) {
 });
 
 test('createSigner with RSA key, auto algo', function(t) {
-  var s = httpSignature.createSigner({
+  var s = createSigner({
     keyId: 'foo',
     key: rsaPrivate
   });
@@ -403,7 +403,7 @@ test('createSigner with RSA key, auto algo', function(t) {
   var date = s.writeDateHeader();
   s.sign(function (err, authz) {
     t.error(err);
-    var req = http.request(httpOptions, function(res) {
+    var req = request(httpOptions, function(res) {
       t.end();
     });
     req.setHeader('date', date);
@@ -413,7 +413,7 @@ test('createSigner with RSA key, auto algo', function(t) {
 });
 
 test('createSigner with RSA key, auto algo, passphrase', function(t) {
-  var s = httpSignature.createSigner({
+  var s = createSigner({
     keyId: 'foo',
     key: rsaPrivateEncrypted,
     keyPassphrase: '123'
@@ -422,7 +422,7 @@ test('createSigner with RSA key, auto algo, passphrase', function(t) {
   var date = s.writeDateHeader();
   s.sign(function (err, authz) {
     t.error(err);
-    var req = http.request(httpOptions, function(res) {
+    var req = request(httpOptions, function(res) {
       t.end();
     });
     req.setHeader('date', date);
@@ -432,7 +432,7 @@ test('createSigner with RSA key, auto algo, passphrase', function(t) {
 });
 
 test('createSigner with HMAC key', function(t) {
-  var s = httpSignature.createSigner({
+  var s = createSigner({
     keyId: 'foo',
     key: hmacKey,
     algorithm: 'hmac-sha256'
@@ -442,7 +442,7 @@ test('createSigner with HMAC key', function(t) {
   s.writeHeader('x-some-header', 'bar');
   s.sign(function (err, authz) {
     t.error(err);
-    var req = http.request(httpOptions, function(res) {
+    var req = request(httpOptions, function(res) {
       t.end();
     });
     req.setHeader('date', date);
@@ -454,7 +454,7 @@ test('createSigner with HMAC key', function(t) {
 
 test('createSigner with sign function', function(t) {
   var date;
-  var s = httpSignature.createSigner({
+  var s = createSigner({
     sign: function (data, cb) {
       t.ok(typeof (data) === 'string');
       var m = data.match(/^date: (.+)$/);
@@ -471,7 +471,7 @@ test('createSigner with sign function', function(t) {
   s.sign(function (err, authz) {
     t.error(err);
     t.ok(authz.match(/fakesig/));
-    var req = http.request(httpOptions, function(res) {
+    var req = request(httpOptions, function(res) {
       t.end();
     });
     req.setHeader('date', date);
@@ -481,7 +481,7 @@ test('createSigner with sign function', function(t) {
 });
 
 test('ed25519', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -490,7 +490,7 @@ test('ed25519', function(t) {
     algorithm: 'ed25519-sha512'
   };
 
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(_sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   console.log('> ' + req.getHeader('Authorization'));
   req.end();

@@ -1,13 +1,13 @@
 // Copyright 2015 Joyent, Inc.  All rights reserved.
 
-var crypto = require('crypto');
-var fs = require('fs');
-var http = require('http');
+import crypto from 'crypto';
+import { readFileSync } from 'fs';
+import { createServer, request } from 'http';
 
-var test = require('tap').test;
-var uuid = require('uuid').v4;
+import { test } from 'tap';
+import { v4 as uuid } from 'uuid';
 
-var httpSignature = require('../built/index');
+import { sign } from '../built/index.js';
 
 
 
@@ -26,12 +26,12 @@ var socket = null;
 
 
 test('setup', function(t) {
-  rsaPrivate = fs.readFileSync(__dirname + '/rsa_private.pem', 'ascii');
+  rsaPrivate = readFileSync(import.meta.dirname + '/rsa_private.pem', 'ascii');
   t.ok(rsaPrivate);
 
   socket = '/tmp/.' + uuid();
 
-  server = http.createServer(function(req, res) {
+  server = createServer(function(req, res) {
     res.writeHead(200);
     res.end();
   });
@@ -60,7 +60,7 @@ test('setup', function(t) {
 
 
 test('header with 0 value', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -69,14 +69,14 @@ test('header with 0 value', function(t) {
     headers: ['date', 'request-line', 'content-length']
   };
 
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   console.log('> ' + req.getHeader('Authorization'));
   req.end();
 });
 
 test('header with boolean-mungable value', function(t) {
-  var req = http.request(httpOptions, function(res) {
+  var req = request(httpOptions, function(res) {
     t.end();
   });
   var opts = {
@@ -85,7 +85,7 @@ test('header with boolean-mungable value', function(t) {
     headers: ['date', 'x-foo']
   };
 
-  t.ok(httpSignature.sign(req, opts));
+  t.ok(sign(req, opts));
   t.ok(req.getHeader('Authorization'));
   console.log('> ' + req.getHeader('Authorization'));
   req.end();

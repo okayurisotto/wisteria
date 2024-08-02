@@ -1,8 +1,10 @@
 {
 	"name": "http-signature",
 	"license": "MIT",
-	"type": "commonjs",
-	"main": "./built/index.js",
+	"type": "module",
+	"exports": {
+		"import": "./built/index.js"
+	},
 	"files": [
 		"lib"
 	],

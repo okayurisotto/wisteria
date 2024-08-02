@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import util from 'util';
 import sshpk from 'sshpk';
 import jsprim from 'jsprim';
-import utils from './utils';
+import utils from './utils.js';
 import { format as sprintf } from 'util';
 
 var HASH_ALGOS = utils.HASH_ALGOS;
@@ -249,7 +249,7 @@ RequestSigner.prototype.sign = function (cb) {
 
 ///--- Exported API
 
-module.exports = {
+export default {
   /**
    * Identifies whether a given object is a request signer or not.
    *

@@ -78,7 +78,7 @@ function validateAlgorithm(algorithm, publicKeyType) {
 
 ///--- API
 
-module.exports = {
+export default {
   HEADER: HEADER,
 
   HASH_ALGOS: HASH_ALGOS,

@@ -2,7 +2,7 @@
 
 import assert from 'assert-plus';
 import util from 'util';
-import utils from './utils';
+import utils from './utils.js';
 
 
 
@@ -60,7 +60,7 @@ util.inherits(StrictParsingError, HttpSignatureError);
 
 ///--- Exported API
 
-module.exports = {
+export default {
 
   /**
    * Parses the 'Authorization' header out of an http.ServerRequest object.

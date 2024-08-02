@@ -1,10 +1,10 @@
 // Copyright 2011 Joyent, Inc.  All rights reserved.
 
-var test = require('tap').test;
+import { test } from 'tap';
 
-var sshKeyFingerprint = require('../built/index').sshKeyFingerprint;
-var sshKeyToPEM = require('../built/index').sshKeyToPEM;
-var pemToRsaSSHKey = require('../built/index').pemToRsaSSHKey;
+import { sshKeyFingerprint } from '../built/index.js';
+import { sshKeyToPEM } from '../built/index.js';
+import { pemToRsaSSHKey } from '../built/index.js';
 
 
 
