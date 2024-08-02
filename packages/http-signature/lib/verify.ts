@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import sshpk from 'sshpk';
 import { validateAlgorithm } from './utils.js';
 
-///--- Exported API
+/// --- Exported API
 
 /**
  * Verify RSA/DSA signature against public key.  You are expected to pass in
@@ -23,11 +23,11 @@ export function verifySignature(parsedSignature, pubkey) {
 		pubkey = sshpk.parseKey(pubkey);
 	assert.ok(sshpk.Key.isKey(pubkey, [1, 1]), 'pubkey must be a sshpk.Key');
 
-	let alg = validateAlgorithm(parsedSignature.algorithm, pubkey.type);
+	const alg = validateAlgorithm(parsedSignature.algorithm, pubkey.type);
 	if (alg[0] === 'hmac' || alg[0] !== pubkey.type)
 		return false;
 
-	let v = pubkey.createVerify(alg[1]);
+	const v = pubkey.createVerify(alg[1]);
 	v.update(parsedSignature.signingString);
 	return (v.verify(parsedSignature.params.signature, 'base64'));
 };
@@ -46,13 +46,13 @@ export function verifyHMAC(parsedSignature, secret) {
 	assert.object(parsedSignature, 'parsedHMAC');
 	assert(typeof (secret) === 'string' || Buffer.isBuffer(secret));
 
-	let alg = validateAlgorithm(parsedSignature.algorithm);
+	const alg = validateAlgorithm(parsedSignature.algorithm);
 	if (alg[0] !== 'hmac')
 		return (false);
 
-	let hashAlg = alg[1].toUpperCase();
+	const hashAlg = alg[1].toUpperCase();
 
-	let hmac = crypto.createHmac(hashAlg, secret);
+	const hmac = crypto.createHmac(hashAlg, secret);
 	hmac.update(parsedSignature.signingString);
 
 	/*

@@ -5,9 +5,7 @@ import { isSigner as isSigner_, createSigner as createSigner_, signRequest as si
 import { verifySignature as verifySignature_, verifyHMAC as verifyHMAC_ } from './verify.js';
 import { sshKeyToPEM as sshKeyToPEM_, fingerprint as sshKeyFingerprint_, pemToRsaSSHKey as pemToRsaSSHKey_ } from './utils.js';
 
-
-
-///--- API
+/// --- API
 
 export default {
 	parse: parseRequest_,

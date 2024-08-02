@@ -3,22 +3,22 @@
 import assert from 'assert-plus';
 import sshpk from 'sshpk';
 
-export let HASH_ALGOS = {
-  'sha1': true,
-  'sha256': true,
-  'sha512': true
+export const HASH_ALGOS = {
+	sha1: true,
+	sha256: true,
+	sha512: true,
 };
 
-export let PK_ALGOS = {
-  'rsa': true,
-  'dsa': true,
-  'ecdsa': true,
-  'ed25519': true
+export const PK_ALGOS = {
+	rsa: true,
+	dsa: true,
+	ecdsa: true,
+	ed25519: true,
 };
 
-export let HEADER = {
-  AUTH: 'authorization',
-  SIG: 'signature'
+export const HEADER = {
+	AUTH: 'authorization',
+	SIG: 'signature',
 };
 
 export class HttpSignatureError extends Error {
@@ -41,37 +41,37 @@ export class InvalidAlgorithmError extends HttpSignatureError {
  * @returns {[string, string]}
  */
 export function validateAlgorithm(algorithm, publicKeyType) {
-  assert.string(algorithm, 'algorithm');
-  assert.optionalString(publicKeyType, 'publicKeyType');
+	assert.string(algorithm, 'algorithm');
+	assert.optionalString(publicKeyType, 'publicKeyType');
 
-  let alg = algorithm.toLowerCase().split('-');
+	const alg = algorithm.toLowerCase().split('-');
 
-  if (alg[0] === 'hs2019') {
-    if (publicKeyType === 'ed25519') {
-      return validateAlgorithm('ed25519-sha512')
-    } else if (publicKeyType !== undefined) {
-      return validateAlgorithm(publicKeyType + '-sha256')
-    }
+	if (alg[0] === 'hs2019') {
+		if (publicKeyType === 'ed25519') {
+			return validateAlgorithm('ed25519-sha512');
+		} else if (publicKeyType !== undefined) {
+			return validateAlgorithm(publicKeyType + '-sha256');
+		}
 
-    return  ['hs2019', 'sha256'];
-  }
+		return ['hs2019', 'sha256'];
+	}
 
-  if (alg.length !== 2) {
-    throw (new InvalidAlgorithmError(alg[0].toUpperCase() + ' is not a ' +
-      'valid algorithm'));
-  }
+	if (alg.length !== 2) {
+		throw (new InvalidAlgorithmError(alg[0].toUpperCase() + ' is not a '
+			+ 'valid algorithm'));
+	}
 
-  if (alg[0] !== 'hmac' && !PK_ALGOS[alg[0]]) {
-    throw (new InvalidAlgorithmError(alg[0].toUpperCase() + ' type keys ' +
-      'are not supported'));
-  }
+	if (alg[0] !== 'hmac' && !PK_ALGOS[alg[0]]) {
+		throw (new InvalidAlgorithmError(alg[0].toUpperCase() + ' type keys '
+			+ 'are not supported'));
+	}
 
-  if (!HASH_ALGOS[alg[1]]) {
-    throw (new InvalidAlgorithmError(alg[1].toUpperCase() + ' is not a ' +
-      'supported hash algorithm'));
-  }
+	if (!HASH_ALGOS[alg[1]]) {
+		throw (new InvalidAlgorithmError(alg[1].toUpperCase() + ' is not a '
+			+ 'supported hash algorithm'));
+	}
 
-  return (alg);
+	return (alg);
 }
 
 /**
@@ -88,7 +88,7 @@ export function validateAlgorithm(algorithm, publicKeyType) {
 export function sshKeyToPEM(key) {
 	assert.string(key, 'ssh_key');
 
-	let k = sshpk.parseKey(key, 'ssh');
+	const k = sshpk.parseKey(key, 'ssh');
 	return (k.toString('pem'));
 }
 
@@ -103,7 +103,7 @@ export function sshKeyToPEM(key) {
 export function fingerprint(key) {
 	assert.string(key, 'ssh_key');
 
-	let k = sshpk.parseKey(key, 'ssh');
+	const k = sshpk.parseKey(key, 'ssh');
 	return (k.fingerprint('md5').toString('hex'));
 };
 
@@ -115,7 +115,7 @@ export function fingerprint(key) {
 export function pemToRsaSSHKey(pem, comment) {
 	assert.equal('string', typeof (pem), 'typeof pem');
 
-	let k = sshpk.parseKey(pem, 'pem');
+	const k = sshpk.parseKey(pem, 'pem');
 	k.comment = comment;
 	return (k.toString('ssh'));
 }
