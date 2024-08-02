@@ -1,9 +1,9 @@
 // Copyright 2015 Joyent, Inc.
 
-var parser = require('./parser');
-var signer = require('./signer');
-var verify = require('./verify');
-var utils = require('./utils');
+import parser from './parser';
+import signer from './signer';
+import verify from './verify';
+import utils from './utils';
 
 
 

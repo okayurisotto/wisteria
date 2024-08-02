@@ -1,8 +1,8 @@
 // Copyright 2012 Joyent, Inc.  All rights reserved.
 
-var assert = require('assert-plus');
-var util = require('util');
-var utils = require('./utils');
+import assert from 'assert-plus';
+import util from 'util';
+import utils from './utils';
 
 
 

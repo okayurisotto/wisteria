@@ -1,13 +1,12 @@
 // Copyright 2012 Joyent, Inc.  All rights reserved.
 
-var assert = require('assert-plus');
-var crypto = require('crypto');
-var util = require('util');
-var sshpk = require('sshpk');
-var jsprim = require('jsprim');
-var utils = require('./utils');
-
-var sprintf = require('util').format;
+import assert from 'assert-plus';
+import crypto from 'crypto';
+import util from 'util';
+import sshpk from 'sshpk';
+import jsprim from 'jsprim';
+import utils from './utils';
+import { format as sprintf } from 'util';
 
 var HASH_ALGOS = utils.HASH_ALGOS;
 var PK_ALGOS = utils.PK_ALGOS;
