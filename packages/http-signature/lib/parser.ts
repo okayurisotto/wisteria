@@ -86,15 +86,6 @@ export interface ParsedSignature {
  * }
  * ```
  *
- * @param request an http.ServerRequest.
- * @param options an optional options object with:
- *                   - clockSkew: allowed clock skew in seconds (default 300).
- *                   - headers: required header names (def: date or x-date)
- *                   - algorithms: algorithms to support (default: all).
- *                   - strict: should enforce latest spec parsing (default: false).
- * @return parsed out object (see above).
- *
- * @throws {TypeError} on invalid input.
  * @throws {InvalidHeaderError} on an invalid Authorization header error.
  * @throws {InvalidParamsError} if the params in the scheme are invalid.
  * @throws {MissingHeaderError} if the params indicate a header not present,

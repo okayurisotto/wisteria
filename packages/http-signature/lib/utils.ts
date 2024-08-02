@@ -1,6 +1,5 @@
 // Copyright 2012 Joyent, Inc.  All rights reserved.
 
-import assert from 'assert-plus';
 import type { AlgorithmHashType } from 'sshpk';
 
 const HASH_ALGOS = {
@@ -42,9 +41,6 @@ export const validateAlgorithm = (
 	algorithm: string,
 	publicKeyType?: string | undefined,
 ): [keyAlgorithm: string, hashAlgorithm: AlgorithmHashType] => {
-	assert.string(algorithm, 'algorithm');
-	assert.optionalString(publicKeyType, 'publicKeyType');
-
 	const alg = algorithm.toLowerCase().split('-');
 	const [keyAlgorithm, hashAlgorithm] = alg;
 

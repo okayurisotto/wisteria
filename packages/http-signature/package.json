@@ -14,13 +14,11 @@
 		"test": "tap test/*.js"
 	},
 	"dependencies": {
-		"assert-plus": "^1.0.0",
 		"jsprim": "^1.4.2",
 		"parcom": "workspace:*",
 		"sshpk": "^1.18.0"
 	},
 	"devDependencies": {
-		"@types/assert-plus": "^1.0.8",
 		"@types/jsprim": "^2.0.5",
 		"@types/node": "^20.14.13",
 		"@types/sshpk": "^1.17.4",

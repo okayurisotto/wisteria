@@ -843,9 +843,6 @@ importers:
 
   packages/http-signature:
     dependencies:
-      assert-plus:
-        specifier: ^1.0.0
-        version: 1.0.0
       jsprim:
         specifier: ^1.4.2
         version: 1.4.2
@@ -856,9 +853,6 @@ importers:
         specifier: ^1.18.0
         version: 1.18.0
     devDependencies:
-      '@types/assert-plus':
-        specifier: ^1.0.8
-        version: 1.0.8
       '@types/jsprim':
         specifier: ^2.0.5
         version: 2.0.5
@@ -4080,9 +4074,6 @@ packages:
 
   '@types/asn1@0.2.4':
     resolution: {integrity: sha512-V91DSJ2l0h0gRhVP4oBfBzRBN9lAbPUkGDMCnwedqPKX2d84aAMc9CulOvxdw1f7DfEYx99afab+Rsm3e52jhA==}
-
-  '@types/assert-plus@1.0.8':
-    resolution: {integrity: sha512-6jk44japgrb1Hh8ef4p3wY2e0BvTGMP+7A90KO4nMBEBECDBDKVMiHUJTPm1pzvt73+xdOt9TRcJbViZni1hig==}
 
   '@types/babel__core@7.20.0':
     resolution: {integrity: sha512-+n8dL/9GWblDO0iU6eZAwEIJVr5DWigtle+Q6HLOrh/pdbXOhOtqzq8VPPE2zvNJzSKY4vH/z3iT3tn0A3ypiQ==}
@@ -15316,10 +15307,6 @@ snapshots:
     dependencies:
       '@types/node': 20.14.13
 
-  '@types/assert-plus@1.0.8':
-    dependencies:
-      '@types/node': 20.14.13
-
   '@types/babel__core@7.20.0':
     dependencies:
       '@babel/parser': 7.23.9
@@ -21359,7 +21346,7 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
       react: 18.2.0
-      scheduler: 0.23.0
+      scheduler: 0.23.2
 
   react-element-to-jsx-string@15.0.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
