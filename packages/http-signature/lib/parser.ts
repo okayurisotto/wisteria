@@ -7,12 +7,12 @@ import { HEADER, HttpSignatureError, InvalidAlgorithmError, validateAlgorithm } 
 
 ///--- Globals
 
-var State = {
+let State = {
   New: 0,
   Params: 1
 };
 
-var ParamsState = {
+let ParamsState = {
   Name: 0,
   Quote: 1,
   Value: 2,
@@ -105,18 +105,18 @@ export function parseRequest(request, options) {
 	assert.object(options, 'options');
 	assert.optionalFinite(options.clockSkew, 'options.clockSkew');
 
-	var headers = [request.headers['x-date'] ? 'x-date' : 'date'];
+	let headers = [request.headers['x-date'] ? 'x-date' : 'date'];
 	if (options.headers !== undefined) {
 		assert.arrayOfString(headers, 'options.headers');
 		headers = options.headers;
 	}
 
-	var authzHeaderName = options.authorizationHeaderName;
-	var authz = request.headers[authzHeaderName] ||
+	let authzHeaderName = options.authorizationHeaderName;
+	let authz = request.headers[authzHeaderName] ||
 		request.headers[HEADER.AUTH] || request.headers[HEADER.SIG];
 
 	if (!authz) {
-		var errHeader = authzHeaderName ? authzHeaderName :
+		let errHeader = authzHeaderName ? authzHeaderName :
 			HEADER.AUTH + ' or ' + HEADER.SIG;
 
 		throw new MissingHeaderError('no ' + errHeader + ' header ' +
@@ -126,21 +126,21 @@ export function parseRequest(request, options) {
 	options.clockSkew = options.clockSkew || 300;
 
 
-	var i = 0;
-	var state = authz === request.headers[HEADER.SIG] ?
+	let i = 0;
+	let state = authz === request.headers[HEADER.SIG] ?
 		State.Params : State.New;
-	var substate = ParamsState.Name;
-	var tmpName = '';
-	var tmpValue = '';
+	let substate = ParamsState.Name;
+	let tmpName = '';
+	let tmpValue = '';
 
-	var parsed = {
+	let parsed = {
 		scheme: authz === request.headers[HEADER.SIG] ? 'Signature' : '',
 		params: {},
 		signingString: ''
 	};
 
 	for (i = 0; i < authz.length; i++) {
-		var c = authz.charAt(i);
+		let c = authz.charAt(i);
 
 		switch (Number(state)) {
 
@@ -152,8 +152,8 @@ export function parseRequest(request, options) {
 			case State.Params:
 				switch (Number(substate)) {
 
-					case ParamsState.Name:
-						var code = c.charCodeAt(0);
+					case ParamsState.Name: {
+						let code = c.charCodeAt(0);
 						// restricted name of A-Z / a-z
 						if ((code >= 0x41 && code <= 0x5a) || // A-Z
 							(code >= 0x61 && code <= 0x7a)) { // a-z
@@ -166,23 +166,23 @@ export function parseRequest(request, options) {
 							throw new InvalidHeaderError('bad param format');
 						}
 						break;
-
-					case ParamsState.Quote:
+					}
+					case ParamsState.Quote: {
 						if (c === '"') {
 							tmpValue = '';
 							substate = ParamsState.Value;
 						} else {
 							//number
 							substate = ParamsState.Number;
-							code = c.charCodeAt(0);
+							let code = c.charCodeAt(0);
 							if (code < 0x30 || code > 0x39) { //character not in 0-9
 								throw new InvalidHeaderError('bad param format');
 							}
 							tmpValue = c;
 						}
 						break;
-
-					case ParamsState.Value:
+					}
+					case ParamsState.Value: {
 						if (c === '"') {
 							parsed.params[tmpName] = tmpValue;
 							substate = ParamsState.Comma;
@@ -190,23 +190,23 @@ export function parseRequest(request, options) {
 							tmpValue += c;
 						}
 						break;
-
-					case ParamsState.Number:
+					}
+					case ParamsState.Number: {
 						if (c === ',') {
 							parsed.params[tmpName] = parseInt(tmpValue, 10);
 							tmpName = '';
 							substate = ParamsState.Name;
 						} else {
-							code = c.charCodeAt(0);
+							let code = c.charCodeAt(0);
 							if (code < 0x30 || code > 0x39) { //character not in 0-9
 								throw new InvalidHeaderError('bad param format');
 							}
 							tmpValue += c;
 						}
 						break;
+					}
 
-
-					case ParamsState.Comma:
+					case ParamsState.Comma: {
 						if (c === ',') {
 							tmpName = '';
 							substate = ParamsState.Name;
@@ -214,7 +214,7 @@ export function parseRequest(request, options) {
 							throw new InvalidHeaderError('bad param format');
 						}
 						break;
-
+					}
 					default:
 						throw new Error('Invalid substate');
 				}
@@ -262,7 +262,7 @@ export function parseRequest(request, options) {
 
 	// Build the signingString
 	for (i = 0; i < parsed.params.headers.length; i++) {
-		var h = parsed.params.headers[i].toLowerCase();
+		let h = parsed.params.headers[i].toLowerCase();
 		parsed.params.headers[i] = h;
 
 		if (h === 'request-line') {
@@ -287,7 +287,7 @@ export function parseRequest(request, options) {
 		} else if (h === '(algorithm)') {
 			parsed.signingString += '(algorithm): ' + parsed.params.algorithm;
 		} else if (h === '(opaque)') {
-			var opaque = parsed.params.opaque;
+			let opaque = parsed.params.opaque;
 			if (opaque === undefined) {
 				throw new MissingHeaderError('opaque param was not in the ' +
 					authzHeaderName + ' header');
@@ -298,7 +298,7 @@ export function parseRequest(request, options) {
 	} else if (h === '(expires)') {
 			parsed.signingString += '(expires): ' + parsed.params.expires;
 		} else {
-			var value = request.headers[h];
+			let value = request.headers[h];
 			if (value === undefined)
 				throw new MissingHeaderError(h + ' was not in the request');
 			parsed.signingString += h + ': ' + value;
@@ -309,15 +309,15 @@ export function parseRequest(request, options) {
 	}
 
 	// Check against the constraints
-	var date;
-	var skew;
+	let date;
+	let skew;
 	if (request.headers.date || request.headers['x-date']) {
 		if (request.headers['x-date']) {
 			date = new Date(request.headers['x-date']);
 		} else {
 			date = new Date(request.headers.date);
 		}
-		var now = new Date();
+		let now = new Date();
 		skew = Math.abs(now.getTime() - date.getTime());
 
 		if (skew > options.clockSkew * 1000) {
@@ -338,7 +338,7 @@ export function parseRequest(request, options) {
 	}
 
 	if (parsed.params.expires) {
-		var expiredSince = Math.floor(Date.now() / 1000) - parsed.params.expires;
+		let expiredSince = Math.floor(Date.now() / 1000) - parsed.params.expires;
 		if (expiredSince > options.clockSkew) {
 			throw new ExpiredRequestError('Request expired with skew ' +
 				expiredSince + 's greater than allowed ' + options.clockSkew + 's');

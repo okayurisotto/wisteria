@@ -9,7 +9,7 @@ import { format as sprintf } from 'util';
 
 ///--- Globals
 
-var AUTHZ_PARAMS = [ 'keyId', 'algorithm', 'created', 'expires', 'opaque',
+let AUTHZ_PARAMS = [ 'keyId', 'algorithm', 'created', 'expires', 'opaque',
   'headers', 'signature' ];
 
 ///--- Specific Errors
@@ -30,10 +30,10 @@ function FormatAuthz(prefix, params) {
   assert.string(prefix, 'prefix');
   assert.object(params, 'params');
 
-  var authz = '';
-  for (var i = 0; i < AUTHZ_PARAMS.length; i++) {
-    var param = AUTHZ_PARAMS[i];
-    var value = params[param];
+  let authz = '';
+  for (let i = 0; i < AUTHZ_PARAMS.length; i++) {
+    let param = AUTHZ_PARAMS[i];
+    let value = params[param];
     if (value === undefined)
       continue;
     if (typeof (value) === 'number') {
@@ -53,7 +53,7 @@ function FormatAuthz(prefix, params) {
 function RequestSigner(options) {
   assert.object(options, 'options');
 
-  var alg = [];
+  let alg = [];
   if (options.algorithm !== undefined) {
     assert.string(options.algorithm, 'options.algorithm');
     alg = validateAlgorithm(options.algorithm);
@@ -88,7 +88,7 @@ function RequestSigner(options) {
      */
     this.rs_signer = crypto.createHmac(alg[1].toUpperCase(), options.key);
     this.rs_signer.sign = function () {
-      var digest = this.digest('base64');
+      let digest = this.digest('base64');
       return ({
         hashAlgorithm: alg[1],
         toString: function () { return (digest); }
@@ -96,7 +96,7 @@ function RequestSigner(options) {
     };
 
   } else if (options.key !== undefined) {
-    var key = options.key;
+    let key = options.key;
     if (typeof (key) === 'string' || Buffer.isBuffer(key))
       assert.optionalString(options.keyPassphrase, 'options.keyPassphrase');
       key = sshpk.parsePrivateKey(key, 'auto', {
@@ -149,7 +149,7 @@ RequestSigner.prototype.writeHeader = function (header, value) {
     this.rs_lines.push(header + ': ' + value);
 
   } else {
-    var line = header + ': ' + value;
+    let line = header + ': ' + value;
     if (this.rs_headers.length > 0)
       line = '\n' + line;
     this.rs_signer.update(line);
@@ -192,10 +192,10 @@ RequestSigner.prototype.sign = function (cb) {
   if (this.rs_headers.length < 1)
     throw (new Error('At least one header must be signed'));
 
-  var alg, authz;
+  let alg, authz;
   if (this.rs_signFunc) {
-    var data = this.rs_lines.join('\n');
-    var self = this;
+    let data = this.rs_lines.join('\n');
+    let self = this;
     this.rs_signFunc(data, function (err, sig) {
       if (err) {
         cb(err);
@@ -222,8 +222,9 @@ RequestSigner.prototype.sign = function (cb) {
     });
 
   } else {
+		let sigObj;
     try {
-      var sigObj = this.rs_signer.sign();
+      sigObj = this.rs_signer.sign();
     } catch (e) {
       cb(e);
       return;
@@ -231,7 +232,7 @@ RequestSigner.prototype.sign = function (cb) {
     alg = sigObj.hideAlgorithm ?
         'hs2019' :
         (this.rs_alg[0] || this.rs_key.type) + '-' + sigObj.hashAlgorithm;
-    var signature = sigObj.toString();
+    let signature = sigObj.toString();
     authz = FormatAuthz('Signature ', {
       keyId: this.rs_keyId,
       algorithm: alg,
@@ -328,19 +329,19 @@ export function signRequest(request, options) {
 
 	if (!request.getHeader('Date'))
 		request.setHeader('Date', jsprim.rfc1123(new Date()));
-	var headers = ['date'];
+	let headers = ['date'];
 	if (options.headers)
 		headers = options.headers;
 	if (!options.httpVersion)
 		options.httpVersion = '1.1';
 
-	var alg = [];
+	let alg = [];
 	if (options.algorithm) {
 		options.algorithm = options.algorithm.toLowerCase();
 		alg = validateAlgorithm(options.algorithm);
 	}
 
-	var key = options.key;
+	let key = options.key;
 	if (alg[0] === 'hmac') {
 		if (typeof (key) !== 'string' && !Buffer.isBuffer(key))
 			throw (new TypeError('options.key must be a string or Buffer'));
@@ -374,18 +375,18 @@ export function signRequest(request, options) {
 				alg[0] + '-' + alg[1];
 	}
 
-	var params = {
+	let params = {
 		'keyId': options.keyId,
 		'algorithm': options.algorithm
 	};
 
-	var i;
-	var stringToSign = '';
+	let i;
+	let stringToSign = '';
 	for (i = 0; i < headers.length; i++) {
 		if (typeof (headers[i]) !== 'string')
 			throw new TypeError('options.headers must be an array of Strings');
 
-		var h = headers[i].toLowerCase();
+		let h = headers[i].toLowerCase();
 
 		if (h === 'request-line') {
 			if (!options.strict) {
@@ -410,17 +411,17 @@ export function signRequest(request, options) {
 		} else if (h === '(algorithm)') {
 			stringToSign += '(algorithm): ' + options.algorithm;
 		} else if (h === '(opaque)') {
-			var opaque = options.opaque;
+			let opaque = options.opaque;
 			if (opaque == undefined || opaque === '') {
 				throw new MissingHeaderError('options.opaque was not in the request');
 			}
 			stringToSign += '(opaque): ' + opaque;
 		} else if (h === '(created)') {
-			var created = Math.floor(Date.now() / 1000);
+			let created = Math.floor(Date.now() / 1000);
 			params.created = created;
 			stringToSign += '(created): ' + created;
 		} else if (h === '(expires)') {
-			var expiresIn = options.expiresIn;
+			let expiresIn = options.expiresIn;
 			if (expiresIn === undefined) {
 				expiresIn = 60;
 			}
@@ -428,7 +429,7 @@ export function signRequest(request, options) {
 			params.expires = expires;
 			stringToSign += '(expires): ' + expires;
 		} else {
-			var value = request.getHeader(h);
+			let value = request.getHeader(h);
 			if (value === undefined || value === '') {
 				throw new MissingHeaderError(h + ' was not in the request');
 			}
@@ -444,15 +445,15 @@ export function signRequest(request, options) {
 		request._stringToSign = stringToSign;
 	}
 
-	var signature;
+	let signature;
 	if (alg[0] === 'hmac') {
-		var hmac = crypto.createHmac(alg[1].toUpperCase(), key);
+		let hmac = crypto.createHmac(alg[1].toUpperCase(), key);
 		hmac.update(stringToSign);
 		signature = hmac.digest('base64');
 	} else {
-		var signer = key.createSign(alg[1]);
+		let signer = key.createSign(alg[1]);
 		signer.update(stringToSign);
-		var sigObj = signer.sign();
+		let sigObj = signer.sign();
 		if (!HASH_ALGOS[sigObj.hashAlgorithm]) {
 			throw (new InvalidAlgorithmError(sigObj.hashAlgorithm.toUpperCase() +
 				' is not a supported hash algorithm'));
@@ -463,8 +464,8 @@ export function signRequest(request, options) {
 		assert.notStrictEqual(signature, '', 'empty signature produced');
 	}
 
-	var authzHeaderName = options.authorizationHeaderName || 'Authorization';
-	var prefix = authzHeaderName.toLowerCase() === HEADER.SIG ?
+	let authzHeaderName = options.authorizationHeaderName || 'Authorization';
+	let prefix = authzHeaderName.toLowerCase() === HEADER.SIG ?
 		'' : 'Signature ';
 
 	params.signature = signature;

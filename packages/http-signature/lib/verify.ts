@@ -23,11 +23,11 @@ export function verifySignature(parsedSignature, pubkey) {
 		pubkey = sshpk.parseKey(pubkey);
 	assert.ok(sshpk.Key.isKey(pubkey, [1, 1]), 'pubkey must be a sshpk.Key');
 
-	var alg = validateAlgorithm(parsedSignature.algorithm, pubkey.type);
+	let alg = validateAlgorithm(parsedSignature.algorithm, pubkey.type);
 	if (alg[0] === 'hmac' || alg[0] !== pubkey.type)
 		return false;
 
-	var v = pubkey.createVerify(alg[1]);
+	let v = pubkey.createVerify(alg[1]);
 	v.update(parsedSignature.signingString);
 	return (v.verify(parsedSignature.params.signature, 'base64'));
 };
@@ -46,13 +46,13 @@ export function verifyHMAC(parsedSignature, secret) {
 	assert.object(parsedSignature, 'parsedHMAC');
 	assert(typeof (secret) === 'string' || Buffer.isBuffer(secret));
 
-	var alg = validateAlgorithm(parsedSignature.algorithm);
+	let alg = validateAlgorithm(parsedSignature.algorithm);
 	if (alg[0] !== 'hmac')
 		return (false);
 
-	var hashAlg = alg[1].toUpperCase();
+	let hashAlg = alg[1].toUpperCase();
 
-	var hmac = crypto.createHmac(hashAlg, secret);
+	let hmac = crypto.createHmac(hashAlg, secret);
 	hmac.update(parsedSignature.signingString);
 
 	/*
@@ -62,10 +62,10 @@ export function verifyHMAC(parsedSignature, secret) {
 	 * https://www.isecpartners.com/blog/2011/february/double-hmac-
 	 * verification.aspx
 	 */
-	var h1 = crypto.createHmac(hashAlg, secret);
+	let h1 = crypto.createHmac(hashAlg, secret);
 	h1.update(hmac.digest());
 	h1 = h1.digest();
-	var h2 = crypto.createHmac(hashAlg, secret);
+	let h2 = crypto.createHmac(hashAlg, secret);
 	h2.update(Buffer.from(parsedSignature.params.signature, 'base64'));
 	h2 = h2.digest();
 

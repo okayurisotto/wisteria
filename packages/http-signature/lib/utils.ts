@@ -3,20 +3,20 @@
 import assert from 'assert-plus';
 import sshpk from 'sshpk';
 
-export var HASH_ALGOS = {
+export let HASH_ALGOS = {
   'sha1': true,
   'sha256': true,
   'sha512': true
 };
 
-export var PK_ALGOS = {
+export let PK_ALGOS = {
   'rsa': true,
   'dsa': true,
   'ecdsa': true,
   'ed25519': true
 };
 
-export var HEADER = {
+export let HEADER = {
   AUTH: 'authorization',
   SIG: 'signature'
 };
@@ -44,7 +44,7 @@ export function validateAlgorithm(algorithm, publicKeyType) {
   assert.string(algorithm, 'algorithm');
   assert.optionalString(publicKeyType, 'publicKeyType');
 
-  var alg = algorithm.toLowerCase().split('-');
+  let alg = algorithm.toLowerCase().split('-');
 
   if (alg[0] === 'hs2019') {
     if (publicKeyType === 'ed25519') {
@@ -88,7 +88,7 @@ export function validateAlgorithm(algorithm, publicKeyType) {
 export function sshKeyToPEM(key) {
 	assert.string(key, 'ssh_key');
 
-	var k = sshpk.parseKey(key, 'ssh');
+	let k = sshpk.parseKey(key, 'ssh');
 	return (k.toString('pem'));
 }
 
@@ -103,7 +103,7 @@ export function sshKeyToPEM(key) {
 export function fingerprint(key) {
 	assert.string(key, 'ssh_key');
 
-	var k = sshpk.parseKey(key, 'ssh');
+	let k = sshpk.parseKey(key, 'ssh');
 	return (k.fingerprint('md5').toString('hex'));
 };
 
@@ -115,7 +115,7 @@ export function fingerprint(key) {
 export function pemToRsaSSHKey(pem, comment) {
 	assert.equal('string', typeof (pem), 'typeof pem');
 
-	var k = sshpk.parseKey(pem, 'pem');
+	let k = sshpk.parseKey(pem, 'pem');
 	k.comment = comment;
 	return (k.toString('ssh'));
 }
