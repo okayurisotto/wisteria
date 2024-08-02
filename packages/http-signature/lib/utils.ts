@@ -4,25 +4,25 @@ import assert from 'assert-plus';
 import sshpk from 'sshpk';
 import util from 'util';
 
-var HASH_ALGOS = {
+export var HASH_ALGOS = {
   'sha1': true,
   'sha256': true,
   'sha512': true
 };
 
-var PK_ALGOS = {
+export var PK_ALGOS = {
   'rsa': true,
   'dsa': true,
   'ecdsa': true,
   'ed25519': true
 };
 
-var HEADER = {
+export var HEADER = {
   AUTH: 'authorization',
   SIG: 'signature'
 };
 
-function HttpSignatureError(message, caller) {
+export function HttpSignatureError(message, caller) {
   if (Error.captureStackTrace)
     Error.captureStackTrace(this, caller || HttpSignatureError);
 
@@ -31,7 +31,7 @@ function HttpSignatureError(message, caller) {
 }
 util.inherits(HttpSignatureError, Error);
 
-function InvalidAlgorithmError(message) {
+export function InvalidAlgorithmError(message) {
   HttpSignatureError.call(this, message, InvalidAlgorithmError);
 }
 util.inherits(InvalidAlgorithmError, HttpSignatureError);
@@ -42,7 +42,7 @@ util.inherits(InvalidAlgorithmError, HttpSignatureError);
  *                                hs2019
  * @returns {[string, string]}
  */
-function validateAlgorithm(algorithm, publicKeyType) {
+export function validateAlgorithm(algorithm, publicKeyType) {
   assert.string(algorithm, 'algorithm');
   assert.optionalString(publicKeyType, 'publicKeyType');
 
@@ -76,63 +76,48 @@ function validateAlgorithm(algorithm, publicKeyType) {
   return (alg);
 }
 
-///--- API
+/**
+ * Converts an OpenSSH public key (rsa only) to a PKCS#8 PEM file.
+ *
+ * The intent of this module is to interoperate with OpenSSL only,
+ * specifically the node crypto module's `verify` method.
+ *
+ * @param {String} key an OpenSSH public key.
+ * @return {String} PEM encoded form of the RSA public key.
+ * @throws {TypeError} on bad input.
+ * @throws {Error} on invalid ssh key formatted data.
+ */
+export function sshKeyToPEM(key) {
+	assert.string(key, 'ssh_key');
 
-export default {
-  HEADER: HEADER,
+	var k = sshpk.parseKey(key, 'ssh');
+	return (k.toString('pem'));
+}
 
-  HASH_ALGOS: HASH_ALGOS,
-  PK_ALGOS: PK_ALGOS,
+/**
+ * Generates an OpenSSH fingerprint from an ssh public key.
+ *
+ * @param {String} key an OpenSSH public key.
+ * @return {String} key fingerprint.
+ * @throws {TypeError} on bad input.
+ * @throws {Error} if what you passed doesn't look like an ssh public key.
+ */
+export function fingerprint(key) {
+	assert.string(key, 'ssh_key');
 
-  HttpSignatureError: HttpSignatureError,
-  InvalidAlgorithmError: InvalidAlgorithmError,
-
-  validateAlgorithm: validateAlgorithm,
-
-  /**
-   * Converts an OpenSSH public key (rsa only) to a PKCS#8 PEM file.
-   *
-   * The intent of this module is to interoperate with OpenSSL only,
-   * specifically the node crypto module's `verify` method.
-   *
-   * @param {String} key an OpenSSH public key.
-   * @return {String} PEM encoded form of the RSA public key.
-   * @throws {TypeError} on bad input.
-   * @throws {Error} on invalid ssh key formatted data.
-   */
-  sshKeyToPEM: function sshKeyToPEM(key) {
-    assert.string(key, 'ssh_key');
-
-    var k = sshpk.parseKey(key, 'ssh');
-    return (k.toString('pem'));
-  },
-
-
-  /**
-   * Generates an OpenSSH fingerprint from an ssh public key.
-   *
-   * @param {String} key an OpenSSH public key.
-   * @return {String} key fingerprint.
-   * @throws {TypeError} on bad input.
-   * @throws {Error} if what you passed doesn't look like an ssh public key.
-   */
-  fingerprint: function fingerprint(key) {
-    assert.string(key, 'ssh_key');
-
-    var k = sshpk.parseKey(key, 'ssh');
-    return (k.fingerprint('md5').toString('hex'));
-  },
-
-  /**
-   * Converts a PKGCS#8 PEM file to an OpenSSH public key (rsa)
-   *
-   * The reverse of the above function.
-   */
-  pemToRsaSSHKey: function pemToRsaSSHKey(pem, comment) {
-    assert.equal('string', typeof (pem), 'typeof pem');
-
-    var k = sshpk.parseKey(pem, 'pem');
-    k.comment = comment;
-    return (k.toString('ssh'));
-  }
+	var k = sshpk.parseKey(key, 'ssh');
+	return (k.fingerprint('md5').toString('hex'));
 };
+
+/**
+ * Converts a PKGCS#8 PEM file to an OpenSSH public key (rsa)
+ *
+ * The reverse of the above function.
+ */
+export function pemToRsaSSHKey(pem, comment) {
+	assert.equal('string', typeof (pem), 'typeof pem');
+
+	var k = sshpk.parseKey(pem, 'pem');
+	k.comment = comment;
+	return (k.toString('ssh'));
+}

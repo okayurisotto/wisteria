@@ -1,44 +1,44 @@
 // Copyright 2015 Joyent, Inc.
 
-import parser from './parser.js';
-import signer from './signer.js';
-import verify_ from './verify.js';
-import utils from './utils.js';
+import { parseRequest as parseRequest_ } from './parser.js';
+import { isSigner as isSigner_, createSigner as createSigner_, signRequest as signRequest_ } from './signer.js';
+import { verifySignature as verifySignature_, verifyHMAC as verifyHMAC_ } from './verify.js';
+import { sshKeyToPEM as sshKeyToPEM_, fingerprint as sshKeyFingerprint_, pemToRsaSSHKey as pemToRsaSSHKey_ } from './utils.js';
 
 
 
 ///--- API
 
 export default {
-	parse: parser.parseRequest,
-	parseRequest: parser.parseRequest,
+	parse: parseRequest_,
+	parseRequest: parseRequest_,
 
-	sign: signer.signRequest,
-	signRequest: signer.signRequest,
-	createSigner: signer.createSigner,
-	isSigner: signer.isSigner,
+	sign: signRequest_,
+	signRequest: signRequest_,
+	createSigner: createSigner_,
+	isSigner: isSigner_,
 
-	sshKeyToPEM: utils.sshKeyToPEM,
-	sshKeyFingerprint: utils.fingerprint,
-	pemToRsaSSHKey: utils.pemToRsaSSHKey,
+	sshKeyToPEM: sshKeyToPEM_,
+	sshKeyFingerprint: sshKeyFingerprint_,
+	pemToRsaSSHKey: pemToRsaSSHKey_,
 
-	verify: verify_.verifySignature,
-	verifySignature: verify_.verifySignature,
-	verifyHMAC: verify_.verifyHMAC,
+	verify: verifySignature_,
+	verifySignature: verifySignature_,
+	verifyHMAC: verifyHMAC_,
 };
 
-export const parse = parser.parseRequest;
-export const parseRequest = parser.parseRequest;
+export const parse = parseRequest_;
+export const parseRequest = parseRequest_;
 
-export const sign = signer.signRequest;
-export const signRequest = signer.signRequest;
-export const createSigner = signer.createSigner;
-export const isSigner = signer.isSigner;
+export const sign = signRequest_;
+export const signRequest = signRequest_;
+export const createSigner = createSigner_;
+export const isSigner = isSigner_;
 
-export const sshKeyToPEM = utils.sshKeyToPEM;
-export const sshKeyFingerprint = utils.fingerprint;
-export const pemToRsaSSHKey = utils.pemToRsaSSHKey;
+export const sshKeyToPEM = sshKeyToPEM_;
+export const sshKeyFingerprint = sshKeyFingerprint_;
+export const pemToRsaSSHKey = pemToRsaSSHKey_;
 
-export const verify = verify_.verifySignature;
-export const verifySignature = verify_.verifySignature;
-export const verifyHMAC = verify_.verifyHMAC;
+export const verify = verifySignature_;
+export const verifySignature = verifySignature_;
+export const verifyHMAC = verifyHMAC_;
