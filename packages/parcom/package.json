@@ -1,0 +1,16 @@
+{
+	"name": "parcom",
+	"type": "module",
+	"scripts": {
+		"build": "tsup"
+	},
+	"exports": {
+		"import": "./built/index.js",
+		"types": "./built/index.d.ts"
+	},
+	"devDependencies": {
+		"@types/node": "^20.14.13",
+		"tsup": "^8.2.3",
+		"typescript": "5.5.4"
+	}
+}
