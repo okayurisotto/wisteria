@@ -1,7 +1,6 @@
 // Copyright 2012 Joyent, Inc.  All rights reserved.
 
 import assert from 'assert-plus';
-import util from 'util';
 import { HEADER, HttpSignatureError, InvalidAlgorithmError, validateAlgorithm } from './utils.js';
 
 
@@ -24,33 +23,35 @@ var ParamsState = {
 ///--- Specific Errors
 
 
-function ExpiredRequestError(message) {
-  HttpSignatureError.call(this, message, ExpiredRequestError);
+class ExpiredRequestError extends HttpSignatureError {
+	constructor(message: string) {
+		super(message, ExpiredRequestError);
+	}
 }
-util.inherits(ExpiredRequestError, HttpSignatureError);
 
-
-function InvalidHeaderError(message) {
-  HttpSignatureError.call(this, message, InvalidHeaderError);
+class InvalidHeaderError extends HttpSignatureError {
+	constructor(message: string) {
+		super(message, InvalidHeaderError);
+	}
 }
-util.inherits(InvalidHeaderError, HttpSignatureError);
 
-
-function InvalidParamsError(message) {
-  HttpSignatureError.call(this, message, InvalidParamsError);
+class InvalidParamsError extends HttpSignatureError {
+	constructor(message: string) {
+		super(message, InvalidParamsError);
+	}
 }
-util.inherits(InvalidParamsError, HttpSignatureError);
 
-
-function MissingHeaderError(message) {
-  HttpSignatureError.call(this, message, MissingHeaderError);
+class MissingHeaderError extends HttpSignatureError {
+	constructor(message: string) {
+		super(message, MissingHeaderError);
+	}
 }
-util.inherits(MissingHeaderError, HttpSignatureError);
 
-function StrictParsingError(message) {
-  HttpSignatureError.call(this, message, StrictParsingError);
+class StrictParsingError extends HttpSignatureError {
+	constructor(message: string) {
+		super(message, StrictParsingError);
+	}
 }
-util.inherits(StrictParsingError, HttpSignatureError);
 
 /**
  * Parses the 'Authorization' header out of an http.ServerRequest object.

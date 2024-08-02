@@ -2,7 +2,6 @@
 
 import assert from 'assert-plus';
 import sshpk from 'sshpk';
-import util from 'util';
 
 export var HASH_ALGOS = {
   'sha1': true,
@@ -22,19 +21,18 @@ export var HEADER = {
   SIG: 'signature'
 };
 
-export function HttpSignatureError(message, caller) {
-  if (Error.captureStackTrace)
-    Error.captureStackTrace(this, caller || HttpSignatureError);
-
-  this.message = message;
-  this.name = caller.name;
+export class HttpSignatureError extends Error {
+	constructor(message: string, caller: { name: string }) {
+		super(message);
+		this.name = caller.name;
+	}
 }
-util.inherits(HttpSignatureError, Error);
 
-export function InvalidAlgorithmError(message) {
-  HttpSignatureError.call(this, message, InvalidAlgorithmError);
+export class InvalidAlgorithmError extends HttpSignatureError {
+	constructor(message: string) {
+		super(message, InvalidAlgorithmError);
+	}
 }
-util.inherits(InvalidAlgorithmError, HttpSignatureError);
 
 /**
  * @param algorithm {String} the algorithm of the signature

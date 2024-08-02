@@ -2,7 +2,6 @@
 
 import assert from 'assert-plus';
 import crypto from 'crypto';
-import util from 'util';
 import sshpk from 'sshpk';
 import jsprim from 'jsprim';
 import { HASH_ALGOS, HEADER, HttpSignatureError, InvalidAlgorithmError, PK_ALGOS, validateAlgorithm } from './utils.js';
@@ -15,15 +14,17 @@ var AUTHZ_PARAMS = [ 'keyId', 'algorithm', 'created', 'expires', 'opaque',
 
 ///--- Specific Errors
 
-function MissingHeaderError(message) {
-  HttpSignatureError.call(this, message, MissingHeaderError);
+class MissingHeaderError extends HttpSignatureError {
+	constructor(message: string) {
+		super(message, MissingHeaderError);
+	}
 }
-util.inherits(MissingHeaderError, HttpSignatureError);
 
-function StrictParsingError(message) {
-  HttpSignatureError.call(this, message, StrictParsingError);
+class StrictParsingError extends HttpSignatureError {
+	constructor(message: string) {
+		super(message, StrictParsingError);
+	}
 }
-util.inherits(StrictParsingError, HttpSignatureError);
 
 function FormatAuthz(prefix, params) {
   assert.string(prefix, 'prefix');
