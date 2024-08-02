@@ -3,13 +3,15 @@
 	"license": "MIT",
 	"type": "module",
 	"exports": {
-		"import": "./built/index.js"
+		"import": "./built/index.js",
+		"types": "./built/index.d.ts"
 	},
 	"files": [
 		"lib"
 	],
 	"scripts": {
 		"build": "tsup",
+		"build:dts": "tsc -p ./tsconfig.dts.json",
 		"test": "tap test/*.js"
 	},
 	"dependencies": {

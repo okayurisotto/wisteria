@@ -14,7 +14,7 @@ import { bindThis } from '@/decorators.js';
 import type { Antenna } from '@/server/api/endpoints/i/import-antennas.js';
 import type { DbQueue, DeliverQueue, EndedPollNotificationQueue, InboxQueue, ObjectStorageQueue, RelationshipQueue, SystemQueue, WebhookDeliverQueue } from './QueueModule.js';
 import type { DbJobData, DeliverJobData, RelationshipJobData, ThinUser } from '../queue/types.js';
-import type httpSignature from 'http-signature';
+import type { ParsedSignature } from 'http-signature';
 import type * as Bull from 'bullmq';
 import { ApRequestCreator } from '@/core/activitypub/ApRequestService.js';
 
@@ -136,7 +136,7 @@ export class QueueService {
 	}
 
 	@bindThis
-	public inbox(activity: IActivity, signature: httpSignature.IParsedSignature) {
+	public inbox(activity: IActivity, signature: ParsedSignature) {
 		const data = {
 			activity: activity,
 			signature,

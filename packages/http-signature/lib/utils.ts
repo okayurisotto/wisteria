@@ -1,6 +1,7 @@
 // Copyright 2012 Joyent, Inc.  All rights reserved.
 
 import assert from 'assert-plus';
+import type { AlgorithmHashType } from 'sshpk';
 
 const HASH_ALGOS = {
 	sha1: true,
@@ -40,7 +41,7 @@ export class InvalidAlgorithmError extends HttpSignatureError {
 export const validateAlgorithm = (
 	algorithm: string,
 	publicKeyType?: string | undefined,
-): [keyAlgorithm: string, hashAlgorithm: string] => {
+): [keyAlgorithm: string, hashAlgorithm: AlgorithmHashType] => {
 	assert.string(algorithm, 'algorithm');
 	assert.optionalString(publicKeyType, 'publicKeyType');
 
