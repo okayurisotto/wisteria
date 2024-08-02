@@ -2,11 +2,12 @@
 	"name": "http-signature",
 	"license": "MIT",
 	"type": "commonjs",
-	"main": "./lib/index.js",
+	"main": "./built/index.js",
 	"files": [
 		"lib"
 	],
 	"scripts": {
+		"build": "tsup",
 		"test": "tap test/*.js"
 	},
 	"dependencies": {
@@ -16,6 +17,7 @@
 	},
 	"devDependencies": {
 		"tap": "^16.2.0",
+		"tsup": "^8.2.3",
 		"uuid": "^8.3.2"
 	}
 }

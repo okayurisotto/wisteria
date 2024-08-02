@@ -6,7 +6,7 @@ var test = require('tap').test;
 var uuid = require('uuid').v4;
 var jsprim = require('jsprim');
 
-var httpSignature = require('../lib/index');
+var httpSignature = require('../built/index');
 
 
 

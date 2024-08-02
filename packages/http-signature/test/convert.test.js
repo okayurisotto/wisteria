@@ -2,9 +2,9 @@
 
 var test = require('tap').test;
 
-var sshKeyFingerprint = require('../lib/index').sshKeyFingerprint;
-var sshKeyToPEM = require('../lib/index').sshKeyToPEM;
-var pemToRsaSSHKey = require('../lib/index').pemToRsaSSHKey;
+var sshKeyFingerprint = require('../built/index').sshKeyFingerprint;
+var sshKeyToPEM = require('../built/index').sshKeyToPEM;
+var pemToRsaSSHKey = require('../built/index').pemToRsaSSHKey;
 
 
 
@@ -128,5 +128,3 @@ test('fingerprint', function(t) {
   t.equal(fp, '59:a4:61:0e:38:18:9f:0f:28:58:2a:27:f7:65:c5:87');
   t.end();
 });
-
-

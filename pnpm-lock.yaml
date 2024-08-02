@@ -856,6 +856,9 @@ importers:
       tap:
         specifier: ^16.2.0
         version: 16.3.10(typescript@5.5.4)
+      tsup:
+        specifier: ^8.2.3
+        version: 8.2.3(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
       uuid:
         specifier: ^8.3.2
         version: 8.3.2
@@ -876,7 +879,7 @@ importers:
         version: 0.3.0
       tsup:
         specifier: ^8.2.3
-        version: 8.2.3(@microsoft/api-extractor@7.47.3(@types/node@20.14.13))(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
+        version: 8.2.3(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
@@ -901,7 +904,7 @@ importers:
         version: 3.0.8
       tsup:
         specifier: ^8.2.3
-        version: 8.2.3(@microsoft/api-extractor@7.47.3(@types/node@20.14.13))(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
+        version: 8.2.3(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -987,7 +990,7 @@ importers:
     devDependencies:
       tsup:
         specifier: ^8.2.3
-        version: 8.2.3(@microsoft/api-extractor@7.47.3(@types/node@20.14.13))(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
+        version: 8.2.3(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -1006,7 +1009,7 @@ importers:
         version: 0.0.67
       tsup:
         specifier: ^8.2.3
-        version: 8.2.3(@microsoft/api-extractor@7.47.3(@types/node@20.14.13))(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
+        version: 8.2.3(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4)
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -9858,7 +9861,6 @@ packages:
 
   ts-case-convert@2.0.2:
     resolution: {integrity: sha512-vdKfx1VAdpvEBOBv5OpVu5ZFqRg9HdTI4sYt6qqMeICBeNyXvitrarCnFWNDAki51IKwCyx+ZssY46Q9jH5otA==}
-    bundledDependencies: []
 
   ts-dedent@2.2.0:
     resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
@@ -17154,7 +17156,7 @@ snapshots:
 
   follow-redirects@1.15.2(debug@4.3.4):
     optionalDependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
 
   for-each@0.3.3:
     dependencies:
@@ -17714,7 +17716,7 @@ snapshots:
     dependencies:
       '@ioredis/commands': 1.2.0
       cluster-key-slot: 1.1.2
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       denque: 2.1.0
       lodash.defaults: 4.2.0
       lodash.isarguments: 3.1.0
@@ -21073,7 +21075,7 @@ snapshots:
       arg: 5.0.2
       bluebird: 3.7.2
       check-more-types: 2.24.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       execa: 5.1.1
       lazy-ass: 1.6.0
       ps-tree: 1.2.0
@@ -21572,7 +21574,7 @@ snapshots:
       - tsx
       - yaml
 
-  tsup@8.2.3(@microsoft/api-extractor@7.47.3(@types/node@20.14.13))(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4):
+  tsup@8.2.3(@microsoft/api-extractor@7.47.3)(@swc/core@1.7.3)(postcss@8.4.35)(typescript@5.5.4):
     dependencies:
       bundle-require: 5.0.0(esbuild@0.23.0)
       cac: 6.7.14
@@ -21682,7 +21684,7 @@ snapshots:
       chalk: 4.1.2
       cli-highlight: 2.1.11
       dayjs: 1.11.10
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       dotenv: 16.0.3
       glob: 10.3.10
       mkdirp: 2.1.6
@@ -21937,7 +21939,7 @@ snapshots:
       acorn-walk: 8.3.2
       cac: 6.7.14
       chai: 4.3.10
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       local-pkg: 0.4.3
       magic-string: 0.30.7
       pathe: 1.1.2
