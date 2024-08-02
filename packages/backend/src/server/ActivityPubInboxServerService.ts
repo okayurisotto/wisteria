@@ -6,7 +6,7 @@
 import * as crypto from 'node:crypto';
 import { IncomingMessage } from 'node:http';
 import { Inject, Injectable } from '@nestjs/common';
-import httpSignature from 'http-signature';
+import { parseRequest, type ParsedSignature } from 'http-signature';
 import secureJson from 'secure-json-parse';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
@@ -15,11 +15,11 @@ import { bindThis } from '@/decorators.js';
 import type { IActivity } from '@/core/activitypub/type.js';
 import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyBodyParser, FastifyPluginOptions } from 'fastify';
 
-const checkHttpSignature = (message: IncomingMessage): httpSignature.IParsedSignature | null => {
-	let signature: httpSignature.IParsedSignature;
+const checkHttpSignature = (message: IncomingMessage): ParsedSignature | null => {
+	let signature: ParsedSignature;
 
 	try {
-		signature = httpSignature.parseRequest(message, { 'headers': [] });
+		signature = parseRequest(message, { 'headers': [] });
 	} catch {
 		return null;
 	}

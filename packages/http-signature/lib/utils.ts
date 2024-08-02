@@ -1,15 +1,14 @@
 // Copyright 2012 Joyent, Inc.  All rights reserved.
 
 import assert from 'assert-plus';
-import sshpk from 'sshpk';
 
-export const HASH_ALGOS = {
+const HASH_ALGOS = {
 	sha1: true,
 	sha256: true,
 	sha512: true,
 };
 
-export const PK_ALGOS = {
+const PK_ALGOS = {
 	rsa: true,
 	dsa: true,
 	ecdsa: true,
@@ -35,18 +34,20 @@ export class InvalidAlgorithmError extends HttpSignatureError {
 }
 
 /**
- * @param algorithm {String} the algorithm of the signature
- * @param publicKeyType {String?} fallback algorithm (public key type) for
- *                                hs2019
- * @returns {[string, string]}
+ * @param algorithm the algorithm of the signature
+ * @param publicKeyType fallback algorithm (public key type) for hs2019
  */
-export function validateAlgorithm(algorithm, publicKeyType) {
+export const validateAlgorithm = (
+	algorithm: string,
+	publicKeyType?: string | undefined,
+): [keyAlgorithm: string, hashAlgorithm: string] => {
 	assert.string(algorithm, 'algorithm');
 	assert.optionalString(publicKeyType, 'publicKeyType');
 
 	const alg = algorithm.toLowerCase().split('-');
+	const [keyAlgorithm, hashAlgorithm] = alg;
 
-	if (alg[0] === 'hs2019') {
+	if (keyAlgorithm === 'hs2019') {
 		if (publicKeyType === 'ed25519') {
 			return validateAlgorithm('ed25519-sha512');
 		} else if (publicKeyType !== undefined) {
@@ -56,66 +57,27 @@ export function validateAlgorithm(algorithm, publicKeyType) {
 		return ['hs2019', 'sha256'];
 	}
 
+	if (keyAlgorithm === undefined || hashAlgorithm === undefined) {
+		throw new InvalidAlgorithmError(algorithm + ' is not a valid algorithm');
+	}
+
 	if (alg.length !== 2) {
-		throw (new InvalidAlgorithmError(alg[0].toUpperCase() + ' is not a '
-			+ 'valid algorithm'));
+		throw new InvalidAlgorithmError(
+			keyAlgorithm.toUpperCase() + ' is not a valid algorithm',
+		);
 	}
 
-	if (alg[0] !== 'hmac' && !PK_ALGOS[alg[0]]) {
-		throw (new InvalidAlgorithmError(alg[0].toUpperCase() + ' type keys '
-			+ 'are not supported'));
+	if (keyAlgorithm !== 'hmac' && !(keyAlgorithm in PK_ALGOS)) {
+		throw new InvalidAlgorithmError(
+			keyAlgorithm.toUpperCase() + ' type keys are not supported',
+		);
 	}
 
-	if (!HASH_ALGOS[alg[1]]) {
-		throw (new InvalidAlgorithmError(alg[1].toUpperCase() + ' is not a '
-			+ 'supported hash algorithm'));
+	if (!(hashAlgorithm in HASH_ALGOS)) {
+		throw new InvalidAlgorithmError(
+			hashAlgorithm.toUpperCase() + ' is not a supported hash algorithm',
+		);
 	}
 
-	return (alg);
-}
-
-/**
- * Converts an OpenSSH public key (rsa only) to a PKCS#8 PEM file.
- *
- * The intent of this module is to interoperate with OpenSSL only,
- * specifically the node crypto module's `verify` method.
- *
- * @param {String} key an OpenSSH public key.
- * @return {String} PEM encoded form of the RSA public key.
- * @throws {TypeError} on bad input.
- * @throws {Error} on invalid ssh key formatted data.
- */
-export function sshKeyToPEM(key) {
-	assert.string(key, 'ssh_key');
-
-	const k = sshpk.parseKey(key, 'ssh');
-	return (k.toString('pem'));
-}
-
-/**
- * Generates an OpenSSH fingerprint from an ssh public key.
- *
- * @param {String} key an OpenSSH public key.
- * @return {String} key fingerprint.
- * @throws {TypeError} on bad input.
- * @throws {Error} if what you passed doesn't look like an ssh public key.
- */
-export function fingerprint(key) {
-	assert.string(key, 'ssh_key');
-
-	const k = sshpk.parseKey(key, 'ssh');
-	return (k.fingerprint('md5').toString('hex'));
+	return [keyAlgorithm, hashAlgorithm];
 };
-
-/**
- * Converts a PKGCS#8 PEM file to an OpenSSH public key (rsa)
- *
- * The reverse of the above function.
- */
-export function pemToRsaSSHKey(pem, comment) {
-	assert.equal('string', typeof (pem), 'typeof pem');
-
-	const k = sshpk.parseKey(pem, 'pem');
-	k.comment = comment;
-	return (k.toString('ssh'));
-}

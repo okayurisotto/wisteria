@@ -1,21 +1,16 @@
 // Copyright 2011 Joyent, Inc.  All rights reserved.
 
 import { createServer, get } from 'http';
-
 import { test } from 'tap';
 import { v4 as uuid } from 'uuid';
 import { rfc1123 } from 'jsprim';
-
 import { parseRequest } from '../built/index.js';
-
-
 
 ///--- Globals
 
 var options = null;
 var server = null;
 var socket = null;
-
 
 ///--- Tests
 

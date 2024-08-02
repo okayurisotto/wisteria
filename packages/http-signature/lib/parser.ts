@@ -3,8 +3,6 @@
 import assert from 'assert-plus';
 import { HEADER, HttpSignatureError, InvalidAlgorithmError, validateAlgorithm } from './utils.js';
 
-/// --- Globals
-
 const State = {
 	New: 0,
 	Params: 1,
@@ -17,8 +15,6 @@ const ParamsState = {
 	Comma: 3,
 	Number: 4,
 };
-
-/// --- Specific Errors
 
 class ExpiredRequestError extends HttpSignatureError {
 	constructor(message: string) {
@@ -93,7 +89,7 @@ class StrictParsingError extends HttpSignatureError {
  *                              mode.
  * @throws {ExpiredRequestError} if the value of date or x-date exceeds skew.
  */
-export function parseRequest(request, options) {
+export const parseRequest = (request, options) => {
 	assert.object(request, 'request');
 	assert.object(request.headers, 'request.headers');
 	if (options === undefined) {
@@ -358,4 +354,4 @@ export function parseRequest(request, options) {
 	parsed.keyId = parsed.params.keyId;
 	parsed.opaque = parsed.params.opaque;
 	return parsed;
-}
+};

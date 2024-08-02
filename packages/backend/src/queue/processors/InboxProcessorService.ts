@@ -5,7 +5,7 @@
 
 import { URL } from 'node:url';
 import { Injectable } from '@nestjs/common';
-import httpSignature from 'http-signature';
+import { verifySignature } from 'http-signature';
 import * as Bull from 'bullmq';
 import type Logger from '@/logger.js';
 import { MetaService } from '@/core/MetaService.js';
@@ -104,7 +104,7 @@ export class InboxProcessorService {
 		}
 
 		// HTTP-Signatureの検証
-		const httpSignatureValidated = httpSignature.verifySignature(signature, authUser.key.keyPem);
+		const httpSignatureValidated = verifySignature(signature, authUser.key.keyPem);
 
 		// また、signatureのsignerは、activity.actorと一致する必要がある
 		if (!httpSignatureValidated || authUser.user.uri !== activity.actor) {

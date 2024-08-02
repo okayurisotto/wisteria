@@ -1,6 +1,6 @@
 // Copyright 2011 Joyent, Inc.  All rights reserved.
 
-import { generateKeyPairSync, randomBytes, createHmac, createSign, createHash } from 'crypto';
+import { generateKeyPairSync, randomBytes, createSign, createHash } from 'crypto';
 import { readFileSync } from 'fs';
 import { createServer, get, request } from 'http';
 import { rfc1123 } from 'jsprim';
@@ -9,9 +9,7 @@ import sshpk from 'sshpk';
 import { test } from 'tap';
 import { v4 as uuid } from 'uuid';
 
-import { parseRequest, verifyHMAC, verify } from '../built/index.js';
-
-
+import { parseRequest, verifySignature as verify } from '../built/index.js';
 
 ///--- Globals
 
@@ -81,96 +79,6 @@ test('setup', function(t) {
   });
 
   server.listen(socket, function() {
-    t.end();
-  });
-});
-
-
-test('invalid hmac', function(t) {
-  server.tester = function(req, res) {
-    var parsed = parseRequest(req);
-    t.ok(!verifyHMAC(parsed, hmacKey));
-
-    res.writeHead(200);
-    res.write(JSON.stringify(parsed, null, 2));
-    res.end();
-  };
-
-  options.headers.Date = rfc1123(new Date());
-  options.headers.Authorization =
-    'Signature keyId="foo",algorithm="hmac-sha1",signature="' +
-     uuid() + '"';
-
-  get(options, function(res) {
-    t.equal(res.statusCode, 200);
-    t.end();
-  });
-});
-
-
-test('valid hmac', function(t) {
-  server.tester = function(req, res) {
-    var parsed = parseRequest(req);
-    t.ok(verifyHMAC(parsed, hmacKey));
-
-    res.writeHead(200);
-    res.write(JSON.stringify(parsed, null, 2));
-    res.end();
-  };
-
-  options.headers.Date = rfc1123(new Date());
-  var hmac = createHmac('sha1', hmacKey);
-  hmac.update('date: ' + options.headers.Date);
-  options.headers.Authorization =
-    'Signature keyId="foo",algorithm="hmac-sha1",signature="' +
-    hmac.digest('base64') + '"';
-
-  get(options, function(res) {
-    t.equal(res.statusCode, 200);
-    t.end();
-  });
-});
-
-test('invalid raw hmac', function(t) {
-  server.tester = function(req, res) {
-    var parsed = parseRequest(req);
-    t.ok(!verifyHMAC(parsed, rawhmacKey));
-
-    res.writeHead(200);
-    res.write(JSON.stringify(parsed, null, 2));
-    res.end();
-  };
-
-  options.headers.Date = rfc1123(new Date());
-  options.headers.Authorization =
-    'Signature keyId="foo",algorithm="hmac-sha1",signature="' +
-     uuid() + '"';
-
-  get(options, function(res) {
-    t.equal(res.statusCode, 200);
-    t.end();
-  });
-});
-
-test('valid raw hmac', function(t) {
-  server.tester = function(req, res) {
-    var parsed = parseRequest(req);
-    t.ok(verifyHMAC(parsed, rawhmacKey));
-
-    res.writeHead(200);
-    res.write(JSON.stringify(parsed, null, 2));
-    res.end();
-  };
-
-  options.headers.Date = rfc1123(new Date());
-  var hmac = createHmac('sha1', rawhmacKey);
-  hmac.update('date: ' + options.headers.Date);
-  options.headers.Authorization =
-    'Signature keyId="foo",algorithm="hmac-sha1",signature="' +
-    hmac.digest('base64') + '"';
-
-  get(options, function(res) {
-    t.equal(res.statusCode, 200);
     t.end();
   });
 });
