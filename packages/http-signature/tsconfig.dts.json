@@ -1,9 +1,0 @@
-{
-	"compilerOptions": {
-		"declaration": true,
-		"emitDeclarationOnly": true,
-		"outDir": "built"
-	},
-	"extends": ["@tsconfig/node-lts/tsconfig.json"],
-	"include": ["lib"]
-}

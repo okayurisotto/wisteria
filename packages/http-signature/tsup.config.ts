@@ -1,9 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-	// TODO: 現状型エラーが多すぎて失敗するのでtscを使っている
-	// dts: true,
-
+	dts: process.env.NODE_ENV !== 'production',
 	entry: ['./lib/index.ts'],
 	format: 'esm',
 	keepNames: true,

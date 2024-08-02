@@ -11,12 +11,12 @@
 	],
 	"scripts": {
 		"build": "tsup",
-		"build:dts": "tsc -p ./tsconfig.dts.json",
 		"test": "tap test/*.js"
 	},
 	"dependencies": {
 		"assert-plus": "^1.0.0",
 		"jsprim": "^1.4.2",
+		"parcom": "workspace:*",
 		"sshpk": "^1.18.0"
 	},
 	"devDependencies": {

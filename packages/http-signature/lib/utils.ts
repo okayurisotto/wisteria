@@ -80,5 +80,8 @@ export const validateAlgorithm = (
 		);
 	}
 
-	return [keyAlgorithm, hashAlgorithm];
+	return [
+		keyAlgorithm,
+		hashAlgorithm as keyof typeof HASH_ALGOS,
+	];
 };
