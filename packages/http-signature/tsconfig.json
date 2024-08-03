@@ -3,5 +3,5 @@
 		"verbatimModuleSyntax": true
 	},
 	"extends": ["@tsconfig/node-lts/tsconfig.json", "../../tsconfig.json"],
-	"include": ["lib"]
+	"include": ["lib", "test"]
 }
