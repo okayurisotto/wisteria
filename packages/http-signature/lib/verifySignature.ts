@@ -1,8 +1,6 @@
-// Copyright 2015 Joyent, Inc.
-
-import type { BinaryLike } from 'node:crypto';
 import sshpk from 'sshpk';
-import { validateAlgorithm } from './utils.js';
+import type { ParsedSignature } from './types.js';
+import { validateAlgorithm } from './validateAlgorithm.js';
 
 /**
  * Verify RSA/DSA signature against public key.  You are expected to pass in
@@ -14,11 +12,7 @@ import { validateAlgorithm } from './utils.js';
  * @throws {InvalidAlgorithmError}
  */
 export const verifySignature = (
-	parsedSignature: {
-		algorithm: string;
-		signingString: BinaryLike;
-		params: { signature: string | Buffer };
-	},
+	parsedSignature: ParsedSignature,
 	pubkey: string | Buffer | sshpk.Key,
 ): boolean => {
 	let pubkey_: sshpk.Key;
@@ -28,7 +22,10 @@ export const verifySignature = (
 		pubkey_ = pubkey;
 	}
 
-	const [keyAlgorithm, hashAlgorithm] = validateAlgorithm(parsedSignature.algorithm, pubkey_.type);
+	const [keyAlgorithm, hashAlgorithm] = validateAlgorithm(
+		parsedSignature.algorithm,
+		pubkey_.type,
+	);
 	if (keyAlgorithm === 'hmac' || keyAlgorithm !== pubkey_.type) return false;
 
 	const verify = pubkey_.createVerify(hashAlgorithm);

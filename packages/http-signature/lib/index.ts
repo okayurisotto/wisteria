@@ -1,4 +1,3 @@
-// Copyright 2015 Joyent, Inc.
-
-export * from './parser.js';
-export * from './verify.js';
+export type * from './types.js';
+export * from './parseRequest.js';
+export * from './verifySignature.js';

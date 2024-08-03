@@ -19,16 +19,8 @@ const checkHttpSignature = (message: IncomingMessage): ParsedSignature | null =>
 	let signature: ParsedSignature;
 
 	try {
-		signature = parseRequest(message, { 'headers': [] });
+		signature = parseRequest(message, { requiredHeaders: ['host', 'digest'] });
 	} catch {
-		return null;
-	}
-
-	if (!signature.params.headers.includes('host')) {
-		return null;
-	}
-
-	if (!signature.params.headers.includes('digest')) {
 		return null;
 	}
 

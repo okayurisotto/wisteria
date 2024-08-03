@@ -1,37 +1,11 @@
-// Copyright 2012 Joyent, Inc.  All rights reserved.
+import { PK_ALGOS, HASH_ALGOS } from './const.js';
+import { includes } from './utils/includes.js';
+import { InvalidAlgorithmError } from './errors.js';
 
-import type { AlgorithmHashType } from 'sshpk';
-
-const HASH_ALGOS = {
-	sha1: true,
-	sha256: true,
-	sha512: true,
-};
-
-const PK_ALGOS = {
-	rsa: true,
-	dsa: true,
-	ecdsa: true,
-	ed25519: true,
-};
-
-export const HEADER = {
-	AUTH: 'authorization',
-	SIG: 'signature',
-};
-
-export class HttpSignatureError extends Error {
-	constructor(message: string, caller: { name: string }) {
-		super(message);
-		this.name = caller.name;
-	}
-}
-
-export class InvalidAlgorithmError extends HttpSignatureError {
-	constructor(message: string) {
-		super(message, InvalidAlgorithmError);
-	}
-}
+type ValidatedAlgorithm = [
+	keyAlgorithm: (typeof PK_ALGOS)[number] | 'hs2019' | 'hmac',
+	hashAlgorithm: (typeof HASH_ALGOS)[number],
+];
 
 /**
  * @param algorithm the algorithm of the signature
@@ -40,7 +14,7 @@ export class InvalidAlgorithmError extends HttpSignatureError {
 export const validateAlgorithm = (
 	algorithm: string,
 	publicKeyType?: string | undefined,
-): [keyAlgorithm: string, hashAlgorithm: AlgorithmHashType] => {
+): ValidatedAlgorithm => {
 	const alg = algorithm.toLowerCase().split('-');
 	const [keyAlgorithm, hashAlgorithm] = alg;
 
@@ -64,20 +38,17 @@ export const validateAlgorithm = (
 		);
 	}
 
-	if (keyAlgorithm !== 'hmac' && !(keyAlgorithm in PK_ALGOS)) {
+	if (keyAlgorithm !== 'hmac' && !includes(PK_ALGOS, keyAlgorithm)) {
 		throw new InvalidAlgorithmError(
 			keyAlgorithm.toUpperCase() + ' type keys are not supported',
 		);
 	}
 
-	if (!(hashAlgorithm in HASH_ALGOS)) {
+	if (!includes(HASH_ALGOS, hashAlgorithm)) {
 		throw new InvalidAlgorithmError(
 			hashAlgorithm.toUpperCase() + ' is not a supported hash algorithm',
 		);
 	}
 
-	return [
-		keyAlgorithm,
-		hashAlgorithm as keyof typeof HASH_ALGOS,
-	];
+	return [keyAlgorithm, hashAlgorithm];
 };
