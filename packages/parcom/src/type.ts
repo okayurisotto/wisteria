@@ -16,4 +16,4 @@ export type InferParsers<T extends Parser<unknown>[]> = T extends [
 
 export type ParserResult<T> =
 	| { ok: true; value: T; offset: number }
-	| { ok: false; offset: number };
+	| { ok: false; value?: never; offset: number };

@@ -1,8 +1,10 @@
 {
 	"name": "parcom",
 	"type": "module",
+	"license": "MIT",
 	"scripts": {
-		"build": "tsup"
+		"build": "tsup",
+		"test": "vitest"
 	},
 	"exports": {
 		"import": "./built/index.js",
@@ -11,6 +13,7 @@
 	"devDependencies": {
 		"@types/node": "^20.14.13",
 		"tsup": "^8.2.3",
-		"typescript": "5.5.4"
+		"typescript": "5.5.4",
+		"vitest": "2.0.5"
 	}
 }
