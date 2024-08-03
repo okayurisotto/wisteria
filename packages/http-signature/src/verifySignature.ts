@@ -3,12 +3,11 @@ import type { ParsedSignature } from './types.js';
 import { validateAlgorithm } from './validateAlgorithm.js';
 
 /**
- * Verify RSA/DSA signature against public key.  You are expected to pass in
- * an object that was returned from `parse()`.
+ * Verify RSA/DSA signature against public key.
+ * You are expected to pass in an object that was returned from `parseRequest()`.
  *
- * @param parsedSignature the object you got from `parse`.
+ * @param parsedSignature the object you got from `parseRequest()`.
  * @param pubkey RSA/DSA private key PEM.
- * @return true if valid, false otherwise.
  * @throws {InvalidAlgorithmError}
  */
 export const verifySignature = (

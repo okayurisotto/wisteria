@@ -1,5 +1,4 @@
 import type { IncomingMessage } from 'node:http';
-import { map, or, pattern, pipe, separated, type Parser } from 'parcom';
 import type { ParseRequestOption, ParsedSignature } from './types.js';
 import { HEADER } from './const.js';
 import {
@@ -7,10 +6,13 @@ import {
 	InvalidAlgorithmError,
 	InvalidHeaderError,
 	InvalidParamsError,
+	InvalidRequestError,
 	MissingHeaderError,
 	StrictParsingError,
 } from './errors.js';
 import { validateAlgorithm } from './validateAlgorithm.js';
+import { parseSignatureHeaderValue } from './parsers/parseSignatureHeaderValue.js';
+import { parseAuthorizationHeaderValue } from './parsers/parseAuthorizationHeaderValue.js';
 
 /**
  * Parses the 'Authorization' header out of an http.IncomingMessage object.
@@ -20,41 +22,27 @@ import { validateAlgorithm } from './validateAlgorithm.js';
  * as those are specific to your environment.  You can use the options object
  * to pass in extra constraints.
  *
- * As a response object you can expect this:
- *
- * ```
- * {
- *   "scheme": "Signature",
- *   "params": {
- *     "keyId": "foo",
- *     "algorithm": "rsa-sha256",
- *     "headers": ["date", "digest"],
- *     "signature": "base64"
- *   },
- *   "signingString": "ready to be passed to crypto.verify()"
- * }
- * ```
- *
- * @throws {InvalidHeaderError} on an invalid Authorization header error.
- * @throws {InvalidParamsError} if the params in the scheme are invalid.
- * @throws {MissingHeaderError} if the params indicate a header not present,
- *                              either in the request headers from the params,
- *                              or not in the params from a required header in options.
- * @throws {StrictParsingError} if old attributes are used in strict parsing mode.
- * @throws {ExpiredRequestError} if the value of date exceeds skew.
+ * @throws {ExpiredRequestError}
+ * @throws {InvalidAlgorithmError}
+ * @throws {InvalidHeaderError}
+ * @throws {InvalidParamsError}
+ * @throws {InvalidRequestError}
+ * @throws {MissingHeaderError}
+ * @throws {StrictParsingError}
  */
 export const parseRequest = (
 	request: IncomingMessage,
 	options: ParseRequestOption | undefined = {},
 ): ParsedSignature => {
-	const requiredHeaders = options.requiredHeaders ?? [];
+	const requiredHeaders =
+		options.requiredHeaders?.map(v => v.toLowerCase()) ?? [];
 	const clockSkew = options.clockSkew ?? 300;
 
 	const method = request.method;
-	if (method === undefined) throw new Error();
+	if (method === undefined) throw new InvalidRequestError();
 
 	const url = request.url;
-	if (url === undefined) throw new Error();
+	if (url === undefined) throw new InvalidRequestError();
 
 	const authHeader = (() => {
 		if (options.authorizationHeaderName) {
@@ -78,7 +66,7 @@ export const parseRequest = (
 		};
 	})();
 	if (authHeader.value === undefined) {
-		throw new MissingHeaderError('no header present in the request');
+		throw new MissingHeaderError();
 	}
 	if (Array.isArray(authHeader.value)) {
 		throw new InvalidHeaderError();
@@ -113,24 +101,24 @@ export const parseRequest = (
 
 	const keyId = params.get('keyId');
 	if (keyId === undefined) {
-		throw new InvalidHeaderError('keyId was not specified');
+		throw new InvalidHeaderError();
 	}
 
 	const algorithm = params.get('algorithm');
 	if (algorithm === undefined) {
-		throw new InvalidHeaderError('algorithm was not specified');
+		throw new InvalidHeaderError();
 	}
 	if (
 		options.algorithm !== undefined &&
 		!options.algorithm.includes(algorithm.toLowerCase())
 	) {
-		throw new InvalidParamsError('unsupported algorithm');
+		throw new InvalidParamsError();
 	}
 	try {
 		validateAlgorithm(algorithm);
 	} catch (e) {
 		if (e instanceof InvalidAlgorithmError) {
-			throw new InvalidParamsError(algorithm + ' is not supported');
+			throw new InvalidParamsError();
 		} else {
 			throw e;
 		}
@@ -138,16 +126,14 @@ export const parseRequest = (
 
 	const signature = params.get('signature');
 	if (signature === undefined) {
-		throw new InvalidHeaderError('signature was not specified');
+		throw new InvalidHeaderError();
 	}
 
 	const created = params.get('created');
 	if (created) {
 		const skew = parseInt(created) - Math.floor(Date.now() / 1000);
 		if (skew > clockSkew) {
-			throw new ExpiredRequestError(
-				`Created lies in the future (with skew ${skew}s greater than allowed ${clockSkew}s`,
-			);
+			throw new ExpiredRequestError();
 		}
 	}
 
@@ -155,9 +141,7 @@ export const parseRequest = (
 	if (expires) {
 		const expiredSince = Math.floor(Date.now() / 1000) - parseInt(expires);
 		if (expiredSince > clockSkew) {
-			throw new ExpiredRequestError(
-				`Request expired with skew ${expiredSince}s greater than allowed ${clockSkew}s`,
-			);
+			throw new ExpiredRequestError();
 		}
 	}
 
@@ -168,69 +152,70 @@ export const parseRequest = (
 		const skew = Math.abs(now.getTime() - date.getTime());
 
 		if (skew > clockSkew * 1000) {
-			throw new ExpiredRequestError(
-				`clock skew of ${skew / 1000}s was greater than ${clockSkew}s`,
-			);
+			throw new ExpiredRequestError();
 		}
 	}
 
-	for (const requiredHeader of requiredHeaders) {
-		if (!targetHeaders.includes(requiredHeader.toLowerCase())) {
-			throw new MissingHeaderError(requiredHeader + ' was not a signed header');
-		}
+	if (!requiredHeaders.every(required => targetHeaders.includes(required))) {
+		throw new MissingHeaderError();
 	}
 
-	// #region Build the signingString
-
-	const signingStrings: string[] = [];
-
-	for (const key of targetHeaders) {
-		if (key === 'request-line') {
-			if (!options.strict) {
-				/** We allow headers from the older spec drafts if strict parsing isn't specified in options. */
-				signingStrings.push(
-					method + ' ' + url + ' HTTP/' + request.httpVersion,
-				);
-			} else {
-				/* Strict parsing doesn't allow older draft headers. */
-				throw new StrictParsingError(
-					'request-line is not a valid header with strict parsing enabled.',
-				);
+	const signingString = targetHeaders
+		.map((key) => {
+			switch (key) {
+				// deprecated?
+				case 'request-line': {
+					if (!options.strict) {
+						// We allow headers from the older spec drafts if strict parsing isn't specified in options.
+						return method + ' ' + url + ' HTTP/' + request.httpVersion;
+					} else {
+						// Strict parsing doesn't allow older draft headers.
+						throw new StrictParsingError();
+					}
+				}
+				case '(request-target)': {
+					return '(request-target): ' + method.toLowerCase() + ' ' + url;
+				}
+				// ?
+				case '(keyid)': {
+					return '(keyid): ' + keyId;
+				}
+				// ?
+				case '(algorithm)': {
+					return '(algorithm): ' + algorithm;
+				}
+				// ?
+				case '(opaque)': {
+					const opaque = params.get('opaque');
+					if (opaque !== undefined) {
+						return '(opaque): ' + opaque;
+					} else {
+						throw new MissingHeaderError();
+					}
+				}
+				case '(created)': {
+					if (created) {
+						return '(created): ' + created;
+					} else {
+						throw new Error();
+					}
+				}
+				case '(expires)': {
+					if (expires) {
+						return '(expires): ' + expires;
+					} else {
+						throw new Error();
+					}
+				}
+				default: {
+					const value = request.headers[key];
+					if (value === undefined) throw new MissingHeaderError();
+					if (Array.isArray(value)) throw new InvalidHeaderError();
+					return key + ': ' + value;
+				}
 			}
-		} else if (key === '(request-target)') {
-			signingStrings.push(
-				'(request-target): ' + method.toLowerCase() + ' ' + url,
-			);
-		} else if (key === '(keyid)') {
-			signingStrings.push('(keyid): ' + keyId);
-		} else if (key === '(algorithm)') {
-			signingStrings.push('(algorithm): ' + algorithm);
-		} else if (key === '(opaque)') {
-			const opaque = params.get('opaque');
-			if (opaque === undefined) throw new MissingHeaderError();
-			signingStrings.push('(opaque): ' + opaque);
-		} else if (key === '(created)') {
-			if (created) {
-				signingStrings.push('(created): ' + created);
-			} else {
-				throw new Error();
-			}
-		} else if (key === '(expires)') {
-			if (expires) {
-				signingStrings.push('(expires): ' + expires);
-			} else {
-				throw new Error();
-			}
-		} else {
-			const value = request.headers[key];
-			if (value === undefined)
-				throw new MissingHeaderError(key + ' was not in the request');
-			if (Array.isArray(value)) throw new InvalidHeaderError();
-			signingStrings.push(key + ': ' + value);
-		}
-	}
-
-	const signingString = signingStrings.join('\n');
+		})
+		.join('\n');
 
 	return {
 		scheme: 'Signature',
@@ -246,31 +231,4 @@ export const parseRequest = (
 			signature,
 		},
 	};
-};
-
-const parseAuthorizationHeaderValue: Parser<
-	{ key: string; value: string }[]
-> = (value, offset) => {
-	return map(
-		pipe([pattern(/^Signature /), parseSignatureHeaderValue]),
-		([, v]) => v,
-	)(value, offset);
-};
-
-const parseSignatureHeaderValue: Parser<{ key: string; value: string }[]> = (
-	value,
-	offset,
-) => {
-	const parameter = map(
-		or([pattern(/^([A-Za-z]+)="([^"]+)"/), pattern(/^([A-Za-z]+)=(\d+)/)]),
-		([, key, value]) => {
-			if (key === undefined) throw new Error();
-			if (value === undefined) throw new Error();
-			return { key, value };
-		},
-	);
-	const separator = pattern(/^,/);
-	const parameters = separated(parameter, separator);
-
-	return parameters(value, offset);
 };

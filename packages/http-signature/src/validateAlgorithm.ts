@@ -10,6 +10,7 @@ type ValidatedAlgorithm = [
 /**
  * @param algorithm the algorithm of the signature
  * @param publicKeyType fallback algorithm (public key type) for hs2019
+ * @throws {InvalidAlgorithmError}
  */
 export const validateAlgorithm = (
 	algorithm: string,
@@ -29,25 +30,19 @@ export const validateAlgorithm = (
 	}
 
 	if (keyAlgorithm === undefined || hashAlgorithm === undefined) {
-		throw new InvalidAlgorithmError(algorithm + ' is not a valid algorithm');
+		throw new InvalidAlgorithmError();
 	}
 
 	if (alg.length !== 2) {
-		throw new InvalidAlgorithmError(
-			keyAlgorithm.toUpperCase() + ' is not a valid algorithm',
-		);
+		throw new InvalidAlgorithmError();
 	}
 
 	if (keyAlgorithm !== 'hmac' && !includes(PK_ALGOS, keyAlgorithm)) {
-		throw new InvalidAlgorithmError(
-			keyAlgorithm.toUpperCase() + ' type keys are not supported',
-		);
+		throw new InvalidAlgorithmError();
 	}
 
 	if (!includes(HASH_ALGOS, hashAlgorithm)) {
-		throw new InvalidAlgorithmError(
-			hashAlgorithm.toUpperCase() + ' is not a supported hash algorithm',
-		);
+		throw new InvalidAlgorithmError();
 	}
 
 	return [keyAlgorithm, hashAlgorithm];

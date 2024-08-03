@@ -1,4 +1,4 @@
-export class HttpSignatureError extends Error {
+class HttpSignatureError extends Error {
 	constructor(caller: { name: string }, message?: string) {
 		super(message);
 		this.name = caller.name;
@@ -8,6 +8,12 @@ export class HttpSignatureError extends Error {
 export class InvalidAlgorithmError extends HttpSignatureError {
 	constructor(message?: string) {
 		super(InvalidAlgorithmError, message);
+	}
+}
+
+export class InvalidRequestError extends HttpSignatureError {
+	constructor(message?: string) {
+		super(InvalidRequestError, message);
 	}
 }
 

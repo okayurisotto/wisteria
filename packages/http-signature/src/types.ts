@@ -52,7 +52,7 @@ export interface ParsedSignature {
 	/**
 	 * @deprecated
 	 */
-	scheme: string;
+	scheme: 'Signature';
 
 	/**
 	 * ready to be passed to `crypto.verify()`
