@@ -117,7 +117,7 @@
 		"punycode": "2.3.1",
 		"qrcode": "1.5.3",
 		"ratelimiter": "3.4.1",
-		"re2": "1.20.9",
+		"re2": "1.21.3",
 		"redis-lock": "0.1.4",
 		"reflect-metadata": "0.1.14",
 		"rename": "1.0.4",
