@@ -6,7 +6,7 @@ import * as http from 'node:http';
 import { rfc1123 } from 'jsprim';
 import sshpk from 'sshpk';
 import { test } from 'tap';
-import { parseRequest, verifySignature } from '../lib/index.js';
+import { parseRequest, verifySignature } from '../src/index.js';
 
 /// --- Globals
 

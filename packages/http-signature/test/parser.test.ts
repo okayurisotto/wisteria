@@ -4,7 +4,7 @@ import * as http from 'node:http';
 import * as crypto from 'node:crypto';
 import { test } from 'tap';
 import { rfc1123 } from 'jsprim';
-import { parseRequest } from '../lib/index.js';
+import { parseRequest } from '../src/index.js';
 
 /// --- Globals
 
