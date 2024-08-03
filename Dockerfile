@@ -48,10 +48,12 @@ COPY --link ./packages/backend/ormconfig.js             ./packages/backend/ormco
 COPY --link ./packages/backend/package.json             ./packages/backend/package.json
 COPY --link ./packages/frontend/assets                  ./packages/frontend/assets
 COPY --link ./packages/frontend/package.json            ./packages/frontend/package.json
+COPY --link ./packages/http-signature/package.json      ./packages/http-signature/package.json
 COPY --link ./packages/identicon-generator/package.json ./packages/identicon-generator/package.json
 COPY --link ./packages/misskey-bubble-game/package.json ./packages/misskey-bubble-game/package.json
 COPY --link ./packages/misskey-js/package.json          ./packages/misskey-js/package.json
 COPY --link ./packages/misskey-reversi/package.json     ./packages/misskey-reversi/package.json
+COPY --link ./packages/parcom/package.json              ./packages/parcom/package.json
 COPY --link ./packages/sw/package.json                  ./packages/sw/package.json
 COPY --link ./pnpm-workspace.yaml                       ./pnpm-workspace.yaml
 
@@ -60,10 +62,12 @@ RUN pnpm install --prod --offline --frozen-lockfile
 COPY --link --from=builder /misskey/built                              ./built
 COPY --link --from=builder /misskey/fluent-emojis                      ./fluent-emojis
 COPY --link --from=builder /misskey/packages/backend/built             ./packages/backend/built
+COPY --link --from=builder /misskey/packages/http-signature/built      ./packages/http-signature/built
 COPY --link --from=builder /misskey/packages/identicon-generator/built ./packages/identicon-generator/built
 COPY --link --from=builder /misskey/packages/misskey-bubble-game/built ./packages/misskey-bubble-game/built
 COPY --link --from=builder /misskey/packages/misskey-js/built          ./packages/misskey-js/built
 COPY --link --from=builder /misskey/packages/misskey-reversi/built     ./packages/misskey-reversi/built
+COPY --link --from=builder /misskey/packages/parcom/built              ./packages/parcom/built
 
 # ----------------------------------------------------------
 # Build a image
