@@ -13,7 +13,7 @@ import Logger from '@/logger.js';
 import { envOption } from '@/env.js';
 import { initialize } from './master.js';
 
-import 'reflect-metadata';
+import 'reflect-metadata/lite';
 
 process.title = 'Wisteria';
 
