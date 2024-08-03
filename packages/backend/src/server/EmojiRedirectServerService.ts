@@ -14,7 +14,7 @@ import { IsNull } from 'typeorm';
 const parseEmoji = (
 	value: string,
 ): { name: string; host: string | null } | null => {
-	const matchResult = value.match(/^([\w+-]+)(?:@([\w.-:]+))?\.webp$/);
+	const matchResult = value.match(/^([\w+-]+)(?:@([\w.\-:]+))?\.webp$/);
 	if (matchResult === null) return null;
 
 	const name = matchResult[1];
