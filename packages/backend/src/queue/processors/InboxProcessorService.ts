@@ -5,7 +5,7 @@
 
 import { URL } from 'node:url';
 import { Injectable } from '@nestjs/common';
-import { verifySignature } from 'http-signature';
+import { verifySignature } from 'http-signature/node';
 import * as Bull from 'bullmq';
 import type Logger from '@/logger.js';
 import { MetaService } from '@/core/MetaService.js';
@@ -50,8 +50,7 @@ export class InboxProcessorService {
 
 	@bindThis
 	public async process(job: Bull.Job<InboxJobData>): Promise<string> {
-		const signature = job.data.signature;	// HTTP-signature
-		const activity = job.data.activity;
+		const { activity, signature, signingString } = job.data;
 
 		//#region Log
 		const info = Object.assign({}, activity);
@@ -104,7 +103,7 @@ export class InboxProcessorService {
 		}
 
 		// HTTP-Signatureの検証
-		const httpSignatureValidated = verifySignature(signature, authUser.key.keyPem);
+		const httpSignatureValidated = verifySignature(signingString, authUser.key.keyPem, signature.signature);
 
 		// また、signatureのsignerは、activity.actorと一致する必要がある
 		if (!httpSignatureValidated || authUser.user.uri !== activity.actor) {

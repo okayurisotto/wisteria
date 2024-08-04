@@ -3,23 +3,27 @@
 	"license": "MIT",
 	"type": "module",
 	"exports": {
-		"import": "./built/index.js",
-		"types": "./built/index.d.ts"
+		"./node": {
+			"import": "./built/node.js",
+			"types": "./built/node.d.ts"
+		},
+		"./web": {
+			"import": "./built/web.js",
+			"types": "./built/web.d.ts"
+		}
 	},
 	"scripts": {
 		"build": "tsup",
-		"test": "tap test/*.ts"
+		"test": "vitest"
 	},
 	"dependencies": {
-		"jsprim": "^1.4.2",
 		"parcom": "workspace:*",
 		"sshpk": "^1.18.0"
 	},
 	"devDependencies": {
-		"@types/jsprim": "^2.0.5",
 		"@types/node": "^20.14.13",
 		"@types/sshpk": "^1.17.4",
-		"tap": "^21.0.0",
-		"tsup": "^8.2.3"
+		"tsup": "^8.2.3",
+		"vitest": "2.0.5"
 	}
 }

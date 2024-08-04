@@ -6,7 +6,7 @@
 import * as crypto from 'node:crypto';
 import { IncomingMessage } from 'node:http';
 import { Inject, Injectable } from '@nestjs/common';
-import { parseRequest, type ParsedSignature } from 'http-signature';
+import { parseRequest, type Signature } from 'http-signature/node';
 import secureJson from 'secure-json-parse';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
@@ -15,16 +15,20 @@ import { bindThis } from '@/decorators.js';
 import type { IActivity } from '@/core/activitypub/type.js';
 import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyBodyParser, FastifyPluginOptions } from 'fastify';
 
-const checkHttpSignature = (message: IncomingMessage): ParsedSignature | null => {
-	let signature: ParsedSignature;
+const checkHttpSignature = (message: IncomingMessage): { signature: Signature; signingString: string } | null => {
+	const result = parseRequest(message);
 
-	try {
-		signature = parseRequest(message, { requiredHeaders: ['host', 'digest'] });
-	} catch {
-		return null;
-	}
+	if (!result.ok) return null;
 
-	return signature;
+	if (!result.value.signature.isValidAt(Date.now() / 1000)) return null;
+
+	const hasRequiredHeaders = result.value.signature.has([
+		{ name: 'host', special: false },
+		{ name: 'digest', special: false },
+	]);
+	if (!hasRequiredHeaders) return null;
+
+	return result.value;
 };
 
 const parseDigestHeaderValue = (value: string): { algo: string; hash: string } | null => {
@@ -78,12 +82,14 @@ export class ActivityPubInboxServerService {
 
 		//#region HTTP Signature
 
-		const signature = checkHttpSignature(request.raw);
+		const result = checkHttpSignature(request.raw);
 
-		if (signature === null) {
+		if (result === null) {
 			reply.code(401);
 			return;
 		}
+
+		const { signature, signingString } = result;
 
 		//#endregion
 
@@ -110,7 +116,7 @@ export class ActivityPubInboxServerService {
 
 		//#endregion
 
-		await this.queueService.inbox(request.body as IActivity, signature);
+		await this.queueService.inbox(request.body as IActivity, signature, signingString);
 		reply.code(202);
 	}
 

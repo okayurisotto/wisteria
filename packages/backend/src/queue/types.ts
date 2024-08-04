@@ -9,7 +9,7 @@ import type { MiNote } from '@/models/Note.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiWebhook } from '@/models/Webhook.js';
 import type { IActivity } from '@/core/activitypub/type.js';
-import type { ParsedSignature } from 'http-signature';
+import type { Signature } from 'http-signature/node';
 
 export type DeliverJobData = {
 	/** Actor */
@@ -26,7 +26,8 @@ export type DeliverJobData = {
 
 export type InboxJobData = {
 	activity: IActivity;
-	signature: ParsedSignature;
+	signature: Signature;
+	signingString: string;
 };
 
 export type RelationshipJobData = {
