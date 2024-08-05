@@ -1,5 +1,4 @@
 .turbo/
 /files/
-built-test/
 built/
 node_modules/
