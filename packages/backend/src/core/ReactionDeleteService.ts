@@ -18,7 +18,6 @@ import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
-import { bindThis } from '@/decorators.js';
 import { trackPromise } from '@/misc/promise-tracker.js';
 import { ReactionDecodeService } from './ReactionDecodeService.js';
 
@@ -41,7 +40,6 @@ export class ReactionDeleteService {
 		private reactionDecodeService: ReactionDecodeService,
 	) {}
 
-	@bindThis
 	public async delete(
 		user: { id: MiUser['id']; host: MiUser['host']; isBot: MiUser['isBot'] },
 		note: MiNote,

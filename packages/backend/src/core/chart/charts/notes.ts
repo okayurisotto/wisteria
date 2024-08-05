@@ -9,7 +9,6 @@ import type { NotesRepository } from '@/models/_.js';
 import type { MiNote } from '@/models/Note.js';
 import { AppLockService } from '@/core/AppLockService.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import Chart from '../core.js';
 import { ChartLoggerService } from '../ChartLoggerService.js';
 import { name, schema } from './entities/notes.js';
@@ -49,7 +48,6 @@ export default class NotesChart extends Chart<typeof schema> {
 		return {};
 	}
 
-	@bindThis
 	public async update(note: MiNote, isAdditional: boolean): Promise<void> {
 		const prefix = note.userHost === null ? 'local' : 'remote';
 

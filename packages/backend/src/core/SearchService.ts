@@ -7,7 +7,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
-import { bindThis } from '@/decorators.js';
 import { MiNote } from '@/models/Note.js';
 import { MiUser } from '@/models/_.js';
 import type { BlockingsRepository, MutingsRepository, NotesRepository } from '@/models/_.js';
@@ -115,7 +114,6 @@ export class SearchService {
 		}
 	}
 
-	@bindThis
 	public async indexNote(note: MiNote): Promise<void> {
 		if (note.text == null && note.cw == null) return;
 		if (!['home', 'public'].includes(note.visibility)) return;
@@ -151,7 +149,6 @@ export class SearchService {
 		}
 	}
 
-	@bindThis
 	public async unindexNote(note: MiNote): Promise<void> {
 		if (!['home', 'public'].includes(note.visibility)) return;
 
@@ -160,7 +157,6 @@ export class SearchService {
 		}
 	}
 
-	@bindThis
 	public async searchNote(q: string, me: MiUser | null, opts: {
 		userId?: MiNote['userId'] | null;
 		channelId?: MiNote['channelId'] | null;

@@ -12,7 +12,6 @@ import { AcctEntity } from '@/misc/AcctEntity.js';
 import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { DownloadService } from '@/core/DownloadService.js';
 import { UserMutingService } from '@/core/UserMutingService.js';
-import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbUserImportJobData } from '../types.js';
@@ -40,7 +39,6 @@ export class ImportMutingProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('import-muting');
 	}
 
-	@bindThis
 	public async process(job: Bull.Job<DbUserImportJobData>): Promise<void> {
 		this.logger.info(`Importing muting of ${job.data.user.id} ...`);
 

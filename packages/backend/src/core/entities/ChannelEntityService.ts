@@ -10,7 +10,6 @@ import type { Packed } from '@/misc/json-schema.js';
 import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiChannel } from '@/models/Channel.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { DriveFileEntityService } from './DriveFileEntityService.js';
 import { NoteEntityService } from './NoteEntityService.js';
@@ -40,7 +39,6 @@ export class ChannelEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiChannel['id'] | MiChannel,
 		me?: { id: MiUser['id'] } | null | undefined,

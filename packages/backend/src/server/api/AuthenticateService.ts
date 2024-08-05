@@ -9,7 +9,6 @@ import type { AccessTokensRepository, AppsRepository, UsersRepository } from '@/
 import type { MiLocalUser } from '@/models/User.js';
 import type { MiAccessToken } from '@/models/AccessToken.js';
 import isNativeToken from '@/misc/is-native-token.js';
-import { bindThis } from '@/decorators.js';
 import { AuthenticationError } from '@/misc/AuthenticationError.js';
 
 @Injectable()
@@ -25,7 +24,6 @@ export class AuthenticateService {
 		private appsRepository: AppsRepository,
 	) {}
 
-	@bindThis
 	public async authenticate(token: string | null | undefined): Promise<[MiLocalUser | null, MiAccessToken | null]> {
 		if (token == null) {
 			return [null, null];

@@ -9,7 +9,6 @@ import type { FollowingsRepository, InstancesRepository } from '@/models/_.js';
 import { AppLockService } from '@/core/AppLockService.js';
 import { DI } from '@/di-symbols.js';
 import { MetaService } from '@/core/MetaService.js';
-import { bindThis } from '@/decorators.js';
 import Chart from '../core.js';
 import { ChartLoggerService } from '../ChartLoggerService.js';
 import { name, schema } from './entities/federation.js';
@@ -112,7 +111,6 @@ export default class FederationChart extends Chart<typeof schema> {
 		};
 	}
 
-	@bindThis
 	public async deliverd(host: string, succeeded: boolean): Promise<void> {
 		await this.commit(succeeded ? {
 			'deliveredInstances': [host],
@@ -121,7 +119,6 @@ export default class FederationChart extends Chart<typeof schema> {
 		});
 	}
 
-	@bindThis
 	public async inbox(host: string): Promise<void> {
 		await this.commit({
 			'inboxInstances': [host],

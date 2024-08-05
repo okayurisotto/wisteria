@@ -9,7 +9,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import RE2 from 're2';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class UtilityService {
@@ -18,25 +17,21 @@ export class UtilityService {
 		private config: Config,
 	) {}
 
-	@bindThis
 	public isSelfHost(host: string | null): boolean {
 		if (host == null) return true;
 		return this.toPuny(this.config.host) === this.toPuny(host);
 	}
 
-	@bindThis
 	public isBlockedHost(blockedHosts: string[], host: string | null): boolean {
 		if (host == null) return false;
 		return blockedHosts.some(x => `.${host.toLowerCase()}`.endsWith(`.${x}`));
 	}
 
-	@bindThis
 	public isSilencedHost(silencedHosts: string[] | undefined, host: string | null): boolean {
 		if (!silencedHosts || host == null) return false;
 		return silencedHosts.some(x => `.${host.toLowerCase()}`.endsWith(`.${x}`));
 	}
 
-	@bindThis
 	public isKeyWordIncluded(text: string, keyWords: string[]): boolean {
 		if (keyWords.length === 0) return false;
 		if (text === '') return false;
@@ -63,18 +58,15 @@ export class UtilityService {
 		return matched;
 	}
 
-	@bindThis
 	public extractDbHost(uri: string): string {
 		const url = new URL(uri);
 		return this.toPuny(url.hostname);
 	}
 
-	@bindThis
 	public toPuny(host: string): string {
 		return toASCII(host.toLowerCase());
 	}
 
-	@bindThis
 	public toPunyNullable(host: string | null | undefined): string | null {
 		if (host == null) return null;
 		return toASCII(host.toLowerCase());

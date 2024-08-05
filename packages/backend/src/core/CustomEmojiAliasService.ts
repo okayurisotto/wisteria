@@ -10,7 +10,6 @@ import { EmojiEntityService } from '@/core/entities/EmojiEntityService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { MiEmoji } from '@/models/Emoji.js';
 import type { EmojisRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class CustomEmojiAliasService {
@@ -22,7 +21,6 @@ export class CustomEmojiAliasService {
 		private globalEventService: GlobalEventService,
 	) {}
 
-	@bindThis
 	public async addAliasesBulk(ids: MiEmoji['id'][], aliases: string[]) {
 		const emojis = await this.emojisRepository.findBy({
 			id: In(ids),
@@ -40,7 +38,6 @@ export class CustomEmojiAliasService {
 		});
 	}
 
-	@bindThis
 	public async setAliasesBulk(ids: MiEmoji['id'][], aliases: string[]) {
 		await this.emojisRepository.update({
 			id: In(ids),
@@ -54,7 +51,6 @@ export class CustomEmojiAliasService {
 		});
 	}
 
-	@bindThis
 	public async removeAliasesBulk(ids: MiEmoji['id'][], aliases: string[]) {
 		const emojis = await this.emojisRepository.findBy({
 			id: In(ids),

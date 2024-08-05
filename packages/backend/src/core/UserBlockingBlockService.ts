@@ -15,7 +15,6 @@ import type { FollowRequestsRepository, BlockingsRepository, UserListsRepository
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { WebhookService } from '@/core/WebhookService.js';
-import { bindThis } from '@/decorators.js';
 import { UserFollowingService } from '@/core/UserFollowingService.js';
 
 @Injectable()
@@ -49,7 +48,6 @@ export class UserBlockingBlockService implements OnModuleInit {
 		this.userFollowingService = this.moduleRef.get('UserFollowingService');
 	}
 
-	@bindThis
 	public async block(blocker: MiUser, blockee: MiUser, silent = false): Promise<void> {
 		await Promise.all([
 			this.cancelRequest(blocker, blockee, silent),
@@ -75,7 +73,6 @@ export class UserBlockingBlockService implements OnModuleInit {
 		}
 	}
 
-	@bindThis
 	private async cancelRequest(follower: MiUser, followee: MiUser, silent: boolean): Promise<void> {
 		const request = await this.followRequestsRepository.findOneBy({
 			followeeId: followee.id,
@@ -140,7 +137,6 @@ export class UserBlockingBlockService implements OnModuleInit {
 		}
 	}
 
-	@bindThis
 	private async removeFromList(listOwner: MiUser, user: MiUser) {
 		const userLists = await this.userListsRepository.findBy({
 			userId: listOwner.id,

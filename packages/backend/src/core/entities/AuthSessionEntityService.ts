@@ -9,7 +9,6 @@ import type { AuthSessionsRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiAuthSession } from '@/models/AuthSession.js';
 import type { MiUser } from '@/models/User.js';
-import { bindThis } from '@/decorators.js';
 import { AppEntityService } from './AppEntityService.js';
 
 @Injectable()
@@ -22,7 +21,6 @@ export class AuthSessionEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiAuthSession['id'] | MiAuthSession,
 		me?: { id: MiUser['id'] } | null | undefined,

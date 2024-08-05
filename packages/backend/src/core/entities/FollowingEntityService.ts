@@ -11,7 +11,6 @@ import type { Packed } from '@/misc/json-schema.js';
 import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiFollowing } from '@/models/Following.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 
@@ -50,27 +49,22 @@ export class FollowingEntityService {
 	) {
 	}
 
-	@bindThis
 	public isLocalFollower(following: MiFollowing): following is LocalFollowerFollowing {
 		return following.followerHost == null;
 	}
 
-	@bindThis
 	public isRemoteFollower(following: MiFollowing): following is RemoteFollowerFollowing {
 		return following.followerHost != null;
 	}
 
-	@bindThis
 	public isLocalFollowee(following: MiFollowing): following is LocalFolloweeFollowing {
 		return following.followeeHost == null;
 	}
 
-	@bindThis
 	public isRemoteFollowee(following: MiFollowing): following is RemoteFolloweeFollowing {
 		return following.followeeHost != null;
 	}
 
-	@bindThis
 	public async pack(
 		src: MiFollowing['id'] | MiFollowing,
 		me?: { id: MiUser['id'] } | null | undefined,
@@ -97,7 +91,6 @@ export class FollowingEntityService {
 		});
 	}
 
-	@bindThis
 	public packMany(
 		followings: any[],
 		me?: { id: MiUser['id'] } | null | undefined,

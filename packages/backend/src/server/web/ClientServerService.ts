@@ -20,7 +20,6 @@ import { GalleryPostEntityService } from '@/core/entities/GalleryPostEntityServi
 import { ClipEntityService } from '@/core/entities/ClipEntityService.js';
 import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
 import type { ChannelsRepository, ClipsRepository, FlashsRepository, GalleryPostsRepository, MiMeta, NotesRepository, PagesRepository, ReversiGamesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 import { FlashEntityService } from '@/core/entities/FlashEntityService.js';
 import { ReversiGameEntityService } from '@/core/entities/ReversiGameEntityService.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
@@ -84,7 +83,6 @@ export class ClientServerService {
 		private clientLoggerService: ClientLoggerService,
 	) {}
 
-	@bindThis
 	private generateCommonPugData(meta: MiMeta) {
 		return {
 			instanceName: meta.name ?? 'Wisteria',

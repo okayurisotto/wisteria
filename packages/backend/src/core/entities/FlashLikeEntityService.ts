@@ -9,7 +9,6 @@ import type { FlashLikesRepository } from '@/models/_.js';
 import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiFlashLike } from '@/models/FlashLike.js';
-import { bindThis } from '@/decorators.js';
 import { FlashEntityService } from './FlashEntityService.js';
 
 @Injectable()
@@ -22,7 +21,6 @@ export class FlashLikeEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiFlashLike['id'] | MiFlashLike,
 		me?: { id: MiUser['id'] } | null | undefined,
@@ -35,7 +33,6 @@ export class FlashLikeEntityService {
 		};
 	}
 
-	@bindThis
 	public packMany(
 		likes: any[],
 		me: { id: MiUser['id'] },

@@ -5,7 +5,6 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { MiUser } from '@/models/User.js';
-import { bindThis } from '@/decorators.js';
 import { DI } from '@/di-symbols.js';
 import type { BlockingsRepository } from '@/models/_.js';
 
@@ -16,7 +15,6 @@ export class UserBlockingCheckService {
 		private blockingsRepository: BlockingsRepository,
 	) {}
 
-	@bindThis
 	public async checkBlocked(
 		blockerId: MiUser['id'],
 		blockeeId: MiUser['id'],

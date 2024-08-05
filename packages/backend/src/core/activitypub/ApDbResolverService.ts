@@ -9,7 +9,6 @@ import type { NotesRepository, UserPublickeysRepository, UsersRepository } from 
 import type { Config } from '@/config.js';
 import type { MiUserPublickey } from '@/models/UserPublickey.js';
 import type { MiNote } from '@/models/Note.js';
-import { bindThis } from '@/decorators.js';
 import type { MiLocalUser, MiRemoteUser } from '@/models/User.js';
 import { getApId } from './type.js';
 import { ApPersonService } from './models/ApPersonService.js';
@@ -49,7 +48,6 @@ export class ApDbResolverService {
 		private apPersonService: ApPersonService,
 	) {}
 
-	@bindThis
 	public parseUri(value: string | IObject): UriParseResult {
 		const separator = '/';
 
@@ -68,7 +66,6 @@ export class ApDbResolverService {
 	/**
 	 * AP Note => Misskey Note in DB
 	 */
-	@bindThis
 	public async getNoteFromApId(value: string | IObject): Promise<MiNote | null> {
 		const parsed = this.parseUri(value);
 
@@ -88,7 +85,6 @@ export class ApDbResolverService {
 	/**
 	 * AP Person => Misskey User in DB
 	 */
-	@bindThis
 	public async getUserFromApId(value: string | IObject): Promise<MiLocalUser | MiRemoteUser | null> {
 		const parsed = this.parseUri(value);
 
@@ -104,7 +100,6 @@ export class ApDbResolverService {
 	/**
 	 * AP KeyId => Misskey User and Key
 	 */
-	@bindThis
 	public async getAuthUserFromKeyId(keyId: string): Promise<{
 		user: MiRemoteUser;
 		key: MiUserPublickey;
@@ -125,7 +120,6 @@ export class ApDbResolverService {
 	/**
 	 * AP Actor id => Misskey User and Key
 	 */
-	@bindThis
 	public async getAuthUserFromApId(uri: string): Promise<{
 		user: MiRemoteUser;
 		key: MiUserPublickey | null;

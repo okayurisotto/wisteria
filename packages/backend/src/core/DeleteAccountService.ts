@@ -8,7 +8,6 @@ import type { UsersRepository } from '@/models/_.js';
 import { QueueService } from '@/core/QueueService.js';
 import { UserSuspendService } from '@/core/UserSuspendService.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class DeleteAccountService {
@@ -21,7 +20,6 @@ export class DeleteAccountService {
 	) {
 	}
 
-	@bindThis
 	public async deleteAccount(user: {
 		id: string;
 		host: string | null;

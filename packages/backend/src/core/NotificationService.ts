@@ -7,7 +7,6 @@ import * as Redis from 'ioredis';
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { MiUser } from '@/models/User.js';
-import { bindThis } from '@/decorators.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { PushNotificationService } from '@/core/PushNotificationService.js';
 
@@ -22,7 +21,6 @@ export class NotificationService {
 	) {
 	}
 
-	@bindThis
 	public async readAllNotification(
 		userId: MiUser['id'],
 		force = false,
@@ -45,7 +43,6 @@ export class NotificationService {
 		}
 	}
 
-	@bindThis
 	private postReadAllNotifications(userId: MiUser['id']) {
 		this.globalEventService.publishMainStream(userId, 'readAllNotifications');
 		this.pushNotificationService.pushNotification(userId, 'readAllNotifications', undefined);

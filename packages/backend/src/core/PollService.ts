@@ -13,7 +13,6 @@ import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
-import { bindThis } from '@/decorators.js';
 import { UserBlockingCheckService } from './UserBlockingCheckService.js';
 
 @Injectable()
@@ -41,7 +40,6 @@ export class PollService {
 	) {
 	}
 
-	@bindThis
 	public async vote(user: MiUser, note: MiNote, choice: number) {
 		const poll = await this.pollsRepository.findOneBy({ noteId: note.id });
 
@@ -89,7 +87,6 @@ export class PollService {
 		});
 	}
 
-	@bindThis
 	public async deliverQuestionUpdate(noteId: MiNote['id']) {
 		const note = await this.notesRepository.findOneBy({ id: noteId });
 		if (note == null) throw new Error('note not found');

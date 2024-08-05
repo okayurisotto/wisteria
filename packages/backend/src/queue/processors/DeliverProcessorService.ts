@@ -16,7 +16,6 @@ import ApRequestChart from '@/core/chart/charts/ap-request.js';
 import FederationChart from '@/core/chart/charts/federation.js';
 import { StatusError } from '@/misc/status-error.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import { bindThis } from '@/decorators.js';
 import type { DeliverJobData } from '../types.js';
 
 @Injectable()
@@ -35,7 +34,6 @@ export class DeliverProcessorService {
 		private federationChart: FederationChart,
 	) {}
 
-	@bindThis
 	public async process(job: Bull.Job<DeliverJobData>): Promise<string> {
 		const { host } = new URL(job.data.to);
 

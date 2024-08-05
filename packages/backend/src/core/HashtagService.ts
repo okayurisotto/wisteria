@@ -12,7 +12,6 @@ import { IdService } from '@/core/IdService.js';
 import type { MiHashtag } from '@/models/Hashtag.js';
 import type { HashtagsRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { bindThis } from '@/decorators.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { UtilityService } from '@/core/UtilityService.js';
@@ -34,14 +33,12 @@ export class HashtagService {
 	) {
 	}
 
-	@bindThis
 	public async updateHashtags(user: { id: MiUser['id']; host: MiUser['host'] }, tags: string[]) {
 		for (const tag of tags) {
 			await this.updateHashtag(user, tag);
 		}
 	}
 
-	@bindThis
 	public async updateUsertags(user: MiUser, tags: string[]) {
 		for (const tag of tags) {
 			await this.updateHashtag(user, tag, true, true);
@@ -52,7 +49,6 @@ export class HashtagService {
 		}
 	}
 
-	@bindThis
 	public async updateHashtag(user: { id: MiUser['id']; host: MiUser['host'] }, tag: string, isUserAttached = false, inc = true) {
 		tag = normalizeForSearch(tag);
 
@@ -158,7 +154,6 @@ export class HashtagService {
 		}
 	}
 
-	@bindThis
 	public async updateHashtagsRanking(hashtag: string, userId: MiUser['id']): Promise<void> {
 		const instance = await this.metaService.fetch();
 		const hiddenTags = instance.hiddenTags.map(t => normalizeForSearch(t));
@@ -195,7 +190,6 @@ export class HashtagService {
 		redisPipeline.exec();
 	}
 
-	@bindThis
 	public async getChart(hashtag: string, range: number): Promise<number[]> {
 		const now = new Date();
 		now.setMinutes(Math.floor(now.getMinutes() / 10) * 10, 0, 0);
@@ -215,7 +209,6 @@ export class HashtagService {
 		return result.map(x => x[1]) as number[];
 	}
 
-	@bindThis
 	public async getCharts(hashtags: string[], range: number): Promise<Record<string, number[]>> {
 		const now = new Date();
 		now.setMinutes(Math.floor(now.getMinutes() / 10) * 10, 0, 0);

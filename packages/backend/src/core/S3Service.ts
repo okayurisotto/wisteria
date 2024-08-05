@@ -12,7 +12,6 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { NodeHttpHandler, type NodeHttpHandlerOptions } from '@smithy/node-http-handler';
 import type { MiMeta } from '@/models/Meta.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
-import { bindThis } from '@/decorators.js';
 import type { DeleteObjectCommandInput, PutObjectCommandInput } from '@aws-sdk/client-s3';
 
 @Injectable()
@@ -22,7 +21,6 @@ export class S3Service {
 	) {
 	}
 
-	@bindThis
 	public getS3Client(meta: MiMeta): S3Client {
 		const u = meta.objectStorageEndpoint
 			? `${meta.objectStorageUseSSL ? 'https' : 'http'}://${meta.objectStorageEndpoint}`
@@ -49,7 +47,6 @@ export class S3Service {
 		});
 	}
 
-	@bindThis
 	public async upload(meta: MiMeta, input: PutObjectCommandInput) {
 		const client = this.getS3Client(meta);
 		return new Upload({
@@ -61,7 +58,6 @@ export class S3Service {
 		}).done();
 	}
 
-	@bindThis
 	public delete(meta: MiMeta, input: DeleteObjectCommandInput) {
 		const client = this.getS3Client(meta);
 		return client.send(new DeleteObjectCommand(input));

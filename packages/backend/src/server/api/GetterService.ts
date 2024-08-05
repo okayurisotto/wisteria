@@ -10,7 +10,6 @@ import { IdentifiableError } from '@/misc/identifiable-error.js';
 import type { MiLocalUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import type { MiNote } from '@/models/Note.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class GetterService {
@@ -28,7 +27,6 @@ export class GetterService {
 	/**
 	 * Get note for API processing
 	 */
-	@bindThis
 	public async getNote(noteId: MiNote['id']) {
 		const note = await this.notesRepository.findOneBy({ id: noteId });
 
@@ -42,7 +40,6 @@ export class GetterService {
 	/**
 	 * Get user for API processing
 	 */
-	@bindThis
 	public async getUser(userId: MiUser['id']) {
 		const user = await this.usersRepository.findOneBy({ id: userId });
 
@@ -56,7 +53,6 @@ export class GetterService {
 	/**
 	 * Get remote user for API processing
 	 */
-	@bindThis
 	public async getRemoteUser(userId: MiUser['id']) {
 		const user = await this.getUser(userId);
 
@@ -70,7 +66,6 @@ export class GetterService {
 	/**
 	 * Get local user for API processing
 	 */
-	@bindThis
 	public async getLocalUser(userId: MiUser['id']) {
 		const user = await this.getUser(userId);
 

@@ -13,7 +13,6 @@ import { AcctEntity } from '@/misc/AcctEntity.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { DI } from '@/di-symbols.js';
 import type { AntennasRepository, UserListMembershipsRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import type { OnApplicationShutdown } from '@nestjs/common';
@@ -49,8 +48,7 @@ export class AntennaService implements OnApplicationShutdown {
 		this.redisForSub.on('message', this.onRedisMessage);
 	}
 
-	@bindThis
-	private async onRedisMessage(_: string, data: string): Promise<void> {
+	private onRedisMessage = async (_: string, data: string): Promise<void> => {
 		const obj = JSON.parse(data);
 
 		if (obj.channel === 'internal') {
@@ -91,9 +89,8 @@ export class AntennaService implements OnApplicationShutdown {
 					break;
 			}
 		}
-	}
+	};
 
-	@bindThis
 	public async addNoteToAntennas(note: MiNote, noteUser: { id: MiUser['id']; username: string; host: string | null }): Promise<void> {
 		const antennas = await this.getAntennas();
 		const antennasWithMatchResult = await Promise.all(antennas.map(antenna => this.checkHitAntenna(antenna, note, noteUser).then(hit => [antenna, hit] as const)));
@@ -111,7 +108,6 @@ export class AntennaService implements OnApplicationShutdown {
 
 	// NOTE: フォローしているユーザーのノート、リストのユーザーのノート、グループのユーザーのノート指定はパフォーマンス上の理由で無効になっている
 
-	@bindThis
 	public async checkHitAntenna(antenna: MiAntenna, note: (MiNote | Packed<'Note'>), noteUser: { id: MiUser['id']; username: string; host: string | null }): Promise<boolean> {
 		if (note.visibility === 'specified') return false;
 		if (note.visibility === 'followers') return false;
@@ -189,7 +185,6 @@ export class AntennaService implements OnApplicationShutdown {
 		return true;
 	}
 
-	@bindThis
 	public async getAntennas() {
 		if (!this.antennasFetched) {
 			this.antennas = await this.antennasRepository.findBy({
@@ -201,12 +196,10 @@ export class AntennaService implements OnApplicationShutdown {
 		return this.antennas;
 	}
 
-	@bindThis
 	public dispose(): void {
 		this.redisForSub.off('message', this.onRedisMessage);
 	}
 
-	@bindThis
 	public onApplicationShutdown(signal?: string | undefined): void {
 		this.dispose();
 	}

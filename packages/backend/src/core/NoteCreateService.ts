@@ -43,7 +43,6 @@ import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
 import { NoteReadService } from '@/core/NoteReadService.js';
 import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
-import { bindThis } from '@/decorators.js';
 import { DB_MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { RoleUserService } from './RoleUserService.js';
 import { MetaService } from '@/core/MetaService.js';
@@ -74,7 +73,6 @@ class NotificationManager {
 		this.queue = [];
 	}
 
-	@bindThis
 	public push(notifiee: MiLocalUser['id'], reason: NotificationType) {
 		// 自分自身へは通知しない
 		if (this.notifier.id === notifiee) return;
@@ -94,7 +92,6 @@ class NotificationManager {
 		}
 	}
 
-	@bindThis
 	public async notify() {
 		for (const x of this.queue) {
 			if (x.reason === 'renote') {
@@ -205,7 +202,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 		private userBlockingCheckService: UserBlockingCheckService,
 	) { }
 
-	@bindThis
 	public async create(user: {
 		id: MiUser['id'];
 		username: MiUser['username'];
@@ -373,7 +369,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 		return note;
 	}
 
-	@bindThis
 	private async insertNote(user: { id: MiUser['id']; host: MiUser['host'] }, data: Option, tags: string[], emojis: string[], mentionedUsers: MinimumUser[]) {
 		const insert = new MiNote({
 			id: this.idService.gen(data.createdAt?.getTime()),
@@ -470,7 +465,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	private async postNoteCreated(note: MiNote, user: {
 		id: MiUser['id'];
 		username: MiUser['username'];
@@ -696,13 +690,11 @@ export class NoteCreateService implements OnApplicationShutdown {
 		this.index(note);
 	}
 
-	@bindThis
 	private isQuote(note: Option): note is Option & { renote: MiNote } {
 		// sync with misc/is-quote.ts
 		return !!note.renote && (!!note.text || !!note.cw || (!!note.files && !!note.files.length) || !!note.poll);
 	}
 
-	@bindThis
 	private incRenoteCount(renote: MiNote) {
 		this.notesRepository.createQueryBuilder().update()
 			.set({
@@ -726,7 +718,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	private async createMentionedEvents(mentionedUsers: MinimumUser[], note: MiNote, nm: NotificationManager) {
 		for (const u of mentionedUsers.filter(u => this.userEntityService.isLocalUser(u))) {
 			const isThreadMuted = await this.noteThreadMutingsRepository.exists({
@@ -758,12 +749,10 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	private saveReply(reply: MiNote, note: MiNote) {
 		this.notesRepository.increment({ id: reply.id }, 'repliesCount', 1);
 	}
 
-	@bindThis
 	private async renderNoteOrRenoteActivity(data: Option, note: MiNote) {
 		if (data.localOnly) return null;
 
@@ -774,14 +763,12 @@ export class NoteCreateService implements OnApplicationShutdown {
 		return this.apRendererService.addContext(content);
 	}
 
-	@bindThis
 	private index(note: MiNote) {
 		if (note.text == null && note.cw == null) return;
 
 		this.searchService.indexNote(note);
 	}
 
-	@bindThis
 	private incNotesCountOfUser(user: { id: MiUser['id'] }) {
 		this.usersRepository.createQueryBuilder().update()
 			.set({
@@ -792,7 +779,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 			.execute();
 	}
 
-	@bindThis
 	private async extractMentionedUsers(user: { host: MiUser['host'] }, tokens: mfm.MfmNode[]): Promise<MiUser[]> {
 		const mentions = extractMentions(tokens, user.host ?? this.config.host);
 
@@ -813,7 +799,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 		return mentionedUsers;
 	}
 
-	@bindThis
 	public async checkHibernation(followings: MiFollowing[]) {
 		if (followings.length === 0) return;
 
@@ -851,12 +836,10 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	public dispose(): void {
 		this.#shutdownController.abort();
 	}
 
-	@bindThis
 	public onApplicationShutdown(signal?: string | undefined): void {
 		this.dispose();
 	}

@@ -8,7 +8,6 @@ import { DI } from '@/di-symbols.js';
 import type { AntennasRepository } from '@/models/_.js';
 import type { Packed } from '@/misc/json-schema.js';
 import type { MiAntenna } from '@/models/Antenna.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 
 @Injectable()
@@ -21,7 +20,6 @@ export class AntennaEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiAntenna['id'] | MiAntenna,
 	): Promise<Packed<'Antenna'>> {

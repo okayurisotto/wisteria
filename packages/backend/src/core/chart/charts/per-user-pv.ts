@@ -8,7 +8,6 @@ import { DataSource } from 'typeorm';
 import type { MiUser } from '@/models/User.js';
 import { AppLockService } from '@/core/AppLockService.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import Chart from '../core.js';
 import { ChartLoggerService } from '../ChartLoggerService.js';
 import { name, schema } from './entities/per-user-pv.js';
@@ -37,7 +36,6 @@ export default class PerUserPvChart extends Chart<typeof schema> {
 		return {};
 	}
 
-	@bindThis
 	public async commitByUser(user: { id: MiUser['id'] }, key: string): Promise<void> {
 		await this.commit({
 			'upv.user': [key],
@@ -45,7 +43,6 @@ export default class PerUserPvChart extends Chart<typeof schema> {
 		}, user.id);
 	}
 
-	@bindThis
 	public async commitByVisitor(user: { id: MiUser['id'] }, key: string): Promise<void> {
 		await this.commit({
 			'upv.visitor': [key],

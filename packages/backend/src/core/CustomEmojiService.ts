@@ -12,7 +12,6 @@ import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiEmoji } from '@/models/Emoji.js';
 import type { EmojisRepository, MiRole, MiUser } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 
 @Injectable()
@@ -32,7 +31,6 @@ export class CustomEmojiService {
 		return new Map(emojis.map(emoji => [emoji.name, emoji]));
 	}
 
-	@bindThis
 	public async add(data: {
 		driveFile: MiDriveFile;
 		name: string;
@@ -76,7 +74,6 @@ export class CustomEmojiService {
 		return emoji;
 	}
 
-	@bindThis
 	public async update(id: MiEmoji['id'], data: {
 		driveFile?: MiDriveFile;
 		name?: string;
@@ -131,7 +128,6 @@ export class CustomEmojiService {
 		}
 	}
 
-	@bindThis
 	public async setCategoryBulk(ids: MiEmoji['id'][], category: string | null) {
 		await this.emojisRepository.update({
 			id: In(ids),
@@ -145,7 +141,6 @@ export class CustomEmojiService {
 		});
 	}
 
-	@bindThis
 	public async setLicenseBulk(ids: MiEmoji['id'][], license: string | null) {
 		await this.emojisRepository.update({
 			id: In(ids),
@@ -159,7 +154,6 @@ export class CustomEmojiService {
 		});
 	}
 
-	@bindThis
 	public async delete(id: MiEmoji['id'], moderator?: MiUser) {
 		const emoji = await this.emojisRepository.findOneByOrFail({ id: id });
 
@@ -177,7 +171,6 @@ export class CustomEmojiService {
 		}
 	}
 
-	@bindThis
 	public async deleteBulk(ids: MiEmoji['id'][], moderator?: MiUser) {
 		const emojis = await this.emojisRepository.findBy({
 			id: In(ids),

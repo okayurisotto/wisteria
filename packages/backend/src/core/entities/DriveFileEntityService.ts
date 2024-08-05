@@ -14,7 +14,6 @@ import type { MiUser } from '@/models/User.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import { appendQuery, query } from '@/misc/prelude/url.js';
 import { deepClone } from '@/misc/clone.js';
-import { bindThis } from '@/decorators.js';
 import { isMimeImage } from '@/misc/is-mime-image.js';
 import { isNotNull } from '@/misc/is-not-null.js';
 import { IdService } from '@/core/IdService.js';
@@ -49,7 +48,6 @@ export class DriveFileEntityService {
 	) {
 	}
 
-	@bindThis
 	public validateFileName(name: string): boolean {
 		return (
 			(name.trim().length > 0) &&
@@ -60,7 +58,6 @@ export class DriveFileEntityService {
 		);
 	}
 
-	@bindThis
 	public getPublicProperties(file: MiDriveFile): MiDriveFile['properties'] {
 		if (file.properties.orientation != null) {
 			const properties = deepClone(file.properties);
@@ -74,7 +71,6 @@ export class DriveFileEntityService {
 		return file.properties;
 	}
 
-	@bindThis
 	private getProxiedUrl(url: string, mode?: 'static' | 'avatar'): string {
 		return appendQuery(
 			`${this.config.mediaProxy}/${mode ?? 'image'}.webp`,
@@ -85,7 +81,6 @@ export class DriveFileEntityService {
 		);
 	}
 
-	@bindThis
 	public getThumbnailUrl(file: MiDriveFile): string | null {
 		if (file.type.startsWith('video')) {
 			if (file.thumbnailUrl) return file.thumbnailUrl;
@@ -108,7 +103,6 @@ export class DriveFileEntityService {
 		return file.thumbnailUrl ?? (isMimeImage(file.type, 'sharp-convertible-image') ? url : null);
 	}
 
-	@bindThis
 	public getPublicUrl(file: MiDriveFile, mode?: 'avatar'): string { // static = thumbnail
 		// リモートかつメディアプロキシ
 		if (file.uri != null && file.userHost != null && this.config.externalMediaProxyEnabled) {
@@ -134,7 +128,6 @@ export class DriveFileEntityService {
 		return url;
 	}
 
-	@bindThis
 	public async calcDriveUsageOf(user: MiUser['id'] | { id: MiUser['id'] }): Promise<number> {
 		const id = typeof user === 'object' ? user.id : user;
 
@@ -148,7 +141,6 @@ export class DriveFileEntityService {
 		return parseInt(sum, 10) || 0;
 	}
 
-	@bindThis
 	public async calcDriveUsageOfHost(host: string): Promise<number> {
 		const { sum } = await this.driveFilesRepository
 			.createQueryBuilder('file')
@@ -160,7 +152,6 @@ export class DriveFileEntityService {
 		return parseInt(sum, 10) || 0;
 	}
 
-	@bindThis
 	public async calcDriveUsageOfLocal(): Promise<number> {
 		const { sum } = await this.driveFilesRepository
 			.createQueryBuilder('file')
@@ -172,7 +163,6 @@ export class DriveFileEntityService {
 		return parseInt(sum, 10) || 0;
 	}
 
-	@bindThis
 	public async calcDriveUsageOfRemote(): Promise<number> {
 		const { sum } = await this.driveFilesRepository
 			.createQueryBuilder('file')
@@ -184,7 +174,6 @@ export class DriveFileEntityService {
 		return parseInt(sum, 10) || 0;
 	}
 
-	@bindThis
 	public async pack(
 		src: MiDriveFile['id'] | MiDriveFile,
 		options?: PackOptions,
@@ -218,7 +207,6 @@ export class DriveFileEntityService {
 		});
 	}
 
-	@bindThis
 	public async packNullable(
 		src: MiDriveFile['id'] | MiDriveFile,
 		options?: PackOptions,
@@ -253,7 +241,6 @@ export class DriveFileEntityService {
 		});
 	}
 
-	@bindThis
 	public async packMany(
 		files: MiDriveFile[],
 		options?: PackOptions,
@@ -262,7 +249,6 @@ export class DriveFileEntityService {
 		return items.filter((x): x is Packed<'DriveFile'> => x != null);
 	}
 
-	@bindThis
 	public async packManyByIdsMap(
 		fileIds: MiDriveFile['id'][],
 		options?: PackOptions,
@@ -277,7 +263,6 @@ export class DriveFileEntityService {
 		return map;
 	}
 
-	@bindThis
 	public async packManyByIds(
 		fileIds: MiDriveFile['id'][],
 		options?: PackOptions,

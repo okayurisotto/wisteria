@@ -4,7 +4,6 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { bindThis } from '@/decorators.js';
 import { HybridTimelineChannelService } from './channels/hybrid-timeline.js';
 import { LocalTimelineChannelService } from './channels/local-timeline.js';
 import { HomeTimelineChannelService } from './channels/home-timeline.js';
@@ -45,7 +44,6 @@ export class ChannelsService {
 	) {
 	}
 
-	@bindThis
 	public getChannelService(name: string): MiChannelService<boolean> {
 		switch (name) {
 			case 'main': return this.mainChannelService;

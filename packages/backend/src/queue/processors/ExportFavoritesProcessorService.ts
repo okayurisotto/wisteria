@@ -14,7 +14,6 @@ import { DriveService } from '@/core/DriveService.js';
 import { createTemp } from '@/misc/create-temp.js';
 import type { MiPoll } from '@/models/Poll.js';
 import type { MiNote } from '@/models/Note.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
@@ -41,7 +40,6 @@ export class ExportFavoritesProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('export-favorites');
 	}
 
-	@bindThis
 	public async process(job: Bull.Job<DbJobDataWithUser>): Promise<void> {
 		this.logger.info(`Exporting favorites of ${job.data.user.id} ...`);
 

@@ -14,7 +14,6 @@ import { DriveService } from '@/core/DriveService.js';
 import { createTemp } from '@/misc/create-temp.js';
 import type { MiPoll } from '@/models/Poll.js';
 import type { MiNote } from '@/models/Note.js';
-import { bindThis } from '@/decorators.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { IdService } from '@/core/IdService.js';
@@ -44,7 +43,6 @@ export class ExportNotesProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('export-notes');
 	}
 
-	@bindThis
 	public async process(job: Bull.Job<DbJobDataWithUser>): Promise<void> {
 		this.logger.info(`Exporting notes of ${job.data.user.id} ...`);
 

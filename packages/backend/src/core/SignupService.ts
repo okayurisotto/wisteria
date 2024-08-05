@@ -17,7 +17,6 @@ import { MiUsedUsername } from '@/models/UsedUsername.js';
 import generateUserToken from '@/misc/generate-native-user-token.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { InstanceActorService } from '@/core/InstanceActorService.js';
-import { bindThis } from '@/decorators.js';
 import UsersChart from '@/core/chart/charts/users.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { MetaService } from '@/core/MetaService.js';
@@ -43,7 +42,6 @@ export class SignupService {
 	) {
 	}
 
-	@bindThis
 	public async signup(opts: {
 		username: MiUser['username'];
 		password?: string | null;

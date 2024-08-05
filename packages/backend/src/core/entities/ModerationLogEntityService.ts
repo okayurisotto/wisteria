@@ -9,7 +9,6 @@ import type { ModerationLogsRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { } from '@/models/Blocking.js';
 import type { MiModerationLog } from '@/models/ModerationLog.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 
@@ -24,7 +23,6 @@ export class ModerationLogEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiModerationLog['id'] | MiModerationLog,
 	) {
@@ -42,7 +40,6 @@ export class ModerationLogEntityService {
 		});
 	}
 
-	@bindThis
 	public packMany(
 		reports: any[],
 	) {

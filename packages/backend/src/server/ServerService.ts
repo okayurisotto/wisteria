@@ -11,7 +11,6 @@ import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
 import type Logger from '@/logger.js';
 import { LoggerService } from '@/core/LoggerService.js';
-import { bindThis } from '@/decorators.js';
 import { ActivityPubServerService } from './ActivityPubServerService.js';
 import { NodeinfoServerService } from './NodeinfoServerService.js';
 import { ApiServerService } from './api/ApiServerService.js';
@@ -63,7 +62,6 @@ export class ServerService implements OnApplicationShutdown {
 		this.logger = this.loggerService.getLogger('server', 'gray');
 	}
 
-	@bindThis
 	public launch(): void {
 		const hono = new Hono();
 
@@ -120,13 +118,11 @@ export class ServerService implements OnApplicationShutdown {
 		);
 	}
 
-	@bindThis
 	public async dispose(): Promise<void> {
 		await this.streamingApiServerService.detach();
 		this.server?.close();
 	}
 
-	@bindThis
 	async onApplicationShutdown(): Promise<void> {
 		await this.dispose();
 	}

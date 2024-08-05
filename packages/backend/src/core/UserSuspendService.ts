@@ -12,7 +12,6 @@ import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class UserSuspendService {
@@ -27,7 +26,6 @@ export class UserSuspendService {
 	) {
 	}
 
-	@bindThis
 	public async doPostSuspend(user: { id: MiUser['id']; host: MiUser['host'] }): Promise<void> {
 		if (this.userEntityService.isLocalUser(user)) {
 			// 知り得る全SharedInboxにDelete配信
@@ -55,7 +53,6 @@ export class UserSuspendService {
 		}
 	}
 
-	@bindThis
 	public async doPostUnsuspend(user: MiUser): Promise<void> {
 		if (this.userEntityService.isLocalUser(user)) {
 			// 知り得る全SharedInboxにUndo Delete配信

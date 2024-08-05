@@ -15,7 +15,6 @@ import { MiUserKeypair } from '@/models/UserKeypair.js';
 import { MiUsedUsername } from '@/models/UsedUsername.js';
 import { DI } from '@/di-symbols.js';
 import generateNativeUserToken from '@/misc/generate-native-user-token.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class CreateSystemUserService {
@@ -27,7 +26,6 @@ export class CreateSystemUserService {
 	) {
 	}
 
-	@bindThis
 	public async createSystemUser(username: string): Promise<MiUser> {
 		const password = randomUUID();
 

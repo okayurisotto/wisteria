@@ -14,7 +14,6 @@ import type {
 } from '@/models/_.js';
 import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { IdService } from '@/core/IdService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
@@ -103,13 +102,11 @@ export class RoleService implements OnModuleInit {
 		this.notificationCreateService = this.moduleRef.get('NotificationCreateService');
 	}
 
-	@bindThis
 	public async getRoles() {
 		const roles = await this.rolesRepository.findBy({});
 		return roles;
 	}
 
-	@bindThis
 	public async isExplorable(role: { id: MiRole['id'] } | null): Promise<boolean> {
 		if (role == null) return false;
 		const check = await this.rolesRepository.findOneBy({ id: role.id });
@@ -117,7 +114,6 @@ export class RoleService implements OnModuleInit {
 		return check.isExplorable;
 	}
 
-	@bindThis
 	public async getModeratorIds(includeAdmins = true): Promise<MiUser['id'][]> {
 		const roles = await this.rolesRepository.findBy({});
 		const moderatorRoles = includeAdmins ? roles.filter(r => r.isModerator || r.isAdministrator) : roles.filter(r => r.isModerator);
@@ -128,7 +124,6 @@ export class RoleService implements OnModuleInit {
 		return assigns.map(a => a.userId);
 	}
 
-	@bindThis
 	public async getModerators(includeAdmins = true): Promise<MiUser[]> {
 		const ids = await this.getModeratorIds(includeAdmins);
 		const users = ids.length > 0 ? await this.usersRepository.findBy({
@@ -137,7 +132,6 @@ export class RoleService implements OnModuleInit {
 		return users;
 	}
 
-	@bindThis
 	public async getAdministratorIds(): Promise<MiUser['id'][]> {
 		const roles = await this.rolesRepository.findBy({});
 		const administratorRoles = roles.filter(r => r.isAdministrator);
@@ -148,7 +142,6 @@ export class RoleService implements OnModuleInit {
 		return assigns.map(a => a.userId);
 	}
 
-	@bindThis
 	public async getAdministrators(): Promise<MiUser[]> {
 		const ids = await this.getAdministratorIds();
 		const users = ids.length > 0 ? await this.usersRepository.findBy({
@@ -157,7 +150,6 @@ export class RoleService implements OnModuleInit {
 		return users;
 	}
 
-	@bindThis
 	public async assign(userId: MiUser['id'], roleId: MiRole['id'], expiresAt: Date | null = null, moderator?: MiUser): Promise<void> {
 		const now = Date.now();
 
@@ -209,7 +201,6 @@ export class RoleService implements OnModuleInit {
 		}
 	}
 
-	@bindThis
 	public async unassign(userId: MiUser['id'], roleId: MiRole['id'], moderator?: MiUser): Promise<void> {
 		const now = new Date();
 
@@ -245,7 +236,6 @@ export class RoleService implements OnModuleInit {
 		}
 	}
 
-	@bindThis
 	public async create(values: Partial<MiRole>, moderator?: MiUser): Promise<MiRole> {
 		const date = new Date();
 		const created = await this.rolesRepository.insert({
@@ -278,7 +268,6 @@ export class RoleService implements OnModuleInit {
 		return created;
 	}
 
-	@bindThis
 	public async update(role: MiRole, params: Partial<MiRole>, moderator?: MiUser): Promise<void> {
 		const date = new Date();
 		await this.rolesRepository.update(role.id, {
@@ -297,7 +286,6 @@ export class RoleService implements OnModuleInit {
 		}
 	}
 
-	@bindThis
 	public async delete(role: MiRole, moderator?: MiUser): Promise<void> {
 		await this.rolesRepository.delete({ id: role.id });
 

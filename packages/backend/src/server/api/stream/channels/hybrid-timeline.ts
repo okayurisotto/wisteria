@@ -8,7 +8,6 @@ import { isUserRelated } from '@/misc/is-user-related.js';
 import { isInstanceMuted } from '@/misc/is-instance-muted.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { bindThis } from '@/decorators.js';
 import Channel, { type MiChannelService } from '../channel.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 
@@ -32,7 +31,6 @@ class HybridTimelineChannel extends Channel {
 		//this.onNote = this.onNote.bind(this);
 	}
 
-	@bindThis
 	public async init(params: any): Promise<void> {
 		const policies = await this.roleUserService.getUserPolicies(this.user ? this.user.id : null);
 		if (!policies.ltlAvailable) return;
@@ -45,8 +43,7 @@ class HybridTimelineChannel extends Channel {
 		this.subscriber.on('notesStream', this.onNote);
 	}
 
-	@bindThis
-	private async onNote(note: Packed<'Note'>) {
+	private onNote = async (note: Packed<'Note'>) => {
 		const isMe = this.user!.id === note.userId;
 
 		if (this.withFiles && (note.fileIds == null || note.fileIds.length === 0)) return;
@@ -102,9 +99,8 @@ class HybridTimelineChannel extends Channel {
 		this.connection.cacheNote(note);
 
 		this.send('note', note);
-	}
+	};
 
-	@bindThis
 	public dispose(): void {
 		// Unsubscribe events
 		this.subscriber.off('notesStream', this.onNote);
@@ -123,7 +119,6 @@ export class HybridTimelineChannelService implements MiChannelService<true> {
 	) {
 	}
 
-	@bindThis
 	public create(id: string, connection: Channel['connection']): HybridTimelineChannel {
 		return new HybridTimelineChannel(
 			this.roleUserService,

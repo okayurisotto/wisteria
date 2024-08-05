@@ -9,7 +9,6 @@ import type { MutingsRepository, MiMuting } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
 import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class UserMutingService {
@@ -20,7 +19,6 @@ export class UserMutingService {
 		private idService: IdService,
 	) {}
 
-	@bindThis
 	public async mute(user: MiUser, target: MiUser, expiresAt: Date | null = null): Promise<void> {
 		await this.mutingsRepository.insert({
 			id: this.idService.gen(),
@@ -30,7 +28,6 @@ export class UserMutingService {
 		});
 	}
 
-	@bindThis
 	public async unmute(mutings: MiMuting[]): Promise<void> {
 		if (mutings.length === 0) return;
 

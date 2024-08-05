@@ -7,7 +7,6 @@ import { Injectable } from '@nestjs/common';
 import si from 'systeminformation';
 import Xev from 'xev';
 import * as osUtils from 'os-utils';
-import { bindThis } from '@/decorators.js';
 import { MetaService } from '@/core/MetaService.js';
 import type { OnApplicationShutdown } from '@nestjs/common';
 
@@ -30,7 +29,6 @@ export class ServerStatsService implements OnApplicationShutdown {
 	/**
 	 * Report server stats regularly
 	 */
-	@bindThis
 	public async start(): Promise<void> {
 		if (!(await this.metaService.fetch()).enableServerMachineStats) return;
 
@@ -71,14 +69,12 @@ export class ServerStatsService implements OnApplicationShutdown {
 		this.intervalId = setInterval(tick, interval);
 	}
 
-	@bindThis
 	public dispose(): void {
 		if (this.intervalId) {
 			clearInterval(this.intervalId);
 		}
 	}
 
-	@bindThis
 	public onApplicationShutdown(signal?: string | undefined): void {
 		this.dispose();
 	}

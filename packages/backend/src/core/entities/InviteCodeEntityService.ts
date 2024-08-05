@@ -10,7 +10,6 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { Packed } from '@/misc/json-schema.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiRegistrationTicket } from '@/models/RegistrationTicket.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 
@@ -25,7 +24,6 @@ export class InviteCodeEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiRegistrationTicket['id'] | MiRegistrationTicket,
 		me?: { id: MiUser['id'] } | null | undefined,
@@ -49,7 +47,6 @@ export class InviteCodeEntityService {
 		});
 	}
 
-	@bindThis
 	public packMany(
 		targets: any[],
 		me: { id: MiUser['id'] },

@@ -10,7 +10,6 @@ import type { RoleAssignmentsRepository, RolesRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiRole } from '@/models/Role.js';
-import { bindThis } from '@/decorators.js';
 import { DEFAULT_POLICIES } from '@/core/RoleService.js';
 import { IdService } from '@/core/IdService.js';
 
@@ -27,7 +26,6 @@ export class RoleEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiRole['id'] | MiRole,
 		me?: { id: MiUser['id'] } | null | undefined,
@@ -74,7 +72,6 @@ export class RoleEntityService {
 		});
 	}
 
-	@bindThis
 	public packMany(
 		roles: any[],
 		me: { id: MiUser['id'] },

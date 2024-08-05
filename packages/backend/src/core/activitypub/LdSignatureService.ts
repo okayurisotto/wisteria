@@ -6,7 +6,6 @@
 import * as crypto from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
-import { bindThis } from '@/decorators.js';
 import { CONTEXTS } from './misc/contexts.js';
 import { validateContentTypeSetAsJsonLD } from './misc/validator.js';
 import type { JsonLdDocument } from 'jsonld';
@@ -24,7 +23,6 @@ class LdSignature {
 	) {
 	}
 
-	@bindThis
 	public async signRsaSignature2017(data: any, privateKey: string, creator: string, domain?: string, created?: Date): Promise<any> {
 		const options: {
 			type: string;
@@ -60,7 +58,6 @@ class LdSignature {
 		};
 	}
 
-	@bindThis
 	public async verifyRsaSignature2017(data: any, publicKey: string): Promise<boolean> {
 		const toBeSigned = await this.createVerifyData(data, data.signature);
 		const verifier = crypto.createVerify('sha256');
@@ -68,7 +65,6 @@ class LdSignature {
 		return verifier.verify(publicKey, data.signature.signatureValue, 'base64');
 	}
 
-	@bindThis
 	public async createVerifyData(data: any, options: any): Promise<string> {
 		const transformedOptions = {
 			...options,
@@ -88,7 +84,6 @@ class LdSignature {
 		return verifyData;
 	}
 
-	@bindThis
 	public async normalize(data: JsonLdDocument): Promise<string> {
 		const customLoader = this.getLoader();
 		// XXX: Importing jsonld dynamically since Jest frequently fails to import it statically
@@ -98,7 +93,6 @@ class LdSignature {
 		});
 	}
 
-	@bindThis
 	private getLoader() {
 		return async (url: string): Promise<RemoteDocument> => {
 			if (!/^https?:\/\//.test(url)) throw new Error(`Invalid URL ${url}`);
@@ -124,7 +118,6 @@ class LdSignature {
 		};
 	}
 
-	@bindThis
 	private async fetchDocument(url: string): Promise<JsonLd> {
 		const json = await this.httpRequestService.send(
 			url,
@@ -149,7 +142,6 @@ class LdSignature {
 		return json as JsonLd;
 	}
 
-	@bindThis
 	public sha256(data: string): string {
 		const hash = crypto.createHash('sha256');
 		hash.update(data);
@@ -164,7 +156,6 @@ export class LdSignatureService {
 	) {
 	}
 
-	@bindThis
 	public use(): LdSignature {
 		return new LdSignature(this.httpRequestService);
 	}

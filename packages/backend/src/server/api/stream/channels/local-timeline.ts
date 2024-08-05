@@ -7,7 +7,6 @@ import { Injectable } from '@nestjs/common';
 import { isUserRelated } from '@/misc/is-user-related.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { bindThis } from '@/decorators.js';
 import Channel, { type MiChannelService } from '../channel.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 
@@ -30,7 +29,6 @@ class LocalTimelineChannel extends Channel {
 		//this.onNote = this.onNote.bind(this);
 	}
 
-	@bindThis
 	public async init(params: any) {
 		const policies = await this.roleUserService.getUserPolicies(this.user ? this.user.id : null);
 		if (!policies.ltlAvailable) return;
@@ -43,8 +41,7 @@ class LocalTimelineChannel extends Channel {
 		this.subscriber.on('notesStream', this.onNote);
 	}
 
-	@bindThis
-	private async onNote(note: Packed<'Note'>) {
+	private onNote = async (note: Packed<'Note'>) => {
 		if (this.withFiles && (note.fileIds == null || note.fileIds.length === 0)) return;
 
 		if (note.user.host !== null) return;
@@ -77,9 +74,8 @@ class LocalTimelineChannel extends Channel {
 		this.connection.cacheNote(note);
 
 		this.send('note', note);
-	}
+	};
 
-	@bindThis
 	public dispose() {
 		// Unsubscribe events
 		this.subscriber.off('notesStream', this.onNote);
@@ -98,7 +94,6 @@ export class LocalTimelineChannelService implements MiChannelService<false> {
 	) {
 	}
 
-	@bindThis
 	public create(id: string, connection: Channel['connection']): LocalTimelineChannel {
 		return new LocalTimelineChannel(
 			this.roleUserService,

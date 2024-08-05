@@ -38,7 +38,6 @@ import { InternalStorageService } from '@/core/InternalStorageService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { FileInfoService } from '@/core/FileInfoService.js';
-import { bindThis } from '@/decorators.js';
 import { RoleUserService } from './RoleUserService.js';
 import { correctFilename } from '@/misc/correct-filename.js';
 import { isMimeImage } from '@/misc/is-mime-image.js';
@@ -142,7 +141,6 @@ export class DriveService {
 	 * @param hash Hash for original
 	 * @param size Size for original
 	 */
-	@bindThis
 	private async save(file: MiDriveFile, path: string, name: string, type: string, hash: string, size: number): Promise<MiDriveFile> {
 	// thunbnail, webpublic を必要なら生成
 		const alts = await this.generateAlts(path, type, !file.uri);
@@ -264,7 +262,6 @@ export class DriveService {
 	 * @param type Content-Type for original
 	 * @param generateWeb Generate webpublic or not
 	 */
-	@bindThis
 	public async generateAlts(path: string, type: string, generateWeb: boolean) {
 		if (type.startsWith('video/')) {
 			if (this.config.videoThumbnailGenerator != null) {
@@ -369,7 +366,6 @@ export class DriveService {
 	/**
 	 * Upload to ObjectStorage
 	 */
-	@bindThis
 	private async upload(key: string, stream: fs.ReadStream | Buffer, type: string, ext?: string | null, filename?: string) {
 		if (type === 'image/apng') type = 'image/png';
 		if (!FILE_TYPE_BROWSERSAFE.includes(type)) type = 'application/octet-stream';
@@ -409,7 +405,7 @@ export class DriveService {
 	}
 
 	// Expire oldest file (without avatar or banner) of remote user
-	@bindThis
+
 	private async expireOldFile(user: MiRemoteUser, driveCapacity: number) {
 		const q = this.driveFilesRepository.createQueryBuilder('file')
 			.where('file.userId = :userId', { userId: user.id })
@@ -441,7 +437,6 @@ export class DriveService {
 	 * Add file to drive
 	 *
 	 */
-	@bindThis
 	public async addFile({
 		user,
 		path,
@@ -651,7 +646,6 @@ export class DriveService {
 		return file;
 	}
 
-	@bindThis
 	public async updateFile(file: MiDriveFile, values: Partial<MiDriveFile>, updater: MiUser) {
 		const alwaysMarkNsfw = (await this.roleUserService.getUserPolicies(file.userId)).alwaysMarkNsfw;
 
@@ -707,7 +701,6 @@ export class DriveService {
 		return fileObj;
 	}
 
-	@bindThis
 	public async deleteFile(file: MiDriveFile, isExpired = false, deleter?: MiUser) {
 		if (file.storedInternal) {
 			this.internalStorageService.del(file.accessKey!);
@@ -734,7 +727,6 @@ export class DriveService {
 		this.deletePostProcess(file, isExpired, deleter);
 	}
 
-	@bindThis
 	public async deleteFileSync(file: MiDriveFile, isExpired = false, deleter?: MiUser) {
 		if (file.storedInternal) {
 			this.internalStorageService.del(file.accessKey!);
@@ -765,7 +757,6 @@ export class DriveService {
 		this.deletePostProcess(file, isExpired, deleter);
 	}
 
-	@bindThis
 	private async deletePostProcess(file: MiDriveFile, isExpired = false, deleter?: MiUser) {
 		// リモートファイル期限切れ削除後は直リンクにする
 		if (isExpired && file.userHost !== null && file.uri != null) {
@@ -809,7 +800,6 @@ export class DriveService {
 		}
 	}
 
-	@bindThis
 	public async deleteObjectStorageFile(key: string) {
 		const meta = await this.metaService.fetch();
 		try {
@@ -831,7 +821,6 @@ export class DriveService {
 		}
 	}
 
-	@bindThis
 	public async uploadFromUrl({
 		url,
 		user,

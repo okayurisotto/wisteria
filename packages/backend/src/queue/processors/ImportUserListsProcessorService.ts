@@ -13,7 +13,6 @@ import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { DownloadService } from '@/core/DownloadService.js';
 import { UserListService } from '@/core/UserListService.js';
 import { IdService } from '@/core/IdService.js';
-import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbUserImportJobData } from '../types.js';
@@ -48,7 +47,6 @@ export class ImportUserListsProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('import-user-lists');
 	}
 
-	@bindThis
 	public async process(job: Bull.Job<DbUserImportJobData>): Promise<void> {
 		this.logger.info(`Importing user lists of ${job.data.user.id} ...`);
 

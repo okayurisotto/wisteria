@@ -7,7 +7,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import Xev from 'xev';
 import * as Bull from 'bullmq';
 import { QueueService } from '@/core/QueueService.js';
-import { bindThis } from '@/decorators.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { QUEUE, baseQueueOptions } from '@/queue/const.js';
@@ -32,7 +31,6 @@ export class QueueStatsService implements OnApplicationShutdown {
 	/**
 	 * Report queue stats regularly
 	 */
-	@bindThis
 	public start(): void {
 		const log = [] as any[];
 
@@ -87,12 +85,10 @@ export class QueueStatsService implements OnApplicationShutdown {
 		this.intervalId = setInterval(tick, interval);
 	}
 
-	@bindThis
 	public dispose(): void {
 		clearInterval(this.intervalId);
 	}
 
-	@bindThis
 	public onApplicationShutdown(signal?: string | undefined): void {
 		this.dispose();
 	}

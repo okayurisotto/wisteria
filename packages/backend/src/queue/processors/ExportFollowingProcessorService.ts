@@ -13,7 +13,6 @@ import type Logger from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import { createTemp } from '@/misc/create-temp.js';
 import type { MiFollowing } from '@/models/Following.js';
-import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbExportFollowingData } from '../types.js';
@@ -43,7 +42,6 @@ export class ExportFollowingProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('export-following');
 	}
 
-	@bindThis
 	public async process(job: Bull.Job<DbExportFollowingData>): Promise<void> {
 		this.logger.info(`Exporting following of ${job.data.user.id} ...`);
 

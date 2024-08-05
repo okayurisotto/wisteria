@@ -12,7 +12,6 @@ import type { Config } from '@/config.js';
 import type { MiUser } from '@/models/User.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 
@@ -37,7 +36,6 @@ export class FeedService {
 	) {
 	}
 
-	@bindThis
 	public async packFeed(user: MiUser) {
 		const author = {
 			link: `${this.config.url}/@${user.username}`,

@@ -9,7 +9,6 @@ import { isUserRelated } from '@/misc/is-user-related.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import { isInstanceMuted } from '@/misc/is-instance-muted.js';
 import Channel, { type MiChannelService } from '../channel.js';
 
@@ -36,7 +35,6 @@ class UserListChannel extends Channel {
 		//this.onNote = this.onNote.bind(this);
 	}
 
-	@bindThis
 	public async init(params: any) {
 		this.listId = params.listId as string;
 		this.withFiles = params.withFiles ?? false;
@@ -60,8 +58,7 @@ class UserListChannel extends Channel {
 		this.listUsersClock = setInterval(this.updateListUsers, 5000);
 	}
 
-	@bindThis
-	private async updateListUsers() {
+	private updateListUsers = async () => {
 		const memberships = await this.userListMembershipsRepository.find({
 			where: {
 				userListId: this.listId,
@@ -76,10 +73,9 @@ class UserListChannel extends Channel {
 			};
 		}
 		this.membershipsMap = membershipsMap;
-	}
+	};
 
-	@bindThis
-	private async onNote(note: Packed<'Note'>) {
+	private onNote = async (note: Packed<'Note'>) => {
 		const isMe = this.user!.id === note.userId;
 
 		// チャンネル投稿は無視する
@@ -128,9 +124,8 @@ class UserListChannel extends Channel {
 		this.connection.cacheNote(note);
 
 		this.send('note', note);
-	}
+	};
 
-	@bindThis
 	public dispose() {
 		// Unsubscribe events
 		this.subscriber.off(`userListStream:${this.listId}`, this.send);
@@ -157,7 +152,6 @@ export class UserListChannelService implements MiChannelService<false> {
 	) {
 	}
 
-	@bindThis
 	public create(id: string, connection: Channel['connection']): UserListChannel {
 		return new UserListChannel(
 			this.userListsRepository,

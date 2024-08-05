@@ -8,7 +8,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import redisLock from 'redis-lock';
 import * as Redis from 'ioredis';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 
 /**
  * Retry delay (ms) for lock acquisition
@@ -32,12 +31,10 @@ export class AppLockService {
 	 * @param timeout Lock timeout (ms), The timeout releases previous lock.
 	 * @returns Unlock function
 	 */
-	@bindThis
 	public getApLock(uri: string, timeout = 30 * 1000): Promise<() => void> {
 		return this.lock(`ap-object:${uri}`, timeout);
 	}
 
-	@bindThis
 	public getChartInsertLock(lockKey: string, timeout = 30 * 1000): Promise<() => void> {
 		return this.lock(`chart-insert:${lockKey}`, timeout);
 	}

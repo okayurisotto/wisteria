@@ -8,7 +8,6 @@ import * as Redis from 'ioredis';
 import type { RoleAssignmentsRepository, RolesRepository, UsersRepository } from '@/models/_.js';
 import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import { MetaService } from '@/core/MetaService.js';
 import type { MiRole, RoleCondFormulaValue } from '@/models/Role.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
@@ -153,7 +152,6 @@ export class RoleUserService {
 		}
 	}
 
-	@bindThis
 	public async getUserAssigns(userId: MiUser['id']) {
 		const now = Date.now();
 		const assigns = await this.roleAssignmentsRepository.findBy({ userId });
@@ -188,7 +186,6 @@ export class RoleUserService {
 		return [...assignedRoles, ...matchedCondRoles];
 	}
 
-	@bindThis
 	public async getUserRoles(userId: MiUser['id']) {
 		const roles = await this.rolesRepository.findBy({});
 		return this.filterRoles(roles, userId);
@@ -197,13 +194,11 @@ export class RoleUserService {
 	/**
 	 * 指定ユーザーのバッジロール一覧取得
 	 */
-	@bindThis
 	public async getUserBadgeRoles(userId: MiUser['id']) {
 		const roles = await this.rolesRepository.findBy({ asBadge: true });
 		return this.filterRoles(roles, userId);
 	}
 
-	@bindThis
 	public async getUserPolicies(
 		userId: MiUser['id'] | null,
 	): Promise<RolePolicies> {
@@ -283,7 +278,6 @@ export class RoleUserService {
 		};
 	}
 
-	@bindThis
 	public async isModerator(
 		user: { id: MiUser['id']; isRoot: MiUser['isRoot'] } | null,
 	): Promise<boolean> {
@@ -294,7 +288,6 @@ export class RoleUserService {
 		return roles.some(r => r.isModerator || r.isAdministrator);
 	}
 
-	@bindThis
 	public async isAdministrator(
 		user: { id: MiUser['id']; isRoot: MiUser['isRoot'] } | null,
 	): Promise<boolean> {
@@ -305,7 +298,6 @@ export class RoleUserService {
 		return roles.some(r => r.isAdministrator);
 	}
 
-	@bindThis
 	public async addNoteToRoleTimeline(note: Packed<'Note'>): Promise<void> {
 		const roles = await this.getUserRoles(note.userId);
 

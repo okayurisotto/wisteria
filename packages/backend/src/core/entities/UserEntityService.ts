@@ -16,7 +16,6 @@ import { USER_ACTIVE_THRESHOLD, USER_ONLINE_THRESHOLD } from '@/const.js';
 import type { MiLocalUser, MiPartialLocalUser, MiPartialRemoteUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import { birthdaySchema, descriptionSchema, localUsernameSchema, locationSchema, nameSchema, passwordSchema } from '@/models/User.js';
 import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, NoteUnreadsRepository, UserNotePiningsRepository, UserProfilesRepository, MiUserProfile, RenoteMutingsRepository, UserMemoRepository, InstancesRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
 import { IdService } from '@/core/IdService.js';
 import { AnnouncementService } from '@/core/AnnouncementService.js';
@@ -119,7 +118,6 @@ export class UserEntityService implements OnModuleInit {
 	public isLocalUser = isLocalUser;
 	public isRemoteUser = isRemoteUser;
 
-	@bindThis
 	public async getRelation(me: MiUser['id'], target: MiUser['id']) {
 		const [
 			following,
@@ -193,7 +191,6 @@ export class UserEntityService implements OnModuleInit {
 		};
 	}
 
-	@bindThis
 	public async getHasUnreadAntenna(userId: MiUser['id']): Promise<boolean> {
 		/*
 		const myAntennas = (await this.antennaService.getAntennas()).filter(a => a.userId === userId);
@@ -210,7 +207,6 @@ export class UserEntityService implements OnModuleInit {
 		return false; // TODO
 	}
 
-	@bindThis
 	public async getNotificationsInfo(userId: MiUser['id']): Promise<{
 		hasUnread: boolean;
 		unreadCount: number;
@@ -241,7 +237,6 @@ export class UserEntityService implements OnModuleInit {
 		return response;
 	}
 
-	@bindThis
 	public async getHasPendingReceivedFollowRequest(userId: MiUser['id']): Promise<boolean> {
 		const count = await this.followRequestsRepository.countBy({
 			followeeId: userId,
@@ -250,7 +245,6 @@ export class UserEntityService implements OnModuleInit {
 		return count > 0;
 	}
 
-	@bindThis
 	public getOnlineStatus(user: MiUser): 'unknown' | 'online' | 'active' | 'offline' {
 		if (user.hideOnlineStatus) return 'unknown';
 		if (user.lastActiveDate == null) return 'unknown';
@@ -262,18 +256,15 @@ export class UserEntityService implements OnModuleInit {
 		);
 	}
 
-	@bindThis
 	public getIdenticonUrl(user: MiUser): string {
 		return `${this.config.url}/identicon/${user.username.toLowerCase()}@${user.host ?? this.config.host}`;
 	}
 
-	@bindThis
 	public getUserUri(user: MiLocalUser | MiPartialLocalUser | MiRemoteUser | MiPartialRemoteUser): string {
 		return this.isRemoteUser(user)
 			? user.uri : this.genLocalUserUri(user.id);
 	}
 
-	@bindThis
 	public genLocalUserUri(userId: string): string {
 		return `${this.config.url}/users/${userId}`;
 	}

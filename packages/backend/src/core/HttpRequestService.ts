@@ -5,7 +5,6 @@
 
 import * as http from 'node:http';
 import * as https from 'node:https';
-import * as net from 'node:net';
 import CacheableLookup from 'cacheable-lookup';
 import fetch from 'node-fetch';
 import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent';
@@ -13,7 +12,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { StatusError } from '@/misc/status-error.js';
-import { bindThis } from '@/decorators.js';
 import { validateContentTypeSetAsActivityPub } from '@/core/activitypub/misc/validator.js';
 import type { IObject } from '@/core/activitypub/type.js';
 import type { Response } from 'node-fetch';
@@ -59,14 +57,14 @@ export class HttpRequestService {
 		this.http = new http.Agent({
 			keepAlive: true,
 			keepAliveMsecs: 30 * 1000,
-			lookup: cache.lookup as unknown as net.LookupFunction,
+			lookup: (...args) => cache.lookup(...args),
 			localAddress: config.outgoingAddress,
 		});
 
 		this.https = new https.Agent({
 			keepAlive: true,
 			keepAliveMsecs: 30 * 1000,
-			lookup: cache.lookup as unknown as net.LookupFunction,
+			lookup: (...args) => cache.lookup(...args),
 			localAddress: config.outgoingAddress,
 		});
 
@@ -102,7 +100,6 @@ export class HttpRequestService {
 	 * @param url URL
 	 * @param bypassProxy Allways bypass proxy
 	 */
-	@bindThis
 	public getAgentByUrl(url: URL, bypassProxy = false): http.Agent | https.Agent {
 		if (bypassProxy || (this.config.proxyBypassHosts ?? []).includes(url.hostname)) {
 			return url.protocol === 'http:' ? this.http : this.https;
@@ -111,7 +108,6 @@ export class HttpRequestService {
 		}
 	}
 
-	@bindThis
 	public async getActivityJson(url: string): Promise<IObject> {
 		const res = await this.send(url, {
 			method: 'GET',
@@ -128,7 +124,6 @@ export class HttpRequestService {
 		return await res.json() as IObject;
 	}
 
-	@bindThis
 	public async getJson<T = unknown>(url: string, accept = 'application/json, */*', headers?: Record<string, string>): Promise<T> {
 		const res = await this.send(url, {
 			method: 'GET',
@@ -142,7 +137,6 @@ export class HttpRequestService {
 		return await res.json() as T;
 	}
 
-	@bindThis
 	public async getHtml(url: string, accept = 'text/html, */*', headers?: Record<string, string>): Promise<string> {
 		const res = await this.send(url, {
 			method: 'GET',
@@ -155,7 +149,6 @@ export class HttpRequestService {
 		return await res.text();
 	}
 
-	@bindThis
 	public async send(
 		url: string,
 		args: {

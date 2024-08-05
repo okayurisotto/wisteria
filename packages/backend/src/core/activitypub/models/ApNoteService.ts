@@ -22,7 +22,6 @@ import { IdService } from '@/core/IdService.js';
 import { PollService } from '@/core/PollService.js';
 import { StatusError } from '@/misc/status-error.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import { bindThis } from '@/decorators.js';
 import { checkHttps } from '@/misc/check-https.js';
 import { getOneApId, getApId, getOneApHrefNullable, validPost, isEmoji, getApType } from '../type.js';
 import { ApLoggerService } from '../ApLoggerService.js';
@@ -76,7 +75,6 @@ export class ApNoteService {
 		this.logger = this.apLoggerService.logger;
 	}
 
-	@bindThis
 	public validateNote(object: IObject, uri: string): Error | null {
 		const expectHost = this.utilityService.extractDbHost(uri);
 
@@ -105,7 +103,6 @@ export class ApNoteService {
 	 *
 	 * Misskeyに対象のNoteが登録されていればそれを返します。
 	 */
-	@bindThis
 	public async fetchNote(object: string | IObject): Promise<MiNote | null> {
 		return await this.apDbResolverService.getNoteFromApId(object);
 	}
@@ -113,7 +110,6 @@ export class ApNoteService {
 	/**
 	 * Noteを作成します。
 	 */
-	@bindThis
 	public async createNote(value: string | IObject, resolver?: Resolver, silent = false): Promise<MiNote | null> {
 		if (resolver == null) resolver = this.apResolverService.createResolver();
 
@@ -315,7 +311,6 @@ export class ApNoteService {
 	 * Misskeyに対象のNoteが登録されていればそれを返し、そうでなければ
 	 * リモートサーバーからフェッチしてMisskeyに登録しそれを返します。
 	 */
-	@bindThis
 	public async resolveNote(value: string | IObject, options: { sentFrom?: URL; resolver?: Resolver } = {}): Promise<MiNote | null> {
 		const uri = getApId(value);
 
@@ -347,7 +342,6 @@ export class ApNoteService {
 		}
 	}
 
-	@bindThis
 	public async extractEmojis(tags: IObject | IObject[], host: string): Promise<MiEmoji[]> {
 		host = this.utilityService.toPuny(host);
 

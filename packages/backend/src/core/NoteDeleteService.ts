@@ -20,7 +20,6 @@ import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { bindThis } from '@/decorators.js';
 import { MetaService } from '@/core/MetaService.js';
 import { SearchService } from '@/core/SearchService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
@@ -141,7 +140,6 @@ export class NoteDeleteService {
 		}
 	}
 
-	@bindThis
 	private async findCascadingNotes(note: MiNote): Promise<MiNote[]> {
 		const recursive = async (noteId: string): Promise<MiNote[]> => {
 			const query = this.notesRepository.createQueryBuilder('note')
@@ -164,7 +162,6 @@ export class NoteDeleteService {
 		return cascadingNotes;
 	}
 
-	@bindThis
 	private async getMentionedRemoteUsers(note: MiNote) {
 		const where = [] as any[];
 
@@ -190,7 +187,6 @@ export class NoteDeleteService {
 		}) as MiRemoteUser[];
 	}
 
-	@bindThis
 	private async deliverToConcerned(user: { id: MiLocalUser['id']; host: null }, note: MiNote, content: any) {
 		this.apDeliverManagerService.deliverToFollowers(user, content);
 		this.relayService.deliverToRelays(user, content);

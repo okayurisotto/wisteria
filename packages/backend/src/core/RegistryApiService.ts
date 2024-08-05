@@ -9,7 +9,6 @@ import type { MiRegistryItem, RegistryItemsRepository } from '@/models/_.js';
 import type { MiUser } from '@/models/User.js';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class RegistryApiService {
@@ -22,7 +21,6 @@ export class RegistryApiService {
 	) {
 	}
 
-	@bindThis
 	public async set(userId: MiUser['id'], domain: string | null, scope: string[], key: string, value: any) {
 		// TODO: 作成できるキーの数を制限する
 
@@ -65,7 +63,6 @@ export class RegistryApiService {
 		}
 	}
 
-	@bindThis
 	public async getItem(userId: MiUser['id'], domain: string | null, scope: string[], key: string): Promise<MiRegistryItem | null> {
 		const query = this.registryItemsRepository.createQueryBuilder('item')
 			.where(domain == null ? 'item.domain IS NULL' : 'item.domain = :domain', { domain: domain })
@@ -78,7 +75,6 @@ export class RegistryApiService {
 		return item;
 	}
 
-	@bindThis
 	public async getAllItemsOfScope(userId: MiUser['id'], domain: string | null, scope: string[]): Promise<MiRegistryItem[]> {
 		const query = this.registryItemsRepository.createQueryBuilder('item');
 		query.where(domain == null ? 'item.domain IS NULL' : 'item.domain = :domain', { domain: domain });
@@ -90,7 +86,6 @@ export class RegistryApiService {
 		return items;
 	}
 
-	@bindThis
 	public async getAllKeysOfScope(userId: MiUser['id'], domain: string | null, scope: string[]): Promise<string[]> {
 		const query = this.registryItemsRepository.createQueryBuilder('item');
 		query.select('item.key');
@@ -103,7 +98,6 @@ export class RegistryApiService {
 		return items.map(x => x.key);
 	}
 
-	@bindThis
 	public async getAllScopeAndDomains(userId: MiUser['id']): Promise<{ domain: string | null; scopes: string[][] }[]> {
 		const query = this.registryItemsRepository.createQueryBuilder('item')
 			.select(['item.scope', 'item.domain'])
@@ -129,7 +123,6 @@ export class RegistryApiService {
 		return res;
 	}
 
-	@bindThis
 	public async remove(userId: MiUser['id'], domain: string | null, scope: string[], key: string) {
 		const query = this.registryItemsRepository.createQueryBuilder().delete();
 		if (domain) {

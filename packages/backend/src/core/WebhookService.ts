@@ -8,7 +8,6 @@ import * as Redis from 'ioredis';
 import type { WebhooksRepository } from '@/models/_.js';
 import type { MiWebhook } from '@/models/Webhook.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import type { OnApplicationShutdown } from '@nestjs/common';
 
@@ -28,7 +27,6 @@ export class WebhookService implements OnApplicationShutdown {
 		this.redisForSub.on('message', this.onMessage);
 	}
 
-	@bindThis
 	public async getActiveWebhooks() {
 		if (!this.webhooksFetched) {
 			this.webhooks = await this.webhooksRepository.findBy({
@@ -40,8 +38,7 @@ export class WebhookService implements OnApplicationShutdown {
 		return this.webhooks;
 	}
 
-	@bindThis
-	private async onMessage(_: string, data: string): Promise<void> {
+	private onMessage = async (_: string, data: string): Promise<void> => {
 		const obj = JSON.parse(data);
 
 		if (obj.channel === 'internal') {
@@ -83,14 +80,12 @@ export class WebhookService implements OnApplicationShutdown {
 					break;
 			}
 		}
-	}
+	};
 
-	@bindThis
 	public dispose(): void {
 		this.redisForSub.off('message', this.onMessage);
 	}
 
-	@bindThis
 	public onApplicationShutdown(signal?: string | undefined): void {
 		this.dispose();
 	}

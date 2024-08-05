@@ -9,7 +9,6 @@ import type { AccessTokensRepository, AppsRepository } from '@/models/_.js';
 import type { Packed } from '@/misc/json-schema.js';
 import type { MiApp } from '@/models/App.js';
 import type { MiUser } from '@/models/User.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class AppEntityService {
@@ -22,7 +21,6 @@ export class AppEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiApp['id'] | MiApp,
 		me?: { id: MiUser['id'] } | null | undefined,

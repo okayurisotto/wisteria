@@ -16,7 +16,6 @@ import { type ILink, WebfingerService } from '@/core/WebfingerService.js';
 import { RemoteLoggerService } from '@/core/RemoteLoggerService.js';
 import { ApDbResolverService } from '@/core/activitypub/ApDbResolverService.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
-import { bindThis } from '@/decorators.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 
 @Injectable()
@@ -129,7 +128,6 @@ export class RemoteUserResolveService {
 		return user;
 	}
 
-	@bindThis
 	private async resolveSelf(acctLower: string): Promise<ILink> {
 		this.logger.info(`WebFinger for ${chalk.yellow(acctLower)}`);
 		const finger = await this.webfingerService.webfinger(acctLower).catch((err: unknown) => {

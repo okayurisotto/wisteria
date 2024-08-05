@@ -9,7 +9,6 @@ import { DI } from '@/di-symbols.js';
 import type { UsersRepository, DriveFilesRepository, MiDriveFile } from '@/models/_.js';
 import type Logger from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
-import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbJobDataWithUser } from '../types.js';
@@ -31,7 +30,6 @@ export class DeleteDriveFilesProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('delete-drive-files');
 	}
 
-	@bindThis
 	public async process(job: Bull.Job<DbJobDataWithUser>): Promise<void> {
 		this.logger.info(`Deleting drive files of ${job.data.user.id} ...`);
 

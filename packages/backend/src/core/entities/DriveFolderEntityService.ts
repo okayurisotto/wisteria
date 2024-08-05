@@ -10,7 +10,6 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { Packed } from '@/misc/json-schema.js';
 import type { } from '@/models/Blocking.js';
 import type { MiDriveFolder } from '@/models/DriveFolder.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 
 @Injectable()
@@ -26,7 +25,6 @@ export class DriveFolderEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiDriveFolder['id'] | MiDriveFolder,
 		options?: {

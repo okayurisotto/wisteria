@@ -6,7 +6,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IsNull, In, MoreThan, Not } from 'typeorm';
 
-import { bindThis } from '@/decorators.js';
 import { DI } from '@/di-symbols.js';
 import type { MiLocalUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import type { BlockingsRepository, FollowingsRepository, InstancesRepository, MutingsRepository, UserListMembershipsRepository, UsersRepository } from '@/models/_.js';
@@ -66,7 +65,6 @@ export class AccountMoveService {
 	 *
 	 * After delivering Move activity, its local followers unfollow the old account and then follow the new one.
 	 */
-	@bindThis
 	public async moveFromLocal(src: MiLocalUser, dst: MiLocalUser | MiRemoteUser): Promise<unknown> {
 		const dstUri = this.userEntityService.getUserUri(dst);
 
@@ -105,7 +103,6 @@ export class AccountMoveService {
 		return iObj;
 	}
 
-	@bindThis
 	public async postMoveProcess(src: MiUser, dst: MiUser): Promise<void> {
 		// Copy blockings and mutings, and update lists
 		try {
@@ -141,7 +138,6 @@ export class AccountMoveService {
 		this.queueService.createFollowJob(followJobs);
 	}
 
-	@bindThis
 	private async copyBlocking(src: ThinUser, dst: ThinUser): Promise<void> {
 		// Followers shouldn't overlap with blockers, but the destination account, different from the blockee (i.e., old account), may have followed the local user before moving.
 		// So block the destination account here.
@@ -158,7 +154,6 @@ export class AccountMoveService {
 		this.queueService.createBlockJob(blockJobs);
 	}
 
-	@bindThis
 	private async copyMutings(src: ThinUser, dst: ThinUser): Promise<void> {
 		// Insert new mutings with the same values except mutee
 		const oldMutings = await this.mutingsRepository.findBy([
@@ -203,7 +198,6 @@ export class AccountMoveService {
 	 * @param dst User (new account)
 	 * @returns Promise<void>
 	 */
-	@bindThis
 	private async updateLists(src: ThinUser, dst: MiUser): Promise<void> {
 		// Return if there is no list to be updated.
 		const oldMemberships = await this.userListMembershipsRepository.find({
@@ -250,7 +244,6 @@ export class AccountMoveService {
 		}
 	}
 
-	@bindThis
 	private async adjustFollowingCounts(localFollowerIds: string[], oldAccount: MiUser): Promise<void> {
 		if (localFollowerIds.length === 0) return;
 

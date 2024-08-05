@@ -13,7 +13,6 @@ import type { Config } from '@/config.js';
 import type Logger from '@/logger.js';
 import type { UserProfilesRepository } from '@/models/_.js';
 import { LoggerService } from '@/core/LoggerService.js';
-import { bindThis } from '@/decorators.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 
 @Injectable()
@@ -35,7 +34,6 @@ export class EmailService {
 		this.logger = this.loggerService.getLogger('email');
 	}
 
-	@bindThis
 	public async sendEmail(to: string, subject: string, html: string, text: string) {
 		const meta = await this.metaService.fetch();
 
@@ -154,7 +152,6 @@ export class EmailService {
 		}
 	}
 
-	@bindThis
 	public async validateEmailForAccount(emailAddress: string): Promise<{
 		available: boolean;
 		reason: null | 'used' | 'format' | 'disposable' | 'mx' | 'smtp' | 'banned' | 'network' | 'blacklist';

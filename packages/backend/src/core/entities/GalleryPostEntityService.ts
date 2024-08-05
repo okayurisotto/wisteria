@@ -11,7 +11,6 @@ import type { Packed } from '@/misc/json-schema.js';
 import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiGalleryPost } from '@/models/GalleryPost.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 import { DriveFileEntityService } from './DriveFileEntityService.js';
@@ -31,7 +30,6 @@ export class GalleryPostEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiGalleryPost['id'] | MiGalleryPost,
 		me?: { id: MiUser['id'] } | null | undefined,
@@ -57,7 +55,6 @@ export class GalleryPostEntityService {
 		});
 	}
 
-	@bindThis
 	public packMany(
 		posts: MiGalleryPost[],
 		me?: { id: MiUser['id'] } | null | undefined,

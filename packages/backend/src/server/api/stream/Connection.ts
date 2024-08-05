@@ -9,7 +9,6 @@ import type { MiAccessToken } from '@/models/AccessToken.js';
 import type { Packed } from '@/misc/json-schema.js';
 import type { NoteReadService } from '@/core/NoteReadService.js';
 import type { NotificationService } from '@/core/NotificationService.js';
-import { bindThis } from '@/decorators.js';
 import type { BlockingsRepository, ChannelFollowingsRepository, FollowingsRepository, MiFollowing, MiUserProfile, MutingsRepository, RenoteMutingsRepository, UserProfilesRepository } from '@/models/_.js';
 import type { StreamEventEmitter, GlobalEvents } from '@/core/GlobalEventService.js';
 import type { ChannelsService } from './ChannelsService.js';
@@ -102,7 +101,6 @@ export default class Connection {
 		}
 	}
 
-	@bindThis
 	public async listen(subscriber: EventEmitter, wsConnection: WebSocket.WebSocket) {
 		this.subscriber = subscriber;
 
@@ -117,8 +115,7 @@ export default class Connection {
 	/**
 	 * クライアントからメッセージ受信時
 	 */
-	@bindThis
-	private async onWsConnectionMessage(data: WebSocket.RawData) {
+	private onWsConnectionMessage = (data: WebSocket.RawData) => {
 		let obj: Record<string, any>;
 
 		try {
@@ -141,14 +138,12 @@ export default class Connection {
 			case 'channel': this.onChannelMessageRequested(body); break;
 			case 'ch': this.onChannelMessageRequested(body); break; // alias
 		}
-	}
+	};
 
-	@bindThis
 	private onBroadcastMessage(data: GlobalEvents['broadcast']['payload']) {
 		this.sendMessageToWs(data.type, data.body);
 	}
 
-	@bindThis
 	public cacheNote(note: Packed<'Note'>) {
 		const add = (note: Packed<'Note'>) => {
 			const existIndex = this.cachedNotes.findIndex(n => n.id === note.id);
@@ -168,7 +163,6 @@ export default class Connection {
 		if (note.renote) add(note.renote);
 	}
 
-	@bindThis
 	private readNote(body: any) {
 		const id = body.id;
 
@@ -180,7 +174,6 @@ export default class Connection {
 		}
 	}
 
-	@bindThis
 	private onReadNotification(payload: any) {
 		this.notificationService.readAllNotification(this.user!.id);
 	}
@@ -188,7 +181,6 @@ export default class Connection {
 	/**
 	 * 投稿購読要求時
 	 */
-	@bindThis
 	private onSubscribeNote(payload: any) {
 		if (!payload.id) return;
 
@@ -206,7 +198,6 @@ export default class Connection {
 	/**
 	 * 投稿購読解除要求時
 	 */
-	@bindThis
 	private onUnsubscribeNote(payload: any) {
 		if (!payload.id) return;
 
@@ -217,19 +208,17 @@ export default class Connection {
 		}
 	}
 
-	@bindThis
-	private async onNoteStreamMessage(data: GlobalEvents['note']['payload']) {
+	private onNoteStreamMessage = async (data: GlobalEvents['note']['payload']) => {
 		this.sendMessageToWs('noteUpdated', {
 			id: data.body.id,
 			type: data.type,
 			body: data.body.body,
 		});
-	}
+	};
 
 	/**
 	 * チャンネル接続要求時
 	 */
-	@bindThis
 	private onChannelConnectRequested(payload: any) {
 		const { channel, id, params, pong } = payload;
 		this.connectChannel(id, params, channel, pong);
@@ -238,7 +227,6 @@ export default class Connection {
 	/**
 	 * チャンネル切断要求時
 	 */
-	@bindThis
 	private onChannelDisconnectRequested(payload: any) {
 		const { id } = payload;
 		this.disconnectChannel(id);
@@ -247,7 +235,6 @@ export default class Connection {
 	/**
 	 * クライアントにメッセージ送信
 	 */
-	@bindThis
 	public sendMessageToWs(type: string, payload: any) {
 		this.wsConnection.send(JSON.stringify({
 			type: type,
@@ -258,7 +245,6 @@ export default class Connection {
 	/**
 	 * チャンネルに接続
 	 */
-	@bindThis
 	public connectChannel(id: string, params: any, channel: string, pong = false) {
 		const channelService = this.channelsService.getChannelService(channel);
 
@@ -291,7 +277,6 @@ export default class Connection {
 	 * チャンネルから切断
 	 * @param id チャンネルコネクションID
 	 */
-	@bindThis
 	public disconnectChannel(id: string) {
 		const channel = this.channels.find(c => c.id === id);
 
@@ -305,7 +290,6 @@ export default class Connection {
 	 * チャンネルへメッセージ送信要求時
 	 * @param data メッセージ
 	 */
-	@bindThis
 	private onChannelMessageRequested(data: any) {
 		const channel = this.channels.find(c => c.id === data.id);
 		if (channel != null && channel.onMessage != null) {
@@ -316,11 +300,10 @@ export default class Connection {
 	/**
 	 * ストリームが切れたとき
 	 */
-	@bindThis
 	public dispose() {
 		if (this.fetchIntervalId) clearInterval(this.fetchIntervalId);
-		for (const c of this.channels.filter(c => c.dispose)) {
-			if (c.dispose) c.dispose();
+		for (const c of this.channels) {
+			c.dispose?.();
 		}
 	}
 }

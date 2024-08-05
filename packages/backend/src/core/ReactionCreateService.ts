@@ -21,7 +21,6 @@ import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { MetaService } from '@/core/MetaService.js';
-import { bindThis } from '@/decorators.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { UserBlockingCheckService } from './UserBlockingCheckService.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
@@ -70,7 +69,6 @@ export class ReactionCreateService {
 		private reactionDeleteService: ReactionDeleteService,
 	) {}
 
-	@bindThis
 	public async create(user: { id: MiUser['id']; host: MiUser['host']; isBot: MiUser['isBot'] }, note: MiNote, _reaction?: string | null) {
 		// Check blocking
 		if (note.userId !== user.id) {
@@ -242,7 +240,6 @@ export class ReactionCreateService {
 		//#endregion
 	}
 
-	@bindThis
 	public normalize(reaction: string | null): string {
 		if (reaction == null) return FALLBACK;
 

@@ -20,7 +20,6 @@ import { DI } from '@/di-symbols.js';
 import type { FollowingsRepository, FollowRequestsRepository, InstancesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
-import { bindThis } from '@/decorators.js';
 import { UserBlockingCheckService } from './UserBlockingCheckService.js';
 import { UserBlockingUnblockService } from '@/core/UserBlockingUnblockService.js';
 import { MetaService } from '@/core/MetaService.js';
@@ -86,7 +85,6 @@ export class UserFollowingService {
 		this.logger = this.loggerService.getLogger('following/create');
 	}
 
-	@bindThis
 	public async follow(
 		_follower: { id: MiUser['id'] },
 		_followee: { id: MiUser['id'] },
@@ -186,7 +184,6 @@ export class UserFollowingService {
 		}
 	}
 
-	@bindThis
 	private async insertFollowingDoc(
 		followee: {
 			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host']; inbox: MiUser['inbox']; sharedInbox: MiUser['sharedInbox'];
@@ -313,7 +310,6 @@ export class UserFollowingService {
 		}
 	}
 
-	@bindThis
 	public async unfollow(
 		follower: {
 			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host']; inbox: MiUser['inbox']; sharedInbox: MiUser['sharedInbox'];
@@ -371,7 +367,6 @@ export class UserFollowingService {
 		}
 	}
 
-	@bindThis
 	private async decrementFollowing(
 		follower: MiUser,
 		followee: MiUser,
@@ -441,7 +436,6 @@ export class UserFollowingService {
 		}
 	}
 
-	@bindThis
 	public async createFollowRequest(
 		follower: {
 			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host']; inbox: MiUser['inbox']; sharedInbox: MiUser['sharedInbox'];
@@ -498,7 +492,6 @@ export class UserFollowingService {
 		}
 	}
 
-	@bindThis
 	public async cancelFollowRequest(
 		followee: {
 			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host']; inbox: MiUser['inbox'];
@@ -536,7 +529,6 @@ export class UserFollowingService {
 		}).then(packed => this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed));
 	}
 
-	@bindThis
 	public async acceptFollowRequest(
 		followee: {
 			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host']; inbox: MiUser['inbox']; sharedInbox: MiUser['sharedInbox'];
@@ -564,7 +556,6 @@ export class UserFollowingService {
 		}).then(packed => this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed));
 	}
 
-	@bindThis
 	public async acceptAllFollowRequests(
 		user: {
 			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host']; inbox: MiUser['inbox']; sharedInbox: MiUser['sharedInbox'];
@@ -583,7 +574,6 @@ export class UserFollowingService {
 	/**
 	 * API following/request/reject
 	 */
-	@bindThis
 	public async rejectFollowRequest(user: Local, follower: Both): Promise<void> {
 		if (this.userEntityService.isRemoteUser(follower)) {
 			this.deliverReject(user, follower);
@@ -599,7 +589,6 @@ export class UserFollowingService {
 	/**
 	 * API following/reject
 	 */
-	@bindThis
 	public async rejectFollow(user: Local, follower: Both): Promise<void> {
 		if (this.userEntityService.isRemoteUser(follower)) {
 			this.deliverReject(user, follower);
@@ -615,7 +604,6 @@ export class UserFollowingService {
 	/**
 	 * AP Reject/Follow
 	 */
-	@bindThis
 	public async remoteReject(actor: Remote, follower: Local): Promise<void> {
 		await this.removeFollowRequest(actor, follower);
 		await this.removeFollow(actor, follower);
@@ -625,7 +613,6 @@ export class UserFollowingService {
 	/**
 	 * Remove follow request record
 	 */
-	@bindThis
 	private async removeFollowRequest(followee: Both, follower: Both): Promise<void> {
 		const request = await this.followRequestsRepository.findOneBy({
 			followeeId: followee.id,
@@ -640,7 +627,6 @@ export class UserFollowingService {
 	/**
 	 * Remove follow record
 	 */
-	@bindThis
 	private async removeFollow(followee: Both, follower: Both): Promise<void> {
 		const following = await this.followingsRepository.findOne({
 			relations: {
@@ -663,7 +649,6 @@ export class UserFollowingService {
 	/**
 	 * Deliver Reject to remote
 	 */
-	@bindThis
 	private async deliverReject(followee: Local, follower: Remote): Promise<void> {
 		const request = await this.followRequestsRepository.findOneBy({
 			followeeId: followee.id,
@@ -677,7 +662,6 @@ export class UserFollowingService {
 	/**
 	 * Publish unfollow to local
 	 */
-	@bindThis
 	private async publishUnfollow(followee: Both, follower: Local): Promise<void> {
 		const packedFollowee = await this.userEntityService.pack(followee.id, follower, {
 			schema: 'UserDetailedNotMe',
@@ -693,7 +677,6 @@ export class UserFollowingService {
 		}
 	}
 
-	@bindThis
 	public getFollowees(userId: MiUser['id']) {
 		return this.followingsRepository.createQueryBuilder('following')
 			.select('following.followeeId')

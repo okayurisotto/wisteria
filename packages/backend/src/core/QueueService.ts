@@ -10,7 +10,6 @@ import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiWebhook, webhookEventTypes } from '@/models/Webhook.js';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import type { Antenna } from '@/server/api/endpoints/i/import-antennas.js';
 import type { DbQueue, DeliverQueue, EndedPollNotificationQueue, InboxQueue, ObjectStorageQueue, RelationshipQueue, SystemQueue, WebhookDeliverQueue } from './QueueModule.js';
 import type { DbJobData, DeliverJobData, RelationshipJobData, ThinUser } from '../queue/types.js';
@@ -70,7 +69,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public deliver(user: ThinUser, content: IActivity | null, to: string | null, isSharedInbox: boolean) {
 		if (content == null) return null;
 		if (to == null) return null;
@@ -105,7 +103,6 @@ export class QueueService {
 	 * @param inboxes `Map<string, boolean>` / key: to (inbox url), value: isSharedInbox (whether it is sharedInbox)
 	 * @returns void
 	 */
-	@bindThis
 	public async deliverMany(user: ThinUser, content: IActivity | null, inboxes: Map<string, boolean>) {
 		if (content == null) return null;
 		const contentBody = JSON.stringify(content);
@@ -135,7 +132,6 @@ export class QueueService {
 		return;
 	}
 
-	@bindThis
 	public inbox(activity: IActivity, signature: Signature, signingString: string) {
 		const data = { activity, signature, signingString };
 
@@ -149,7 +145,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createDeleteDriveFilesJob(user: ThinUser) {
 		return this.dbQueue.add('deleteDriveFiles', {
 			user: { id: user.id },
@@ -159,7 +154,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createExportCustomEmojisJob(user: ThinUser) {
 		return this.dbQueue.add('exportCustomEmojis', {
 			user: { id: user.id },
@@ -169,7 +163,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createExportNotesJob(user: ThinUser) {
 		return this.dbQueue.add('exportNotes', {
 			user: { id: user.id },
@@ -179,7 +172,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createExportClipsJob(user: ThinUser) {
 		return this.dbQueue.add('exportClips', {
 			user: { id: user.id },
@@ -189,7 +181,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createExportFavoritesJob(user: ThinUser) {
 		return this.dbQueue.add('exportFavorites', {
 			user: { id: user.id },
@@ -199,7 +190,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createExportFollowingJob(user: ThinUser, excludeMuting = false, excludeInactive = false) {
 		return this.dbQueue.add('exportFollowing', {
 			user: { id: user.id },
@@ -211,7 +201,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createExportMuteJob(user: ThinUser) {
 		return this.dbQueue.add('exportMuting', {
 			user: { id: user.id },
@@ -221,7 +210,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createExportBlockingJob(user: ThinUser) {
 		return this.dbQueue.add('exportBlocking', {
 			user: { id: user.id },
@@ -231,7 +219,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createExportUserListsJob(user: ThinUser) {
 		return this.dbQueue.add('exportUserLists', {
 			user: { id: user.id },
@@ -241,7 +228,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createExportAntennasJob(user: ThinUser) {
 		return this.dbQueue.add('exportAntennas', {
 			user: { id: user.id },
@@ -251,7 +237,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createImportFollowingJob(user: ThinUser, fileId: MiDriveFile['id'], withReplies?: boolean) {
 		return this.dbQueue.add('importFollowing', {
 			user: { id: user.id },
@@ -263,13 +248,11 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createImportFollowingToDbJob(user: ThinUser, targets: string[], withReplies?: boolean) {
 		const jobs = targets.map(rel => this.generateToDbJobData('importFollowingToDb', { user, target: rel, withReplies }));
 		return this.dbQueue.addBulk(jobs);
 	}
 
-	@bindThis
 	public createImportMutingJob(user: ThinUser, fileId: MiDriveFile['id']) {
 		return this.dbQueue.add('importMuting', {
 			user: { id: user.id },
@@ -280,7 +263,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createImportBlockingJob(user: ThinUser, fileId: MiDriveFile['id']) {
 		return this.dbQueue.add('importBlocking', {
 			user: { id: user.id },
@@ -291,13 +273,11 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createImportBlockingToDbJob(user: ThinUser, targets: string[]) {
 		const jobs = targets.map(rel => this.generateToDbJobData('importBlockingToDb', { user, target: rel }));
 		return this.dbQueue.addBulk(jobs);
 	}
 
-	@bindThis
 	private generateToDbJobData<T extends 'importFollowingToDb' | 'importBlockingToDb', D extends DbJobData<T>>(name: T, data: D): {
 		name: string;
 		data: D;
@@ -313,7 +293,6 @@ export class QueueService {
 		};
 	}
 
-	@bindThis
 	public createImportUserListsJob(user: ThinUser, fileId: MiDriveFile['id']) {
 		return this.dbQueue.add('importUserLists', {
 			user: { id: user.id },
@@ -324,7 +303,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createImportCustomEmojisJob(user: ThinUser, fileId: MiDriveFile['id']) {
 		return this.dbQueue.add('importCustomEmojis', {
 			user: { id: user.id },
@@ -335,7 +313,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createImportAntennasJob(user: ThinUser, antenna: Antenna) {
 		return this.dbQueue.add('importAntennas', {
 			user: { id: user.id },
@@ -346,7 +323,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createDeleteAccountJob(user: ThinUser, opts: { soft?: boolean } = {}) {
 		return this.dbQueue.add('deleteAccount', {
 			user: { id: user.id },
@@ -357,37 +333,31 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createFollowJob(followings: { from: ThinUser; to: ThinUser; requestId?: string; silent?: boolean; withReplies?: boolean }[]) {
 		const jobs = followings.map(rel => this.generateRelationshipJobData('follow', rel));
 		return this.relationshipQueue.addBulk(jobs);
 	}
 
-	@bindThis
 	public createUnfollowJob(followings: { from: ThinUser; to: ThinUser; requestId?: string }[]) {
 		const jobs = followings.map(rel => this.generateRelationshipJobData('unfollow', rel));
 		return this.relationshipQueue.addBulk(jobs);
 	}
 
-	@bindThis
 	public createDelayedUnfollowJob(followings: { from: ThinUser; to: ThinUser; requestId?: string }[], delay: number) {
 		const jobs = followings.map(rel => this.generateRelationshipJobData('unfollow', rel, { delay }));
 		return this.relationshipQueue.addBulk(jobs);
 	}
 
-	@bindThis
 	public createBlockJob(blockings: { from: ThinUser; to: ThinUser; silent?: boolean }[]) {
 		const jobs = blockings.map(rel => this.generateRelationshipJobData('block', rel));
 		return this.relationshipQueue.addBulk(jobs);
 	}
 
-	@bindThis
 	public createUnblockJob(blockings: { from: ThinUser; to: ThinUser; silent?: boolean }[]) {
 		const jobs = blockings.map(rel => this.generateRelationshipJobData('unblock', rel));
 		return this.relationshipQueue.addBulk(jobs);
 	}
 
-	@bindThis
 	private generateRelationshipJobData(name: 'follow' | 'unfollow' | 'block' | 'unblock', data: RelationshipJobData, opts: Bull.JobsOptions = {}): {
 		name: string;
 		data: RelationshipJobData;
@@ -410,7 +380,6 @@ export class QueueService {
 		};
 	}
 
-	@bindThis
 	public createDeleteObjectStorageFileJob(key: string) {
 		return this.objectStorageQueue.add('deleteFile', {
 			key: key,
@@ -420,7 +389,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public createCleanRemoteFilesJob() {
 		return this.objectStorageQueue.add('cleanRemoteFiles', {}, {
 			removeOnComplete: true,
@@ -428,7 +396,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public webhookDeliver(webhook: MiWebhook, type: typeof webhookEventTypes[number], content: unknown) {
 		const data = {
 			type,
@@ -451,7 +418,6 @@ export class QueueService {
 		});
 	}
 
-	@bindThis
 	public destroy() {
 		this.deliverQueue.once('cleaned', (jobs, status) => {
 			//deliverLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);

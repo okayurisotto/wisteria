@@ -8,7 +8,6 @@ import type { AvatarDecorationsRepository, MiAvatarDecoration, MiUser } from '@/
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 
 @Injectable()
@@ -22,7 +21,6 @@ export class AvatarDecorationService {
 		private globalEventService: GlobalEventService,
 	) {}
 
-	@bindThis
 	public async create(options: Partial<MiAvatarDecoration>, moderator?: MiUser): Promise<MiAvatarDecoration> {
 		const created = await this.avatarDecorationsRepository.insert({
 			id: this.idService.gen(),
@@ -39,7 +37,6 @@ export class AvatarDecorationService {
 		return created;
 	}
 
-	@bindThis
 	public async update(id: MiAvatarDecoration['id'], params: Partial<MiAvatarDecoration>, moderator?: MiUser): Promise<void> {
 		const avatarDecoration = await this.avatarDecorationsRepository.findOneByOrFail({ id });
 
@@ -60,7 +57,6 @@ export class AvatarDecorationService {
 		}
 	}
 
-	@bindThis
 	public async delete(id: MiAvatarDecoration['id'], moderator?: MiUser): Promise<void> {
 		const avatarDecoration = await this.avatarDecorationsRepository.findOneByOrFail({ id });
 
@@ -74,7 +70,6 @@ export class AvatarDecorationService {
 		}
 	}
 
-	@bindThis
 	public async getAll(): Promise<MiAvatarDecoration[]> {
 		return await this.avatarDecorationsRepository.find();
 	}

@@ -12,7 +12,6 @@ import { HttpRequestService } from '@/core/HttpRequestService.js';
 import type Logger from '@/logger.js';
 import { query } from '@/misc/prelude/url.js';
 import { LoggerService } from '@/core/LoggerService.js';
-import { bindThis } from '@/decorators.js';
 import { ApiError } from '@/server/api/error.js';
 import type { Context } from 'hono';
 
@@ -31,7 +30,6 @@ export class UrlPreviewService {
 		this.logger = this.loggerService.getLogger('url-preview');
 	}
 
-	@bindThis
 	private wrap(url?: string | null): string | null {
 		return url != null
 			? url.match(/^https?:\/\//)

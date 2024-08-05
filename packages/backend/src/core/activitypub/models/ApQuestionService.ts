@@ -9,7 +9,6 @@ import type { NotesRepository, PollsRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
 import type { IPoll } from '@/models/Poll.js';
 import type Logger from '@/logger.js';
-import { bindThis } from '@/decorators.js';
 import { isQuestion } from '../type.js';
 import { ApLoggerService } from '../ApLoggerService.js';
 import { ApResolverService } from '../ApResolverService.js';
@@ -36,7 +35,6 @@ export class ApQuestionService {
 		this.logger = this.apLoggerService.logger;
 	}
 
-	@bindThis
 	public async extractPollFromQuestion(source: string | IObject, resolver?: Resolver): Promise<IPoll> {
 		if (resolver == null) resolver = this.apResolverService.createResolver();
 
@@ -63,7 +61,6 @@ export class ApQuestionService {
 	 * @param uri URI of AP Question object
 	 * @returns true if updated
 	 */
-	@bindThis
 	public async updateQuestion(value: string | IObject, resolver?: Resolver): Promise<boolean> {
 		const uri = typeof value === 'string' ? value : value.id;
 		if (uri == null) throw new Error('uri is null');

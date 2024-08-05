@@ -9,7 +9,6 @@ import type { MiLocalUser } from '@/models/User.js';
 import type { UsersRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { CreateSystemUserService } from '@/core/CreateSystemUserService.js';
-import { bindThis } from '@/decorators.js';
 
 const ACTOR_USERNAME = 'instance.actor';
 
@@ -22,7 +21,6 @@ export class InstanceActorService {
 		private createSystemUserService: CreateSystemUserService,
 	) {}
 
-	@bindThis
 	public async realLocalUsersPresent(): Promise<boolean> {
 		return await this.usersRepository.existsBy({
 			host: IsNull(),
@@ -30,7 +28,6 @@ export class InstanceActorService {
 		});
 	}
 
-	@bindThis
 	public async getInstanceActor(): Promise<MiLocalUser> {
 		const user = await this.usersRepository.findOneBy({
 			host: IsNull(),

@@ -9,7 +9,6 @@ import type { MiInstance } from '@/models/Instance.js';
 import { IdService } from '@/core/IdService.js';
 import { DI } from '@/di-symbols.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class FederatedInstanceService {
@@ -21,7 +20,6 @@ export class FederatedInstanceService {
 		private idService: IdService,
 	) {}
 
-	@bindThis
 	public async fetch(host: string): Promise<MiInstance> {
 		host = this.utilityService.toPuny(host);
 
@@ -40,7 +38,6 @@ export class FederatedInstanceService {
 		}
 	}
 
-	@bindThis
 	public async update(id: MiInstance['id'], data: Partial<MiInstance>): Promise<void> {
 		await this.instancesRepository.createQueryBuilder().update()
 			.set(data)

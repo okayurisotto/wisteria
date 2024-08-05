@@ -8,7 +8,6 @@ import type { MiUser } from '@/models/User.js';
 import type { UserKeypairsRepository } from '@/models/_.js';
 import type { MiUserKeypair } from '@/models/UserKeypair.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class UserKeypairService {
@@ -17,7 +16,6 @@ export class UserKeypairService {
 		private userKeypairsRepository: UserKeypairsRepository,
 	) {}
 
-	@bindThis
 	public async getUserKeypair(userId: MiUser['id']): Promise<MiUserKeypair> {
 		return await this.userKeypairsRepository.findOneByOrFail({ userId });
 	}

@@ -7,7 +7,6 @@ import { Injectable } from '@nestjs/common';
 import * as mfm from 'mfm-js';
 import { MfmService } from '@/core/MfmService.js';
 import type { MiNote } from '@/models/Note.js';
-import { bindThis } from '@/decorators.js';
 import { extractApHashtagObjects } from './models/tag.js';
 import type { IObject } from './type.js';
 
@@ -18,13 +17,11 @@ export class ApMfmService {
 	) {
 	}
 
-	@bindThis
 	public htmlToMfm(html: string, tag?: IObject | IObject[]): string {
 		const hashtagNames = extractApHashtagObjects(tag).map(x => x.name);
 		return this.mfmService.fromHtml(html, hashtagNames);
 	}
 
-	@bindThis
 	public getNoteHtml(note: MiNote, apAppend?: string) {
 		let noMisskeyContent = false;
 		const srcMfm = (note.text ?? '') + (apAppend ?? '');

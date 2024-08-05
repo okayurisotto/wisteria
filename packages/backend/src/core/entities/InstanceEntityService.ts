@@ -7,7 +7,6 @@ import { Injectable } from '@nestjs/common';
 import type { Packed } from '@/misc/json-schema.js';
 import type { MiInstance } from '@/models/Instance.js';
 import { MetaService } from '@/core/MetaService.js';
-import { bindThis } from '@/decorators.js';
 import { UtilityService } from '../UtilityService.js';
 
 @Injectable()
@@ -19,7 +18,6 @@ export class InstanceEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		instance: MiInstance,
 	): Promise<Packed<'FederationInstance'>> {
@@ -51,7 +49,6 @@ export class InstanceEntityService {
 		};
 	}
 
-	@bindThis
 	public packMany(
 		instances: MiInstance[],
 	) {

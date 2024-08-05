@@ -11,7 +11,6 @@ import type { Packed } from '@/misc/json-schema.js';
 import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiFlash } from '@/models/Flash.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 
@@ -29,7 +28,6 @@ export class FlashEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiFlash['id'] | MiFlash,
 		me?: { id: MiUser['id'] } | null | undefined,
@@ -51,7 +49,6 @@ export class FlashEntityService {
 		});
 	}
 
-	@bindThis
 	public packMany(
 		flashs: MiFlash[],
 		me?: { id: MiUser['id'] } | null | undefined,

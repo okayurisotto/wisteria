@@ -10,7 +10,6 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { Packed } from '@/misc/json-schema.js';
 import type { } from '@/models/Blocking.js';
 import type { MiReversiGame } from '@/models/ReversiGame.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 
@@ -25,7 +24,6 @@ export class ReversiGameEntityService {
 	) {
 	}
 
-	@bindThis
 	public async packDetail(
 		src: MiReversiGame['id'] | MiReversiGame,
 	): Promise<Packed<'ReversiGameDetailed'>> {
@@ -67,14 +65,12 @@ export class ReversiGameEntityService {
 		});
 	}
 
-	@bindThis
 	public packDetailMany(
 		xs: MiReversiGame[],
 	) {
 		return Promise.all(xs.map(x => this.packDetail(x)));
 	}
 
-	@bindThis
 	public async packLite(
 		src: MiReversiGame['id'] | MiReversiGame,
 	): Promise<Packed<'ReversiGameLite'>> {
@@ -110,7 +106,6 @@ export class ReversiGameEntityService {
 		});
 	}
 
-	@bindThis
 	public packLiteMany(
 		xs: MiReversiGame[],
 	) {

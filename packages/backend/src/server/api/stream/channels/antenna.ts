@@ -6,7 +6,6 @@
 import { Injectable } from '@nestjs/common';
 import { isUserRelated } from '@/misc/is-user-related.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { bindThis } from '@/decorators.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import Channel, { type MiChannelService } from '../channel.js';
 
@@ -27,7 +26,6 @@ class AntennaChannel extends Channel {
 		//this.onEvent = this.onEvent.bind(this);
 	}
 
-	@bindThis
 	public async init(params: any) {
 		this.antennaId = params.antennaId as string;
 
@@ -35,8 +33,7 @@ class AntennaChannel extends Channel {
 		this.subscriber.on(`antennaStream:${this.antennaId}`, this.onEvent);
 	}
 
-	@bindThis
-	private async onEvent(data: GlobalEvents['antenna']['payload']) {
+	private onEvent = async (data: GlobalEvents['antenna']['payload']) => {
 		if (data.type === 'note') {
 			const note = await this.noteEntityService.pack(data.body.id, this.user, { detail: true });
 
@@ -53,9 +50,8 @@ class AntennaChannel extends Channel {
 		} else {
 			this.send(data.type, data.body);
 		}
-	}
+	};
 
-	@bindThis
 	public dispose() {
 		// Unsubscribe events
 		this.subscriber.off(`antennaStream:${this.antennaId}`, this.onEvent);
@@ -73,7 +69,6 @@ export class AntennaChannelService implements MiChannelService<true> {
 	) {
 	}
 
-	@bindThis
 	public create(id: string, connection: Channel['connection']): AntennaChannel {
 		return new AntennaChannel(
 			this.noteEntityService,

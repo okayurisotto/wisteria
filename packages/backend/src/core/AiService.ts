@@ -8,7 +8,6 @@ import { Injectable } from '@nestjs/common';
 import * as nsfw from 'nsfwjs';
 import si from 'systeminformation';
 import { Mutex } from 'async-mutex';
-import { bindThis } from '@/decorators.js';
 import { NSFW_MODEL_DIR } from '@/path.js';
 
 const REQUIRED_CPU_FLAGS = ['avx2', 'fma'];
@@ -19,7 +18,6 @@ export class AiService {
 	private model: nsfw.NSFWJS;
 	private modelLoadMutex: Mutex = new Mutex();
 
-	@bindThis
 	public async detectSensitive(path: string): Promise<nsfw.predictionType[] | null> {
 		try {
 			if (isSupportedCpu === undefined) {
@@ -56,7 +54,6 @@ export class AiService {
 		}
 	}
 
-	@bindThis
 	private async getCpuFlags(): Promise<string[]> {
 		const str = await si.cpuFlags();
 		return str.split(/\s+/);

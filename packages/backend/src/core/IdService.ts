@@ -12,7 +12,6 @@ import { genAidx, isSafeAidxT, parseAidx } from '@/misc/id/aidx.js';
 import { genMeid, isSafeMeidT, parseMeid } from '@/misc/id/meid.js';
 import { genMeidg, isSafeMeidgT, parseMeidg } from '@/misc/id/meidg.js';
 import { genObjectId, isSafeObjectIdT, parseObjectId } from '@/misc/id/object-id.js';
-import { bindThis } from '@/decorators.js';
 import { parseUlid } from '@/misc/id/ulid.js';
 
 @Injectable()
@@ -26,7 +25,6 @@ export class IdService {
 		this.method = config.id.toLowerCase();
 	}
 
-	@bindThis
 	public isSafeT(t: number): boolean {
 		switch (this.method) {
 			case 'aid': return isSafeAidT(t);
@@ -43,7 +41,6 @@ export class IdService {
 	 * 時間を元にIDを生成します(省略時は現在日時)
 	 * @param time 日時
 	 */
-	@bindThis
 	public gen(time?: number): string {
 		const t = (!time || (time > Date.now())) ? Date.now() : time;
 
@@ -58,7 +55,6 @@ export class IdService {
 		}
 	}
 
-	@bindThis
 	public parse(id: string): { date: Date } {
 		switch (this.method) {
 			case 'aid': return parseAid(id);

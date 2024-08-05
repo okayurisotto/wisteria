@@ -10,7 +10,6 @@ import type { MiNote } from '@/models/Note.js';
 import { AppLockService } from '@/core/AppLockService.js';
 import { DI } from '@/di-symbols.js';
 import type { NotesRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 import Chart from '../core.js';
 import { ChartLoggerService } from '../ChartLoggerService.js';
 import { name, schema } from './entities/per-user-notes.js';
@@ -48,7 +47,6 @@ export default class PerUserNotesChart extends Chart<typeof schema> {
 		return {};
 	}
 
-	@bindThis
 	public update(user: { id: MiUser['id'] }, note: MiNote, isAdditional: boolean): void {
 		this.commit({
 			'total': isAdditional ? 1 : -1,

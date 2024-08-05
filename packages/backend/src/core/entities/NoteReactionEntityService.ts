@@ -7,7 +7,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { NoteReactionsRepository } from '@/models/_.js';
 import type { Packed } from '@/misc/json-schema.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
@@ -29,7 +28,6 @@ export class NoteReactionEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiNoteReaction['id'] | MiNoteReaction,
 		me?: { id: MiUser['id'] } | null | undefined,

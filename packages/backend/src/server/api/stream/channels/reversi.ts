@@ -4,7 +4,6 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { bindThis } from '@/decorators.js';
 import Channel, { type MiChannelService } from '../channel.js';
 
 class ReversiChannel extends Channel {
@@ -13,12 +12,10 @@ class ReversiChannel extends Channel {
 	public static requireCredential = true as const;
 	public static kind = 'read:account';
 
-	@bindThis
 	public async init(params: any) {
 		this.subscriber.on(`reversiStream:${this.user!.id}`, this.send);
 	}
 
-	@bindThis
 	public dispose() {
 		// Unsubscribe events
 		this.subscriber.off(`reversiStream:${this.user!.id}`, this.send);
@@ -31,7 +28,6 @@ export class ReversiChannelService implements MiChannelService<true> {
 	public readonly requireCredential = ReversiChannel.requireCredential;
 	public readonly kind = ReversiChannel.kind;
 
-	@bindThis
 	public create(id: string, connection: Channel['connection']): ReversiChannel {
 		return new ReversiChannel(
 			id,

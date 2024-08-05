@@ -9,7 +9,6 @@ import type { MiUserListMembership, UserListMembershipsRepository, UserListsRepo
 import type { Packed } from '@/misc/json-schema.js';
 import type { } from '@/models/Blocking.js';
 import type { MiUserList } from '@/models/UserList.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 
@@ -27,7 +26,6 @@ export class UserListEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiUserList['id'] | MiUserList,
 	): Promise<Packed<'UserList'>> {
@@ -46,7 +44,6 @@ export class UserListEntityService {
 		};
 	}
 
-	@bindThis
 	public async packMembershipsMany(
 		memberships: MiUserListMembership[],
 	) {

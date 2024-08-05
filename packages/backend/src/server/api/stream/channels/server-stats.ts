@@ -5,7 +5,6 @@
 
 import Xev from 'xev';
 import { Injectable } from '@nestjs/common';
-import { bindThis } from '@/decorators.js';
 import Channel, { type MiChannelService } from '../channel.js';
 
 const ev = new Xev();
@@ -15,17 +14,14 @@ class ServerStatsChannel extends Channel {
 	public static shouldShare = true;
 	public static requireCredential = false as const;
 
-	@bindThis
 	public async init(params: any) {
 		ev.addListener('serverStats', this.onStats);
 	}
 
-	@bindThis
-	private onStats(stats: any) {
+	private onStats = (stats: any) => {
 		this.send('stats', stats);
-	}
+	};
 
-	@bindThis
 	public onMessage(type: string, body: any) {
 		switch (type) {
 			case 'requestLog':
@@ -40,7 +36,6 @@ class ServerStatsChannel extends Channel {
 		}
 	}
 
-	@bindThis
 	public dispose() {
 		ev.removeListener('serverStats', this.onStats);
 	}
@@ -52,7 +47,6 @@ export class ServerStatsChannelService implements MiChannelService<false> {
 	public readonly requireCredential = ServerStatsChannel.requireCredential;
 	public readonly kind = ServerStatsChannel.kind;
 
-	@bindThis
 	public create(id: string, connection: Channel['connection']): ServerStatsChannel {
 		return new ServerStatsChannel(
 			id,

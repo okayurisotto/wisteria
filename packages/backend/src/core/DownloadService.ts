@@ -18,7 +18,6 @@ import { StatusError } from '@/misc/status-error.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import type Logger from '@/logger.js';
 
-import { bindThis } from '@/decorators.js';
 import { envOption } from '@/env.js';
 
 @Injectable()
@@ -35,7 +34,6 @@ export class DownloadService {
 		this.logger = this.loggerService.getLogger('download');
 	}
 
-	@bindThis
 	public async downloadUrl(url: string, path: string): Promise<{
 		filename: string;
 	}> {
@@ -122,7 +120,6 @@ export class DownloadService {
 		};
 	}
 
-	@bindThis
 	public async downloadTextFile(url: string): Promise<string> {
 		// Create temp file
 		const [path, cleanup] = await createTemp();
@@ -141,7 +138,6 @@ export class DownloadService {
 		}
 	}
 
-	@bindThis
 	private isPrivateIp(ip: string): boolean {
 		const parsedIp = ipaddr.parse(ip);
 

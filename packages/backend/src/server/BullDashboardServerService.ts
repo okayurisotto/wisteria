@@ -22,7 +22,6 @@ import type {
 	WebhookDeliverQueue,
 } from '@/core/QueueModule.js';
 import type { UsersRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 
 @Injectable()
@@ -51,7 +50,6 @@ export class BullDashboardServerService {
 		private readonly roleUserService: RoleUserService,
 	) {}
 
-	@bindThis
 	public createServer(): Hono {
 		const bullBoardPath = '/queue';
 

@@ -7,7 +7,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { ClipsRepository, MiNote, MiClip, ClipNotesRepository, NotesRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
 import { RoleUserService } from './RoleUserService.js';
 import { IdService } from '@/core/IdService.js';
@@ -36,7 +35,6 @@ export class ClipService {
 	) {
 	}
 
-	@bindThis
 	public async create(me: MiLocalUser, name: string, isPublic: boolean, description: string | null): Promise<MiClip> {
 		const currentCount = await this.clipsRepository.countBy({
 			userId: me.id,
@@ -56,7 +54,6 @@ export class ClipService {
 		return clip;
 	}
 
-	@bindThis
 	public async update(me: MiLocalUser, clipId: MiClip['id'], name: string | undefined, isPublic: boolean | undefined, description: string | null | undefined): Promise<void> {
 		const clip = await this.clipsRepository.findOneBy({
 			id: clipId,
@@ -74,7 +71,6 @@ export class ClipService {
 		});
 	}
 
-	@bindThis
 	public async delete(me: MiLocalUser, clipId: MiClip['id']): Promise<void> {
 		const clip = await this.clipsRepository.findOneBy({
 			id: clipId,
@@ -88,7 +84,6 @@ export class ClipService {
 		await this.clipsRepository.delete(clip.id);
 	}
 
-	@bindThis
 	public async addNote(me: MiLocalUser, clipId: MiClip['id'], noteId: MiNote['id']): Promise<void> {
 		const clip = await this.clipsRepository.findOneBy({
 			id: clipId,
@@ -131,7 +126,6 @@ export class ClipService {
 		this.notesRepository.increment({ id: noteId }, 'clippedCount', 1);
 	}
 
-	@bindThis
 	public async removeNote(me: MiLocalUser, clipId: MiClip['id'], noteId: MiNote['id']): Promise<void> {
 		const clip = await this.clipsRepository.findOneBy({
 			id: clipId,

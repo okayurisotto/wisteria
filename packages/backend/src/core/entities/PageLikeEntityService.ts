@@ -9,7 +9,6 @@ import type { PageLikesRepository } from '@/models/_.js';
 import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiPageLike } from '@/models/PageLike.js';
-import { bindThis } from '@/decorators.js';
 import { PageEntityService } from './PageEntityService.js';
 
 @Injectable()
@@ -22,7 +21,6 @@ export class PageLikeEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiPageLike['id'] | MiPageLike,
 		me?: { id: MiUser['id'] } | null | undefined,
@@ -35,7 +33,6 @@ export class PageLikeEntityService {
 		};
 	}
 
-	@bindThis
 	public packMany(
 		likes: any[],
 		me: { id: MiUser['id'] },

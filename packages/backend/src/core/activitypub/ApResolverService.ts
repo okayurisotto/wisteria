@@ -13,7 +13,6 @@ import { MetaService } from '@/core/MetaService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { DI } from '@/di-symbols.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import { bindThis } from '@/decorators.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import type Logger from '@/logger.js';
 import { isCollectionOrOrderedCollection } from './type.js';
@@ -48,12 +47,10 @@ export class Resolver {
 		this.logger = this.loggerService.getLogger('ap-resolve');
 	}
 
-	@bindThis
 	public getHistory(): string[] {
 		return Array.from(this.history);
 	}
 
-	@bindThis
 	public async resolveCollection(value: string | IObject): Promise<ICollection | IOrderedCollection> {
 		const collection = typeof value === 'string'
 			? await this.resolve(value)
@@ -66,7 +63,6 @@ export class Resolver {
 		}
 	}
 
-	@bindThis
 	public async resolve(value: string | IObject): Promise<IObject> {
 		if (typeof value !== 'string') {
 			return value;
@@ -118,7 +114,6 @@ export class Resolver {
 		return object;
 	}
 
-	@bindThis
 	private resolveLocal(url: string): Promise<IObject> {
 		const parsed = this.apDbResolverService.parseUri(url);
 		if (!parsed.local) throw new Error('resolveLocal: not local');
@@ -204,7 +199,6 @@ export class ApResolverService {
 	) {
 	}
 
-	@bindThis
 	public createResolver(): Resolver {
 		return new Resolver(
 			this.config,

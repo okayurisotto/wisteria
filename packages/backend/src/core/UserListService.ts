@@ -13,7 +13,6 @@ import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ProxyAccountService } from '@/core/ProxyAccountService.js';
-import { bindThis } from '@/decorators.js';
 import { QueueService } from '@/core/QueueService.js';
 import { RoleUserService } from './RoleUserService.js';
 
@@ -33,7 +32,6 @@ export class UserListService {
 		private roleUserService: RoleUserService,
 	) {}
 
-	@bindThis
 	public async addMember(target: MiUser, list: MiUserList, me: MiUser) {
 		const currentCount = await this.userListMembershipsRepository.countBy({
 			userListId: list.id,
@@ -60,7 +58,6 @@ export class UserListService {
 		}
 	}
 
-	@bindThis
 	public async removeMember(target: MiUser, list: MiUserList) {
 		await this.userListMembershipsRepository.delete({
 			userId: target.id,
@@ -70,7 +67,6 @@ export class UserListService {
 		this.globalEventService.publishUserListStream(list.id, 'userRemoved', await this.userEntityService.pack(target));
 	}
 
-	@bindThis
 	public async updateMembership(target: MiUser, list: MiUserList, options: { withReplies?: boolean }) {
 		const membership = await this.userListMembershipsRepository.findOneBy({
 			userId: target.id,

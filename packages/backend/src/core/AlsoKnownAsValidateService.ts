@@ -4,7 +4,6 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { bindThis } from '@/decorators.js';
 import type { MiLocalUser, MiRemoteUser } from '@/models/User.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
@@ -24,7 +23,6 @@ export class AlsoKnownAsValidateService {
 	 * @param instant checkがtrueであるユーザーが最初に見つかったら即座にreturnするかどうか
 	 * @returns Promise<LocalUser | RemoteUser | null>
 	 */
-	@bindThis
 	public async validate(
 		dst: MiLocalUser | MiRemoteUser,
 		check: (oldUser: MiLocalUser | MiRemoteUser | null, newUser: MiLocalUser | MiRemoteUser) => boolean | Promise<boolean> = () => true,

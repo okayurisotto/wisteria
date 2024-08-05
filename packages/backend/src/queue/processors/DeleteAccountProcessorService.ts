@@ -12,7 +12,6 @@ import { DriveService } from '@/core/DriveService.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiNote } from '@/models/Note.js';
 import { EmailService } from '@/core/EmailService.js';
-import { bindThis } from '@/decorators.js';
 import { SearchService } from '@/core/SearchService.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
@@ -43,7 +42,6 @@ export class DeleteAccountProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('delete-account');
 	}
 
-	@bindThis
 	public async process(job: Bull.Job<DbUserDeleteJobData>): Promise<string | void> {
 		this.logger.info(`Deleting account of ${job.data.user.id} ...`);
 

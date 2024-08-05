@@ -8,7 +8,6 @@ import { DataSource } from 'typeorm';
 import { AppLockService } from '@/core/AppLockService.js';
 import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import Chart from '../core.js';
 import { ChartLoggerService } from '../ChartLoggerService.js';
@@ -43,7 +42,6 @@ export default class ActiveUsersChart extends Chart<typeof schema> {
 		return {};
 	}
 
-	@bindThis
 	public async read(user: { id: MiUser['id']; host: null }): Promise<void> {
 		const createdAt = this.idService.parse(user.id).date;
 		await this.commit({
@@ -57,7 +55,6 @@ export default class ActiveUsersChart extends Chart<typeof schema> {
 		});
 	}
 
-	@bindThis
 	public async write(user: { id: MiUser['id']; host: null }): Promise<void> {
 		await this.commit({
 			'write': [user.id],

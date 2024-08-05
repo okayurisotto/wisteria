@@ -6,7 +6,6 @@
 import chalk from 'chalk';
 import { default as convertColor } from 'color-convert';
 import { format as dateFormat } from 'date-fns';
-import { bindThis } from '@/decorators.js';
 import { envOption } from './env.js';
 import type { KEYWORD } from 'color-convert/conversions.js';
 
@@ -28,14 +27,12 @@ export default class Logger {
 		};
 	}
 
-	@bindThis
 	public createSubLogger(context: string, color?: KEYWORD): Logger {
 		const logger = new Logger(context, color);
 		logger.parentLogger = this;
 		return logger;
 	}
 
-	@bindThis
 	private log(
 		level: Level,
 		message: string,
@@ -113,7 +110,6 @@ export default class Logger {
 		console.log(...args);
 	}
 
-	@bindThis
 	/** 実行を継続できない状況で使う */
 	public error(
 		e: string | Error,
@@ -130,7 +126,6 @@ export default class Logger {
 		}
 	}
 
-	@bindThis
 	/** 実行を継続できるが改善すべき状況で使う */
 	public warn(
 		message: string,
@@ -140,7 +135,6 @@ export default class Logger {
 		this.log('warning', message, data, important);
 	}
 
-	@bindThis
 	/** 何かに成功した状況で使う */
 	public succ(
 		message: string,
@@ -150,7 +144,6 @@ export default class Logger {
 		this.log('success', message, data, important);
 	}
 
-	@bindThis
 	/** デバッグ用に使う(開発者に必要だが利用者に不要な情報) */
 	public debug(
 		message: string,
@@ -162,7 +155,6 @@ export default class Logger {
 		}
 	}
 
-	@bindThis
 	public info(
 		message: string,
 		data: Record<string, unknown> | null = null,

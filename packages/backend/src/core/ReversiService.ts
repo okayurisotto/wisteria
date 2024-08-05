@@ -13,7 +13,6 @@ import type {
 } from '@/models/_.js';
 import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { IdService } from '@/core/IdService.js';
@@ -39,17 +38,14 @@ export class ReversiService implements OnApplicationShutdown {
 	) {
 	}
 
-	@bindThis
 	private async cacheGame(game: MiReversiGame) {
 		await this.redisClient.setex(`reversi:game:cache:${game.id}`, 60 * 60, JSON.stringify(game));
 	}
 
-	@bindThis
 	private async deleteGameCache(gameId: MiReversiGame['id']) {
 		await this.redisClient.del(`reversi:game:cache:${gameId}`);
 	}
 
-	@bindThis
 	private getBakeProps(game: MiReversiGame) {
 		return {
 			startedAt: game.startedAt,
@@ -77,7 +73,6 @@ export class ReversiService implements OnApplicationShutdown {
 		} satisfies Partial<MiReversiGame>;
 	}
 
-	@bindThis
 	public async matchSpecificUser(me: MiUser, targetUser: MiUser, multiple = false): Promise<MiReversiGame | null> {
 		if (targetUser.id === me.id) {
 			throw new Error('You cannot match yourself.');
@@ -128,7 +123,6 @@ export class ReversiService implements OnApplicationShutdown {
 		return null;
 	}
 
-	@bindThis
 	public async matchAnyUser(me: MiUser, options: { noIrregularRules: boolean }, multiple = false): Promise<MiReversiGame | null> {
 		if (!multiple) {
 			// 既にマッチしている対局が無いか探す(3分以内)
@@ -199,17 +193,14 @@ export class ReversiService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	public async matchSpecificUserCancel(user: MiUser, targetUserId: MiUser['id']) {
 		await this.redisClient.zrem(`reversi:matchSpecific:${targetUserId}`, user.id);
 	}
 
-	@bindThis
 	public async matchAnyUserCancel(user: MiUser) {
 		await this.redisClient.zrem('reversi:matchAny', user.id, user.id + ':noIrregularRules');
 	}
 
-	@bindThis
 	public async cleanOutdatedGames() {
 		await this.reversiGamesRepository.delete({
 			id: LessThan(this.idService.gen(Date.now() - 1000 * 60 * 10)),
@@ -217,7 +208,6 @@ export class ReversiService implements OnApplicationShutdown {
 		});
 	}
 
-	@bindThis
 	public async gameReady(gameId: MiReversiGame['id'], user: MiUser, ready: boolean) {
 		const game = await this.get(gameId);
 		if (game == null) throw new Error('game not found');
@@ -267,7 +257,6 @@ export class ReversiService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	private async matched(parentId: MiUser['id'], childId: MiUser['id'], options: { noIrregularRules: boolean }): Promise<MiReversiGame> {
 		const game = await this.reversiGamesRepository.insert({
 			id: this.idService.gen(),
@@ -294,7 +283,6 @@ export class ReversiService implements OnApplicationShutdown {
 		return game;
 	}
 
-	@bindThis
 	private async startGame(game: MiReversiGame) {
 		let bw: number;
 		if (game.bw === 'random') {
@@ -353,7 +341,6 @@ export class ReversiService implements OnApplicationShutdown {
 		});
 	}
 
-	@bindThis
 	private async endGame(game: MiReversiGame, winnerId: MiUser['id'] | null, reason: 'surrender' | 'timeout' | null) {
 		const updatedGame = await this.reversiGamesRepository.createQueryBuilder().update()
 			.set({
@@ -379,7 +366,6 @@ export class ReversiService implements OnApplicationShutdown {
 		});
 	}
 
-	@bindThis
 	public async getInvitations(user: MiUser): Promise<MiUser['id'][]> {
 		const invitations = await this.redisClient.zrange(
 			`reversi:matchSpecific:${user.id}`,
@@ -389,7 +375,6 @@ export class ReversiService implements OnApplicationShutdown {
 		return invitations;
 	}
 
-	@bindThis
 	public async updateSettings(gameId: MiReversiGame['id'], user: MiUser, key: string, value: any) {
 		const game = await this.get(gameId);
 		if (game == null) throw new Error('game not found');
@@ -415,7 +400,6 @@ export class ReversiService implements OnApplicationShutdown {
 		});
 	}
 
-	@bindThis
 	public async putStoneToGame(gameId: MiReversiGame['id'], user: MiUser, pos: number, id?: string | null) {
 		const game = await this.get(gameId);
 		if (game == null) throw new Error('game not found');
@@ -484,7 +468,6 @@ export class ReversiService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	public async surrender(gameId: MiReversiGame['id'], user: MiUser) {
 		const game = await this.get(gameId);
 		if (game == null) throw new Error('game not found');
@@ -496,7 +479,6 @@ export class ReversiService implements OnApplicationShutdown {
 		await this.endGame(game, winnerId, 'surrender');
 	}
 
-	@bindThis
 	public async checkTimeout(gameId: MiReversiGame['id']) {
 		const game = await this.get(gameId);
 		if (game == null) throw new Error('game not found');
@@ -521,7 +503,6 @@ export class ReversiService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	public async cancelGame(gameId: MiReversiGame['id'], user: MiUser) {
 		const game = await this.get(gameId);
 		if (game == null) throw new Error('game not found');
@@ -536,7 +517,6 @@ export class ReversiService implements OnApplicationShutdown {
 		});
 	}
 
-	@bindThis
 	public async get(id: MiReversiGame['id']): Promise<MiReversiGame | null> {
 		const cached = await this.redisClient.get(`reversi:game:cache:${id}`);
 		if (cached != null) {
@@ -578,7 +558,6 @@ export class ReversiService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	public async checkCrc(gameId: MiReversiGame['id'], crc32: string | number) {
 		const game = await this.get(gameId);
 		if (game == null) throw new Error('game not found');
@@ -590,11 +569,9 @@ export class ReversiService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	public dispose(): void {
 	}
 
-	@bindThis
 	public onApplicationShutdown(signal?: string | undefined): void {
 		this.dispose();
 	}

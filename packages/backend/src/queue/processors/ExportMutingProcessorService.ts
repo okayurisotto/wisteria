@@ -12,7 +12,6 @@ import type { MutingsRepository, UsersRepository, MiMuting } from '@/models/_.js
 import type Logger from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import { createTemp } from '@/misc/create-temp.js';
-import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbJobDataWithUser } from '../types.js';
@@ -39,7 +38,6 @@ export class ExportMutingProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('export-muting');
 	}
 
-	@bindThis
 	public async process(job: Bull.Job<DbJobDataWithUser>): Promise<void> {
 		this.logger.info(`Exporting muting of ${job.data.user.id} ...`);
 

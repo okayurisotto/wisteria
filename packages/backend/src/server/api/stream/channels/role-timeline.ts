@@ -6,7 +6,6 @@
 import { Injectable } from '@nestjs/common';
 import { isUserRelated } from '@/misc/is-user-related.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { bindThis } from '@/decorators.js';
 import { RoleService } from '@/core/RoleService.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import Channel, { type MiChannelService } from '../channel.js';
@@ -28,15 +27,13 @@ class RoleTimelineChannel extends Channel {
 		//this.onNote = this.onNote.bind(this);
 	}
 
-	@bindThis
 	public async init(params: any) {
 		this.roleId = params.roleId as string;
 
 		this.subscriber.on(`roleTimelineStream:${this.roleId}`, this.onEvent);
 	}
 
-	@bindThis
-	private async onEvent(data: GlobalEvents['roleTimeline']['payload']) {
+	private onEvent = async (data: GlobalEvents['roleTimeline']['payload']) => {
 		if (data.type === 'note') {
 			const note = data.body;
 
@@ -56,9 +53,8 @@ class RoleTimelineChannel extends Channel {
 		} else {
 			this.send(data.type, data.body);
 		}
-	}
+	};
 
-	@bindThis
 	public dispose() {
 		// Unsubscribe events
 		this.subscriber.off(`roleTimelineStream:${this.roleId}`, this.onEvent);
@@ -77,7 +73,6 @@ export class RoleTimelineChannelService implements MiChannelService<false> {
 	) {
 	}
 
-	@bindThis
 	public create(id: string, connection: Channel['connection']): RoleTimelineChannel {
 		return new RoleTimelineChannel(
 			this.noteEntityService,

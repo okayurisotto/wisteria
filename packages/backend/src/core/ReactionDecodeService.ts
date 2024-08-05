@@ -4,7 +4,6 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { bindThis } from '@/decorators.js';
 
 type DecodedReaction = {
 	/**
@@ -27,7 +26,6 @@ const decodeCustomEmojiRegexp = /^:([\w+-]+)(?:@([\w.-]+))?:$/;
 
 @Injectable()
 export class ReactionDecodeService {
-	@bindThis
 	public decodeReaction(str: string): DecodedReaction {
 		const custom = str.match(decodeCustomEmojiRegexp);
 

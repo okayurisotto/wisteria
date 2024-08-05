@@ -11,7 +11,6 @@ import type { Packed } from '@/misc/json-schema.js';
 import { getNoteSummary } from '@/misc/get-note-summary.js';
 import type { SwSubscriptionsRepository } from '@/models/_.js';
 import { MetaService } from '@/core/MetaService.js';
-import { bindThis } from '@/decorators.js';
 
 // Defined also packages/sw/types.ts#L13
 type PushNotificationsTypes = {
@@ -56,7 +55,6 @@ export class PushNotificationService {
 		private metaService: MetaService,
 	) {}
 
-	@bindThis
 	public async pushNotification<T extends keyof PushNotificationsTypes>(userId: string, type: T, body: PushNotificationsTypes[T]) {
 		const meta = await this.metaService.fetch();
 

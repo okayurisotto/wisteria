@@ -4,7 +4,6 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { bindThis } from '@/decorators.js';
 import Channel, { type MiChannelService } from '../channel.js';
 
 class DriveChannel extends Channel {
@@ -13,7 +12,6 @@ class DriveChannel extends Channel {
 	public static requireCredential = true as const;
 	public static kind = 'read:account';
 
-	@bindThis
 	public async init(params: any) {
 		// Subscribe drive stream
 		this.subscriber.on(`driveStream:${this.user!.id}`, (data) => {
@@ -28,7 +26,6 @@ export class DriveChannelService implements MiChannelService<true> {
 	public readonly requireCredential = DriveChannel.requireCredential;
 	public readonly kind = DriveChannel.kind;
 
-	@bindThis
 	public create(id: string, connection: Channel['connection']): DriveChannel {
 		return new DriveChannel(
 			id,

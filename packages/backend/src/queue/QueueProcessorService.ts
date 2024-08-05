@@ -8,7 +8,6 @@ import * as Bull from 'bullmq';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
 import type Logger from '@/logger.js';
-import { bindThis } from '@/decorators.js';
 import { WebhookDeliverProcessorService } from './processors/WebhookDeliverProcessorService.js';
 import { EndedPollNotificationProcessorService } from './processors/EndedPollNotificationProcessorService.js';
 import { DeliverProcessorService } from './processors/DeliverProcessorService.js';
@@ -346,7 +345,6 @@ export class QueueProcessorService implements OnApplicationShutdown {
 		//#endregion
 	}
 
-	@bindThis
 	public async start(): Promise<void> {
 		await Promise.all([
 			runWorker(this.systemQueueWorker),
@@ -362,7 +360,6 @@ export class QueueProcessorService implements OnApplicationShutdown {
 		this.logger.succ('Queue started', null, true);
 	}
 
-	@bindThis
 	public async stop(): Promise<void> {
 		await Promise.all([
 			this.systemQueueWorker.close(),
@@ -376,7 +373,6 @@ export class QueueProcessorService implements OnApplicationShutdown {
 		]);
 	}
 
-	@bindThis
 	public async onApplicationShutdown(signal?: string | undefined): Promise<void> {
 		await this.stop();
 	}

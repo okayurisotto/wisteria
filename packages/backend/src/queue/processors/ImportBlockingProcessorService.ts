@@ -11,7 +11,6 @@ import type Logger from '@/logger.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { DownloadService } from '@/core/DownloadService.js';
-import { bindThis } from '@/decorators.js';
 import { QueueService } from '@/core/QueueService.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
@@ -40,7 +39,6 @@ export class ImportBlockingProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('import-blocking');
 	}
 
-	@bindThis
 	public async process(job: Bull.Job<DbUserImportJobData>): Promise<void> {
 		this.logger.info(`Importing blocking of ${job.data.user.id} ...`);
 
@@ -63,7 +61,6 @@ export class ImportBlockingProcessorService {
 		this.logger.succ('Import jobs created');
 	}
 
-	@bindThis
 	public async processDb(job: Bull.Job<DbUserImportToDbJobData>): Promise<void> {
 		const line = job.data.target;
 		const user = job.data.user;

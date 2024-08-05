@@ -13,7 +13,6 @@ import { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import { createTempDir } from '@/misc/create-temp.js';
 import { DriveService } from '@/core/DriveService.js';
 import { DownloadService } from '@/core/DownloadService.js';
-import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbUserImportJobData } from '../types.js';
@@ -38,7 +37,6 @@ export class ImportCustomEmojisProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('import-custom-emojis');
 	}
 
-	@bindThis
 	public async process(job: Bull.Job<DbUserImportJobData>): Promise<void> {
 		this.logger.info('Importing custom emojis ...');
 

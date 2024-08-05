@@ -12,7 +12,6 @@ import type { MiUser } from '@/models/User.js';
 import { UserKeypairService } from '@/core/UserKeypairService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { LoggerService } from '@/core/LoggerService.js';
-import { bindThis } from '@/decorators.js';
 import type Logger from '@/logger.js';
 import { validateContentTypeSetAsActivityPub } from '@/core/activitypub/misc/validator.js';
 
@@ -148,7 +147,6 @@ export class ApRequestService {
 		this.logger = this.loggerService?.getLogger('ap-request'); // なぜか TypeError: Cannot read properties of undefined (reading 'getLogger') と言われる
 	}
 
-	@bindThis
 	public async signedPost(user: { id: MiUser['id'] }, url: string, object: unknown, digest?: string): Promise<void> {
 		const body = typeof object === 'string' ? object : JSON.stringify(object);
 
@@ -178,7 +176,6 @@ export class ApRequestService {
 	 * @param user http-signature user
 	 * @param url URL to fetch
 	 */
-	@bindThis
 	public async signedGet(url: string, user: { id: MiUser['id'] }): Promise<unknown> {
 		const keypair = await this.userKeypairService.getUserKeypair(user.id);
 

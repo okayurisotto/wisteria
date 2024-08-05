@@ -7,7 +7,6 @@ import { Injectable } from '@nestjs/common';
 import promiseLimit from 'promise-limit';
 import type { MiRemoteUser, MiUser } from '@/models/User.js';
 import { concat, unique } from '@/misc/prelude/array.js';
-import { bindThis } from '@/decorators.js';
 import { getApIds } from './type.js';
 import { ApPersonService } from './models/ApPersonService.js';
 import type { ApObject } from './type.js';
@@ -30,7 +29,6 @@ export class ApAudienceService {
 	) {
 	}
 
-	@bindThis
 	public async parseAudience(actor: MiRemoteUser, to?: ApObject, cc?: ApObject, resolver?: Resolver): Promise<AudienceInfo> {
 		const toGroups = this.groupingAudience(getApIds(to), actor);
 		const ccGroups = this.groupingAudience(getApIds(cc), actor);
@@ -73,7 +71,6 @@ export class ApAudienceService {
 		};
 	}
 
-	@bindThis
 	private groupingAudience(ids: string[], actor: MiRemoteUser): GroupedAudience {
 		const groups: GroupedAudience = {
 			public: [],
@@ -96,7 +93,6 @@ export class ApAudienceService {
 		return groups;
 	}
 
-	@bindThis
 	private isPublic(id: string): boolean {
 		return [
 			'https://www.w3.org/ns/activitystreams#Public',
@@ -105,7 +101,6 @@ export class ApAudienceService {
 		].includes(id);
 	}
 
-	@bindThis
 	private isFollowers(id: string, actor: MiRemoteUser): boolean {
 		return id === (actor.followersUri ?? `${actor.uri}/followers`);
 	}

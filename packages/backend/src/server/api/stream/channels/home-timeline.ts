@@ -9,7 +9,6 @@ import { isUserRelated } from '@/misc/is-user-related.js';
 import { isInstanceMuted } from '@/misc/is-instance-muted.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { bindThis } from '@/decorators.js';
 import Channel, { type MiChannelService } from '../channel.js';
 
 class HomeTimelineChannel extends Channel {
@@ -30,7 +29,6 @@ class HomeTimelineChannel extends Channel {
 		//this.onNote = this.onNote.bind(this);
 	}
 
-	@bindThis
 	public async init(params: any) {
 		this.withRenotes = params.withRenotes ?? true;
 		this.withFiles = params.withFiles ?? false;
@@ -38,8 +36,7 @@ class HomeTimelineChannel extends Channel {
 		this.subscriber.on('notesStream', this.onNote);
 	}
 
-	@bindThis
-	private async onNote(note: Packed<'Note'>) {
+	private onNote = async (note: Packed<'Note'>) => {
 		const isMe = this.user!.id === note.userId;
 
 		if (this.withFiles && (note.fileIds == null || note.fileIds.length === 0)) return;
@@ -90,9 +87,8 @@ class HomeTimelineChannel extends Channel {
 		this.connection.cacheNote(note);
 
 		this.send('note', note);
-	}
+	};
 
-	@bindThis
 	public dispose() {
 		// Unsubscribe events
 		this.subscriber.off('notesStream', this.onNote);
@@ -110,7 +106,6 @@ export class HomeTimelineChannelService implements MiChannelService<true> {
 	) {
 	}
 
-	@bindThis
 	public create(id: string, connection: Channel['connection']): HomeTimelineChannel {
 		return new HomeTimelineChannel(
 			this.noteEntityService,

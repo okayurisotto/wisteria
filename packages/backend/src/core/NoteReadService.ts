@@ -13,7 +13,6 @@ import type { MiNote } from '@/models/Note.js';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { NoteUnreadsRepository, MutingsRepository, NoteThreadMutingsRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 import { trackPromise } from '@/misc/promise-tracker.js';
 
 @Injectable()
@@ -35,7 +34,6 @@ export class NoteReadService implements OnApplicationShutdown {
 	) {
 	}
 
-	@bindThis
 	public async insertNoteUnread(userId: MiUser['id'], note: MiNote, params: {
 		// NOTE: isSpecifiedがtrueならisMentionedは必ずfalse
 		isSpecified: boolean;
@@ -83,7 +81,6 @@ export class NoteReadService implements OnApplicationShutdown {
 		}, () => { /* aborted, ignore it */ });
 	}
 
-	@bindThis
 	public async read(
 		userId: MiUser['id'],
 		notes: (MiNote | Packed<'Note'>)[],
@@ -130,12 +127,10 @@ export class NoteReadService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	public dispose(): void {
 		this.#shutdownController.abort();
 	}
 
-	@bindThis
 	public onApplicationShutdown(signal?: string | undefined): void {
 		this.dispose();
 	}

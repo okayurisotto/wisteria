@@ -4,7 +4,6 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { bindThis } from '@/decorators.js';
 import { ReactionDecodeService } from './ReactionDecodeService.js';
 import { LEGACY_EMOJIS } from './LEGACY_EMOJIS.js';
 
@@ -12,13 +11,11 @@ import { LEGACY_EMOJIS } from './LEGACY_EMOJIS.js';
 export class LegacyReactionConvertService {
 	constructor(private readonly reactionDecodeService: ReactionDecodeService) {}
 
-	@bindThis
 	public convertLegacyReaction(reaction: string): string {
 		reaction = this.reactionDecodeService.decodeReaction(reaction).reaction;
 		return LEGACY_EMOJIS.get(reaction) ?? reaction;
 	}
 
-	@bindThis
 	public convertLegacyReactions(reactions: Record<string, number>) {
 		return Object.fromEntries(
 			Object.entries(reactions).reduce((prev, [key, value]) => {

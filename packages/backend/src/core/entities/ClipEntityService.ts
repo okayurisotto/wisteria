@@ -10,7 +10,6 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { Packed } from '@/misc/json-schema.js';
 import type { } from '@/models/Blocking.js';
 import type { MiClip } from '@/models/Clip.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 
@@ -28,7 +27,6 @@ export class ClipEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiClip['id'] | MiClip,
 		me?: { id: MiUser['id'] } | null | undefined,
@@ -50,7 +48,6 @@ export class ClipEntityService {
 		});
 	}
 
-	@bindThis
 	public packMany(
 		clips: MiClip[],
 		me?: { id: MiUser['id'] } | null | undefined,

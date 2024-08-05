@@ -42,7 +42,6 @@ export const avifDefault: sharp.AvifOptions = {
 	effort: 2,
 };
 
-import { bindThis } from '@/decorators.js';
 import { Readable } from 'node:stream';
 
 @Injectable()
@@ -51,12 +50,10 @@ export class ImageProcessingService {
 	 * Convert to WebP
 	 *   with resize, remove metadata, resolve orientation, stop animation
 	 */
-	@bindThis
 	public async convertToWebp(path: string, width: number, height: number, options: sharp.WebpOptions = webpDefault): Promise<IImage> {
 		return this.convertSharpToWebp(sharp(path), width, height, options);
 	}
 
-	@bindThis
 	public async convertSharpToWebp(sharp: sharp.Sharp, width: number, height: number, options: sharp.WebpOptions = webpDefault): Promise<IImage> {
 		const result = this.convertSharpToWebpStream(sharp, width, height, options);
 
@@ -67,12 +64,10 @@ export class ImageProcessingService {
 		};
 	}
 
-	@bindThis
 	public convertToWebpStream(path: string, width: number, height: number, options: sharp.WebpOptions = webpDefault): IImageSharp {
 		return this.convertSharpToWebpStream(sharp(path), width, height, options);
 	}
 
-	@bindThis
 	public convertSharpToWebpStream(sharp: sharp.Sharp, width: number, height: number, options: sharp.WebpOptions = webpDefault): IImageSharp {
 		const data = sharp
 			.resize(width, height, {
@@ -93,12 +88,10 @@ export class ImageProcessingService {
 	 * Convert to Avif
 	 *   with resize, remove metadata, resolve orientation, stop animation
 	 */
-	@bindThis
 	public async convertToAvif(path: string, width: number, height: number, options: sharp.AvifOptions = avifDefault): Promise<IImage> {
 		return this.convertSharpToAvif(sharp(path), width, height, options);
 	}
 
-	@bindThis
 	public async convertSharpToAvif(sharp: sharp.Sharp, width: number, height: number, options: sharp.AvifOptions = avifDefault): Promise<IImage> {
 		const result = this.convertSharpToAvifStream(sharp, width, height, options);
 
@@ -109,12 +102,10 @@ export class ImageProcessingService {
 		};
 	}
 
-	@bindThis
 	public convertToAvifStream(path: string, width: number, height: number, options: sharp.AvifOptions = avifDefault): IImageSharp {
 		return this.convertSharpToAvifStream(sharp(path), width, height, options);
 	}
 
-	@bindThis
 	public convertSharpToAvifStream(sharp: sharp.Sharp, width: number, height: number, options: sharp.AvifOptions = avifDefault): IImageSharp {
 		const data = sharp
 			.resize(width, height, {
@@ -135,12 +126,10 @@ export class ImageProcessingService {
 	 * Convert to PNG
 	 *   with resize, remove metadata, resolve orientation, stop animation
 	 */
-	@bindThis
 	public async convertToPng(path: string, width: number, height: number): Promise<IImage> {
 		return this.convertSharpToPng(sharp(path), width, height);
 	}
 
-	@bindThis
 	public async convertSharpToPng(sharp: sharp.Sharp, width: number, height: number): Promise<IImage> {
 		const data = await sharp
 			.resize(width, height, {

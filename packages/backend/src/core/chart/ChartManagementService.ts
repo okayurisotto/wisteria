@@ -5,7 +5,6 @@
 
 import { Injectable } from '@nestjs/common';
 
-import { bindThis } from '@/decorators.js';
 import FederationChart from './charts/federation.js';
 import NotesChart from './charts/notes.js';
 import UsersChart from './charts/users.js';
@@ -56,7 +55,6 @@ export class ChartManagementService implements OnApplicationShutdown {
 		];
 	}
 
-	@bindThis
 	public start() {
 		// 20分おきにメモリ情報をDBに書き込み
 		this.saveIntervalId = setInterval(() => {
@@ -66,7 +64,6 @@ export class ChartManagementService implements OnApplicationShutdown {
 		}, 1000 * 60 * 20);
 	}
 
-	@bindThis
 	public async dispose(): Promise<void> {
 		clearInterval(this.saveIntervalId);
 		if (!envOption.isTest) {
@@ -76,7 +73,6 @@ export class ChartManagementService implements OnApplicationShutdown {
 		}
 	}
 
-	@bindThis
 	async onApplicationShutdown(signal: string): Promise<void> {
 		await this.dispose();
 	}

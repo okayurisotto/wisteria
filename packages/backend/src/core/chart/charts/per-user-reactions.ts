@@ -10,7 +10,6 @@ import type { MiNote } from '@/models/Note.js';
 import { AppLockService } from '@/core/AppLockService.js';
 import { DI } from '@/di-symbols.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { bindThis } from '@/decorators.js';
 import Chart from '../core.js';
 import { ChartLoggerService } from '../ChartLoggerService.js';
 import { name, schema } from './entities/per-user-reactions.js';
@@ -40,7 +39,6 @@ export default class PerUserReactionsChart extends Chart<typeof schema> {
 		return {};
 	}
 
-	@bindThis
 	public async update(user: { id: MiUser['id']; host: MiUser['host'] }, note: MiNote): Promise<void> {
 		const prefix = this.userEntityService.isLocalUser(user) ? 'local' : 'remote';
 		this.commit({

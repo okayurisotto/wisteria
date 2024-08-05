@@ -12,7 +12,6 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiGroupedNotification, MiNotification } from '@/models/Notification.js';
 import type { MiNote } from '@/models/Note.js';
 import type { Packed } from '@/misc/json-schema.js';
-import { bindThis } from '@/decorators.js';
 import { isNotNull } from '@/misc/is-not-null.js';
 import { type FilterUnionByProperty, notificationTypes } from '@/types.js';
 import { RoleEntityService } from './RoleEntityService.js';
@@ -52,7 +51,6 @@ export class NotificationEntityService implements OnModuleInit {
 		this.roleEntityService = this.moduleRef.get('RoleEntityService');
 	}
 
-	@bindThis
 	public async pack(
 		src: MiNotification,
 		meId: MiUser['id'],
@@ -103,7 +101,6 @@ export class NotificationEntityService implements OnModuleInit {
 		});
 	}
 
-	@bindThis
 	public async packMany(
 		notifications: MiNotification[],
 		meId: MiUser['id'],
@@ -146,7 +143,6 @@ export class NotificationEntityService implements OnModuleInit {
 		})));
 	}
 
-	@bindThis
 	public async packGrouped(
 		src: MiGroupedNotification,
 		meId: MiUser['id'],
@@ -233,7 +229,6 @@ export class NotificationEntityService implements OnModuleInit {
 		});
 	}
 
-	@bindThis
 	public async packGroupedMany(
 		notifications: MiGroupedNotification[],
 		meId: MiUser['id'],

@@ -16,7 +16,6 @@ import type { Config } from '@/config.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
-import { bindThis } from '@/decorators.js';
 import { RoleUserService } from './RoleUserService.js';
 
 @Injectable()
@@ -48,7 +47,6 @@ export class NotePiningService {
 	 * @param user
 	 * @param noteId
 	 */
-	@bindThis
 	public async addPinned(user: { id: MiUser['id']; host: MiUser['host'] }, noteId: MiNote['id']) {
 	// Fetch pinee
 		const note = await this.notesRepository.findOneBy({
@@ -87,7 +85,6 @@ export class NotePiningService {
 	 * @param user
 	 * @param noteId
 	 */
-	@bindThis
 	public async removePinned(user: { id: MiUser['id']; host: MiUser['host'] }, noteId: MiNote['id']) {
 	// Fetch unpinee
 		const note = await this.notesRepository.findOneBy({
@@ -110,7 +107,6 @@ export class NotePiningService {
 		}
 	}
 
-	@bindThis
 	public async deliverPinnedChange(userId: MiUser['id'], noteId: MiNote['id'], isAddition: boolean) {
 		const user = await this.usersRepository.findOneBy({ id: userId });
 		if (user == null) throw new Error('user not found');

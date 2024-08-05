@@ -7,7 +7,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import * as OTPAuth from 'otpauth';
 import { DI } from '@/di-symbols.js';
 import type { MiUserProfile, UserProfilesRepository, UsersRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class UserAuthService {
@@ -20,7 +19,6 @@ export class UserAuthService {
 	) {
 	}
 
-	@bindThis
 	public async twoFactorAuthenticate(profile: MiUserProfile, token: string): Promise<void> {
 		if (profile.twoFactorBackupSecret?.includes(token)) {
 			await this.userProfilesRepository.update({ userId: profile.userId }, {

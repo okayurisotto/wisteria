@@ -9,7 +9,6 @@ import { DI } from '@/di-symbols.js';
 import type { MiDriveFile, DriveFilesRepository } from '@/models/_.js';
 import type Logger from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
-import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 
@@ -27,7 +26,6 @@ export class CleanRemoteFilesProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('clean-remote-files');
 	}
 
-	@bindThis
 	public async process(job: Bull.Job<Record<string, unknown>>): Promise<void> {
 		this.logger.info('Deleting cached remote files...');
 

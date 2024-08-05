@@ -11,7 +11,6 @@ import { DI } from '@/di-symbols.js';
 import type { AntennasRepository, UsersRepository, UserListMembershipsRepository, MiUser } from '@/models/_.js';
 import Logger from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
-import { bindThis } from '@/decorators.js';
 import { createTemp } from '@/misc/create-temp.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type { DBExportAntennasData } from '../types.js';
@@ -42,7 +41,6 @@ export class ExportAntennasProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('export-antennas');
 	}
 
-	@bindThis
 	public async process(job: Bull.Job<DBExportAntennasData>): Promise<void> {
 		const user = await this.usersRepository.findOneBy({ id: job.data.user.id });
 		if (user == null) {

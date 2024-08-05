@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { bindThis } from '@/decorators.js';
 import type Connection from './Connection.js';
 
 /**
@@ -58,8 +57,7 @@ export default abstract class Channel {
 		this.connection = connection;
 	}
 
-	@bindThis
-	public send(typeOrPayload: any, payload?: any) {
+	public send = (typeOrPayload: any, payload?: any) => {
 		const type = payload === undefined ? typeOrPayload.type : typeOrPayload;
 		const body = payload === undefined ? typeOrPayload.body : payload;
 
@@ -68,7 +66,7 @@ export default abstract class Channel {
 			type: type,
 			body: body,
 		});
-	}
+	};
 
 	public abstract init(params: any): void;
 

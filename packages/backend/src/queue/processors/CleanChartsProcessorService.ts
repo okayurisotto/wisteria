@@ -17,7 +17,6 @@ import PerUserReactionsChart from '@/core/chart/charts/per-user-reactions.js';
 import PerUserFollowingChart from '@/core/chart/charts/per-user-following.js';
 import PerUserDriveChart from '@/core/chart/charts/per-user-drive.js';
 import ApRequestChart from '@/core/chart/charts/ap-request.js';
-import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 
 @Injectable()
@@ -43,7 +42,6 @@ export class CleanChartsProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('clean-charts');
 	}
 
-	@bindThis
 	public async process(): Promise<void> {
 		this.logger.info('Clean charts...');
 

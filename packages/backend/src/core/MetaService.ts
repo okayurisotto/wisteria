@@ -8,7 +8,6 @@ import { DataSource } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import { MiMeta } from '@/models/Meta.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
-import { bindThis } from '@/decorators.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
 
 @Injectable()
@@ -21,7 +20,6 @@ export class MetaService {
 		private globalEventService: GlobalEventService,
 	) {}
 
-	@bindThis
 	public async fetch(): Promise<MiMeta> {
 		return await this.db.transaction(async (transactionalEntityManager) => {
 			// 過去のバグでレコードが複数出来てしまっている可能性があるので新しいIDを優先する
@@ -52,7 +50,6 @@ export class MetaService {
 		});
 	}
 
-	@bindThis
 	public async update(data: Partial<MiMeta>): Promise<MiMeta> {
 		let before: MiMeta | undefined;
 

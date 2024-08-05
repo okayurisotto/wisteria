@@ -9,7 +9,6 @@ import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
 import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { bindThis } from '@/decorators.js';
 import NotesChart from '@/core/chart/charts/notes.js';
 import UsersChart from '@/core/chart/charts/users.js';
 import { DEFAULT_POLICIES } from '@/core/RoleService.js';
@@ -31,7 +30,6 @@ export class NodeinfoServerService {
 		private usersChart: UsersChart,
 	) {}
 
-	@bindThis
 	public getLinks() {
 		return [{
 			rel: 'http://nodeinfo.diaspora.software/ns/schema/2.1',

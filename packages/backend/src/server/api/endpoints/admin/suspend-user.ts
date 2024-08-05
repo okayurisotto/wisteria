@@ -12,7 +12,6 @@ import type { RelationshipJobData } from '@/queue/types.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 import { UserSuspendService } from '@/core/UserSuspendService.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { QueueService } from '@/core/QueueService.js';
 
@@ -74,7 +73,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		});
 	}
 
-	@bindThis
 	private async unFollowAll(follower: MiUser) {
 		const followings = await this.followingsRepository.find({
 			where: {

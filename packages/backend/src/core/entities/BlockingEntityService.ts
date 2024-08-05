@@ -10,7 +10,6 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { Packed } from '@/misc/json-schema.js';
 import type { MiBlocking } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 
@@ -25,7 +24,6 @@ export class BlockingEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiBlocking['id'] | MiBlocking,
 		me?: { id: MiUser['id'] } | null | undefined,
@@ -42,7 +40,6 @@ export class BlockingEntityService {
 		});
 	}
 
-	@bindThis
 	public packMany(
 		blockings: any[],
 		me: { id: MiUser['id'] },

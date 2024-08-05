@@ -4,7 +4,6 @@ import type { ChannelFollowingsRepository } from '@/models/_.js';
 import { MiChannel } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
-import { bindThis } from '@/decorators.js';
 import type { MiLocalUser } from '@/models/User.js';
 
 @Injectable()
@@ -17,7 +16,6 @@ export class ChannelFollowingService {
 		private globalEventService: GlobalEventService,
 	) {}
 
-	@bindThis
 	public async follow(
 		requestUser: MiLocalUser,
 		targetChannel: MiChannel,
@@ -29,7 +27,6 @@ export class ChannelFollowingService {
 		});
 	}
 
-	@bindThis
 	public async unfollow(
 		requestUser: MiLocalUser,
 		targetChannel: MiChannel,

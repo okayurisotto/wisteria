@@ -8,7 +8,6 @@ import { DI } from '@/di-symbols.js';
 import type { AbuseUserReportsRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiAbuseUserReport } from '@/models/AbuseUserReport.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 
@@ -23,7 +22,6 @@ export class AbuseUserReportEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiAbuseUserReport['id'] | MiAbuseUserReport,
 	) {
@@ -50,7 +48,6 @@ export class AbuseUserReportEntityService {
 		});
 	}
 
-	@bindThis
 	public packMany(
 		reports: any[],
 	) {

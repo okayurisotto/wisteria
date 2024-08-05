@@ -9,7 +9,6 @@ import { Inject, Injectable, type OnApplicationShutdown } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiNotification } from '@/models/Notification.js';
-import { bindThis } from '@/decorators.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { PushNotificationService } from '@/core/PushNotificationService.js';
 import { NotificationEntityService } from '@/core/entities/NotificationEntityService.js';
@@ -48,7 +47,6 @@ export class NotificationCreateService implements OnApplicationShutdown {
 		private pushNotificationService: PushNotificationService,
 	) {}
 
-	@bindThis
 	public createNotification<T extends MiNotification['type']>(
 		notifieeId: MiUser['id'],
 		type: T,
@@ -151,12 +149,10 @@ export class NotificationCreateService implements OnApplicationShutdown {
 		return notification;
 	}
 
-	@bindThis
 	public dispose(): void {
 		this.shutdownController.abort();
 	}
 
-	@bindThis
 	public onApplicationShutdown(signal?: string | undefined): void {
 		this.dispose();
 	}

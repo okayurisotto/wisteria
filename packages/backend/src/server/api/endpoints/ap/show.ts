@@ -18,7 +18,6 @@ import { ApNoteService } from '@/core/activitypub/models/ApNoteService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import { bindThis } from '@/decorators.js';
 import { ApiError } from '../../error.js';
 
 export const meta = {
@@ -110,7 +109,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 	/***
 	 * URIからUserかNoteを解決する
 	 */
-	@bindThis
 	private async fetchAny(uri: string, me: MiLocalUser | null | undefined): Promise<SchemaType<typeof meta['res']> | null> {
 	// ブロックしてたら中断
 		const fetchedMeta = await this.metaService.fetch();
@@ -143,7 +141,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		);
 	}
 
-	@bindThis
 	private async mergePack(me: MiLocalUser | null | undefined, user: MiUser | null | undefined, note: MiNote | null | undefined): Promise<SchemaType<typeof meta.res> | null> {
 		if (user != null) {
 			return {

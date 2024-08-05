@@ -7,7 +7,6 @@ import { Injectable } from '@nestjs/common';
 import { isUserRelated } from '@/misc/is-user-related.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { bindThis } from '@/decorators.js';
 import Channel, { type MiChannelService } from '../channel.js';
 
 class ChannelChannel extends Channel {
@@ -26,7 +25,6 @@ class ChannelChannel extends Channel {
 		//this.onNote = this.onNote.bind(this);
 	}
 
-	@bindThis
 	public async init(params: any) {
 		this.channelId = params.channelId as string;
 
@@ -34,8 +32,7 @@ class ChannelChannel extends Channel {
 		this.subscriber.on('notesStream', this.onNote);
 	}
 
-	@bindThis
-	private async onNote(note: Packed<'Note'>) {
+	private onNote = async (note: Packed<'Note'>) => {
 		if (note.channelId !== this.channelId) return;
 
 		// 流れてきたNoteがミュートしているユーザーが関わるものだったら無視する
@@ -55,9 +52,8 @@ class ChannelChannel extends Channel {
 		this.connection.cacheNote(note);
 
 		this.send('note', note);
-	}
+	};
 
-	@bindThis
 	public dispose() {
 		// Unsubscribe events
 		this.subscriber.off('notesStream', this.onNote);
@@ -75,7 +71,6 @@ export class ChannelChannelService implements MiChannelService<false> {
 	) {
 	}
 
-	@bindThis
 	public create(id: string, connection: Channel['connection']): ChannelChannel {
 		return new ChannelChannel(
 			this.noteEntityService,

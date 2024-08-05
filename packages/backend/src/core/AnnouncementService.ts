@@ -8,7 +8,6 @@ import { Brackets } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { MiUser } from '@/models/User.js';
 import type { AnnouncementReadsRepository, AnnouncementsRepository, MiAnnouncement, MiAnnouncementRead, UsersRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
@@ -32,14 +31,12 @@ export class AnnouncementService {
 	) {
 	}
 
-	@bindThis
 	public async getReads(userId: MiUser['id']): Promise<MiAnnouncementRead[]> {
 		return this.announcementReadsRepository.findBy({
 			userId: userId,
 		});
 	}
 
-	@bindThis
 	public async getUnreadAnnouncements(user: MiUser): Promise<MiAnnouncement[]> {
 		const readsQuery = this.announcementReadsRepository.createQueryBuilder('read')
 			.select('read.announcementId')
@@ -63,7 +60,6 @@ export class AnnouncementService {
 		return q.getMany();
 	}
 
-	@bindThis
 	public async create(values: Partial<MiAnnouncement>, moderator?: MiUser): Promise<{ raw: MiAnnouncement; packed: Packed<'Announcement'> }> {
 		const announcement = await this.announcementsRepository.insert({
 			id: this.idService.gen(),
@@ -115,7 +111,6 @@ export class AnnouncementService {
 		};
 	}
 
-	@bindThis
 	public async update(announcement: MiAnnouncement, values: Partial<MiAnnouncement>, moderator?: MiUser): Promise<void> {
 		await this.announcementsRepository.update(announcement.id, {
 			updatedAt: new Date(),
@@ -153,7 +148,6 @@ export class AnnouncementService {
 		}
 	}
 
-	@bindThis
 	public async delete(announcement: MiAnnouncement, moderator?: MiUser): Promise<void> {
 		await this.announcementsRepository.delete(announcement.id);
 
@@ -176,7 +170,6 @@ export class AnnouncementService {
 		}
 	}
 
-	@bindThis
 	public async read(user: MiUser, announcementId: MiAnnouncement['id']): Promise<void> {
 		try {
 			await this.announcementReadsRepository.insert({
@@ -193,7 +186,6 @@ export class AnnouncementService {
 		}
 	}
 
-	@bindThis
 	public async packMany(
 		announcements: MiAnnouncement[],
 		me?: { id: MiUser['id'] } | null | undefined,

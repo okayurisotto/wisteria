@@ -9,7 +9,6 @@ import type { EmojisRepository } from '@/models/_.js';
 import type { Packed } from '@/misc/json-schema.js';
 import type { } from '@/models/Blocking.js';
 import type { MiEmoji } from '@/models/Emoji.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class EmojiEntityService {
@@ -19,7 +18,6 @@ export class EmojiEntityService {
 	) {
 	}
 
-	@bindThis
 	public async packSimple(
 		src: MiEmoji['id'] | MiEmoji,
 	): Promise<Packed<'EmojiSimple'>> {
@@ -37,14 +35,12 @@ export class EmojiEntityService {
 		};
 	}
 
-	@bindThis
 	public packSimpleMany(
 		emojis: any[],
 	) {
 		return Promise.all(emojis.map(x => this.packSimple(x)));
 	}
 
-	@bindThis
 	public async packDetailed(
 		src: MiEmoji['id'] | MiEmoji,
 	): Promise<Packed<'EmojiDetailed'>> {
@@ -65,7 +61,6 @@ export class EmojiEntityService {
 		};
 	}
 
-	@bindThis
 	public packDetailedMany(
 		emojis: any[],
 	) {

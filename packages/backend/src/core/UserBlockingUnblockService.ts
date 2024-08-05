@@ -13,7 +13,6 @@ import Logger from '@/logger.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { LoggerService } from '@/core/LoggerService.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class UserBlockingUnblockService {
@@ -32,7 +31,6 @@ export class UserBlockingUnblockService {
 		this.logger = this.loggerService.getLogger('user-block');
 	}
 
-	@bindThis
 	public async unblock(blocker: MiUser, blockee: MiUser) {
 		const blocking = await this.blockingsRepository.findOneBy({
 			blockerId: blocker.id,

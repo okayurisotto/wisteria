@@ -8,7 +8,6 @@ import { Brackets, type ObjectLiteral } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { MiUser } from '@/models/User.js';
 import type { UserProfilesRepository, FollowingsRepository, ChannelFollowingsRepository, BlockingsRepository, NoteThreadMutingsRepository, MutingsRepository, RenoteMutingsRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import type { SelectQueryBuilder } from 'typeorm';
 
@@ -68,7 +67,7 @@ export class QueryService {
 	}
 
 	// ここでいうBlockedは被Blockedの意
-	@bindThis
+
 	public generateBlockedUserQuery(q: SelectQueryBuilder<any>, me: { id: MiUser['id'] }): void {
 		const blockingQuery = this.blockingsRepository.createQueryBuilder('blocking')
 			.select('blocking.blockerId')
@@ -93,7 +92,6 @@ export class QueryService {
 		q.setParameters(blockingQuery.getParameters());
 	}
 
-	@bindThis
 	public generateBlockQueryForUsers(q: SelectQueryBuilder<any>, me: { id: MiUser['id'] }): void {
 		const blockingQuery = this.blockingsRepository.createQueryBuilder('blocking')
 			.select('blocking.blockeeId')
@@ -110,7 +108,6 @@ export class QueryService {
 		q.setParameters(blockedQuery.getParameters());
 	}
 
-	@bindThis
 	public generateMutedNoteThreadQuery(q: SelectQueryBuilder<any>, me: { id: MiUser['id'] }): void {
 		const mutedQuery = this.noteThreadMutingsRepository.createQueryBuilder('threadMuted')
 			.select('threadMuted.threadId')
@@ -126,7 +123,6 @@ export class QueryService {
 		q.setParameters(mutedQuery.getParameters());
 	}
 
-	@bindThis
 	public generateMutedUserQuery(q: SelectQueryBuilder<any>, me: { id: MiUser['id'] }, exclude?: { id: MiUser['id'] }): void {
 		const mutingQuery = this.mutingsRepository.createQueryBuilder('muting')
 			.select('muting.muteeId')
@@ -176,7 +172,6 @@ export class QueryService {
 		q.setParameters(mutingInstanceQuery.getParameters());
 	}
 
-	@bindThis
 	public generateMutedUserQueryForUsers(q: SelectQueryBuilder<any>, me: { id: MiUser['id'] }): void {
 		const mutingQuery = this.mutingsRepository.createQueryBuilder('muting')
 			.select('muting.muteeId')
@@ -187,7 +182,6 @@ export class QueryService {
 		q.setParameters(mutingQuery.getParameters());
 	}
 
-	@bindThis
 	public generateVisibilityQuery(q: SelectQueryBuilder<any>, me?: { id: MiUser['id'] } | null): void {
 		// This code must always be synchronized with the checks in Notes.isVisibleForMe.
 		if (me == null) {
@@ -232,7 +226,6 @@ export class QueryService {
 		}
 	}
 
-	@bindThis
 	public generateMutedUserRenotesQueryForNotes(q: SelectQueryBuilder<any>, me: { id: MiUser['id'] }): void {
 		const mutingQuery = this.renoteMutingsRepository.createQueryBuilder('renote_muting')
 			.select('renote_muting.muteeId')

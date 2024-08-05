@@ -6,7 +6,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 
 export type FanoutTimelineName =
@@ -22,7 +21,6 @@ export class FanoutTimelineService {
 		private idService: IdService,
 	) {}
 
-	@bindThis
 	public push(tl: FanoutTimelineName, id: string, maxlen: number, pipeline: Redis.ChainableCommander) {
 		// リモートから遅れて届いた(もしくは後から追加された)投稿日時が古い投稿が追加されるとページネーション時に問題を引き起こすため、
 		// 3分以内に投稿されたものでない場合、Redisにある最古のIDより新しい場合のみ追加する
@@ -45,7 +43,6 @@ export class FanoutTimelineService {
 		}
 	}
 
-	@bindThis
 	public get(name: FanoutTimelineName, untilId?: string | null, sinceId?: string | null) {
 		if (untilId && sinceId) {
 			return this.redisForTimelines.lrange('list:' + name, 0, -1)

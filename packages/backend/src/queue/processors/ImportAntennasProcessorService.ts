@@ -10,7 +10,6 @@ import { GlobalEventService } from '@/core/GlobalEventService.js';
 import Logger from '@/logger.js';
 import type { AntennasRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type { DBAntennaImportJobData } from '../types.js';
 import type * as Bull from 'bullmq';
@@ -66,7 +65,6 @@ export class ImportAntennasProcessorService {
 		this.logger = this.queueLoggerService.logger.createSubLogger('import-antennas');
 	}
 
-	@bindThis
 	public async process(job: Bull.Job<DBAntennaImportJobData>): Promise<void> {
 		const now = new Date();
 		try {

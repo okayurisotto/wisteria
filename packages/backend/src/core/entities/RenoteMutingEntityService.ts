@@ -11,7 +11,6 @@ import type { Packed } from '@/misc/json-schema.js';
 import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiRenoteMuting } from '@/models/RenoteMuting.js';
-import { bindThis } from '@/decorators.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 
@@ -26,7 +25,6 @@ export class RenoteMutingEntityService {
 	) {
 	}
 
-	@bindThis
 	public async pack(
 		src: MiRenoteMuting['id'] | MiRenoteMuting,
 		me?: { id: MiUser['id'] } | null | undefined,
@@ -43,7 +41,6 @@ export class RenoteMutingEntityService {
 		});
 	}
 
-	@bindThis
 	public packMany(
 		mutings: any[],
 		me: { id: MiUser['id'] },

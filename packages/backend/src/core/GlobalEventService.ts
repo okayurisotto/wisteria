@@ -20,7 +20,6 @@ import { MiReversiGame, MiRole } from '@/models/_.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
-import { bindThis } from '@/decorators.js';
 import type { Serialized } from '@/types.js';
 import type Emitter from 'strict-event-emitter-types';
 import type { EventEmitter } from 'events';
@@ -288,7 +287,6 @@ export class GlobalEventService {
 	) {
 	}
 
-	@bindThis
 	private publish(channel: StreamChannels, type: string | null, value?: any): void {
 		const message = type == null ? value : value == null
 			? { type: type, body: null }
@@ -300,27 +298,22 @@ export class GlobalEventService {
 		}));
 	}
 
-	@bindThis
 	public publishInternalEvent<K extends keyof InternalEventTypes>(type: K, value?: InternalEventTypes[K]): void {
 		this.publish('internal', type, typeof value === 'undefined' ? null : value);
 	}
 
-	@bindThis
 	public publishBroadcastStream<K extends keyof BroadcastTypes>(type: K, value?: BroadcastTypes[K]): void {
 		this.publish('broadcast', type, typeof value === 'undefined' ? null : value);
 	}
 
-	@bindThis
 	public publishMainStream<K extends keyof MainEventTypes>(userId: MiUser['id'], type: K, value?: MainEventTypes[K]): void {
 		this.publish(`mainStream:${userId}`, type, typeof value === 'undefined' ? null : value);
 	}
 
-	@bindThis
 	public publishDriveStream<K extends keyof DriveEventTypes>(userId: MiUser['id'], type: K, value?: DriveEventTypes[K]): void {
 		this.publish(`driveStream:${userId}`, type, typeof value === 'undefined' ? null : value);
 	}
 
-	@bindThis
 	public publishNoteStream<K extends keyof NoteEventTypes>(noteId: MiNote['id'], type: K, value?: NoteEventTypes[K]): void {
 		this.publish(`noteStream:${noteId}`, type, {
 			id: noteId,
@@ -328,37 +321,30 @@ export class GlobalEventService {
 		});
 	}
 
-	@bindThis
 	public publishUserListStream<K extends keyof UserListEventTypes>(listId: MiUserList['id'], type: K, value?: UserListEventTypes[K]): void {
 		this.publish(`userListStream:${listId}`, type, typeof value === 'undefined' ? null : value);
 	}
 
-	@bindThis
 	public publishAntennaStream<K extends keyof AntennaEventTypes>(antennaId: MiAntenna['id'], type: K, value?: AntennaEventTypes[K]): void {
 		this.publish(`antennaStream:${antennaId}`, type, typeof value === 'undefined' ? null : value);
 	}
 
-	@bindThis
 	public publishRoleTimelineStream<K extends keyof RoleTimelineEventTypes>(roleId: MiRole['id'], type: K, value?: RoleTimelineEventTypes[K]): void {
 		this.publish(`roleTimelineStream:${roleId}`, type, typeof value === 'undefined' ? null : value);
 	}
 
-	@bindThis
 	public publishNotesStream(note: Packed<'Note'>): void {
 		this.publish('notesStream', null, note);
 	}
 
-	@bindThis
 	public publishAdminStream<K extends keyof AdminEventTypes>(userId: MiUser['id'], type: K, value?: AdminEventTypes[K]): void {
 		this.publish(`adminStream:${userId}`, type, typeof value === 'undefined' ? null : value);
 	}
 
-	@bindThis
 	public publishReversiStream<K extends keyof ReversiEventTypes>(userId: MiUser['id'], type: K, value?: ReversiEventTypes[K]): void {
 		this.publish(`reversiStream:${userId}`, type, typeof value === 'undefined' ? null : value);
 	}
 
-	@bindThis
 	public publishReversiGameStream<K extends keyof ReversiGameEventTypes>(gameId: MiReversiGame['id'], type: K, value?: ReversiGameEventTypes[K]): void {
 		this.publish(`reversiGameStream:${gameId}`, type, typeof value === 'undefined' ? null : value);
 	}

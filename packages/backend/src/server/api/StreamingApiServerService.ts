@@ -11,7 +11,6 @@ import { DI } from '@/di-symbols.js';
 import type { BlockingsRepository, ChannelFollowingsRepository, FollowingsRepository, MiAccessToken, MutingsRepository, RenoteMutingsRepository, UserProfilesRepository } from '@/models/_.js';
 import { NoteReadService } from '@/core/NoteReadService.js';
 import { NotificationService } from '@/core/NotificationService.js';
-import { bindThis } from '@/decorators.js';
 import type { MiLocalUser } from '@/models/User.js';
 import { UserService } from '@/core/UserService.js';
 import { AuthenticateService } from './AuthenticateService.js';
@@ -55,7 +54,6 @@ export class StreamingApiServerService {
 		private usersService: UserService,
 	) {}
 
-	@bindThis
 	public attach(server: http.Server): void {
 		this.#wss = new WebSocket.WebSocketServer({
 			noServer: true,
@@ -188,7 +186,6 @@ export class StreamingApiServerService {
 		}, 1000 * 60);
 	}
 
-	@bindThis
 	public detach(): Promise<void> {
 		if (this.#cleanConnectionsIntervalId) {
 			clearInterval(this.#cleanConnectionsIntervalId);

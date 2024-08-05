@@ -12,7 +12,6 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiNote } from '@/models/Note.js';
 import type { UsersRepository, NotesRepository, FollowingsRepository, PollsRepository, PollVotesRepository, NoteReactionsRepository, ChannelsRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 import { isNotNull } from '@/misc/is-not-null.js';
 import { DebounceLoader } from '@/misc/loader.js';
 import { IdService } from '@/core/IdService.js';
@@ -27,7 +26,12 @@ import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
 export class NoteEntityService implements OnModuleInit {
 	private userEntityService!: UserEntityService;
 	private driveFileEntityService!: DriveFileEntityService;
-	private noteLoader = new DebounceLoader(this.findNoteOrFail);
+	private noteLoader = new DebounceLoader((id: string) => {
+		return this.notesRepository.findOneOrFail({
+			where: { id },
+			relations: ['user'],
+		});
+	});
 
 	constructor(
 		private moduleRef: ModuleRef,
@@ -65,7 +69,6 @@ export class NoteEntityService implements OnModuleInit {
 		this.driveFileEntityService = this.moduleRef.get('DriveFileEntityService');
 	}
 
-	@bindThis
 	private async hideNote(packedNote: Packed<'Note'>, meId: MiUser['id'] | null) {
 		// TODO: isVisibleForMe を使うようにしても良さそう(型違うけど)
 		let hide = false;
@@ -124,7 +127,6 @@ export class NoteEntityService implements OnModuleInit {
 		}
 	}
 
-	@bindThis
 	private async populatePoll(note: MiNote, meId: MiUser['id'] | null) {
 		const poll = await this.pollsRepository.findOneByOrFail({ noteId: note.id });
 		const choices = poll.choices.map(c => ({
@@ -163,7 +165,6 @@ export class NoteEntityService implements OnModuleInit {
 		};
 	}
 
-	@bindThis
 	public async populateMyReaction(note: { id: MiNote['id']; reactions: MiNote['reactions']; reactionAndUserPairCache?: MiNote['reactionAndUserPairCache'] }, meId: MiUser['id'], _hint_?: {
 		myReactions: Map<MiNote['id'], string | null>;
 	}) {
@@ -204,7 +205,6 @@ export class NoteEntityService implements OnModuleInit {
 		return undefined;
 	}
 
-	@bindThis
 	public async isVisibleForMe(note: MiNote, meId: MiUser['id'] | null): Promise<boolean> {
 		// This code must always be synchronized with the checks in generateVisibilityQuery.
 		// visibility が specified かつ自分が指定されていなかったら非表示
@@ -258,7 +258,6 @@ export class NoteEntityService implements OnModuleInit {
 		return true;
 	}
 
-	@bindThis
 	public async packAttachedFiles(fileIds: MiNote['fileIds'], packedFiles: Map<MiNote['fileIds'][number], Packed<'DriveFile'> | null>): Promise<Packed<'DriveFile'>[]> {
 		const missingIds = [];
 		for (const id of fileIds) {
@@ -273,7 +272,6 @@ export class NoteEntityService implements OnModuleInit {
 		return fileIds.map(id => packedFiles.get(id)).filter(isNotNull);
 	}
 
-	@bindThis
 	public async pack(
 		src: MiNote['id'] | MiNote,
 		me?: { id: MiUser['id'] } | null | undefined,
@@ -381,7 +379,6 @@ export class NoteEntityService implements OnModuleInit {
 		return packed;
 	}
 
-	@bindThis
 	public async packMany(
 		notes: MiNote[],
 		me?: { id: MiUser['id'] } | null | undefined,
@@ -451,7 +448,6 @@ export class NoteEntityService implements OnModuleInit {
 		})));
 	}
 
-	@bindThis
 	public aggregateNoteEmojis(notes: MiNote[]) {
 		let emojis: { name: string | null; host: string | null }[] = [];
 		for (const note of notes) {
@@ -473,13 +469,5 @@ export class NoteEntityService implements OnModuleInit {
 			}
 		}
 		return emojis.filter(x => x.name != null && x.host != null) as { name: string; host: string }[];
-	}
-
-	@bindThis
-	private findNoteOrFail(id: string): Promise<MiNote> {
-		return this.notesRepository.findOneOrFail({
-			where: { id },
-			relations: ['user'],
-		});
 	}
 }

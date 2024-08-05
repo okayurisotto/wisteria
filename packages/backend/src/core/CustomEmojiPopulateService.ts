@@ -6,7 +6,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { EmojisRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
 import { UtilityService } from '@/core/UtilityService.js';
 
 const parseEmojiStrRegexp = /^(\w+)(?:@([\w.-]+))?$/;
@@ -20,7 +19,6 @@ export class CustomEmojiPopulateService {
 		private utilityService: UtilityService,
 	) {}
 
-	@bindThis
 	private normalizeHost(src: string | undefined, noteUserHost: string | null): string | null {
 		// クエリに使うホスト
 		let host = src === '.' ? null	// .はローカルホスト (ここがマッチするのはリアクションのみ)
@@ -33,7 +31,6 @@ export class CustomEmojiPopulateService {
 		return host;
 	}
 
-	@bindThis
 	public parseEmojiStr(emojiName: string, noteUserHost: string | null) {
 		const match = emojiName.match(parseEmojiStrRegexp);
 		if (!match) return { name: null, host: null };
@@ -52,7 +49,6 @@ export class CustomEmojiPopulateService {
 	 * @param noteUserHost ノートやユーザープロフィールの所有者のホスト
 	 * @returns URL, nullは未マッチを意味する
 	 */
-	@bindThis
 	public async populateEmoji(emojiName: string, noteUserHost: string | null): Promise<string | null> {
 		const { name, host } = this.parseEmojiStr(emojiName, noteUserHost);
 		if (name == null) return null;
@@ -67,7 +63,6 @@ export class CustomEmojiPopulateService {
 	/**
 	 * 複数の添付用(リモート)カスタム絵文字URLを解決する (キャシュ付き, 存在しないものは結果から除外される)
 	 */
-	@bindThis
 	public async populateEmojis(emojiNames: string[], noteUserHost: string | null): Promise<Record<string, string>> {
 		const emojis = await Promise.all(emojiNames.map(x => this.populateEmoji(x, noteUserHost)));
 		const res = {} as any;

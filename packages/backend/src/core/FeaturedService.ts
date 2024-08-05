@@ -7,7 +7,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import type { MiGalleryPost, MiNote, MiUser } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
 
 const GLOBAL_NOTES_RANKING_WINDOW = 1000 * 60 * 60 * 24 * 3; // 3日ごと
 export const GALLERY_POSTS_RANKING_WINDOW = 1000 * 60 * 60 * 24 * 3; // 3日ごと
@@ -24,13 +23,11 @@ export class FeaturedService {
 	) {
 	}
 
-	@bindThis
 	private getCurrentWindow(windowRange: number): number {
 		const passed = new Date().getTime() - featuredEpoc;
 		return Math.floor(passed / windowRange);
 	}
 
-	@bindThis
 	private async updateRankingOf(name: string, windowRange: number, element: string, score = 1): Promise<void> {
 		const currentWindow = this.getCurrentWindow(windowRange);
 		const redisTransaction = this.redisClient.multi();
@@ -45,7 +42,6 @@ export class FeaturedService {
 		await redisTransaction.exec();
 	}
 
-	@bindThis
 	private async getRankingOf(name: string, windowRange: number, threshold: number): Promise<string[]> {
 		const currentWindow = this.getCurrentWindow(windowRange);
 		const previousWindow = currentWindow - 1;
@@ -77,7 +73,6 @@ export class FeaturedService {
 		return Array.from(ranking.keys());
 	}
 
-	@bindThis
 	private async removeFromRanking(name: string, windowRange: number, element: string): Promise<void> {
 		const currentWindow = this.getCurrentWindow(windowRange);
 		const previousWindow = currentWindow - 1;
@@ -88,57 +83,46 @@ export class FeaturedService {
 		await redisPipeline.exec();
 	}
 
-	@bindThis
 	public updateGlobalNotesRanking(noteId: MiNote['id'], score = 1): Promise<void> {
 		return this.updateRankingOf('featuredGlobalNotesRanking', GLOBAL_NOTES_RANKING_WINDOW, noteId, score);
 	}
 
-	@bindThis
 	public updateGalleryPostsRanking(galleryPostId: MiGalleryPost['id'], score = 1): Promise<void> {
 		return this.updateRankingOf('featuredGalleryPostsRanking', GALLERY_POSTS_RANKING_WINDOW, galleryPostId, score);
 	}
 
-	@bindThis
 	public updateInChannelNotesRanking(channelId: MiNote['channelId'], noteId: MiNote['id'], score = 1): Promise<void> {
 		return this.updateRankingOf(`featuredInChannelNotesRanking:${channelId}`, GLOBAL_NOTES_RANKING_WINDOW, noteId, score);
 	}
 
-	@bindThis
 	public updatePerUserNotesRanking(userId: MiUser['id'], noteId: MiNote['id'], score = 1): Promise<void> {
 		return this.updateRankingOf(`featuredPerUserNotesRanking:${userId}`, PER_USER_NOTES_RANKING_WINDOW, noteId, score);
 	}
 
-	@bindThis
 	public updateHashtagsRanking(hashtag: string, score = 1): Promise<void> {
 		return this.updateRankingOf('featuredHashtagsRanking', HASHTAG_RANKING_WINDOW, hashtag, score);
 	}
 
-	@bindThis
 	public getGlobalNotesRanking(threshold: number): Promise<MiNote['id'][]> {
 		return this.getRankingOf('featuredGlobalNotesRanking', GLOBAL_NOTES_RANKING_WINDOW, threshold);
 	}
 
-	@bindThis
 	public getGalleryPostsRanking(threshold: number): Promise<MiGalleryPost['id'][]> {
 		return this.getRankingOf('featuredGalleryPostsRanking', GALLERY_POSTS_RANKING_WINDOW, threshold);
 	}
 
-	@bindThis
 	public getInChannelNotesRanking(channelId: MiNote['channelId'], threshold: number): Promise<MiNote['id'][]> {
 		return this.getRankingOf(`featuredInChannelNotesRanking:${channelId}`, GLOBAL_NOTES_RANKING_WINDOW, threshold);
 	}
 
-	@bindThis
 	public getPerUserNotesRanking(userId: MiUser['id'], threshold: number): Promise<MiNote['id'][]> {
 		return this.getRankingOf(`featuredPerUserNotesRanking:${userId}`, PER_USER_NOTES_RANKING_WINDOW, threshold);
 	}
 
-	@bindThis
 	public getHashtagsRanking(threshold: number): Promise<string[]> {
 		return this.getRankingOf('featuredHashtagsRanking', HASHTAG_RANKING_WINDOW, threshold);
 	}
 
-	@bindThis
 	public removeHashtagsFromRanking(hashtag: string): Promise<void> {
 		return this.removeFromRanking('featuredHashtagsRanking', HASHTAG_RANKING_WINDOW, hashtag);
 	}

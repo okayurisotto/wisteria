@@ -10,7 +10,6 @@ import type { MiDriveFile } from '@/models/DriveFile.js';
 import { AppLockService } from '@/core/AppLockService.js';
 import { DI } from '@/di-symbols.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
-import { bindThis } from '@/decorators.js';
 import Chart from '../core.js';
 import { ChartLoggerService } from '../ChartLoggerService.js';
 import { name, schema } from './entities/per-user-drive.js';
@@ -51,7 +50,6 @@ export default class PerUserDriveChart extends Chart<typeof schema> {
 		return {};
 	}
 
-	@bindThis
 	public async update(file: MiDriveFile, isAdditional: boolean): Promise<void> {
 		const fileSizeKb = file.size / 1000;
 		await this.commit({
