@@ -12,7 +12,8 @@
 		"restart": "pnpm build && pnpm start",
 		"typecheck": "tsc",
 		"lint": "eslint ./src/**/*.ts",
-		"generate-api-json": "pnpm build && node ./generate_api_json.js"
+		"generate-api-json": "pnpm build && node ./generate_api_json.js",
+		"test": "node --test ./built/**/*.test.js"
 	},
 	"optionalDependencies": {
 		"@tensorflow/tfjs-node": "4.20.0",
