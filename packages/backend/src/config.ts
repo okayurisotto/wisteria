@@ -6,90 +6,99 @@
 import * as fs from 'node:fs';
 import * as yaml from 'js-yaml';
 import type { RedisOptions } from 'ioredis';
+import { z } from 'zod';
 import { META_FILE, FRONTEND_MANIFEST_FILE, CONFIG_FILE } from './path.js';
 import { envOption } from './env.js';
 
-type RedisOptionsSource = Partial<RedisOptions> & {
-	host: string;
-	port: number;
-	family?: number;
-	pass: string;
-	db?: number;
-	prefix?: string;
-};
+const metaSchema = z.object({
+	version: z.string(),
+});
 
-/**
- * 設定ファイルの型
- */
-type Source = {
-	url: string;
-	port?: number;
-	disableHsts?: boolean;
-	db: {
-		host: string;
-		port: number;
-		db: string;
-		user: string;
-		pass: string;
-		disableCache?: boolean;
-		extra?: { [x: string]: string };
-	};
-	dbReplications?: boolean;
-	dbSlaves?: {
-		host: string;
-		port: number;
-		db: string;
-		user: string;
-		pass: string;
-	}[];
-	redis: RedisOptionsSource;
-	redisForPubsub?: RedisOptionsSource;
-	redisForJobQueue?: RedisOptionsSource;
-	redisForTimelines?: RedisOptionsSource;
-	meilisearch?: {
-		host: string;
-		port: string;
-		apiKey: string;
-		ssl?: boolean;
-		index: string;
-		scope?: 'local' | 'global' | string[];
-	};
+const frontendManifestSchema = z.object({
+	'src/_boot_.ts': z.object({
+		file: z.string(),
+	}),
+});
 
-	publishTarballInsteadOfProvideRepositoryUrl?: boolean;
+const redisConfigSchema = z.object({
+	host: z.string(),
+	port: z.number(),
+	family: z.number().optional(),
+	pass: z.string().optional(),
+	db: z.number().optional(),
+	prefix: z.string().optional(),
+	extra: z.record(z.string(), z.unknown()).optional(),
+});
 
-	proxy?: string;
-	proxySmtp?: string;
-	proxyBypassHosts?: string[];
+const configSchema = z.object({
+	url: z.string(),
+	port: z.number().optional(),
+	disableHsts: z.boolean().optional(),
+	db: z.object({
+		host: z.string(),
+		port: z.number(),
+		db: z.string(),
+		user: z.string(),
+		pass: z.string(),
+		disableCache: z.boolean().optional(),
+		extra: z.record(z.string(), z.string()).optional(),
+	}),
+	dbReplications: z.boolean().optional(),
+	dbSlaves: z.object({
+		host: z.string(),
+		port: z.number(),
+		db: z.string(),
+		user: z.string(),
+		pass: z.string(),
+	}).array().optional(),
+	redis: redisConfigSchema,
+	redisForPubsub: redisConfigSchema.optional(),
+	redisForJobQueue: redisConfigSchema.optional(),
+	redisForTimelines: redisConfigSchema.optional(),
+	meilisearch: z.object({
+		host: z.string(),
+		port: z.string(),
+		apiKey: z.string(),
+		ssl: z.boolean().optional(),
+		index: z.string(),
+		scope: z.enum(['local', 'global']).or(z.string().array()).optional(),
+	}).optional(),
 
-	allowedPrivateNetworks?: string[];
+	publishTarballInsteadOfProvideRepositoryUrl: z.boolean().optional(),
 
-	maxFileSize?: number;
+	proxy: z.string().optional(),
+	proxySmtp: z.string().optional(),
+	proxyBypassHosts: z.string().array().optional(),
 
-	id: string;
+	allowedPrivateNetworks: z.string().array().optional(),
 
-	outgoingAddress?: string;
-	outgoingAddressFamily?: 'ipv4' | 'ipv6' | 'dual';
+	maxFileSize: z.number().optional(),
 
-	deliverJobConcurrency?: number;
-	inboxJobConcurrency?: number;
-	relationshipJobConcurrency?: number;
-	deliverJobPerSec?: number;
-	inboxJobPerSec?: number;
-	relationshipJobPerSec?: number;
-	deliverJobMaxAttempts?: number;
-	inboxJobMaxAttempts?: number;
+	id: z.string(),
 
-	mediaProxy?: string;
-	proxyRemoteFiles?: boolean;
-	videoThumbnailGenerator?: string;
+	outgoingAddress: z.string().optional(),
+	outgoingAddressFamily: z.enum(['ipv4', 'ipv6', 'dual']).optional(),
 
-	signToActivityPubGet?: boolean;
+	deliverJobConcurrency: z.number().optional(),
+	inboxJobConcurrency: z.number().optional(),
+	relationshipJobConcurrency: z.number().optional(),
+	deliverJobPerSec: z.number().optional(),
+	inboxJobPerSec: z.number().optional(),
+	relationshipJobPerSec: z.number().optional(),
+	deliverJobMaxAttempts: z.number().optional(),
+	inboxJobMaxAttempts: z.number().optional(),
 
-	perChannelMaxNoteCacheCount?: number;
-	perUserNotificationsMaxCount?: number;
-	deactivateAntennaThreshold?: number;
-	pidFile: string;
-};
+	mediaProxy: z.string().optional(),
+	proxyRemoteFiles: z.boolean().optional(),
+	videoThumbnailGenerator: z.string().optional(),
+
+	signToActivityPubGet: z.boolean().optional(),
+
+	perChannelMaxNoteCacheCount: z.number().optional(),
+	perUserNotificationsMaxCount: z.number().optional(),
+	deactivateAntennaThreshold: z.number().optional(),
+	pidFile: z.string().optional(),
+});
 
 export type Config = {
 	url: string;
@@ -101,8 +110,8 @@ export type Config = {
 		db: string;
 		user: string;
 		pass: string;
-		disableCache?: boolean;
-		extra?: { [x: string]: string };
+		disableCache?: boolean | undefined;
+		extra?: { [x: string]: string } | undefined;
 	};
 	dbReplications: boolean | undefined;
 	dbSlaves: {
@@ -116,9 +125,9 @@ export type Config = {
 		host: string;
 		port: string;
 		apiKey: string;
-		ssl?: boolean;
+		ssl?: boolean | undefined;
 		index: string;
-		scope?: 'local' | 'global' | string[];
+		scope?: 'local' | 'global' | string[] | undefined;
 	} | undefined;
 	proxy: string | undefined;
 	proxySmtp: string | undefined;
@@ -150,28 +159,30 @@ export type Config = {
 	authUrl: string;
 	driveUrl: string;
 	userAgent: string;
-	clientEntry: string;
+	clientEntry: z.infer<typeof frontendManifestSchema>['src/_boot_.ts'];
 	clientManifestExists: boolean;
 	mediaProxy: string;
 	externalMediaProxyEnabled: boolean;
 	videoThumbnailGenerator: string | null;
-	redis: RedisOptions & RedisOptionsSource;
-	redisForPubsub: RedisOptions & RedisOptionsSource;
-	redisForJobQueue: RedisOptions & RedisOptionsSource;
-	redisForTimelines: RedisOptions & RedisOptionsSource;
+	redis: RedisOptions;
+	redisForPubsub: RedisOptions;
+	redisForJobQueue: RedisOptions;
+	redisForTimelines: RedisOptions;
 	perChannelMaxNoteCacheCount: number;
 	perUserNotificationsMaxCount: number;
 	deactivateAntennaThreshold: number;
-	pidFile: string;
+	pidFile: string | undefined;
 };
 
 export function loadConfig(): Config {
-	const meta = JSON.parse(fs.readFileSync(META_FILE, 'utf-8'));
+	const meta = metaSchema.parse(JSON.parse(fs.readFileSync(META_FILE, 'utf-8')));
+
 	const clientManifestExists = fs.existsSync(FRONTEND_MANIFEST_FILE);
 	const clientManifest = clientManifestExists
-		? JSON.parse(fs.readFileSync(FRONTEND_MANIFEST_FILE, 'utf-8'))
+		? frontendManifestSchema.parse(JSON.parse(fs.readFileSync(FRONTEND_MANIFEST_FILE, 'utf-8')))
 		: { 'src/_boot_.ts': { file: 'src/_boot_.ts' } };
-	const config = yaml.load(fs.readFileSync(CONFIG_FILE, 'utf-8')) as Source;
+
+	const config = configSchema.parse(yaml.load(fs.readFileSync(CONFIG_FILE, 'utf-8')));
 
 	const url = tryCreateUrl(config.url);
 	const version = meta.version;
@@ -181,10 +192,12 @@ export function loadConfig(): Config {
 	const wsScheme = scheme.replace('http', 'ws');
 
 	const externalMediaProxy = config.mediaProxy
-		? config.mediaProxy.endsWith('/') ? config.mediaProxy.substring(0, config.mediaProxy.length - 1) : config.mediaProxy
+		? config.mediaProxy.endsWith('/')
+			? config.mediaProxy.substring(0, config.mediaProxy.length - 1)
+			: config.mediaProxy
 		: null;
 	const internalMediaProxy = `${scheme}://${host}/proxy`;
-	const redis = convertRedisOptions(config.redis, host);
+	const redis = { ...config.redis.extra, ...convertRedisOptions(config.redis, host) };
 
 	return {
 		version,
@@ -205,9 +218,15 @@ export function loadConfig(): Config {
 		dbSlaves: config.dbSlaves,
 		meilisearch: config.meilisearch,
 		redis,
-		redisForPubsub: config.redisForPubsub ? convertRedisOptions(config.redisForPubsub, host) : redis,
-		redisForJobQueue: config.redisForJobQueue ? convertRedisOptions(config.redisForJobQueue, host) : redis,
-		redisForTimelines: config.redisForTimelines ? convertRedisOptions(config.redisForTimelines, host) : redis,
+		redisForPubsub: config.redisForPubsub
+			? { ...config.redisForPubsub.extra, ...convertRedisOptions(config.redisForPubsub, host) }
+			: redis,
+		redisForJobQueue: config.redisForJobQueue
+			? { ...config.redisForJobQueue.extra, ...convertRedisOptions(config.redisForJobQueue, host) }
+			: redis,
+		redisForTimelines: config.redisForTimelines
+			? { ...config.redisForTimelines.extra, ...convertRedisOptions(config.redisForTimelines, host) }
+			: redis,
 		id: config.id,
 		proxy: config.proxy,
 		proxySmtp: config.proxySmtp,
@@ -249,13 +268,14 @@ function tryCreateUrl(url: string) {
 	}
 }
 
-function convertRedisOptions(options: RedisOptionsSource, host: string): RedisOptions & RedisOptionsSource {
-	return {
-		...options,
-		password: options.pass,
-		prefix: options.prefix ?? host,
-		family: options.family ?? 0,
-		keyPrefix: `${options.prefix ?? host}:`,
-		db: options.db ?? 0,
-	};
-}
+const convertRedisOptions = (
+	options: z.infer<typeof redisConfigSchema>,
+	host: string,
+) => ({
+	host: options.host,
+	port: options.port,
+	...(options.pass !== undefined ? { password: options.pass } : {}),
+	db: options.db ?? 0,
+	family: options.family ?? 0,
+	keyPrefix: `${options.prefix ?? host}:`,
+} as const satisfies RedisOptions);

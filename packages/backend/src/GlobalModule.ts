@@ -21,7 +21,7 @@ const $config: Provider = {
 
 const $db: Provider = {
 	provide: DI.db,
-	useFactory: async (config) => {
+	useFactory: async (config: Config) => {
 		const db = createPostgresDataSource(config);
 		return await db.initialize();
 	},

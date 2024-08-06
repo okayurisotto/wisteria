@@ -136,7 +136,8 @@ redis:
   #prefix: example-prefix
   #db: 1
   # You can specify more ioredis options...
-  #username: example-username
+  #extra:
+  #  username: example-username
 
 #redisForPubsub:
 #  host: redis
@@ -146,7 +147,8 @@ redis:
 #  #prefix: example-prefix
 #  #db: 1
 #  # You can specify more ioredis options...
-#  #username: example-username
+#  #extra:
+#  #  username: example-username
 
 #redisForJobQueue:
 #  host: redis
@@ -156,7 +158,8 @@ redis:
 #  #prefix: example-prefix
 #  #db: 1
 #  # You can specify more ioredis options...
-#  #username: example-username
+#  #extra:
+#  #  username: example-username
 
 #redisForTimelines:
 #  host: redis
@@ -166,7 +169,8 @@ redis:
 #  #prefix: example-prefix
 #  #db: 1
 #  # You can specify more ioredis options...
-#  #username: example-username
+#  #extra:
+#  #  username: example-username
 
 #   ┌───────────────────────────┐
 #───┘ MeiliSearch configuration └─────────────────────────────

@@ -203,39 +203,44 @@ export function createPostgresDataSource(config: Config) {
 			statement_timeout: 1000 * 10,
 			...config.db.extra,
 		},
-		...(config.dbReplications ? {
-			replication: {
-				master: {
-					host: config.db.host,
-					port: config.db.port,
-					username: config.db.user,
-					password: config.db.pass,
-					database: config.db.db,
-				},
-				slaves: config.dbSlaves!.map(rep => ({
-					host: rep.host,
-					port: rep.port,
-					username: rep.user,
-					password: rep.pass,
-					database: rep.db,
-				})),
-			},
-		} : {}),
+		...(config.dbReplications
+			? {
+					replication: {
+						master: {
+							host: config.db.host,
+							port: config.db.port,
+							username: config.db.user,
+							password: config.db.pass,
+							database: config.db.db,
+						},
+						slaves: config.dbSlaves?.map(rep => ({
+							host: rep.host,
+							port: rep.port,
+							username: rep.user,
+							password: rep.pass,
+							database: rep.db,
+						})) ?? [],
+					},
+				}
+			: {}),
 		synchronize: envOption.isTest,
 		dropSchema: envOption.isTest,
-		cache: !config.db.disableCache && !envOption.isTest ? { // dbをcloseしても何故かredisのコネクションが内部的に残り続けるようで、テストの際に支障が出るため無効にする(キャッシュも含めてテストしたいため本当は有効にしたいが...)
-			type: 'ioredis',
-			options: {
-				host: config.redis.host,
-				port: config.redis.port,
-				family: config.redis.family ?? 0,
-				password: config.redis.pass,
-				keyPrefix: `${config.redis.prefix}:query:`,
-				db: config.redis.db ?? 0,
-			},
-		} : false,
+		// dbをcloseしても何故かredisのコネクションが内部的に残り続けるようで、テストの際に支障が出るため無効にする(キャッシュも含めてテストしたいため本当は有効にしたいが...)
+		cache: !config.db.disableCache && !envOption.isTest
+			? {
+					type: 'ioredis',
+					options: {
+						host: config.redis.host,
+						port: config.redis.port,
+						family: config.redis.family ?? 0,
+						password: config.redis.password,
+						keyPrefix: `${config.redis.keyPrefix}query:`,
+						db: config.redis.db ?? 0,
+					},
+				}
+			: false,
 		logging: !envOption.isProduction,
-		logger: !envOption.isProduction ? new MyCustomLogger() : undefined,
+		...(!envOption.isProduction ? { logger: new MyCustomLogger() } : {}),
 		maxQueryExecutionTime: 300,
 		entities: entities,
 		migrations: [DATABASE_MIGRATION_FILES],
