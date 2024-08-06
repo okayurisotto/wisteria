@@ -58,7 +58,7 @@ export class ApiServerService {
 			const methods = ep.meta.allowGet ? ['GET', 'POST'] : ['POST'];
 
 			const limit = endpoint.meta.requireFile
-				? bodyLimit({ maxSize: this.config.maxFileSize ?? 262144000 })
+				? bodyLimit({ maxSize: this.config.maxFileSize })
 				: bodyLimit({ maxSize: 1024 * 1024 });
 
 			hono.on(methods, '/' + endpoint.name, limit, async (c) => {

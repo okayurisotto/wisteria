@@ -27,9 +27,6 @@ html
 		link(rel='stylesheet' href='/assets/tabler-icons/tabler-icons.min.css?v2.44.0')
 		link(rel='modulepreload' href=`/vite/${clientEntry.file}`)
 
-		if !config.clientManifestExists
-				script(type="module" src="/vite/@vite/client")
-
 		if Array.isArray(clientEntry.css)
 			each href in clientEntry.css
 				link(rel='stylesheet' href=`/vite/${href}`)

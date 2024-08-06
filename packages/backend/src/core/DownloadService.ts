@@ -41,7 +41,6 @@ export class DownloadService {
 
 		const timeout = 30 * 1000;
 		const operationTimeout = 60 * 1000;
-		const maxSize = this.config.maxFileSize ?? 262144000;
 
 		const urlObj = new URL(url);
 		let filename = urlObj.pathname.split('/').pop() ?? 'untitled';
@@ -79,8 +78,8 @@ export class DownloadService {
 			const contentLength = res.headers['content-length'];
 			if (contentLength != null) {
 				const size = Number(contentLength);
-				if (size > maxSize) {
-					this.logger.warn(`maxSize exceeded (${size} > ${maxSize}) on response`);
+				if (size > this.config.maxFileSize) {
+					this.logger.warn(`maxSize exceeded (${size} > ${this.config.maxFileSize}) on response`);
 					req.destroy();
 				}
 			}
@@ -97,8 +96,8 @@ export class DownloadService {
 				}
 			}
 		}).on('downloadProgress', (progress: Got.Progress) => {
-			if (progress.transferred > maxSize) {
-				this.logger.warn(`maxSize exceeded (${progress.transferred} > ${maxSize}) on downloadProgress`);
+			if (progress.transferred > this.config.maxFileSize) {
+				this.logger.warn(`maxSize exceeded (${progress.transferred} > ${this.config.maxFileSize}) on downloadProgress`);
 				req.destroy();
 			}
 		});
@@ -141,7 +140,7 @@ export class DownloadService {
 	private isPrivateIp(ip: string): boolean {
 		const parsedIp = ipaddr.parse(ip);
 
-		for (const net of this.config.allowedPrivateNetworks ?? []) {
+		for (const net of this.config.allowedPrivateNetworks) {
 			const cidr = ipaddr.parseCIDR(net);
 			if (cidr[0].kind() === parsedIp.kind() && parsedIp.match(ipaddr.parseCIDR(net))) {
 				return false;

@@ -16,13 +16,13 @@ import { parseUlid } from '@/misc/id/ulid.js';
 
 @Injectable()
 export class IdService {
-	private method: string;
+	private method;
 
 	constructor(
 		@Inject(DI.config)
 		config: Config,
 	) {
-		this.method = config.id.toLowerCase();
+		this.method = config.id;
 	}
 
 	public isSafeT(t: number): boolean {
@@ -33,7 +33,7 @@ export class IdService {
 			case 'meidg': return isSafeMeidgT(t);
 			case 'ulid': return t > 0;
 			case 'objectid': return isSafeObjectIdT(t);
-			default: throw new Error('unrecognized id generation method');
+			default: return this.method satisfies never;
 		}
 	}
 

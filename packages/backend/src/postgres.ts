@@ -213,13 +213,13 @@ export function createPostgresDataSource(config: Config) {
 							password: config.db.pass,
 							database: config.db.db,
 						},
-						slaves: config.dbSlaves?.map(rep => ({
+						slaves: config.dbSlaves.map(rep => ({
 							host: rep.host,
 							port: rep.port,
 							username: rep.user,
 							password: rep.pass,
 							database: rep.db,
-						})) ?? [],
+						})),
 					},
 				}
 			: {}),
