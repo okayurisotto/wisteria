@@ -5,6 +5,8 @@ import tseslint from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
 
 export default tseslint.config(
+	{ ignores: ['built/'] },
+
 	// ESLint config
 	eslint.configs.recommended,
 
