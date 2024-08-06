@@ -9,7 +9,7 @@ void suite('AcctEntity.from()', () => {
 		void test('properties', () => {
 			strictEqual(acct.username, 'alice');
 			strictEqual(acct.host, null);
-			strictEqual(acct.localDomain, 'local.example.com');
+			strictEqual(acct.localHost, 'local.example.com');
 			strictEqual(acct.omitted, true);
 		});
 
@@ -40,7 +40,7 @@ void suite('AcctEntity.from()', () => {
 		void test('properties', () => {
 			strictEqual(acct.username, 'alice');
 			strictEqual(acct.host, null);
-			strictEqual(acct.localDomain, 'local.example.com');
+			strictEqual(acct.localHost, 'local.example.com');
 			strictEqual(acct.omitted, false);
 		});
 
@@ -72,7 +72,7 @@ void suite('AcctEntity.from()', () => {
 			strictEqual(acct.username, 'alice');
 			strictEqual(acct.host, 'remote.example.com');
 			strictEqual(acct.omitted, false);
-			strictEqual(acct.localDomain, 'local.example.com');
+			strictEqual(acct.localHost, 'local.example.com');
 		});
 
 		void test('toAcctURI()', () => {

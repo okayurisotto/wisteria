@@ -60,18 +60,18 @@ export class AcctEntity {
 	private constructor(
 		public readonly username: string,
 		public readonly host: string | null,
-		public readonly localDomain: string,
+		public readonly localHost: string,
 		public readonly omitted: boolean,
 	) {}
 
 	public is(mention: AcctEntity): boolean {
 		if (this.username !== mention.username) return false;
 
-		if (this.localDomain === mention.localDomain) {
+		if (this.localHost === mention.localHost) {
 			return this.host === mention.host;
 		} else {
-			const a = this.host ?? this.localDomain;
-			const b = mention.host ?? mention.localDomain;
+			const a = this.host ?? this.localHost;
+			const b = mention.host ?? mention.localHost;
 			return a === b;
 		}
 	}
@@ -83,14 +83,14 @@ export class AcctEntity {
 
 	/** @deprecated */
 	public toLongStringLegacy(): `${string}@${string}` {
-		return `${this.username}@${this.host ?? this.localDomain}`;
+		return `${this.username}@${this.host ?? this.localHost}`;
 	}
 
 	public toLongString(): `@${string}@${string}` {
-		return `@${this.username}@${this.host ?? this.localDomain}`;
+		return `@${this.username}@${this.host ?? this.localHost}`;
 	}
 
 	public toAcctURI(): `acct:${string}@${string}` {
-		return `acct:${this.username}@${this.host ?? this.localDomain}`;
+		return `acct:${this.username}@${this.host ?? this.localHost}`;
 	}
 }
