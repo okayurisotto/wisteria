@@ -12,7 +12,7 @@ import type { MiUser } from '@/models/User.js';
 import { UserKeypairService } from '@/core/UserKeypairService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { LoggerService } from '@/core/LoggerService.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { validateContentTypeSetAsActivityPub } from '@/core/activitypub/misc/validator.js';
 
 type Request = {

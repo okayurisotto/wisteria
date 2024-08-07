@@ -7,7 +7,7 @@ import { Injectable } from '@nestjs/common';
 import { isUserRelated } from '@/misc/is-user-related.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
-import Channel, { type MiChannelService } from '../channel.js';
+import { type MiChannelService, Channel } from '../channel.js';
 
 class AntennaChannel extends Channel {
 	public readonly chName = 'antenna';

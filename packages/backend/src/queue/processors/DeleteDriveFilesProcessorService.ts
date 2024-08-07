@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { MoreThan } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { UsersRepository, DriveFilesRepository, MiDriveFile } from '@/models/_.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';

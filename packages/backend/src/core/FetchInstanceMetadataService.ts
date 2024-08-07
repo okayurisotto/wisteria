@@ -9,7 +9,7 @@ import { JSDOM } from 'jsdom';
 import tinycolor from 'tinycolor2';
 import * as Redis from 'ioredis';
 import type { MiInstance } from '@/models/Instance.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { DI } from '@/di-symbols.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';

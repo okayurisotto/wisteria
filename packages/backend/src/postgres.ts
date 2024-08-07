@@ -80,7 +80,7 @@ import { MiBubbleGameRecord } from '@/models/BubbleGameRecord.js';
 import { MiReversiGame } from '@/models/ReversiGame.js';
 
 import type { Config } from '@/config.js';
-import MisskeyLogger from '@/logger.js';
+import { Logger as MisskeyLogger } from '@/logger.js';
 import { DATABASE_MIGRATION_FILES } from './path.js';
 import { envOption } from './env.js';
 

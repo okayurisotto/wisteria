@@ -9,7 +9,7 @@
 
 import { EventEmitter } from 'node:events';
 import Xev from 'xev';
-import Logger from '@/logger.js';
+import { Logger } from '@/logger.js';
 import { envOption } from '@/env.js';
 import { initialize } from './master.js';
 

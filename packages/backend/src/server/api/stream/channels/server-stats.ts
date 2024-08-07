@@ -5,7 +5,7 @@
 
 import Xev from 'xev';
 import { Injectable } from '@nestjs/common';
-import Channel, { type MiChannelService } from '../channel.js';
+import { type MiChannelService, Channel } from '../channel.js';
 
 const ev = new Xev();
 

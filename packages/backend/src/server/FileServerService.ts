@@ -10,7 +10,7 @@ import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
 import { FILE_TYPE_BROWSERSAFE } from '@/const.js';
 import { StatusError } from '@/misc/status-error.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { VideoProcessingService } from '@/core/VideoProcessingService.js';
 import { contentDisposition } from '@/misc/content-disposition.js';
 import { LoggerService } from '@/core/LoggerService.js';

@@ -8,7 +8,7 @@ import { isInstanceMuted } from '@/misc/is-instance-muted.js';
 import { isUserRelated } from '@/misc/is-user-related.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import Channel, { type MiChannelService } from '../channel.js';
+import { type MiChannelService, Channel } from '../channel.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 
 class GlobalTimelineChannel extends Channel {

@@ -7,7 +7,7 @@ import { Inject, Injectable, type OnApplicationShutdown } from '@nestjs/common';
 import * as Bull from 'bullmq';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { WebhookDeliverProcessorService } from './processors/WebhookDeliverProcessorService.js';
 import { EndedPollNotificationProcessorService } from './processors/EndedPollNotificationProcessorService.js';
 import { DeliverProcessorService } from './processors/DeliverProcessorService.js';

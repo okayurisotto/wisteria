@@ -4,7 +4,7 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import Logger from '@/logger.js';
+import { Logger } from '@/logger.js';
 import type { KEYWORD } from 'color-convert/conversions.js';
 
 @Injectable()

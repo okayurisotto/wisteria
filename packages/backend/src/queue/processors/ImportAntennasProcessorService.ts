@@ -7,7 +7,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import _Ajv from 'ajv';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
-import Logger from '@/logger.js';
+import { Logger } from '@/logger.js';
 import type { AntennasRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';

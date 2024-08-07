@@ -8,7 +8,7 @@ import { isUserRelated } from '@/misc/is-user-related.js';
 import { isInstanceMuted } from '@/misc/is-instance-muted.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import Channel, { type MiChannelService } from '../channel.js';
+import { type MiChannelService, Channel } from '../channel.js';
 
 class HomeTimelineChannel extends Channel {
 	public readonly chName = 'homeTimeline';

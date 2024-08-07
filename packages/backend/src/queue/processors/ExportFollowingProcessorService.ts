@@ -9,7 +9,7 @@ import { In, MoreThan, Not } from 'typeorm';
 import { format as dateFormat } from 'date-fns';
 import { DI } from '@/di-symbols.js';
 import type { UsersRepository, FollowingsRepository, MutingsRepository } from '@/models/_.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import { createTemp } from '@/misc/create-temp.js';
 import type { MiFollowing } from '@/models/Following.js';

@@ -15,7 +15,7 @@ import type { MiLocalUser } from '@/models/User.js';
 import { UserService } from '@/core/UserService.js';
 import { AuthenticateService } from './AuthenticateService.js';
 import { AuthenticationError } from '@/misc/AuthenticationError.js';
-import MainStreamConnection from './stream/Connection.js';
+import { Connection as MainStreamConnection } from './stream/Connection.js';
 import { ChannelsService } from './stream/ChannelsService.js';
 import type * as http from 'node:http';
 

@@ -14,7 +14,7 @@ import { IdService } from '@/core/IdService.js';
 import { MiUserKeypair } from '@/models/UserKeypair.js';
 import { MiUsedUsername } from '@/models/UsedUsername.js';
 import { DI } from '@/di-symbols.js';
-import generateNativeUserToken from '@/misc/generate-native-user-token.js';
+import { generateUserToken } from '@/misc/generate-native-user-token.js';
 
 @Injectable()
 export class CreateSystemUserService {
@@ -34,7 +34,7 @@ export class CreateSystemUserService {
 		const hash = await bcrypt.hash(password, salt);
 
 		// Generate secret
-		const secret = generateNativeUserToken();
+		const secret = generateUserToken();
 
 		const keyPair = await genRsaKeyPair();
 

@@ -6,7 +6,7 @@
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import sysUtils from 'systeminformation';
-import Logger from '@/logger.js';
+import { Logger } from '@/logger.js';
 import { loadConfig } from '@/config.js';
 import { envOption } from '@/env.js';
 import { META_FILE } from '@/path.js';

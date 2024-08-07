@@ -7,7 +7,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { AppLockService } from '@/core/AppLockService.js';
 import { DI } from '@/di-symbols.js';
-import Logger from '@/logger.js';
+import { Logger } from '@/logger.js';
 import Chart from '../core.js';
 import { name, schema } from './entities/test-grouped.js';
 import type { KVs } from '../core.js';

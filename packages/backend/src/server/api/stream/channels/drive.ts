@@ -4,7 +4,7 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import Channel, { type MiChannelService } from '../channel.js';
+import { type MiChannelService, Channel } from '../channel.js';
 
 class DriveChannel extends Channel {
 	public readonly chName = 'drive';

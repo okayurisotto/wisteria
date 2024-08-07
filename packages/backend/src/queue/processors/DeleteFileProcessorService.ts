@@ -4,7 +4,7 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';

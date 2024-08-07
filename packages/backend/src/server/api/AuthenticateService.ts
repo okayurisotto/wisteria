@@ -8,7 +8,7 @@ import { DI } from '@/di-symbols.js';
 import type { AccessTokensRepository, AppsRepository, UsersRepository } from '@/models/_.js';
 import type { MiLocalUser } from '@/models/User.js';
 import type { MiAccessToken } from '@/models/AccessToken.js';
-import isNativeToken from '@/misc/is-native-token.js';
+import { isNativeToken } from '@/misc/is-native-token.js';
 import { AuthenticationError } from '@/misc/AuthenticationError.js';
 
 @Injectable()

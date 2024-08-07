@@ -6,7 +6,7 @@
 import { Injectable } from '@nestjs/common';
 import { isInstanceMuted, isUserFromMutedInstance } from '@/misc/is-instance-muted.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import Channel, { type MiChannelService } from '../channel.js';
+import { type MiChannelService, Channel } from '../channel.js';
 
 class MainChannel extends Channel {
 	public readonly chName = 'main';

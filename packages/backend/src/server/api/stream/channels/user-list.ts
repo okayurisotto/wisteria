@@ -10,7 +10,7 @@ import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { isInstanceMuted } from '@/misc/is-instance-muted.js';
-import Channel, { type MiChannelService } from '../channel.js';
+import { type MiChannelService, Channel } from '../channel.js';
 
 class UserListChannel extends Channel {
 	public readonly chName = 'userList';

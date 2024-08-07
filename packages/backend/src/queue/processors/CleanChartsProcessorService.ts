@@ -4,7 +4,7 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import FederationChart from '@/core/chart/charts/federation.js';
 import NotesChart from '@/core/chart/charts/notes.js';
 import UsersChart from '@/core/chart/charts/users.js';

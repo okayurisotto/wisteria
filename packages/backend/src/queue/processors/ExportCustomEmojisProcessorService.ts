@@ -12,7 +12,7 @@ import archiver from 'archiver';
 import { DI } from '@/di-symbols.js';
 import type { EmojisRepository, UsersRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import { createTemp, createTempDir } from '@/misc/create-temp.js';
 import { DownloadService } from '@/core/DownloadService.js';

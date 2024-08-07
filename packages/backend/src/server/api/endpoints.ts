@@ -866,7 +866,7 @@ export interface IEndpoint {
 	params: Schema;
 }
 
-const endpoints: IEndpoint[] = (eps as [string, any]).map(([name, ep]) => {
+export const endpoints: IEndpoint[] = (eps as [string, any]).map(([name, ep]) => {
 	return {
 		name: name,
 		get meta() {
@@ -877,5 +877,3 @@ const endpoints: IEndpoint[] = (eps as [string, any]).map(([name, ep]) => {
 		},
 	};
 });
-
-export default endpoints;

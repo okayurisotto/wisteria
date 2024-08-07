@@ -5,4 +5,4 @@
 
 import { secureRndstr } from '@/misc/secure-rndstr.js';
 
-export default () => secureRndstr(16);
+export const generateUserToken = () => secureRndstr(16);

@@ -15,7 +15,7 @@ import { MiUser } from '@/models/User.js';
 import { truncate } from '@/misc/truncate.js';
 import { normalizeForSearch } from '@/misc/normalize-for-search.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import type { MiNote } from '@/models/Note.js';
 import { IdService } from '@/core/IdService.js';
 import { MfmService } from '@/core/MfmService.js';

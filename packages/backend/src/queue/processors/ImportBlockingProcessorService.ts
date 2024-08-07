@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IsNull } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { UsersRepository, DriveFilesRepository } from '@/models/_.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { DownloadService } from '@/core/DownloadService.js';

@@ -12,7 +12,7 @@
 import * as nestedProperty from 'nested-property';
 import { EntitySchema, LessThan, Between } from 'typeorm';
 import { dateUTC, isTimeSame, isTimeBefore, subtractTime, addTime } from '@/misc/prelude/time.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import type { Repository, DataSource } from 'typeorm';
 
 const COLUMN_PREFIX = '___';

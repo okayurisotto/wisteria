@@ -12,7 +12,7 @@ import { MetaService } from '@/core/MetaService.js';
 import { truncate } from '@/misc/truncate.js';
 import { DB_MAX_IMAGE_COMMENT_LENGTH } from '@/const.js';
 import { DriveService } from '@/core/DriveService.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { checkHttps } from '@/misc/check-https.js';
 import { ApResolverService } from '../ApResolverService.js';
 import { ApLoggerService } from '../ApLoggerService.js';

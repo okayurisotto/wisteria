@@ -6,7 +6,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { MutingsRepository } from '@/models/_.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { UserMutingService } from '@/core/UserMutingService.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 

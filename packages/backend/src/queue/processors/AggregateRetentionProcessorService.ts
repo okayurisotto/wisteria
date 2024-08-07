@@ -6,7 +6,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IsNull, MoreThan } from 'typeorm';
 import { DI } from '@/di-symbols.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import type { RetentionAggregationsRepository, UsersRepository } from '@/models/_.js';
 import { deepClone } from '@/misc/clone.js';
 import { IdService } from '@/core/IdService.js';

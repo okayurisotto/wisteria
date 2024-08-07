@@ -7,7 +7,7 @@ import { Injectable } from '@nestjs/common';
 import type { MiReversiGame } from '@/models/_.js';
 import { ReversiService } from '@/core/ReversiService.js';
 import { ReversiGameEntityService } from '@/core/entities/ReversiGameEntityService.js';
-import Channel, { type MiChannelService } from '../channel.js';
+import { type MiChannelService, Channel } from '../channel.js';
 
 class ReversiGameChannel extends Channel {
 	public readonly chName = 'reversiGame';

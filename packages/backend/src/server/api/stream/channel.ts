@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type Connection from './Connection.js';
+import type { Connection } from './Connection.js';
 
 /**
  * Stream channel
  */
-export default abstract class Channel {
+export abstract class Channel {
 	protected connection: Connection;
 	public id: string;
 	public abstract readonly chName: string;

@@ -5,7 +5,7 @@
 
 import type { Config } from '@/config.js';
 import type { IEndpoint } from '../endpoints.js';
-import endpoints from '../endpoints.js';
+import { endpoints } from '../endpoints.js';
 import { errors as basicErrors } from './errors.js';
 import { getSchemas, convertSchemaToOpenApiSchema } from './schemas.js';
 

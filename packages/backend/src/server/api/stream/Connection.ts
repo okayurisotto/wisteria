@@ -13,12 +13,12 @@ import type { BlockingsRepository, ChannelFollowingsRepository, FollowingsReposi
 import type { StreamEventEmitter, GlobalEvents } from '@/core/GlobalEventService.js';
 import type { ChannelsService } from './ChannelsService.js';
 import type { EventEmitter } from 'events';
-import type Channel from './channel.js';
+import type { Channel } from './channel.js';
 
 /**
  * Main stream connection
  */
-export default class Connection {
+export class Connection {
 	public readonly user?: MiUser;
 	public readonly token?: MiAccessToken;
 	private wsConnection: WebSocket.WebSocket;

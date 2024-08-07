@@ -13,7 +13,7 @@ import type { DeleteObjectCommandInput, PutObjectCommandInput } from '@aws-sdk/c
 import { DI } from '@/di-symbols.js';
 import type { DriveFilesRepository, UsersRepository, DriveFoldersRepository, UserProfilesRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
-import Logger from '@/logger.js';
+import { Logger } from '@/logger.js';
 import type { MiRemoteUser, MiUser } from '@/models/User.js';
 import { MetaService } from '@/core/MetaService.js';
 import { MiDriveFile } from '@/models/DriveFile.js';

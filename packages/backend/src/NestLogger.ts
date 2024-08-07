@@ -4,7 +4,7 @@
  */
 
 import type { LoggerService } from '@nestjs/common';
-import Logger from '@/logger.js';
+import { Logger } from '@/logger.js';
 import { envOption } from './env.js';
 
 const logger = new Logger('core', 'cyan');

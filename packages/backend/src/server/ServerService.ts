@@ -9,7 +9,7 @@ import { Hono } from 'hono';
 import { serve, type ServerType } from '@hono/node-server';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import { ActivityPubServerService } from './ActivityPubServerService.js';
 import { NodeinfoServerService } from './NodeinfoServerService.js';

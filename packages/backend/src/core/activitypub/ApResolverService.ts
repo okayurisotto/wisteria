@@ -14,7 +14,7 @@ import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { DI } from '@/di-symbols.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { LoggerService } from '@/core/LoggerService.js';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { isCollectionOrOrderedCollection } from './type.js';
 import { ApDbResolverService } from './ApDbResolverService.js';
 import { ApRendererService } from './ApRendererService.js';

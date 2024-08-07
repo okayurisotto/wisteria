@@ -7,7 +7,7 @@ import { URL } from 'node:url';
 import { Injectable } from '@nestjs/common';
 import { verifySignature } from 'http-signature/node';
 import * as Bull from 'bullmq';
-import type Logger from '@/logger.js';
+import type { Logger } from '@/logger.js';
 import { MetaService } from '@/core/MetaService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { FetchInstanceMetadataService } from '@/core/FetchInstanceMetadataService.js';

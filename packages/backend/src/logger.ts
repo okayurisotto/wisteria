@@ -16,7 +16,7 @@ type Context = {
 
 type Level = 'error' | 'success' | 'warning' | 'debug' | 'info';
 
-export default class Logger {
+export class Logger {
 	private readonly context: Context;
 	private parentLogger: Logger | null = null;
 

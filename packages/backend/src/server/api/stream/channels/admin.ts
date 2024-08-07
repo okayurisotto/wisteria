@@ -4,7 +4,7 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import Channel, { type MiChannelService } from '../channel.js';
+import { type MiChannelService, Channel } from '../channel.js';
 
 class AdminChannel extends Channel {
 	public readonly chName = 'admin';
