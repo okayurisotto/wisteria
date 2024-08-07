@@ -14,6 +14,7 @@ import { EntitySchema, LessThan, Between } from 'typeorm';
 import { dateUTC, isTimeSame, isTimeBefore, subtractTime, addTime } from '@/misc/prelude/time.js';
 import type { Logger } from '@/logger.js';
 import type { Repository, DataSource } from 'typeorm';
+import type { UnionToIntersection } from 'type-fest';
 
 const COLUMN_PREFIX = '___';
 const UNIQUE_TEMP_COLUMN_PREFIX = 'unique_temp___';
@@ -71,8 +72,6 @@ export type KVs<S extends Schema> = {
 type ChartResult<T extends Schema> = {
 	[P in keyof T]: number[];
 };
-
-type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any ? R : never;
 
 type UnflattenSingleton<K extends string, V> = K extends `${infer A}.${infer B}`
 	? { [_ in A]: UnflattenSingleton<B, V>; }

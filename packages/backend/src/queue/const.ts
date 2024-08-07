@@ -5,6 +5,7 @@
 
 import type { Config } from '@/config.js';
 import type * as Bull from 'bullmq';
+import type { ValueOf } from 'type-fest';
 
 export const QUEUE = {
 	DELIVER: 'deliver',
@@ -17,7 +18,7 @@ export const QUEUE = {
 	WEBHOOK_DELIVER: 'webhookDeliver',
 };
 
-export function baseQueueOptions(config: Config, queueName: typeof QUEUE[keyof typeof QUEUE]): Bull.QueueOptions {
+export function baseQueueOptions(config: Config, queueName: ValueOf<typeof QUEUE>): Bull.QueueOptions {
 	const { keyPrefix, ...connection } = config.redisForJobQueue;
 
 	return {

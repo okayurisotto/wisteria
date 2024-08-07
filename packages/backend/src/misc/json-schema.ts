@@ -50,6 +50,7 @@ import {
 } from '@/models/json-schema/role.js';
 import { packedAdSchema } from '@/models/json-schema/ad.js';
 import { packedReversiGameLiteSchema, packedReversiGameDetailedSchema } from '@/models/json-schema/reversi-game.js';
+import type { UnionToIntersection } from 'type-fest';
 
 export const refs = {
 	UserLite: packedUserLiteSchema,
@@ -173,7 +174,6 @@ type NullOrUndefined<p extends Schema, T> =
 
 // https://stackoverflow.com/questions/54938141/typescript-convert-union-to-intersection
 // Get intersection from union
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;
 type PartialIntersection<T> = Partial<UnionToIntersection<T>>;
 
 // https://github.com/misskey-dev/misskey/pull/8144#discussion_r785287552
