@@ -5,7 +5,7 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
-import _Ajv from 'ajv';
+import Ajv from 'ajv';
 import { ModuleRef } from '@nestjs/core';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
@@ -26,7 +26,6 @@ import type { PageEntityService } from './PageEntityService.js';
 import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
 import type { RoleUserService } from '../RoleUserService.js';
 
-const Ajv = _Ajv.default;
 const ajv = new Ajv();
 
 function isLocalUser(user: MiUser): user is MiLocalUser;

@@ -4,7 +4,7 @@
  */
 
 import { Injectable, Inject } from '@nestjs/common';
-import _Ajv from 'ajv';
+import Ajv from 'ajv';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { Logger } from '@/logger.js';
@@ -13,8 +13,6 @@ import { DI } from '@/di-symbols.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type { DBAntennaImportJobData } from '../types.js';
 import type * as Bull from 'bullmq';
-
-const Ajv = _Ajv.default;
 
 const validate = new Ajv().compile({
 	type: 'object',
