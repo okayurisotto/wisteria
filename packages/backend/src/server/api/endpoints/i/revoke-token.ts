@@ -30,7 +30,7 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.accessTokensRepository)
-		private accessTokensRepository: AccessTokensRepository,
+		private readonly accessTokensRepository: AccessTokensRepository,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			if (ps.tokenId) {

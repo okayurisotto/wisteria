@@ -38,8 +38,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private reversiService: ReversiService,
-		private reversiGameEntityService: ReversiGameEntityService,
+		private readonly reversiService: ReversiService,
+		private readonly reversiGameEntityService: ReversiGameEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const game = await this.reversiService.get(ps.gameId);

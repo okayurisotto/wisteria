@@ -35,31 +35,31 @@ import type { IAccept, IActivity, IAdd, IAnnounce, IApDocument, IApEmoji, IApHas
 export class ApRendererService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
 		@Inject(DI.pollsRepository)
-		private pollsRepository: PollsRepository,
+		private readonly pollsRepository: PollsRepository,
 
-		private customEmojiService: CustomEmojiService,
-		private userEntityService: UserEntityService,
-		private driveFileEntityService: DriveFileEntityService,
-		private ldSignatureService: LdSignatureService,
-		private userKeypairService: UserKeypairService,
-		private apMfmService: ApMfmService,
-		private mfmService: MfmService,
-		private idService: IdService,
+		private readonly customEmojiService: CustomEmojiService,
+		private readonly userEntityService: UserEntityService,
+		private readonly driveFileEntityService: DriveFileEntityService,
+		private readonly ldSignatureService: LdSignatureService,
+		private readonly userKeypairService: UserKeypairService,
+		private readonly apMfmService: ApMfmService,
+		private readonly mfmService: MfmService,
+		private readonly idService: IdService,
 	) {}
 
 	public renderAccept(object: string | IObject, user: { id: MiUser['id']; host: null }): IAccept {
@@ -353,9 +353,11 @@ export class ApRendererService {
 			to = mentions;
 		}
 
-		const mentionedUsers = note.mentions.length > 0 ? await this.usersRepository.findBy({
-			id: In(note.mentions),
-		}) : [];
+		const mentionedUsers = note.mentions.length > 0
+			? await this.usersRepository.findBy({
+				id: In(note.mentions),
+			})
+			: [];
 
 		const hashtagTags = note.tags.map(tag => this.renderHashtag(tag));
 		const mentionTags = mentionedUsers.map(u => this.renderMention(u as MiLocalUser | MiRemoteUser));
@@ -388,18 +390,20 @@ export class ApRendererService {
 			...apemojis,
 		];
 
-		const asPoll = poll ? {
-			type: 'Question',
-			[poll.expiresAt && poll.expiresAt < new Date() ? 'closed' : 'endTime']: poll.expiresAt,
-			[poll.multiple ? 'anyOf' : 'oneOf']: poll.choices.map((text, i) => ({
-				type: 'Note',
-				name: text,
-				replies: {
-					type: 'Collection',
-					totalItems: poll.votes[i],
-				},
-			})),
-		} as const : {};
+		const asPoll = poll
+			? {
+					type: 'Question',
+					[poll.expiresAt && poll.expiresAt < new Date() ? 'closed' : 'endTime']: poll.expiresAt,
+					[poll.multiple ? 'anyOf' : 'oneOf']: poll.choices.map((text, i) => ({
+						type: 'Note',
+						name: text,
+						replies: {
+							type: 'Collection',
+							totalItems: poll.votes[i],
+						},
+					})),
+				} as const
+			: {};
 
 		return {
 			id: `${this.config.url}/notes/${note.id}`,
@@ -407,13 +411,15 @@ export class ApRendererService {
 			attributedTo,
 			summary: summary ?? undefined,
 			content: content ?? undefined,
-			...(noMisskeyContent ? {} : {
-				_misskey_content: text,
-				source: {
-					content: text,
-					mediaType: 'text/x.misskeymarkdown',
-				},
-			}),
+			...(noMisskeyContent
+				? {}
+				: {
+						_misskey_content: text,
+						source: {
+							content: text,
+							mediaType: 'text/x.misskeymarkdown',
+						},
+					}),
 			_misskey_quote: quote,
 			quoteUrl: quote,
 			published: this.idService.parse(note.id).date.toISOString(),
@@ -583,7 +589,7 @@ export class ApRendererService {
 		};
 	}
 
-	public addContext<T extends IObject>(x: T): T & { '@context': any; id: string } {
+	public addContext<T extends IObject>(x: T): T & { '@context': any; 'id': string } {
 		if (typeof x === 'object' && x.id == null) {
 			x.id = `${this.config.url}/${randomUUID()}`;
 		}
@@ -610,12 +616,12 @@ export class ApRendererService {
 					value: 'schema:value',
 					// Misskey
 					misskey: 'https://misskey-hub.net/ns#',
-					'_misskey_content': 'misskey:_misskey_content',
-					'_misskey_quote': 'misskey:_misskey_quote',
-					'_misskey_reaction': 'misskey:_misskey_reaction',
-					'_misskey_votes': 'misskey:_misskey_votes',
-					'_misskey_summary': 'misskey:_misskey_summary',
-					'isCat': 'misskey:isCat',
+					_misskey_content: 'misskey:_misskey_content',
+					_misskey_quote: 'misskey:_misskey_quote',
+					_misskey_reaction: 'misskey:_misskey_reaction',
+					_misskey_votes: 'misskey:_misskey_votes',
+					_misskey_summary: 'misskey:_misskey_summary',
+					isCat: 'misskey:isCat',
 					// vcard
 					vcard: 'http://www.w3.org/2006/vcard/ns#',
 				},

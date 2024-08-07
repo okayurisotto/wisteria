@@ -61,11 +61,11 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.emojisRepository)
-		private emojisRepository: EmojisRepository,
+		private readonly emojisRepository: EmojisRepository,
 
-		private emojiEntityService: EmojiEntityService,
-		private customEmojiService: CustomEmojiService,
-		private driveService: DriveService,
+		private readonly emojiEntityService: EmojiEntityService,
+		private readonly customEmojiService: CustomEmojiService,
+		private readonly driveService: DriveService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const emoji = await this.emojisRepository.findOneBy({ id: ps.emojiId });

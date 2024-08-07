@@ -24,27 +24,27 @@ export class NotificationCreateService implements OnApplicationShutdown {
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
+		private readonly redisClient: Redis.Redis,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.mutingsRepository)
-		private mutingsRepository: MutingsRepository,
+		private readonly mutingsRepository: MutingsRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
 		@Inject(DI.userListMembershipsRepository)
-		private userListMembershipsRepository: UserListMembershipsRepository,
+		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
-		private notificationEntityService: NotificationEntityService,
-		private idService: IdService,
-		private globalEventService: GlobalEventService,
-		private pushNotificationService: PushNotificationService,
+		private readonly notificationEntityService: NotificationEntityService,
+		private readonly idService: IdService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly pushNotificationService: PushNotificationService,
 	) {}
 
 	public createNotification<T extends MiNotification['type']>(
@@ -118,9 +118,11 @@ export class NotificationCreateService implements OnApplicationShutdown {
 			id: this.idService.gen(),
 			createdAt: new Date(),
 			type: type,
-			...(notifierId ? {
-				notifierId,
-			} : {}),
+			...(notifierId
+				? {
+						notifierId,
+					}
+				: {}),
 			...data,
 		} as any as FilterUnionByProperty<MiNotification, 'type', T>;
 

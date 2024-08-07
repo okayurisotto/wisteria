@@ -21,13 +21,13 @@ import { accepts } from 'hono/accepts';
 export class WellKnownServerService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private nodeinfoServerService: NodeinfoServerService,
-		private userEntityService: UserEntityService,
+		private readonly nodeinfoServerService: NodeinfoServerService,
+		private readonly userEntityService: UserEntityService,
 	) {}
 
 	private toXRD(elements: { name: string; value?: string; attributes?: Record<string, string> }[]): string {

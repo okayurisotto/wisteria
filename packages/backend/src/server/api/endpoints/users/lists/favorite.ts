@@ -39,11 +39,11 @@ export const paramDef = {
 @Injectable() export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userListsRepository)
-		private userListsRepository: UserListsRepository,
+		private readonly userListsRepository: UserListsRepository,
 
 		@Inject(DI.userListFavoritesRepository)
-		private userListFavoritesRepository: UserListFavoritesRepository,
-		private idService: IdService,
+		private readonly userListFavoritesRepository: UserListFavoritesRepository,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const userListExist = await this.userListsRepository.exists({

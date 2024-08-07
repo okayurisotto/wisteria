@@ -25,7 +25,7 @@ export default class PerUserReactionsChart extends Chart<typeof schema> {
 		db: DataSource,
 
 		appLockService: AppLockService,
-		private userEntityService: UserEntityService,
+		private readonly userEntityService: UserEntityService,
 		chartLoggerService: ChartLoggerService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);

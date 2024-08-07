@@ -16,11 +16,11 @@ import { UserEntityService } from '@/core/entities/UserEntityService.js';
 export class UserSuspendService {
 	constructor(
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
-		private userEntityService: UserEntityService,
-		private queueService: QueueService,
-		private apRendererService: ApRendererService,
+		private readonly userEntityService: UserEntityService,
+		private readonly queueService: QueueService,
+		private readonly apRendererService: ApRendererService,
 	) {}
 
 	public async doPostSuspend(user: { id: MiUser['id']; host: MiUser['host'] }): Promise<void> {

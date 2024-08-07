@@ -22,16 +22,16 @@ export class ClipService {
 
 	constructor(
 		@Inject(DI.clipsRepository)
-		private clipsRepository: ClipsRepository,
+		private readonly clipsRepository: ClipsRepository,
 
 		@Inject(DI.clipNotesRepository)
-		private clipNotesRepository: ClipNotesRepository,
+		private readonly clipNotesRepository: ClipNotesRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
-		private roleUserService: RoleUserService,
-		private idService: IdService,
+		private readonly roleUserService: RoleUserService,
+		private readonly idService: IdService,
 	) {}
 
 	public async create(me: MiLocalUser, name: string, isPublic: boolean, description: string | null): Promise<MiClip> {

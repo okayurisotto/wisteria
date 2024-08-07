@@ -17,17 +17,17 @@ import { ModerationLogService } from '@/core/ModerationLogService.js';
 export class AnnouncementService {
 	constructor(
 		@Inject(DI.announcementsRepository)
-		private announcementsRepository: AnnouncementsRepository,
+		private readonly announcementsRepository: AnnouncementsRepository,
 
 		@Inject(DI.announcementReadsRepository)
-		private announcementReadsRepository: AnnouncementReadsRepository,
+		private readonly announcementReadsRepository: AnnouncementReadsRepository,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private idService: IdService,
-		private globalEventService: GlobalEventService,
-		private moderationLogService: ModerationLogService,
+		private readonly idService: IdService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly moderationLogService: ModerationLogService,
 	) {}
 
 	public async getReads(userId: MiUser['id']): Promise<MiAnnouncementRead[]> {

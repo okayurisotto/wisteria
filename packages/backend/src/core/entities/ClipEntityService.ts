@@ -17,13 +17,13 @@ import { UserEntityService } from './UserEntityService.js';
 export class ClipEntityService {
 	constructor(
 		@Inject(DI.clipsRepository)
-		private clipsRepository: ClipsRepository,
+		private readonly clipsRepository: ClipsRepository,
 
 		@Inject(DI.clipFavoritesRepository)
-		private clipFavoritesRepository: ClipFavoritesRepository,
+		private readonly clipFavoritesRepository: ClipFavoritesRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(

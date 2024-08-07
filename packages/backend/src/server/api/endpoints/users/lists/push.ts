@@ -74,16 +74,16 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userListsRepository)
-		private userListsRepository: UserListsRepository,
+		private readonly userListsRepository: UserListsRepository,
 
 		@Inject(DI.userListMembershipsRepository)
-		private userListMembershipsRepository: UserListMembershipsRepository,
+		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
 		@Inject(DI.blockingsRepository)
-		private blockingsRepository: BlockingsRepository,
+		private readonly blockingsRepository: BlockingsRepository,
 
-		private getterService: GetterService,
-		private userListService: UserListService,
+		private readonly getterService: GetterService,
+		private readonly userListService: UserListService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Fetch the list

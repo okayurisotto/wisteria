@@ -54,12 +54,12 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
-		private noteEntityService: NoteEntityService,
-		private queryService: QueryService,
-		private roleUserService: RoleUserService,
-		private activeUsersChart: ActiveUsersChart,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly queryService: QueryService,
+		private readonly roleUserService: RoleUserService,
+		private readonly activeUsersChart: ActiveUsersChart,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const policies = await this.roleUserService.getUserPolicies(me ? me.id : null);
@@ -67,7 +67,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				throw new ApiError(meta.errors.gtlDisabled);
 			}
 
-			//#region Construct query
+			// #region Construct query
 			const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'),
 				ps.sinceId, ps.untilId, ps.sinceDate, ps.untilDate)
 				.andWhere('note.visibility = \'public\'')
@@ -97,7 +97,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 					}));
 				}));
 			}
-			//#endregion
+			// #endregion
 
 			const timeline = await query.limit(ps.limit).getMany();
 

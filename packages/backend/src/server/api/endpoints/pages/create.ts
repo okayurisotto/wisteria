@@ -72,13 +72,13 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.pagesRepository)
-		private pagesRepository: PagesRepository,
+		private readonly pagesRepository: PagesRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private pageEntityService: PageEntityService,
-		private idService: IdService,
+		private readonly pageEntityService: PageEntityService,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			let eyeCatchingImage = null;

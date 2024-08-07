@@ -34,7 +34,7 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			await this.followingsRepository.update({

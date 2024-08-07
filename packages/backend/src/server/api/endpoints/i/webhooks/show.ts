@@ -65,7 +65,7 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.webhooksRepository)
-		private webhooksRepository: WebhooksRepository,
+		private readonly webhooksRepository: WebhooksRepository,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const webhook = await this.webhooksRepository.findOneBy({

@@ -70,14 +70,14 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.channelsRepository)
-		private channelsRepository: ChannelsRepository,
+		private readonly channelsRepository: ChannelsRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private channelEntityService: ChannelEntityService,
+		private readonly channelEntityService: ChannelEntityService,
 
-		private roleUserService: RoleUserService,
+		private readonly roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const channel = await this.channelsRepository.findOneBy({

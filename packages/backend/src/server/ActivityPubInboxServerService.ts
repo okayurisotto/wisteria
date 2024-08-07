@@ -47,9 +47,9 @@ const checkDigest = (algo: string, hash: string, body: string | Buffer): boolean
 export class ActivityPubInboxServerService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
-		private queueService: QueueService,
+		private readonly queueService: QueueService,
 	) {}
 
 	private async inbox(c: Context) {

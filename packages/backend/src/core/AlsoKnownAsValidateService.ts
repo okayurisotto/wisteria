@@ -11,8 +11,8 @@ import { UserEntityService } from '@/core/entities/UserEntityService.js';
 @Injectable()
 export class AlsoKnownAsValidateService {
 	constructor(
-		private userEntityService: UserEntityService,
-		private apPersonService: ApPersonService,
+		private readonly userEntityService: UserEntityService,
+		private readonly apPersonService: ApPersonService,
 	) {}
 
 	/**

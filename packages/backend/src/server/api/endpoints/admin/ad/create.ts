@@ -44,10 +44,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.adsRepository)
-		private adsRepository: AdsRepository,
+		private readonly adsRepository: AdsRepository,
 
-		private idService: IdService,
-		private moderationLogService: ModerationLogService,
+		private readonly idService: IdService,
+		private readonly moderationLogService: ModerationLogService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const ad = await this.adsRepository.insert({

@@ -77,22 +77,22 @@ export class RoleUserService {
 
 	constructor(
 		@Inject(DI.redisForTimelines)
-		private redisForTimelines: Redis.Redis,
+		private readonly redisForTimelines: Redis.Redis,
 
 		@Inject(DI.rolesRepository)
-		private rolesRepository: RolesRepository,
+		private readonly rolesRepository: RolesRepository,
 
 		@Inject(DI.roleAssignmentsRepository)
-		private roleAssignmentsRepository: RoleAssignmentsRepository,
+		private readonly roleAssignmentsRepository: RoleAssignmentsRepository,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private metaService: MetaService,
-		private userEntityService: UserEntityService,
-		private globalEventService: GlobalEventService,
-		private idService: IdService,
-		private fanoutTimelineService: FanoutTimelineService,
+		private readonly metaService: MetaService,
+		private readonly userEntityService: UserEntityService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly idService: IdService,
+		private readonly fanoutTimelineService: FanoutTimelineService,
 	) {}
 
 	private evalCond(user: MiUser, value: RoleCondFormulaValue): boolean {

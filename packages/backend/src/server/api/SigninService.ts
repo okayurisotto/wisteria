@@ -17,11 +17,11 @@ import { getConnInfo } from '@hono/node-server/conninfo';
 export class SigninService {
 	constructor(
 		@Inject(DI.signinsRepository)
-		private signinsRepository: SigninsRepository,
+		private readonly signinsRepository: SigninsRepository,
 
-		private signinEntityService: SigninEntityService,
-		private idService: IdService,
-		private globalEventService: GlobalEventService,
+		private readonly signinEntityService: SigninEntityService,
+		private readonly idService: IdService,
+		private readonly globalEventService: GlobalEventService,
 	) {}
 
 	public signin(c: Context, user: MiLocalUser) {

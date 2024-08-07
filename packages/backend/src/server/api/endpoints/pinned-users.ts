@@ -40,13 +40,13 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private metaService: MetaService,
-		private userEntityService: UserEntityService,
+		private readonly metaService: MetaService,
+		private readonly userEntityService: UserEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const meta = await this.metaService.fetch();

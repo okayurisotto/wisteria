@@ -23,7 +23,7 @@ const urlRegexFull = /^https?:\/\/[\w/:%#@$&?!()[\]~.,=+-]+$/;
 export class MfmService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 	) {}
 
 	public fromHtml(html: string, hashtagNames?: string[]): string {
@@ -89,10 +89,10 @@ export class MfmService {
 						const part = txt.split('@');
 
 						if (part.length === 2 && href) {
-							//#region ホスト名部分が省略されているので復元する
+							// #region ホスト名部分が省略されているので復元する
 							const acct = `${txt}@${(new URL(href.value)).hostname}`;
 							text += acct;
-							//#endregion
+							// #endregion
 						} else if (part.length === 3) {
 							text += txt;
 						}

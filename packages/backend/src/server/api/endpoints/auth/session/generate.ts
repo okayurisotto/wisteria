@@ -54,15 +54,15 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.appsRepository)
-		private appsRepository: AppsRepository,
+		private readonly appsRepository: AppsRepository,
 
 		@Inject(DI.authSessionsRepository)
-		private authSessionsRepository: AuthSessionsRepository,
+		private readonly authSessionsRepository: AuthSessionsRepository,
 
-		private idService: IdService,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Lookup app

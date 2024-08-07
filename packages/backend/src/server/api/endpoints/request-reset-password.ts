@@ -44,19 +44,19 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.passwordResetRequestsRepository)
-		private passwordResetRequestsRepository: PasswordResetRequestsRepository,
+		private readonly passwordResetRequestsRepository: PasswordResetRequestsRepository,
 
-		private idService: IdService,
-		private emailService: EmailService,
+		private readonly idService: IdService,
+		private readonly emailService: EmailService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const user = await this.usersRepository.findOneBy({

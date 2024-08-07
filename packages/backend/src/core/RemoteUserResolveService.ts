@@ -20,19 +20,19 @@ import { AcctEntity } from '@/misc/AcctEntity.js';
 
 @Injectable()
 export class RemoteUserResolveService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private webfingerService: WebfingerService,
-		private remoteLoggerService: RemoteLoggerService,
-		private apDbResolverService: ApDbResolverService,
-		private apPersonService: ApPersonService,
+		private readonly webfingerService: WebfingerService,
+		private readonly remoteLoggerService: RemoteLoggerService,
+		private readonly apDbResolverService: ApDbResolverService,
+		private readonly apPersonService: ApPersonService,
 	) {
 		this.logger = this.remoteLoggerService.logger.createSubLogger('resolve-user');
 	}

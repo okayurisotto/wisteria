@@ -41,46 +41,46 @@ declare module 'hono' {
 export class ClientServerService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.galleryPostsRepository)
-		private galleryPostsRepository: GalleryPostsRepository,
+		private readonly galleryPostsRepository: GalleryPostsRepository,
 
 		@Inject(DI.channelsRepository)
-		private channelsRepository: ChannelsRepository,
+		private readonly channelsRepository: ChannelsRepository,
 
 		@Inject(DI.clipsRepository)
-		private clipsRepository: ClipsRepository,
+		private readonly clipsRepository: ClipsRepository,
 
 		@Inject(DI.pagesRepository)
-		private pagesRepository: PagesRepository,
+		private readonly pagesRepository: PagesRepository,
 
 		@Inject(DI.flashsRepository)
-		private flashsRepository: FlashsRepository,
+		private readonly flashsRepository: FlashsRepository,
 
 		@Inject(DI.reversiGamesRepository)
-		private reversiGamesRepository: ReversiGamesRepository,
+		private readonly reversiGamesRepository: ReversiGamesRepository,
 
-		private flashEntityService: FlashEntityService,
-		private userEntityService: UserEntityService,
-		private noteEntityService: NoteEntityService,
-		private pageEntityService: PageEntityService,
-		private galleryPostEntityService: GalleryPostEntityService,
-		private clipEntityService: ClipEntityService,
-		private channelEntityService: ChannelEntityService,
-		private reversiGameEntityService: ReversiGameEntityService,
-		private metaService: MetaService,
-		private urlPreviewService: UrlPreviewService,
-		private clientLoggerService: ClientLoggerService,
+		private readonly flashEntityService: FlashEntityService,
+		private readonly userEntityService: UserEntityService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly pageEntityService: PageEntityService,
+		private readonly galleryPostEntityService: GalleryPostEntityService,
+		private readonly clipEntityService: ClipEntityService,
+		private readonly channelEntityService: ChannelEntityService,
+		private readonly reversiGameEntityService: ReversiGameEntityService,
+		private readonly metaService: MetaService,
+		private readonly urlPreviewService: UrlPreviewService,
+		private readonly clientLoggerService: ClientLoggerService,
 	) {}
 
 	private generateCommonPugData(meta: MiMeta) {

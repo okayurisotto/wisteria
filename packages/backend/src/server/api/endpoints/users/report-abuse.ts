@@ -59,15 +59,15 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.abuseUserReportsRepository)
-		private abuseUserReportsRepository: AbuseUserReportsRepository,
+		private readonly abuseUserReportsRepository: AbuseUserReportsRepository,
 
-		private idService: IdService,
-		private metaService: MetaService,
-		private emailService: EmailService,
-		private getterService: GetterService,
-		private roleService: RoleService,
-		private globalEventService: GlobalEventService,
-		private roleUserService: RoleUserService,
+		private readonly idService: IdService,
+		private readonly metaService: MetaService,
+		private readonly emailService: EmailService,
+		private readonly getterService: GetterService,
+		private readonly roleService: RoleService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Lookup user

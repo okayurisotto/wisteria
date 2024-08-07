@@ -73,7 +73,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private metaService: MetaService,
+		private readonly metaService: MetaService,
 	) {
 		super(meta, paramDef, async () => {
 			if (!(await this.metaService.fetch()).enableServerMachineStats) return {

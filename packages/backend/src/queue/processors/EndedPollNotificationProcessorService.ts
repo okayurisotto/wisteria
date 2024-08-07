@@ -14,12 +14,12 @@ import { NotificationCreateService } from '@/core/NotificationCreateService.js';
 export class EndedPollNotificationProcessorService {
 	constructor(
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.pollVotesRepository)
-		private pollVotesRepository: PollVotesRepository,
+		private readonly pollVotesRepository: PollVotesRepository,
 
-		private notificationCreateService: NotificationCreateService,
+		private readonly notificationCreateService: NotificationCreateService,
 	) {}
 
 	public async process(job: Bull.Job<EndedPollNotificationJobData>): Promise<void> {

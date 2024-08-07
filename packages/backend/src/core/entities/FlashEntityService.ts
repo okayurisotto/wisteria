@@ -18,13 +18,13 @@ import { UserEntityService } from './UserEntityService.js';
 export class FlashEntityService {
 	constructor(
 		@Inject(DI.flashsRepository)
-		private flashsRepository: FlashsRepository,
+		private readonly flashsRepository: FlashsRepository,
 
 		@Inject(DI.flashLikesRepository)
-		private flashLikesRepository: FlashLikesRepository,
+		private readonly flashLikesRepository: FlashLikesRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(

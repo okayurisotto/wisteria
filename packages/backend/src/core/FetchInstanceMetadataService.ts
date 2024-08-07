@@ -37,14 +37,14 @@ type NodeInfo = {
 
 @Injectable()
 export class FetchInstanceMetadataService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
-		private httpRequestService: HttpRequestService,
-		private loggerService: LoggerService,
-		private federatedInstanceService: FederatedInstanceService,
+		private readonly httpRequestService: HttpRequestService,
+		private readonly loggerService: LoggerService,
+		private readonly federatedInstanceService: FederatedInstanceService,
 		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
+		private readonly redisClient: Redis.Redis,
 	) {
 		this.logger = this.loggerService.getLogger('metadata', 'cyan');
 	}

@@ -41,9 +41,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private driveFileEntityService: DriveFileEntityService,
+		private readonly driveFileEntityService: DriveFileEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const files = await this.driveFilesRepository.findBy({

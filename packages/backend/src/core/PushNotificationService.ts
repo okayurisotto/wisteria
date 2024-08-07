@@ -14,12 +14,12 @@ import { MetaService } from '@/core/MetaService.js';
 
 // Defined also packages/sw/types.ts#L13
 type PushNotificationsTypes = {
-	'notification': Packed<'Notification'>;
-	'unreadAntennaNote': {
+	notification: Packed<'Notification'>;
+	unreadAntennaNote: {
 		antenna: { id: string; name: string };
 		note: Packed<'Note'>;
 	};
-	'readAllNotifications': undefined;
+	readAllNotifications: undefined;
 };
 
 // Reduce length because push message servers have character limits
@@ -47,12 +47,12 @@ function truncateBody<T extends keyof PushNotificationsTypes>(type: T, body: Pus
 export class PushNotificationService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.swSubscriptionsRepository)
-		private swSubscriptionsRepository: SwSubscriptionsRepository,
+		private readonly swSubscriptionsRepository: SwSubscriptionsRepository,
 
-		private metaService: MetaService,
+		private readonly metaService: MetaService,
 	) {}
 
 	public async pushNotification<T extends keyof PushNotificationsTypes>(userId: string, type: T, body: PushNotificationsTypes[T]) {
@@ -88,9 +88,9 @@ export class PushNotificationService {
 			}), {
 				proxy: this.config.proxy,
 			}).catch((err: unknown) => {
-				//swLogger.info(err.statusCode);
-				//swLogger.info(err.headers);
-				//swLogger.info(err.body);
+				// swLogger.info(err.statusCode);
+				// swLogger.info(err.headers);
+				// swLogger.info(err.body);
 
 				if (err.statusCode === 410) {
 					this.swSubscriptionsRepository.delete({

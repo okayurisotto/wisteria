@@ -13,10 +13,10 @@ import { ModerationLogService } from '@/core/ModerationLogService.js';
 export class AvatarDecorationService {
 	constructor(
 		@Inject(DI.avatarDecorationsRepository)
-		private avatarDecorationsRepository: AvatarDecorationsRepository,
+		private readonly avatarDecorationsRepository: AvatarDecorationsRepository,
 
-		private idService: IdService,
-		private moderationLogService: ModerationLogService,
+		private readonly idService: IdService,
+		private readonly moderationLogService: ModerationLogService,
 	) {}
 
 	public async create(options: Partial<MiAvatarDecoration>, moderator?: MiUser): Promise<MiAvatarDecoration> {

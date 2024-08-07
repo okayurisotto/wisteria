@@ -25,8 +25,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private getterService: GetterService,
-		private apPersonService: ApPersonService,
+		private readonly getterService: GetterService,
+		private readonly apPersonService: ApPersonService,
 	) {
 		super(meta, paramDef, async (ps) => {
 			const user = await this.getterService.getRemoteUser(ps.userId);

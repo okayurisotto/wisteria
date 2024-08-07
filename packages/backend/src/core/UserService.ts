@@ -12,10 +12,10 @@ import { DI } from '@/di-symbols.js';
 export class UserService {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 	) {}
 
 	public async updateLastActiveDate(user: MiUser): Promise<void> {

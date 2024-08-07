@@ -80,21 +80,21 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.pollsRepository)
-		private pollsRepository: PollsRepository,
+		private readonly pollsRepository: PollsRepository,
 
 		@Inject(DI.pollVotesRepository)
-		private pollVotesRepository: PollVotesRepository,
+		private readonly pollVotesRepository: PollVotesRepository,
 
-		private idService: IdService,
-		private getterService: GetterService,
-		private queueService: QueueService,
-		private pollService: PollService,
-		private apRendererService: ApRendererService,
-		private globalEventService: GlobalEventService,
-		private userBlockingCheckService: UserBlockingCheckService,
+		private readonly idService: IdService,
+		private readonly getterService: GetterService,
+		private readonly queueService: QueueService,
+		private readonly pollService: PollService,
+		private readonly apRendererService: ApRendererService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly userBlockingCheckService: UserBlockingCheckService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const createdAt = new Date();

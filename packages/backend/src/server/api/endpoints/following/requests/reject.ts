@@ -36,8 +36,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private getterService: GetterService,
-		private userFollowingService: UserFollowingService,
+		private readonly getterService: GetterService,
+		private readonly userFollowingService: UserFollowingService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Fetch follower

@@ -16,8 +16,8 @@ class ReversiGameChannel extends Channel {
 	private gameId: MiReversiGame['id'] | null = null;
 
 	constructor(
-		private reversiService: ReversiService,
-		private reversiGameEntityService: ReversiGameEntityService,
+		private readonly reversiService: ReversiService,
+		private readonly reversiGameEntityService: ReversiGameEntityService,
 
 		id: string,
 		connection: Channel['connection'],
@@ -84,8 +84,8 @@ export class ReversiGameChannelService implements MiChannelService<false> {
 	public readonly kind = ReversiGameChannel.kind;
 
 	constructor(
-		private reversiService: ReversiService,
-		private reversiGameEntityService: ReversiGameEntityService,
+		private readonly reversiService: ReversiService,
+		private readonly reversiGameEntityService: ReversiGameEntityService,
 	) {}
 
 	public create(id: string, connection: Channel['connection']): ReversiGameChannel {

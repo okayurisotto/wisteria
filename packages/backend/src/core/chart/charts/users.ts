@@ -25,10 +25,10 @@ export default class UsersChart extends Chart<typeof schema> {
 		db: DataSource,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		appLockService: AppLockService,
-		private userEntityService: UserEntityService,
+		private readonly userEntityService: UserEntityService,
 		chartLoggerService: ChartLoggerService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema);

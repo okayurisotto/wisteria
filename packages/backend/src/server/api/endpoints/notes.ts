@@ -43,10 +43,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
-		private noteEntityService: NoteEntityService,
-		private queryService: QueryService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), ps.sinceId, ps.untilId)
@@ -79,9 +79,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			}
 
 			// TODO
-			//if (bot != undefined) {
+			// if (bot != undefined) {
 			//	query.isBot = bot;
-			//}
+			// }
 
 			const notes = await query.limit(ps.limit).getMany();
 

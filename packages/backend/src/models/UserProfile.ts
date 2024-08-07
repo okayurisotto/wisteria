@@ -268,14 +268,14 @@ export class MiUserProfile {
 		unlockedAt: number;
 	}[];
 
-	//#region Denormalized fields
+	// #region Denormalized fields
 	@Index()
 	@Column('varchar', {
 		length: 128, nullable: true,
 		comment: '[Denormalized]',
 	})
 	public userHost: string | null;
-	//#endregion
+	// #endregion
 
 	constructor(data: Partial<MiUserProfile>) {
 		if (data == null) return;

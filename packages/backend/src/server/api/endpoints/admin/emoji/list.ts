@@ -10,7 +10,7 @@ import type { MiEmoji } from '@/models/Emoji.js';
 import { QueryService } from '@/core/QueryService.js';
 import { DI } from '@/di-symbols.js';
 import { EmojiEntityService } from '@/core/entities/EmojiEntityService.js';
-//import { sqlLikeEscape } from '@/misc/sql-like-escape.js';
+// import { sqlLikeEscape } from '@/misc/sql-like-escape.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -76,10 +76,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.emojisRepository)
-		private emojisRepository: EmojisRepository,
+		private readonly emojisRepository: EmojisRepository,
 
-		private emojiEntityService: EmojiEntityService,
-		private queryService: QueryService,
+		private readonly emojiEntityService: EmojiEntityService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const q = this.queryService.makePaginationQuery(this.emojisRepository.createQueryBuilder('emoji'), ps.sinceId, ps.untilId)
@@ -88,8 +88,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			let emojis: MiEmoji[];
 
 			if (ps.query) {
-				//q.andWhere('emoji.name ILIKE :q', { q: `%${ sqlLikeEscape(ps.query) }%` });
-				//const emojis = await q.limit(ps.limit).getMany();
+				// q.andWhere('emoji.name ILIKE :q', { q: `%${ sqlLikeEscape(ps.query) }%` });
+				// const emojis = await q.limit(ps.limit).getMany();
 
 				emojis = await q.getMany();
 				const queryarry = ps.query.match(/:([a-z0-9_]*):/g);

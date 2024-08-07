@@ -27,9 +27,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.noteUnreadsRepository)
-		private noteUnreadsRepository: NoteUnreadsRepository,
+		private readonly noteUnreadsRepository: NoteUnreadsRepository,
 
-		private globalEventService: GlobalEventService,
+		private readonly globalEventService: GlobalEventService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Remove documents

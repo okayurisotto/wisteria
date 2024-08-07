@@ -19,24 +19,24 @@ import { UserBlockingCheckService } from './UserBlockingCheckService.js';
 export class PollService {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.pollsRepository)
-		private pollsRepository: PollsRepository,
+		private readonly pollsRepository: PollsRepository,
 
 		@Inject(DI.pollVotesRepository)
-		private pollVotesRepository: PollVotesRepository,
+		private readonly pollVotesRepository: PollVotesRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
-		private relayService: RelayService,
-		private globalEventService: GlobalEventService,
-		private userBlockingCheckService: UserBlockingCheckService,
-		private apRendererService: ApRendererService,
-		private apDeliverManagerService: ApDeliverManagerService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
+		private readonly relayService: RelayService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly userBlockingCheckService: UserBlockingCheckService,
+		private readonly apRendererService: ApRendererService,
+		private readonly apDeliverManagerService: ApDeliverManagerService,
 	) {}
 
 	public async vote(user: MiUser, note: MiNote, choice: number) {

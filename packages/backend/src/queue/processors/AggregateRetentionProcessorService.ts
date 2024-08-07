@@ -15,17 +15,17 @@ import { QueueLoggerService } from '../QueueLoggerService.js';
 
 @Injectable()
 export class AggregateRetentionProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.retentionAggregationsRepository)
-		private retentionAggregationsRepository: RetentionAggregationsRepository,
+		private readonly retentionAggregationsRepository: RetentionAggregationsRepository,
 
-		private idService: IdService,
-		private queueLoggerService: QueueLoggerService,
+		private readonly idService: IdService,
+		private readonly queueLoggerService: QueueLoggerService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('aggregate-retention');
 	}

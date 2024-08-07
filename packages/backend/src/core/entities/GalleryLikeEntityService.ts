@@ -14,9 +14,9 @@ import { GalleryPostEntityService } from './GalleryPostEntityService.js';
 export class GalleryLikeEntityService {
 	constructor(
 		@Inject(DI.galleryLikesRepository)
-		private galleryLikesRepository: GalleryLikesRepository,
+		private readonly galleryLikesRepository: GalleryLikesRepository,
 
-		private galleryPostEntityService: GalleryPostEntityService,
+		private readonly galleryPostEntityService: GalleryPostEntityService,
 	) {}
 
 	public async pack(

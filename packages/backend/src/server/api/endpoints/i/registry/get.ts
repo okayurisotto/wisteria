@@ -40,7 +40,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private registryApiService: RegistryApiService,
+		private readonly registryApiService: RegistryApiService,
 	) {
 		super(meta, paramDef, async (ps, me, accessToken) => {
 			const item = await this.registryApiService.getItem(me.id, accessToken != null ? accessToken.id : (ps.domain ?? null), ps.scope, ps.key);

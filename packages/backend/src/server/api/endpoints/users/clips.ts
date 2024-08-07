@@ -41,10 +41,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.clipsRepository)
-		private clipsRepository: ClipsRepository,
+		private readonly clipsRepository: ClipsRepository,
 
-		private clipEntityService: ClipEntityService,
-		private queryService: QueryService,
+		private readonly clipEntityService: ClipEntityService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.clipsRepository.createQueryBuilder('clip'), ps.sinceId, ps.untilId)

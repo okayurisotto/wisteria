@@ -20,16 +20,16 @@ import type { IObject } from '../type.js';
 
 @Injectable()
 export class ApImageService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private metaService: MetaService,
-		private apResolverService: ApResolverService,
-		private driveService: DriveService,
-		private apLoggerService: ApLoggerService,
+		private readonly metaService: MetaService,
+		private readonly apResolverService: ApResolverService,
+		private readonly driveService: DriveService,
+		private readonly apLoggerService: ApLoggerService,
 	) {
 		this.logger = this.apLoggerService.logger;
 	}

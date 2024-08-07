@@ -55,15 +55,15 @@ import { NotificationCreateService } from './NotificationCreateService.js';
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention';
 
 class NotificationManager {
-	private notifier: { id: MiUser['id'] };
-	private note: MiNote;
-	private queue: {
+	private readonly notifier: { id: MiUser['id'] };
+	private readonly note: MiNote;
+	private readonly queue: {
 		target: MiLocalUser['id'];
 		reason: NotificationType;
 	}[];
 
 	constructor(
-		private notificationCreateService: NotificationCreateService,
+		private readonly notificationCreateService: NotificationCreateService,
 		notifier: { id: MiUser['id'] },
 		note: MiNote,
 	) {
@@ -138,63 +138,63 @@ type Option = {
 
 @Injectable()
 export class NoteCreateService implements OnApplicationShutdown {
-	#shutdownController = new AbortController();
+	readonly #shutdownController = new AbortController();
 
 	public static ContainsProhibitedWordsError = class extends Error {};
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.db)
-		private db: DataSource,
+		private readonly db: DataSource,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.channelsRepository)
-		private channelsRepository: ChannelsRepository,
+		private readonly channelsRepository: ChannelsRepository,
 
 		@Inject(DI.noteThreadMutingsRepository)
-		private noteThreadMutingsRepository: NoteThreadMutingsRepository,
+		private readonly noteThreadMutingsRepository: NoteThreadMutingsRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
-		private userEntityService: UserEntityService,
-		private noteEntityService: NoteEntityService,
-		private idService: IdService,
-		private globalEventService: GlobalEventService,
-		private queueService: QueueService,
-		private noteReadService: NoteReadService,
-		private notificationCreateService: NotificationCreateService,
-		private relayService: RelayService,
-		private federatedInstanceService: FederatedInstanceService,
-		private hashtagService: HashtagService,
-		private antennaService: AntennaService,
-		private webhookService: WebhookService,
-		private featuredService: FeaturedService,
-		private remoteUserResolveService: RemoteUserResolveService,
-		private apDeliverManagerService: ApDeliverManagerService,
-		private apRendererService: ApRendererService,
-		private roleUserService: RoleUserService,
-		private metaService: MetaService,
-		private searchService: SearchService,
-		private notesChart: NotesChart,
-		private perUserNotesChart: PerUserNotesChart,
-		private activeUsersChart: ActiveUsersChart,
-		private instanceChart: InstanceChart,
-		private utilityService: UtilityService,
-		private userBlockingCheckService: UserBlockingCheckService,
+		private readonly userEntityService: UserEntityService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly idService: IdService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly queueService: QueueService,
+		private readonly noteReadService: NoteReadService,
+		private readonly notificationCreateService: NotificationCreateService,
+		private readonly relayService: RelayService,
+		private readonly federatedInstanceService: FederatedInstanceService,
+		private readonly hashtagService: HashtagService,
+		private readonly antennaService: AntennaService,
+		private readonly webhookService: WebhookService,
+		private readonly featuredService: FeaturedService,
+		private readonly remoteUserResolveService: RemoteUserResolveService,
+		private readonly apDeliverManagerService: ApDeliverManagerService,
+		private readonly apRendererService: ApRendererService,
+		private readonly roleUserService: RoleUserService,
+		private readonly metaService: MetaService,
+		private readonly searchService: SearchService,
+		private readonly notesChart: NotesChart,
+		private readonly perUserNotesChart: PerUserNotesChart,
+		private readonly activeUsersChart: ActiveUsersChart,
+		private readonly instanceChart: InstanceChart,
+		private readonly utilityService: UtilityService,
+		private readonly userBlockingCheckService: UserBlockingCheckService,
 	) {}
 
 	public async create(user: {
@@ -625,7 +625,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 			nm.notify();
 
-			//#region AP deliver
+			// #region AP deliver
 			if (this.userEntityService.isLocalUser(user)) {
 				(async () => {
 					const noteActivity = await this.renderNoteOrRenoteActivity(data, note);
@@ -660,7 +660,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 					trackPromise(dm.execute());
 				})();
 			}
-			//#endregion
+			// #endregion
 		}
 
 		if (data.channel) {

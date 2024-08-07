@@ -17,19 +17,19 @@ import { HttpRequestService } from '@/core/HttpRequestService.js';
 
 @Injectable()
 export class EmailService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
-		private metaService: MetaService,
-		private loggerService: LoggerService,
-		private utilityService: UtilityService,
-		private httpRequestService: HttpRequestService,
+		private readonly metaService: MetaService,
+		private readonly loggerService: LoggerService,
+		private readonly utilityService: UtilityService,
+		private readonly httpRequestService: HttpRequestService,
 	) {
 		this.logger = this.loggerService.getLogger('email');
 	}
@@ -50,10 +50,12 @@ export class EmailService {
 			secure: meta.smtpSecure,
 			ignoreTLS: !enableAuth,
 			proxy: this.config.proxySmtp,
-			auth: enableAuth ? {
-				user: meta.smtpUser,
-				pass: meta.smtpPass,
-			} : undefined,
+			auth: enableAuth
+				? {
+						user: meta.smtpUser,
+						pass: meta.smtpPass,
+					}
+				: undefined,
 		} as any);
 
 		try {
@@ -233,7 +235,7 @@ export class EmailService {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
-				Accept: 'application/json, */*',
+				'Accept': 'application/json, */*',
 			},
 		});
 
@@ -303,8 +305,8 @@ export class EmailService {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					Accept: 'application/json',
-					Authorization: truemailAuthKey,
+					'Accept': 'application/json',
+					'Authorization': truemailAuthKey,
 				},
 			});
 

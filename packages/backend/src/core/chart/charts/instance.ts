@@ -26,18 +26,18 @@ export default class InstanceChart extends Chart<typeof schema> {
 		db: DataSource,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
-		private utilityService: UtilityService,
+		private readonly utilityService: UtilityService,
 		appLockService: AppLockService,
 		chartLoggerService: ChartLoggerService,
 	) {

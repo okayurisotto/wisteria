@@ -44,9 +44,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFoldersRepository)
-		private driveFoldersRepository: DriveFoldersRepository,
+		private readonly driveFoldersRepository: DriveFoldersRepository,
 
-		private driveFolderEntityService: DriveFolderEntityService,
+		private readonly driveFolderEntityService: DriveFolderEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Get folder

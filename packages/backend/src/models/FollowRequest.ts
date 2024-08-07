@@ -50,7 +50,7 @@ export class MiFollowRequest {
 	})
 	public withReplies: boolean;
 
-	//#region Denormalized fields
+	// #region Denormalized fields
 	@Column('varchar', {
 		length: 128, nullable: true,
 		comment: '[Denormalized]',
@@ -86,5 +86,5 @@ export class MiFollowRequest {
 		comment: '[Denormalized]',
 	})
 	public followeeSharedInbox: string | null;
-	//#endregion
+	// #endregion
 }

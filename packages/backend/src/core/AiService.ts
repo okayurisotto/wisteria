@@ -16,7 +16,7 @@ let isSupportedCpu: undefined | boolean = undefined;
 @Injectable()
 export class AiService {
 	private model: nsfw.NSFWJS;
-	private modelLoadMutex: Mutex = new Mutex();
+	private readonly modelLoadMutex: Mutex = new Mutex();
 
 	public async detectSensitive(path: string): Promise<nsfw.predictionType[] | null> {
 		try {

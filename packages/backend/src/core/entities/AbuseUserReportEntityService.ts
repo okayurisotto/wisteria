@@ -15,10 +15,10 @@ import { UserEntityService } from './UserEntityService.js';
 export class AbuseUserReportEntityService {
 	constructor(
 		@Inject(DI.abuseUserReportsRepository)
-		private abuseUserReportsRepository: AbuseUserReportsRepository,
+		private readonly abuseUserReportsRepository: AbuseUserReportsRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(
@@ -40,9 +40,11 @@ export class AbuseUserReportEntityService {
 			targetUser: this.userEntityService.pack(report.targetUser ?? report.targetUserId, null, {
 				schema: 'UserDetailedNotMe',
 			}),
-			assignee: report.assigneeId ? this.userEntityService.pack(report.assignee ?? report.assigneeId, null, {
-				schema: 'UserDetailedNotMe',
-			}) : null,
+			assignee: report.assigneeId
+				? this.userEntityService.pack(report.assignee ?? report.assigneeId, null, {
+					schema: 'UserDetailedNotMe',
+				})
+				: null,
 			forwarded: report.forwarded,
 		});
 	}

@@ -19,20 +19,20 @@ import { AcctEntity } from '@/misc/AcctEntity.js';
 export class FeedService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private userEntityService: UserEntityService,
-		private driveFileEntityService: DriveFileEntityService,
-		private idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly driveFileEntityService: DriveFileEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async packFeed(user: MiUser) {
@@ -70,9 +70,11 @@ export class FeedService {
 		});
 
 		for (const note of notes) {
-			const files = note.fileIds.length > 0 ? await this.driveFilesRepository.findBy({
-				id: In(note.fileIds),
-			}) : [];
+			const files = note.fileIds.length > 0
+				? await this.driveFilesRepository.findBy({
+					id: In(note.fileIds),
+				})
+				: [];
 			const file = files.find(file => file.type.startsWith('image/'));
 
 			feed.addItem({

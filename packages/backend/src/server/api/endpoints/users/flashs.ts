@@ -41,10 +41,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.flashsRepository)
-		private flashsRepository: FlashsRepository,
+		private readonly flashsRepository: FlashsRepository,
 
-		private flashEntityService: FlashEntityService,
-		private queryService: QueryService,
+		private readonly flashEntityService: FlashEntityService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.flashsRepository.createQueryBuilder('flash'), ps.sinceId, ps.untilId)

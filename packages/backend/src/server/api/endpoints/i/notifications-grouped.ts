@@ -61,15 +61,15 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
+		private readonly redisClient: Redis.Redis,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
-		private idService: IdService,
-		private notificationEntityService: NotificationEntityService,
-		private notificationService: NotificationService,
-		private noteReadService: NoteReadService,
+		private readonly idService: IdService,
+		private readonly notificationEntityService: NotificationEntityService,
+		private readonly notificationService: NotificationService,
+		private readonly noteReadService: NoteReadService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const EXTRA_LIMIT = 100;

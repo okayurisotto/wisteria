@@ -17,10 +17,10 @@ import { UserEntityService } from './UserEntityService.js';
 export class ReversiGameEntityService {
 	constructor(
 		@Inject(DI.reversiGamesRepository)
-		private reversiGamesRepository: ReversiGamesRepository,
+		private readonly reversiGamesRepository: ReversiGamesRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async packDetail(

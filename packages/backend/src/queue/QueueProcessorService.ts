@@ -56,8 +56,10 @@ function getJobInfo(job: Bull.Job | undefined, increment = false): string {
 
 	const age = Date.now() - job.timestamp;
 
-	const formated = age > 60000 ? `${Math.floor(age / 1000 / 60)}m`
-		: age > 10000 ? `${Math.floor(age / 1000)}s`
+	const formated = age > 60000
+		? `${Math.floor(age / 1000 / 60)}m`
+		: age > 10000
+			? `${Math.floor(age / 1000)}s`
 			: `${age}ms`;
 
 	// onActiveとかonCompletedのattemptsMadeがなぜか0始まりなのでインクリメントする
@@ -74,7 +76,7 @@ const runWorker = async (worker: Bull.Worker): Promise<void> => {
 			return;
 		}
 
-		worker.on("ready", resolve);
+		worker.on('ready', resolve);
 
 		void worker.run().catch(() => {
 			reject(new Error());
@@ -84,51 +86,51 @@ const runWorker = async (worker: Bull.Worker): Promise<void> => {
 
 @Injectable()
 export class QueueProcessorService implements OnApplicationShutdown {
-	private logger: Logger;
-	private systemQueueWorker: Bull.Worker;
-	private dbQueueWorker: Bull.Worker;
-	private deliverQueueWorker: Bull.Worker;
-	private inboxQueueWorker: Bull.Worker;
-	private webhookDeliverQueueWorker: Bull.Worker;
-	private relationshipQueueWorker: Bull.Worker;
-	private objectStorageQueueWorker: Bull.Worker;
-	private endedPollNotificationQueueWorker: Bull.Worker;
+	private readonly logger: Logger;
+	private readonly systemQueueWorker: Bull.Worker;
+	private readonly dbQueueWorker: Bull.Worker;
+	private readonly deliverQueueWorker: Bull.Worker;
+	private readonly inboxQueueWorker: Bull.Worker;
+	private readonly webhookDeliverQueueWorker: Bull.Worker;
+	private readonly relationshipQueueWorker: Bull.Worker;
+	private readonly objectStorageQueueWorker: Bull.Worker;
+	private readonly endedPollNotificationQueueWorker: Bull.Worker;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
-		private queueLoggerService: QueueLoggerService,
-		private webhookDeliverProcessorService: WebhookDeliverProcessorService,
-		private endedPollNotificationProcessorService: EndedPollNotificationProcessorService,
-		private deliverProcessorService: DeliverProcessorService,
-		private inboxProcessorService: InboxProcessorService,
-		private deleteDriveFilesProcessorService: DeleteDriveFilesProcessorService,
-		private exportCustomEmojisProcessorService: ExportCustomEmojisProcessorService,
-		private exportNotesProcessorService: ExportNotesProcessorService,
-		private exportClipsProcessorService: ExportClipsProcessorService,
-		private exportFavoritesProcessorService: ExportFavoritesProcessorService,
-		private exportFollowingProcessorService: ExportFollowingProcessorService,
-		private exportMutingProcessorService: ExportMutingProcessorService,
-		private exportBlockingProcessorService: ExportBlockingProcessorService,
-		private exportUserListsProcessorService: ExportUserListsProcessorService,
-		private exportAntennasProcessorService: ExportAntennasProcessorService,
-		private importFollowingProcessorService: ImportFollowingProcessorService,
-		private importMutingProcessorService: ImportMutingProcessorService,
-		private importBlockingProcessorService: ImportBlockingProcessorService,
-		private importUserListsProcessorService: ImportUserListsProcessorService,
-		private importCustomEmojisProcessorService: ImportCustomEmojisProcessorService,
-		private importAntennasProcessorService: ImportAntennasProcessorService,
-		private deleteAccountProcessorService: DeleteAccountProcessorService,
-		private deleteFileProcessorService: DeleteFileProcessorService,
-		private cleanRemoteFilesProcessorService: CleanRemoteFilesProcessorService,
-		private relationshipProcessorService: RelationshipProcessorService,
-		private tickChartsProcessorService: TickChartsProcessorService,
-		private resyncChartsProcessorService: ResyncChartsProcessorService,
-		private cleanChartsProcessorService: CleanChartsProcessorService,
-		private aggregateRetentionProcessorService: AggregateRetentionProcessorService,
-		private checkExpiredMutingsProcessorService: CheckExpiredMutingsProcessorService,
-		private cleanProcessorService: CleanProcessorService,
+		private readonly queueLoggerService: QueueLoggerService,
+		private readonly webhookDeliverProcessorService: WebhookDeliverProcessorService,
+		private readonly endedPollNotificationProcessorService: EndedPollNotificationProcessorService,
+		private readonly deliverProcessorService: DeliverProcessorService,
+		private readonly inboxProcessorService: InboxProcessorService,
+		private readonly deleteDriveFilesProcessorService: DeleteDriveFilesProcessorService,
+		private readonly exportCustomEmojisProcessorService: ExportCustomEmojisProcessorService,
+		private readonly exportNotesProcessorService: ExportNotesProcessorService,
+		private readonly exportClipsProcessorService: ExportClipsProcessorService,
+		private readonly exportFavoritesProcessorService: ExportFavoritesProcessorService,
+		private readonly exportFollowingProcessorService: ExportFollowingProcessorService,
+		private readonly exportMutingProcessorService: ExportMutingProcessorService,
+		private readonly exportBlockingProcessorService: ExportBlockingProcessorService,
+		private readonly exportUserListsProcessorService: ExportUserListsProcessorService,
+		private readonly exportAntennasProcessorService: ExportAntennasProcessorService,
+		private readonly importFollowingProcessorService: ImportFollowingProcessorService,
+		private readonly importMutingProcessorService: ImportMutingProcessorService,
+		private readonly importBlockingProcessorService: ImportBlockingProcessorService,
+		private readonly importUserListsProcessorService: ImportUserListsProcessorService,
+		private readonly importCustomEmojisProcessorService: ImportCustomEmojisProcessorService,
+		private readonly importAntennasProcessorService: ImportAntennasProcessorService,
+		private readonly deleteAccountProcessorService: DeleteAccountProcessorService,
+		private readonly deleteFileProcessorService: DeleteFileProcessorService,
+		private readonly cleanRemoteFilesProcessorService: CleanRemoteFilesProcessorService,
+		private readonly relationshipProcessorService: RelationshipProcessorService,
+		private readonly tickChartsProcessorService: TickChartsProcessorService,
+		private readonly resyncChartsProcessorService: ResyncChartsProcessorService,
+		private readonly cleanChartsProcessorService: CleanChartsProcessorService,
+		private readonly aggregateRetentionProcessorService: AggregateRetentionProcessorService,
+		private readonly checkExpiredMutingsProcessorService: CheckExpiredMutingsProcessorService,
+		private readonly cleanProcessorService: CleanProcessorService,
 	) {
 		this.logger = this.queueLoggerService.logger;
 
@@ -148,7 +150,7 @@ export class QueueProcessorService implements OnApplicationShutdown {
 			}
 		}
 
-		//#region system
+		// #region system
 		this.systemQueueWorker = new Bull.Worker(QUEUE.SYSTEM, (job) => {
 			switch (job.name) {
 				case 'tickCharts': return this.tickChartsProcessorService.process();
@@ -167,14 +169,24 @@ export class QueueProcessorService implements OnApplicationShutdown {
 		const systemLogger = this.logger.createSubLogger('system');
 
 		this.systemQueueWorker
-			.on('active', job => systemLogger.debug(`active id=${job.id}`))
-			.on('completed', (job, result) => systemLogger.debug(`completed(${result}) id=${job.id}`))
-			.on('failed', (job, err) => systemLogger.warn(`failed(${err.stack}) id=${job ? job.id : '-'}`, { job, e: renderError(err) }))
-			.on('error', (err: Error) => systemLogger.error(`error ${err.stack}`, { e: renderError(err) }))
-			.on('stalled', jobId => systemLogger.warn(`stalled id=${jobId}`));
-		//#endregion
+			.on('active', (job) => {
+				systemLogger.debug(`active id=${job.id}`);
+			})
+			.on('completed', (job, result) => {
+				systemLogger.debug(`completed(${result}) id=${job.id}`);
+			})
+			.on('failed', (job, err) => {
+				systemLogger.warn(`failed(${err.stack}) id=${job ? job.id : '-'}`, { job, e: renderError(err) });
+			})
+			.on('error', (err: Error) => {
+				systemLogger.error(`error ${err.stack}`, { e: renderError(err) });
+			})
+			.on('stalled', (jobId) => {
+				systemLogger.warn(`stalled id=${jobId}`);
+			});
+		// #endregion
 
-		//#region db
+		// #region db
 		this.dbQueueWorker = new Bull.Worker(QUEUE.DB, (job) => {
 			switch (job.name) {
 				case 'deleteDriveFiles': return this.deleteDriveFilesProcessorService.process(job);
@@ -206,14 +218,24 @@ export class QueueProcessorService implements OnApplicationShutdown {
 		const dbLogger = this.logger.createSubLogger('db');
 
 		this.dbQueueWorker
-			.on('active', job => dbLogger.debug(`active id=${job.id}`))
-			.on('completed', (job, result) => dbLogger.debug(`completed(${result}) id=${job.id}`))
-			.on('failed', (job, err) => dbLogger.warn(`failed(${err.stack}) id=${job ? job.id : '-'}`, { job, e: renderError(err) }))
-			.on('error', (err: Error) => dbLogger.error(`error ${err.stack}`, { e: renderError(err) }))
-			.on('stalled', jobId => dbLogger.warn(`stalled id=${jobId}`));
-		//#endregion
+			.on('active', (job) => {
+				dbLogger.debug(`active id=${job.id}`);
+			})
+			.on('completed', (job, result) => {
+				dbLogger.debug(`completed(${result}) id=${job.id}`);
+			})
+			.on('failed', (job, err) => {
+				dbLogger.warn(`failed(${err.stack}) id=${job ? job.id : '-'}`, { job, e: renderError(err) });
+			})
+			.on('error', (err: Error) => {
+				dbLogger.error(`error ${err.stack}`, { e: renderError(err) });
+			})
+			.on('stalled', (jobId) => {
+				dbLogger.warn(`stalled id=${jobId}`);
+			});
+		// #endregion
 
-		//#region deliver
+		// #region deliver
 		this.deliverQueueWorker = new Bull.Worker(QUEUE.DELIVER, job => this.deliverProcessorService.process(job), {
 			...baseQueueOptions(this.config, QUEUE.DELIVER),
 			autorun: false,
@@ -230,14 +252,24 @@ export class QueueProcessorService implements OnApplicationShutdown {
 		const deliverLogger = this.logger.createSubLogger('deliver');
 
 		this.deliverQueueWorker
-			.on('active', job => deliverLogger.debug(`active ${getJobInfo(job, true)} to=${job.data.to}`))
-			.on('completed', (job, result) => deliverLogger.debug(`completed(${result}) ${getJobInfo(job, true)} to=${job.data.to}`))
-			.on('failed', (job, err) => deliverLogger.warn(`failed(${err.stack}) ${getJobInfo(job)} to=${job ? job.data.to : '-'}`))
-			.on('error', (err: Error) => deliverLogger.error(`error ${err.stack}`, { e: renderError(err) }))
-			.on('stalled', jobId => deliverLogger.warn(`stalled id=${jobId}`));
-		//#endregion
+			.on('active', (job) => {
+				deliverLogger.debug(`active ${getJobInfo(job, true)} to=${job.data.to}`);
+			})
+			.on('completed', (job, result) => {
+				deliverLogger.debug(`completed(${result}) ${getJobInfo(job, true)} to=${job.data.to}`);
+			})
+			.on('failed', (job, err) => {
+				deliverLogger.warn(`failed(${err.stack}) ${getJobInfo(job)} to=${job ? job.data.to : '-'}`);
+			})
+			.on('error', (err: Error) => {
+				deliverLogger.error(`error ${err.stack}`, { e: renderError(err) });
+			})
+			.on('stalled', (jobId) => {
+				deliverLogger.warn(`stalled id=${jobId}`);
+			});
+		// #endregion
 
-		//#region inbox
+		// #region inbox
 		this.inboxQueueWorker = new Bull.Worker(QUEUE.INBOX, job => this.inboxProcessorService.process(job), {
 			...baseQueueOptions(this.config, QUEUE.INBOX),
 			autorun: false,
@@ -254,14 +286,24 @@ export class QueueProcessorService implements OnApplicationShutdown {
 		const inboxLogger = this.logger.createSubLogger('inbox');
 
 		this.inboxQueueWorker
-			.on('active', job => inboxLogger.debug(`active ${getJobInfo(job, true)}`))
-			.on('completed', (job, result) => inboxLogger.debug(`completed(${result}) ${getJobInfo(job, true)}`))
-			.on('failed', (job, err) => inboxLogger.warn(`failed(${err.stack}) ${getJobInfo(job)} activity=${job ? (job.data.activity ? job.data.activity.id : 'none') : '-'}`, { job, e: renderError(err) }))
-			.on('error', (err: Error) => inboxLogger.error(`error ${err.stack}`, { e: renderError(err) }))
-			.on('stalled', jobId => inboxLogger.warn(`stalled id=${jobId}`));
-		//#endregion
+			.on('active', (job) => {
+				inboxLogger.debug(`active ${getJobInfo(job, true)}`);
+			})
+			.on('completed', (job, result) => {
+				inboxLogger.debug(`completed(${result}) ${getJobInfo(job, true)}`);
+			})
+			.on('failed', (job, err) => {
+				inboxLogger.warn(`failed(${err.stack}) ${getJobInfo(job)} activity=${job ? (job.data.activity ? job.data.activity.id : 'none') : '-'}`, { job, e: renderError(err) });
+			})
+			.on('error', (err: Error) => {
+				inboxLogger.error(`error ${err.stack}`, { e: renderError(err) });
+			})
+			.on('stalled', (jobId) => {
+				inboxLogger.warn(`stalled id=${jobId}`);
+			});
+		// #endregion
 
-		//#region webhook deliver
+		// #region webhook deliver
 		this.webhookDeliverQueueWorker = new Bull.Worker(QUEUE.WEBHOOK_DELIVER, job => this.webhookDeliverProcessorService.process(job), {
 			...baseQueueOptions(this.config, QUEUE.WEBHOOK_DELIVER),
 			autorun: false,
@@ -278,14 +320,24 @@ export class QueueProcessorService implements OnApplicationShutdown {
 		const webhookLogger = this.logger.createSubLogger('webhook');
 
 		this.webhookDeliverQueueWorker
-			.on('active', job => webhookLogger.debug(`active ${getJobInfo(job, true)} to=${job.data.to}`))
-			.on('completed', (job, result) => webhookLogger.debug(`completed(${result}) ${getJobInfo(job, true)} to=${job.data.to}`))
-			.on('failed', (job, err) => webhookLogger.warn(`failed(${err.stack}) ${getJobInfo(job)} to=${job ? job.data.to : '-'}`))
-			.on('error', (err: Error) => webhookLogger.error(`error ${err.stack}`, { e: renderError(err) }))
-			.on('stalled', jobId => webhookLogger.warn(`stalled id=${jobId}`));
-		//#endregion
+			.on('active', (job) => {
+				webhookLogger.debug(`active ${getJobInfo(job, true)} to=${job.data.to}`);
+			})
+			.on('completed', (job, result) => {
+				webhookLogger.debug(`completed(${result}) ${getJobInfo(job, true)} to=${job.data.to}`);
+			})
+			.on('failed', (job, err) => {
+				webhookLogger.warn(`failed(${err.stack}) ${getJobInfo(job)} to=${job ? job.data.to : '-'}`);
+			})
+			.on('error', (err: Error) => {
+				webhookLogger.error(`error ${err.stack}`, { e: renderError(err) });
+			})
+			.on('stalled', (jobId) => {
+				webhookLogger.warn(`stalled id=${jobId}`);
+			});
+		// #endregion
 
-		//#region relationship
+		// #region relationship
 		this.relationshipQueueWorker = new Bull.Worker(QUEUE.RELATIONSHIP, (job) => {
 			switch (job.name) {
 				case 'follow': return this.relationshipProcessorService.processFollow(job);
@@ -307,14 +359,24 @@ export class QueueProcessorService implements OnApplicationShutdown {
 		const relationshipLogger = this.logger.createSubLogger('relationship');
 
 		this.relationshipQueueWorker
-			.on('active', job => relationshipLogger.debug(`active id=${job.id}`))
-			.on('completed', (job, result) => relationshipLogger.debug(`completed(${result}) id=${job.id}`))
-			.on('failed', (job, err) => relationshipLogger.warn(`failed(${err.stack}) id=${job ? job.id : '-'}`, { job, e: renderError(err) }))
-			.on('error', (err: Error) => relationshipLogger.error(`error ${err.stack}`, { e: renderError(err) }))
-			.on('stalled', jobId => relationshipLogger.warn(`stalled id=${jobId}`));
-		//#endregion
+			.on('active', (job) => {
+				relationshipLogger.debug(`active id=${job.id}`);
+			})
+			.on('completed', (job, result) => {
+				relationshipLogger.debug(`completed(${result}) id=${job.id}`);
+			})
+			.on('failed', (job, err) => {
+				relationshipLogger.warn(`failed(${err.stack}) id=${job ? job.id : '-'}`, { job, e: renderError(err) });
+			})
+			.on('error', (err: Error) => {
+				relationshipLogger.error(`error ${err.stack}`, { e: renderError(err) });
+			})
+			.on('stalled', (jobId) => {
+				relationshipLogger.warn(`stalled id=${jobId}`);
+			});
+		// #endregion
 
-		//#region object storage
+		// #region object storage
 		this.objectStorageQueueWorker = new Bull.Worker(QUEUE.OBJECT_STORAGE, (job) => {
 			switch (job.name) {
 				case 'deleteFile': return this.deleteFileProcessorService.process(job);
@@ -330,19 +392,29 @@ export class QueueProcessorService implements OnApplicationShutdown {
 		const objectStorageLogger = this.logger.createSubLogger('objectStorage');
 
 		this.objectStorageQueueWorker
-			.on('active', job => objectStorageLogger.debug(`active id=${job.id}`))
-			.on('completed', (job, result) => objectStorageLogger.debug(`completed(${result}) id=${job.id}`))
-			.on('failed', (job, err) => objectStorageLogger.warn(`failed(${err.stack}) id=${job ? job.id : '-'}`, { job, e: renderError(err) }))
-			.on('error', (err: Error) => objectStorageLogger.error(`error ${err.stack}`, { e: renderError(err) }))
-			.on('stalled', jobId => objectStorageLogger.warn(`stalled id=${jobId}`));
-		//#endregion
+			.on('active', (job) => {
+				objectStorageLogger.debug(`active id=${job.id}`);
+			})
+			.on('completed', (job, result) => {
+				objectStorageLogger.debug(`completed(${result}) id=${job.id}`);
+			})
+			.on('failed', (job, err) => {
+				objectStorageLogger.warn(`failed(${err.stack}) id=${job ? job.id : '-'}`, { job, e: renderError(err) });
+			})
+			.on('error', (err: Error) => {
+				objectStorageLogger.error(`error ${err.stack}`, { e: renderError(err) });
+			})
+			.on('stalled', (jobId) => {
+				objectStorageLogger.warn(`stalled id=${jobId}`);
+			});
+		// #endregion
 
-		//#region ended poll notification
+		// #region ended poll notification
 		this.endedPollNotificationQueueWorker = new Bull.Worker(QUEUE.ENDED_POLL_NOTIFICATION, job => this.endedPollNotificationProcessorService.process(job), {
 			...baseQueueOptions(this.config, QUEUE.ENDED_POLL_NOTIFICATION),
 			autorun: false,
 		});
-		//#endregion
+		// #endregion
 	}
 
 	public async start(): Promise<void> {

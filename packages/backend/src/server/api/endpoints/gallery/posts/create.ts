@@ -55,13 +55,13 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.galleryPostsRepository)
-		private galleryPostsRepository: GalleryPostsRepository,
+		private readonly galleryPostsRepository: GalleryPostsRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private galleryPostEntityService: GalleryPostEntityService,
-		private idService: IdService,
+		private readonly galleryPostEntityService: GalleryPostEntityService,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const files = (await Promise.all(ps.fileIds.map(fileId =>

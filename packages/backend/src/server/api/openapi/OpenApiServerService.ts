@@ -16,7 +16,7 @@ import { serveStaticFile } from 'hono-serve-static';
 export class OpenApiServerService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 	) {}
 
 	public createServer(): Hono {

@@ -16,13 +16,13 @@ import { UserEntityService } from './UserEntityService.js';
 export class UserListEntityService {
 	constructor(
 		@Inject(DI.userListsRepository)
-		private userListsRepository: UserListsRepository,
+		private readonly userListsRepository: UserListsRepository,
 
 		@Inject(DI.userListMembershipsRepository)
-		private userListMembershipsRepository: UserListMembershipsRepository,
+		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(

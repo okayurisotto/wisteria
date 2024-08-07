@@ -26,30 +26,30 @@ import { z } from 'zod';
 export class SignupApiService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.userPendingsRepository)
-		private userPendingsRepository: UserPendingsRepository,
+		private readonly userPendingsRepository: UserPendingsRepository,
 
 		@Inject(DI.usedUsernamesRepository)
-		private usedUsernamesRepository: UsedUsernamesRepository,
+		private readonly usedUsernamesRepository: UsedUsernamesRepository,
 
 		@Inject(DI.registrationTicketsRepository)
-		private registrationTicketsRepository: RegistrationTicketsRepository,
+		private readonly registrationTicketsRepository: RegistrationTicketsRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
-		private metaService: MetaService,
-		private captchaService: CaptchaService,
-		private signupService: SignupService,
-		private signinService: SigninService,
-		private emailService: EmailService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
+		private readonly metaService: MetaService,
+		private readonly captchaService: CaptchaService,
+		private readonly signupService: SignupService,
+		private readonly signinService: SigninService,
+		private readonly emailService: EmailService,
 	) {}
 
 	public async signup(c: Context): Promise<Response> {

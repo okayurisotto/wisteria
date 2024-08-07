@@ -129,7 +129,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private userEntityService: UserEntityService,
+		private readonly userEntityService: UserEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const ids = Array.isArray(ps.userId) ? ps.userId : [ps.userId];

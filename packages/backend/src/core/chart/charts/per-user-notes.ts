@@ -25,7 +25,7 @@ export default class PerUserNotesChart extends Chart<typeof schema> {
 		db: DataSource,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		appLockService: AppLockService,
 		chartLoggerService: ChartLoggerService,

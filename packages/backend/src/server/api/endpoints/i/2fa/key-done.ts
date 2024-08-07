@@ -59,15 +59,15 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.userSecurityKeysRepository)
-		private userSecurityKeysRepository: UserSecurityKeysRepository,
+		private readonly userSecurityKeysRepository: UserSecurityKeysRepository,
 
-		private webAuthnService: WebAuthnService,
-		private userAuthService: UserAuthService,
-		private userEntityService: UserEntityService,
-		private globalEventService: GlobalEventService,
+		private readonly webAuthnService: WebAuthnService,
+		private readonly userAuthService: UserAuthService,
+		private readonly userEntityService: UserEntityService,
+		private readonly globalEventService: GlobalEventService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const token = ps.token;

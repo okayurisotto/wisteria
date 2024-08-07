@@ -46,23 +46,25 @@ export const paramDef = {
 @Injectable() export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userListsRepository)
-		private userListsRepository: UserListsRepository,
+		private readonly userListsRepository: UserListsRepository,
 
 		@Inject(DI.userListFavoritesRepository)
-		private userListFavoritesRepository: UserListFavoritesRepository,
+		private readonly userListFavoritesRepository: UserListFavoritesRepository,
 
-		private userListEntityService: UserListEntityService,
+		private readonly userListEntityService: UserListEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const additionalProperties: Partial<{ likedCount: number; isLiked: boolean }> = {};
 			// Fetch the list
-			const userList = await this.userListsRepository.findOneBy(!ps.forPublic && me !== null ? {
-				id: ps.listId,
-				userId: me.id,
-			} : {
-				id: ps.listId,
-				isPublic: true,
-			});
+			const userList = await this.userListsRepository.findOneBy(!ps.forPublic && me !== null
+				? {
+						id: ps.listId,
+						userId: me.id,
+					}
+				: {
+						id: ps.listId,
+						isPublic: true,
+					});
 
 			if (userList == null) {
 				throw new ApiError(meta.errors.noSuchList);

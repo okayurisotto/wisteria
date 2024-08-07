@@ -19,7 +19,7 @@ const featuredEpoc = new Date('2023-01-01T00:00:00Z').getTime();
 export class FeaturedService {
 	constructor(
 		@Inject(DI.redis)
-		private redisClient: Redis.Redis, // TODO: 専用のRedisサーバーを設定できるようにする
+		private readonly redisClient: Redis.Redis, // TODO: 専用のRedisサーバーを設定できるようにする
 	) {}
 
 	private getCurrentWindow(windowRange: number): number {

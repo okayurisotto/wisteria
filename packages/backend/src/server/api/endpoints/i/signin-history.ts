@@ -39,10 +39,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.signinsRepository)
-		private signinsRepository: SigninsRepository,
+		private readonly signinsRepository: SigninsRepository,
 
-		private signinEntityService: SigninEntityService,
-		private queryService: QueryService,
+		private readonly signinEntityService: SigninEntityService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.signinsRepository.createQueryBuilder('signin'), ps.sinceId, ps.untilId)

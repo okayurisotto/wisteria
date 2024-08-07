@@ -38,9 +38,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.noteThreadMutingsRepository)
-		private noteThreadMutingsRepository: NoteThreadMutingsRepository,
+		private readonly noteThreadMutingsRepository: NoteThreadMutingsRepository,
 
-		private getterService: GetterService,
+		private readonly getterService: GetterService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const note = await this.getterService.getNote(ps.noteId).catch((err: unknown) => {

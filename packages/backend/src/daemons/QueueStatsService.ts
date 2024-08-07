@@ -22,9 +22,9 @@ export class QueueStatsService implements OnApplicationShutdown {
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
-		private queueService: QueueService,
+		private readonly queueService: QueueService,
 	) {}
 
 	/**

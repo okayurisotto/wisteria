@@ -19,25 +19,25 @@ import type { DbUserDeleteJobData } from '../types.js';
 
 @Injectable()
 export class DeleteAccountProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private driveService: DriveService,
-		private emailService: EmailService,
-		private queueLoggerService: QueueLoggerService,
-		private searchService: SearchService,
+		private readonly driveService: DriveService,
+		private readonly emailService: EmailService,
+		private readonly queueLoggerService: QueueLoggerService,
+		private readonly searchService: SearchService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('delete-account');
 	}

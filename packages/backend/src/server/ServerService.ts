@@ -32,32 +32,32 @@ import { FileProxyServerService } from './FileProxyServerService.js';
 
 @Injectable()
 export class ServerService implements OnApplicationShutdown {
-	private logger: Logger;
+	private readonly logger: Logger;
 	private server: ServerType | null = null;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
-		private apiServerService: ApiServerService,
-		private openApiServerService: OpenApiServerService,
-		private streamingApiServerService: StreamingApiServerService,
-		private activityPubServerService: ActivityPubServerService,
-		private wellKnownServerService: WellKnownServerService,
-		private nodeinfoServerService: NodeinfoServerService,
-		private fileServerService: FileServerService,
-		private clientServerService: ClientServerService,
-		private loggerService: LoggerService,
-		private activityPubInboxServerService: ActivityPubInboxServerService,
-		private emojiRedirectServerService: EmojiRedirectServerService,
-		private avatarRedirectServerService: AvatarRedirectServerService,
-		private identiconServerService: IdenticonServerService,
-		private emailVerificationServerService: EmailVerificationServerService,
-		private staticAssetsServerService: StaticAssetsServerService,
-		private userFeedServerService: UserFeedServerService,
-		private emojiServerService: EmojiServerService,
-		private bullDashboardServerService: BullDashboardServerService,
-		private fileProxyServerService: FileProxyServerService,
+		private readonly apiServerService: ApiServerService,
+		private readonly openApiServerService: OpenApiServerService,
+		private readonly streamingApiServerService: StreamingApiServerService,
+		private readonly activityPubServerService: ActivityPubServerService,
+		private readonly wellKnownServerService: WellKnownServerService,
+		private readonly nodeinfoServerService: NodeinfoServerService,
+		private readonly fileServerService: FileServerService,
+		private readonly clientServerService: ClientServerService,
+		private readonly loggerService: LoggerService,
+		private readonly activityPubInboxServerService: ActivityPubInboxServerService,
+		private readonly emojiRedirectServerService: EmojiRedirectServerService,
+		private readonly avatarRedirectServerService: AvatarRedirectServerService,
+		private readonly identiconServerService: IdenticonServerService,
+		private readonly emailVerificationServerService: EmailVerificationServerService,
+		private readonly staticAssetsServerService: StaticAssetsServerService,
+		private readonly userFeedServerService: UserFeedServerService,
+		private readonly emojiServerService: EmojiServerService,
+		private readonly bullDashboardServerService: BullDashboardServerService,
+		private readonly fileProxyServerService: FileProxyServerService,
 	) {
 		this.logger = this.loggerService.getLogger('server', 'gray');
 	}

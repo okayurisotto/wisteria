@@ -42,10 +42,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 	constructor(
 		@Inject(DI.galleryPostsRepository)
-		private galleryPostsRepository: GalleryPostsRepository,
+		private readonly galleryPostsRepository: GalleryPostsRepository,
 
-		private galleryPostEntityService: GalleryPostEntityService,
-		private featuredService: FeaturedService,
+		private readonly galleryPostEntityService: GalleryPostEntityService,
+		private readonly featuredService: FeaturedService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			let postIds: string[];

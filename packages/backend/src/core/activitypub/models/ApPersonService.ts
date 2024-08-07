@@ -56,47 +56,47 @@ export class ApPersonService implements OnModuleInit {
 	private apResolverService: ApResolverService;
 	private apNoteService: ApNoteService;
 	private apImageService: ApImageService;
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
-		private accountMoveService: AccountMoveService,
+		private readonly accountMoveService: AccountMoveService,
 
-		private moduleRef: ModuleRef,
+		private readonly moduleRef: ModuleRef,
 
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.db)
-		private db: DataSource,
+		private readonly db: DataSource,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.userPublickeysRepository)
-		private userPublickeysRepository: UserPublickeysRepository,
+		private readonly userPublickeysRepository: UserPublickeysRepository,
 
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
-		private metaService: MetaService,
-		private idService: IdService,
-		private utilityService: UtilityService,
-		private apLoggerService: ApLoggerService,
-		private mfmService: MfmService,
-		private userEntityService: UserEntityService,
-		private driveFileEntityService: DriveFileEntityService,
-		private federatedInstanceService: FederatedInstanceService,
-		private fetchInstanceMetadataService: FetchInstanceMetadataService,
-		private apMfmService: ApMfmService,
-		private hashtagService: HashtagService,
-		private usersChart: UsersChart,
-		private instanceChart: InstanceChart,
+		private readonly metaService: MetaService,
+		private readonly idService: IdService,
+		private readonly utilityService: UtilityService,
+		private readonly apLoggerService: ApLoggerService,
+		private readonly mfmService: MfmService,
+		private readonly userEntityService: UserEntityService,
+		private readonly driveFileEntityService: DriveFileEntityService,
+		private readonly federatedInstanceService: FederatedInstanceService,
+		private readonly fetchInstanceMetadataService: FetchInstanceMetadataService,
+		private readonly apMfmService: ApMfmService,
+		private readonly hashtagService: HashtagService,
+		private readonly usersChart: UsersChart,
+		private readonly instanceChart: InstanceChart,
 	) {
 		this.logger = this.apLoggerService.logger;
 	}
@@ -188,13 +188,13 @@ export class ApPersonService implements OnModuleInit {
 			return u;
 		}
 
-		//#region このサーバーに既に登録されていたらそれを返す
+		// #region このサーバーに既に登録されていたらそれを返す
 		const exist = await this.usersRepository.findOneBy({ uri }) as MiLocalUser | MiRemoteUser | null;
 
 		if (exist) {
 			return exist;
 		}
-		//#endregion
+		// #endregion
 
 		return null;
 	}
@@ -220,16 +220,20 @@ export class ApPersonService implements OnModuleInit {
 			returns the special {id:null}&c value, and we return those
 		*/
 		return {
-			...(avatar ? {
-				avatarId: avatar.id,
-				avatarUrl: avatar.url ? this.driveFileEntityService.getPublicUrl(avatar, 'avatar') : null,
-				avatarBlurhash: avatar.blurhash,
-			} : {}),
-			...(banner ? {
-				bannerId: banner.id,
-				bannerUrl: banner.url ? this.driveFileEntityService.getPublicUrl(banner) : null,
-				bannerBlurhash: banner.blurhash,
-			} : {}),
+			...(avatar
+				? {
+						avatarId: avatar.id,
+						avatarUrl: avatar.url ? this.driveFileEntityService.getPublicUrl(avatar, 'avatar') : null,
+						avatarBlurhash: avatar.blurhash,
+					}
+				: {}),
+			...(banner
+				? {
+						bannerId: banner.id,
+						bannerUrl: banner.url ? this.driveFileEntityService.getPublicUrl(banner) : null,
+						bannerBlurhash: banner.blurhash,
+					}
+				: {}),
 		};
 	}
 
@@ -271,14 +275,14 @@ export class ApPersonService implements OnModuleInit {
 		// Create user
 		let user: MiRemoteUser | null = null;
 
-		//#region カスタム絵文字取得
+		// #region カスタム絵文字取得
 		const emojis = await this.apNoteService.extractEmojis(person.tag ?? [], host)
 			.then(_emojis => _emojis.map(emoji => emoji.name))
 			.catch((err: unknown) => {
 				this.logger.error('error occurred while fetching user emojis', { stack: err });
 				return [];
 			});
-		//#endregion
+		// #endregion
 
 		try {
 			// Start transaction
@@ -364,7 +368,7 @@ export class ApPersonService implements OnModuleInit {
 		// ハッシュタグ更新
 		this.hashtagService.updateUsertags(user, tags);
 
-		//#region アバターとヘッダー画像をフェッチ
+		// #region アバターとヘッダー画像をフェッチ
 		try {
 			const updates = await this.resolveAvatarAndBanner(user, person.icon, person.image);
 			await this.usersRepository.update(user.id, updates);
@@ -372,9 +376,11 @@ export class ApPersonService implements OnModuleInit {
 		} catch (err) {
 			this.logger.error('error occurred while fetching user avatar/banner', { stack: err });
 		}
-		//#endregion
+		// #endregion
 
-		await this.updateFeatured(user.id, resolver).catch((err: unknown) => this.logger.error(err));
+		await this.updateFeatured(user.id, resolver).catch((err: unknown) => {
+			this.logger.error(err);
+		});
 
 		return user;
 	}
@@ -395,10 +401,10 @@ export class ApPersonService implements OnModuleInit {
 		// URIがこのサーバーを指しているならスキップ
 		if (uri.startsWith(`${this.config.url}/`)) return;
 
-		//#region このサーバーに既に登録されているか
+		// #region このサーバーに既に登録されているか
 		const exist = await this.fetchPerson(uri) as MiRemoteUser | null;
 		if (exist === null) return;
-		//#endregion
+		// #endregion
 
 		if (resolver == null) resolver = this.apResolverService.createResolver();
 
@@ -501,7 +507,9 @@ export class ApPersonService implements OnModuleInit {
 			{ followerSharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox },
 		);
 
-		await this.updateFeatured(exist.id, resolver).catch((err: unknown) => this.logger.error(err));
+		await this.updateFeatured(exist.id, resolver).catch((err: unknown) => {
+			this.logger.error(err);
+		});
 
 		const updated = { ...exist, ...updates };
 
@@ -535,10 +543,10 @@ export class ApPersonService implements OnModuleInit {
 	 * リモートサーバーからフェッチしてMisskeyに登録しそれを返します。
 	 */
 	public async resolvePerson(uri: string, resolver?: Resolver): Promise<MiLocalUser | MiRemoteUser> {
-		//#region このサーバーに既に登録されていたらそれを返す
+		// #region このサーバーに既に登録されていたらそれを返す
 		const exist = await this.fetchPerson(uri);
 		if (exist) return exist;
-		//#endregion
+		// #endregion
 
 		// リモートサーバーからフェッチしてきて登録
 		if (resolver == null) resolver = this.apResolverService.createResolver();

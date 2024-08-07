@@ -59,10 +59,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.renoteMutingsRepository)
-		private renoteMutingsRepository: RenoteMutingsRepository,
+		private readonly renoteMutingsRepository: RenoteMutingsRepository,
 
-		private getterService: GetterService,
-		private idService: IdService,
+		private readonly getterService: GetterService,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const muter = me;

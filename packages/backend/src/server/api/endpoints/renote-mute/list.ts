@@ -42,10 +42,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.renoteMutingsRepository)
-		private renoteMutingsRepository: RenoteMutingsRepository,
+		private readonly renoteMutingsRepository: RenoteMutingsRepository,
 
-		private renoteMutingEntityService: RenoteMutingEntityService,
-		private queryService: QueryService,
+		private readonly renoteMutingEntityService: RenoteMutingEntityService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.renoteMutingsRepository.createQueryBuilder('muting'), ps.sinceId, ps.untilId)

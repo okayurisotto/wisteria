@@ -41,10 +41,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.appsRepository)
-		private appsRepository: AppsRepository,
+		private readonly appsRepository: AppsRepository,
 
-		private appEntityService: AppEntityService,
-		private idService: IdService,
+		private readonly appEntityService: AppEntityService,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Generate secret

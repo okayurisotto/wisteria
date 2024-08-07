@@ -19,22 +19,22 @@ import type { Config } from '@/config.js';
 
 @Injectable()
 export class ImportMutingProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private userMutingService: UserMutingService,
-		private remoteUserResolveService: RemoteUserResolveService,
-		private downloadService: DownloadService,
-		private queueLoggerService: QueueLoggerService,
+		private readonly userMutingService: UserMutingService,
+		private readonly remoteUserResolveService: RemoteUserResolveService,
+		private readonly downloadService: DownloadService,
+		private readonly queueLoggerService: QueueLoggerService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('import-muting');
 	}

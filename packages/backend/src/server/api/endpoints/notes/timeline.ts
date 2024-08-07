@@ -54,16 +54,16 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.channelFollowingsRepository)
-		private channelFollowingsRepository: ChannelFollowingsRepository,
+		private readonly channelFollowingsRepository: ChannelFollowingsRepository,
 
-		private noteEntityService: NoteEntityService,
-		private activeUsersChart: ActiveUsersChart,
-		private idService: IdService,
-		private userFollowingService: UserFollowingService,
-		private queryService: QueryService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly activeUsersChart: ActiveUsersChart,
+		private readonly idService: IdService,
+		private readonly userFollowingService: UserFollowingService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate) : null);
@@ -96,7 +96,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			},
 		});
 
-		//#region Construct query
+		// #region Construct query
 		const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), ps.sinceId, ps.untilId)
 			.innerJoinAndSelect('note.user', 'user')
 			.leftJoinAndSelect('note.reply', 'reply')
@@ -190,7 +190,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		if (!ps.withRenotes) {
 			query.andWhere('note.renoteId IS NULL');
 		}
-		//#endregion
+		// #endregion
 
 		return await query.limit(ps.limit).getMany();
 	}

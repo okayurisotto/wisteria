@@ -61,16 +61,16 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private queueService: QueueService,
-		private alsoKnownAsValidateService: AlsoKnownAsValidateService,
+		private readonly queueService: QueueService,
+		private readonly alsoKnownAsValidateService: AlsoKnownAsValidateService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const file = await this.driveFilesRepository.findOneBy({ id: ps.fileId });
 
 			if (file == null) throw new ApiError(meta.errors.noSuchFile);
-			//if (!file.type.endsWith('/csv')) throw new ApiError(meta.errors.unexpectedFileType);
+			// if (!file.type.endsWith('/csv')) throw new ApiError(meta.errors.unexpectedFileType);
 			if (file.size === 0) throw new ApiError(meta.errors.emptyFile);
 
 			const checkMoving = await this.alsoKnownAsValidateService.validate(

@@ -28,18 +28,18 @@ export class NotificationEntityService implements OnModuleInit {
 	private noteEntityService: NoteEntityService;
 
 	constructor(
-		private moduleRef: ModuleRef,
+		private readonly moduleRef: ModuleRef,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.followRequestsRepository)
-		private followRequestsRepository: FollowRequestsRepository,
+		private readonly followRequestsRepository: FollowRequestsRepository,
 
-		private roleEntityService: RoleEntityService,
+		private readonly roleEntityService: RoleEntityService,
 	) {}
 
 	onModuleInit() {
@@ -59,18 +59,22 @@ export class NotificationEntityService implements OnModuleInit {
 		},
 	): Promise<Packed<'Notification'>> {
 		const notification = src;
-		const noteIfNeed = NOTE_REQUIRED_NOTIFICATION_TYPES.has(notification.type) && 'noteId' in notification ? (
-			hint?.packedNotes != null
-				? hint.packedNotes.get(notification.noteId)
-				: this.noteEntityService.pack(notification.noteId, { id: meId }, {
-					detail: true,
-				})
-		) : undefined;
-		const userIfNeed = 'notifierId' in notification ? (
-			hint?.packedUsers != null
-				? hint.packedUsers.get(notification.notifierId)
-				: this.userEntityService.pack(notification.notifierId, { id: meId })
-		) : undefined;
+		const noteIfNeed = NOTE_REQUIRED_NOTIFICATION_TYPES.has(notification.type) && 'noteId' in notification
+			? (
+					hint?.packedNotes != null
+						? hint.packedNotes.get(notification.noteId)
+						: this.noteEntityService.pack(notification.noteId, { id: meId }, {
+							detail: true,
+						})
+				)
+			: undefined;
+		const userIfNeed = 'notifierId' in notification
+			? (
+					hint?.packedUsers != null
+						? hint.packedUsers.get(notification.notifierId)
+						: this.userEntityService.pack(notification.notifierId, { id: meId })
+				)
+			: undefined;
 		const role = notification.type === 'roleAssigned' ? await this.roleEntityService.pack(notification.roleId) : undefined;
 
 		return await awaitAll({
@@ -80,20 +84,28 @@ export class NotificationEntityService implements OnModuleInit {
 			userId: 'notifierId' in notification ? notification.notifierId : undefined,
 			...(userIfNeed != null ? { user: userIfNeed } : {}),
 			...(noteIfNeed != null ? { note: noteIfNeed } : {}),
-			...(notification.type === 'reaction' ? {
-				reaction: notification.reaction,
-			} : {}),
-			...(notification.type === 'roleAssigned' ? {
-				role: role,
-			} : {}),
-			...(notification.type === 'achievementEarned' ? {
-				achievement: notification.achievement,
-			} : {}),
-			...(notification.type === 'app' ? {
-				body: notification.customBody,
-				header: notification.customHeader,
-				icon: notification.customIcon,
-			} : {}),
+			...(notification.type === 'reaction'
+				? {
+						reaction: notification.reaction,
+					}
+				: {}),
+			...(notification.type === 'roleAssigned'
+				? {
+						role: role,
+					}
+				: {}),
+			...(notification.type === 'achievementEarned'
+				? {
+						achievement: notification.achievement,
+					}
+				: {}),
+			...(notification.type === 'app'
+				? {
+						body: notification.customBody,
+						header: notification.customHeader,
+						icon: notification.customIcon,
+					}
+				: {}),
 		});
 	}
 
@@ -106,10 +118,12 @@ export class NotificationEntityService implements OnModuleInit {
 		let validNotifications = notifications;
 
 		const noteIds = validNotifications.map(x => 'noteId' in x ? x.noteId : null).filter(isNotNull);
-		const notes = noteIds.length > 0 ? await this.notesRepository.find({
-			where: { id: In(noteIds) },
-			relations: ['user', 'reply', 'reply.user', 'renote', 'renote.user'],
-		}) : [];
+		const notes = noteIds.length > 0
+			? await this.notesRepository.find({
+				where: { id: In(noteIds) },
+				relations: ['user', 'reply', 'reply.user', 'renote', 'renote.user'],
+			})
+			: [];
 		const packedNotesArray = await this.noteEntityService.packMany(notes, { id: meId }, {
 			detail: true,
 		});
@@ -118,9 +132,11 @@ export class NotificationEntityService implements OnModuleInit {
 		validNotifications = validNotifications.filter(x => !('noteId' in x) || packedNotes.has(x.noteId));
 
 		const userIds = validNotifications.map(x => 'notifierId' in x ? x.notifierId : null).filter(isNotNull);
-		const users = userIds.length > 0 ? await this.usersRepository.find({
-			where: { id: In(userIds) },
-		}) : [];
+		const users = userIds.length > 0
+			? await this.usersRepository.find({
+				where: { id: In(userIds) },
+			})
+			: [];
 		const packedUsersArray = await this.userEntityService.packMany(users, { id: meId });
 		const packedUsers = new Map(packedUsersArray.map(p => [p.id, p]));
 
@@ -151,18 +167,22 @@ export class NotificationEntityService implements OnModuleInit {
 		},
 	): Promise<Packed<'Notification'>> {
 		const notification = src;
-		const noteIfNeed = NOTE_REQUIRED_GROUPED_NOTIFICATION_TYPES.has(notification.type) && 'noteId' in notification ? (
-			hint?.packedNotes != null
-				? hint.packedNotes.get(notification.noteId)
-				: this.noteEntityService.pack(notification.noteId, { id: meId }, {
-					detail: true,
-				})
-		) : undefined;
-		const userIfNeed = 'notifierId' in notification ? (
-			hint?.packedUsers != null
-				? hint.packedUsers.get(notification.notifierId)
-				: this.userEntityService.pack(notification.notifierId, { id: meId })
-		) : undefined;
+		const noteIfNeed = NOTE_REQUIRED_GROUPED_NOTIFICATION_TYPES.has(notification.type) && 'noteId' in notification
+			? (
+					hint?.packedNotes != null
+						? hint.packedNotes.get(notification.noteId)
+						: this.noteEntityService.pack(notification.noteId, { id: meId }, {
+							detail: true,
+						})
+				)
+			: undefined;
+		const userIfNeed = 'notifierId' in notification
+			? (
+					hint?.packedUsers != null
+						? hint.packedUsers.get(notification.notifierId)
+						: this.userEntityService.pack(notification.notifierId, { id: meId })
+				)
+			: undefined;
 
 		if (notification.type === 'reaction:grouped') {
 			const reactions = await Promise.all(notification.reactions.map(async (reaction) => {
@@ -208,20 +228,28 @@ export class NotificationEntityService implements OnModuleInit {
 			userId: 'notifierId' in notification ? notification.notifierId : undefined,
 			...(userIfNeed != null ? { user: userIfNeed } : {}),
 			...(noteIfNeed != null ? { note: noteIfNeed } : {}),
-			...(notification.type === 'reaction' ? {
-				reaction: notification.reaction,
-			} : {}),
-			...(notification.type === 'roleAssigned' ? {
-				role: role,
-			} : {}),
-			...(notification.type === 'achievementEarned' ? {
-				achievement: notification.achievement,
-			} : {}),
-			...(notification.type === 'app' ? {
-				body: notification.customBody,
-				header: notification.customHeader,
-				icon: notification.customIcon,
-			} : {}),
+			...(notification.type === 'reaction'
+				? {
+						reaction: notification.reaction,
+					}
+				: {}),
+			...(notification.type === 'roleAssigned'
+				? {
+						role: role,
+					}
+				: {}),
+			...(notification.type === 'achievementEarned'
+				? {
+						achievement: notification.achievement,
+					}
+				: {}),
+			...(notification.type === 'app'
+				? {
+						body: notification.customBody,
+						header: notification.customHeader,
+						icon: notification.customIcon,
+					}
+				: {}),
 		});
 	}
 
@@ -234,10 +262,12 @@ export class NotificationEntityService implements OnModuleInit {
 		let validNotifications = notifications;
 
 		const noteIds = validNotifications.map(x => 'noteId' in x ? x.noteId : null).filter(isNotNull);
-		const notes = noteIds.length > 0 ? await this.notesRepository.find({
-			where: { id: In(noteIds) },
-			relations: ['user', 'reply', 'reply.user', 'renote', 'renote.user'],
-		}) : [];
+		const notes = noteIds.length > 0
+			? await this.notesRepository.find({
+				where: { id: In(noteIds) },
+				relations: ['user', 'reply', 'reply.user', 'renote', 'renote.user'],
+			})
+			: [];
 		const packedNotesArray = await this.noteEntityService.packMany(notes, { id: meId }, {
 			detail: true,
 		});
@@ -251,9 +281,11 @@ export class NotificationEntityService implements OnModuleInit {
 			if (notification.type === 'reaction:grouped') userIds.push(...notification.reactions.map(x => x.userId));
 			if (notification.type === 'renote:grouped') userIds.push(...notification.userIds);
 		}
-		const users = userIds.length > 0 ? await this.usersRepository.find({
-			where: { id: In(userIds) },
-		}) : [];
+		const users = userIds.length > 0
+			? await this.usersRepository.find({
+				where: { id: In(userIds) },
+			})
+			: [];
 		const packedUsersArray = await this.userEntityService.packMany(users, { id: meId });
 		const packedUsers = new Map(packedUsersArray.map(p => [p.id, p]));
 

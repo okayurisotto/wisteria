@@ -38,9 +38,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.channelFavoritesRepository)
-		private channelFavoritesRepository: ChannelFavoritesRepository,
+		private readonly channelFavoritesRepository: ChannelFavoritesRepository,
 
-		private channelEntityService: ChannelEntityService,
+		private readonly channelEntityService: ChannelEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.channelFavoritesRepository.createQueryBuilder('favorite')

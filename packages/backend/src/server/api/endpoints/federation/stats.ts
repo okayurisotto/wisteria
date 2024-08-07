@@ -64,12 +64,12 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
-		private instanceEntityService: InstanceEntityService,
+		private readonly instanceEntityService: InstanceEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const [topSubInstances, topPubInstances, allSubCount, allPubCount] = await Promise.all([

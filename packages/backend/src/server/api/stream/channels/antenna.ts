@@ -17,13 +17,13 @@ class AntennaChannel extends Channel {
 	private antennaId: string;
 
 	constructor(
-		private noteEntityService: NoteEntityService,
+		private readonly noteEntityService: NoteEntityService,
 
 		id: string,
 		connection: Channel['connection'],
 	) {
 		super(id, connection);
-		//this.onEvent = this.onEvent.bind(this);
+		// this.onEvent = this.onEvent.bind(this);
 	}
 
 	public async init(params: any) {
@@ -33,7 +33,7 @@ class AntennaChannel extends Channel {
 		this.subscriber.on(`antennaStream:${this.antennaId}`, this.onEvent);
 	}
 
-	private onEvent = async (data: GlobalEvents['antenna']['payload']) => {
+	private readonly onEvent = async (data: GlobalEvents['antenna']['payload']) => {
 		if (data.type === 'note') {
 			const note = await this.noteEntityService.pack(data.body.id, this.user, { detail: true });
 
@@ -65,7 +65,7 @@ export class AntennaChannelService implements MiChannelService<true> {
 	public readonly kind = AntennaChannel.kind;
 
 	constructor(
-		private noteEntityService: NoteEntityService,
+		private readonly noteEntityService: NoteEntityService,
 	) {}
 
 	public create(id: string, connection: Channel['connection']): AntennaChannel {

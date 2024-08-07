@@ -17,20 +17,20 @@ import type { IObject, IQuestion } from '../type.js';
 
 @Injectable()
 export class ApQuestionService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.pollsRepository)
-		private pollsRepository: PollsRepository,
+		private readonly pollsRepository: PollsRepository,
 
-		private apResolverService: ApResolverService,
-		private apLoggerService: ApLoggerService,
+		private readonly apResolverService: ApResolverService,
+		private readonly apLoggerService: ApLoggerService,
 	) {
 		this.logger = this.apLoggerService.logger;
 	}
@@ -68,13 +68,13 @@ export class ApQuestionService {
 		// URIがこのサーバーを指しているならスキップ
 		if (uri.startsWith(this.config.url + '/')) throw new Error('uri points local');
 
-		//#region このサーバーに既に登録されているか
+		// #region このサーバーに既に登録されているか
 		const note = await this.notesRepository.findOneBy({ uri });
 		if (note == null) throw new Error('Question is not registed');
 
 		const poll = await this.pollsRepository.findOneBy({ noteId: note.id });
 		if (poll == null) throw new Error('Question is not registed');
-		//#endregion
+		// #endregion
 
 		// resolve new Question object
 		if (resolver == null) resolver = this.apResolverService.createResolver();

@@ -13,9 +13,9 @@ import { FeaturedService } from '@/core/FeaturedService.js';
 export class MetaService {
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		private readonly db: DataSource,
 
-		private featuredService: FeaturedService,
+		private readonly featuredService: FeaturedService,
 	) {}
 
 	public async fetch(): Promise<MiMeta> {

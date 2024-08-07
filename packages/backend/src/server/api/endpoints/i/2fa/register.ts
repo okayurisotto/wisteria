@@ -54,12 +54,12 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
-		private userAuthService: UserAuthService,
+		private readonly userAuthService: UserAuthService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const token = ps.token;

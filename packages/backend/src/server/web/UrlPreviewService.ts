@@ -17,15 +17,15 @@ import type { Context } from 'hono';
 
 @Injectable()
 export class UrlPreviewService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
-		private metaService: MetaService,
-		private httpRequestService: HttpRequestService,
-		private loggerService: LoggerService,
+		private readonly metaService: MetaService,
+		private readonly httpRequestService: HttpRequestService,
+		private readonly loggerService: LoggerService,
 	) {
 		this.logger = this.loggerService.getLogger('url-preview');
 	}

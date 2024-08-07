@@ -44,9 +44,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userMemosRepository)
-		private userMemosRepository: UserMemoRepository,
-		private getterService: GetterService,
-		private idService: IdService,
+		private readonly userMemosRepository: UserMemoRepository,
+		private readonly getterService: GetterService,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Get target

@@ -29,7 +29,7 @@ export default class ActiveUsersChart extends Chart<typeof schema> {
 
 		appLockService: AppLockService,
 		chartLoggerService: ChartLoggerService,
-		private idService: IdService,
+		private readonly idService: IdService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema);
 	}
@@ -45,19 +45,19 @@ export default class ActiveUsersChart extends Chart<typeof schema> {
 	public async read(user: { id: MiUser['id']; host: null }): Promise<void> {
 		const createdAt = this.idService.parse(user.id).date;
 		await this.commit({
-			'read': [user.id],
-			'registeredWithinWeek': (Date.now() - createdAt.getTime() < week) ? [user.id] : [],
-			'registeredWithinMonth': (Date.now() - createdAt.getTime() < month) ? [user.id] : [],
-			'registeredWithinYear': (Date.now() - createdAt.getTime() < year) ? [user.id] : [],
-			'registeredOutsideWeek': (Date.now() - createdAt.getTime() > week) ? [user.id] : [],
-			'registeredOutsideMonth': (Date.now() - createdAt.getTime() > month) ? [user.id] : [],
-			'registeredOutsideYear': (Date.now() - createdAt.getTime() > year) ? [user.id] : [],
+			read: [user.id],
+			registeredWithinWeek: (Date.now() - createdAt.getTime() < week) ? [user.id] : [],
+			registeredWithinMonth: (Date.now() - createdAt.getTime() < month) ? [user.id] : [],
+			registeredWithinYear: (Date.now() - createdAt.getTime() < year) ? [user.id] : [],
+			registeredOutsideWeek: (Date.now() - createdAt.getTime() > week) ? [user.id] : [],
+			registeredOutsideMonth: (Date.now() - createdAt.getTime() > month) ? [user.id] : [],
+			registeredOutsideYear: (Date.now() - createdAt.getTime() > year) ? [user.id] : [],
 		});
 	}
 
 	public async write(user: { id: MiUser['id']; host: null }): Promise<void> {
 		await this.commit({
-			'write': [user.id],
+			write: [user.id],
 		});
 	}
 }

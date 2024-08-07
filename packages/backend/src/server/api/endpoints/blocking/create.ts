@@ -64,14 +64,14 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.blockingsRepository)
-		private blockingsRepository: BlockingsRepository,
+		private readonly blockingsRepository: BlockingsRepository,
 
-		private userEntityService: UserEntityService,
-		private getterService: GetterService,
-		private userBlockingBlockService: UserBlockingBlockService,
+		private readonly userEntityService: UserEntityService,
+		private readonly getterService: GetterService,
+		private readonly userBlockingBlockService: UserBlockingBlockService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const blocker = await this.usersRepository.findOneByOrFail({ id: me.id });

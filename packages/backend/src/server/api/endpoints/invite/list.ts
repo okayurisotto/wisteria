@@ -42,10 +42,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.registrationTicketsRepository)
-		private registrationTicketsRepository: RegistrationTicketsRepository,
+		private readonly registrationTicketsRepository: RegistrationTicketsRepository,
 
-		private inviteCodeEntityService: InviteCodeEntityService,
-		private queryService: QueryService,
+		private readonly inviteCodeEntityService: InviteCodeEntityService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.registrationTicketsRepository.createQueryBuilder('ticket'), ps.sinceId, ps.untilId)

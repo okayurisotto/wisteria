@@ -28,7 +28,7 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.swSubscriptionsRepository)
-		private swSubscriptionsRepository: SwSubscriptionsRepository,
+		private readonly swSubscriptionsRepository: SwSubscriptionsRepository,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			await this.swSubscriptionsRepository.delete({

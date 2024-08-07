@@ -42,8 +42,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private userEntityService: UserEntityService,
-		private notePiningService: NotePiningService,
+		private readonly userEntityService: UserEntityService,
+		private readonly notePiningService: NotePiningService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			await this.notePiningService.removePinned(me, ps.noteId).catch((err: unknown) => {

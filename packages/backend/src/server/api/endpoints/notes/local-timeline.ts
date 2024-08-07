@@ -64,13 +64,13 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
-		private noteEntityService: NoteEntityService,
-		private roleUserService: RoleUserService,
-		private activeUsersChart: ActiveUsersChart,
-		private idService: IdService,
-		private queryService: QueryService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly roleUserService: RoleUserService,
+		private readonly activeUsersChart: ActiveUsersChart,
+		private readonly idService: IdService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate) : null);

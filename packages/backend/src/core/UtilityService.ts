@@ -14,7 +14,7 @@ import type { Config } from '@/config.js';
 export class UtilityService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 	) {}
 
 	public isSelfHost(host: string | null): boolean {

@@ -25,10 +25,10 @@ export default class PerUserDriveChart extends Chart<typeof schema> {
 		db: DataSource,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
 		appLockService: AppLockService,
-		private driveFileEntityService: DriveFileEntityService,
+		private readonly driveFileEntityService: DriveFileEntityService,
 		chartLoggerService: ChartLoggerService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);
@@ -41,8 +41,8 @@ export default class PerUserDriveChart extends Chart<typeof schema> {
 		]);
 
 		return {
-			'totalCount': count,
-			'totalSize': size,
+			totalCount: count,
+			totalSize: size,
 		};
 	}
 
@@ -53,12 +53,12 @@ export default class PerUserDriveChart extends Chart<typeof schema> {
 	public async update(file: MiDriveFile, isAdditional: boolean): Promise<void> {
 		const fileSizeKb = file.size / 1000;
 		await this.commit({
-			'totalCount': isAdditional ? 1 : -1,
-			'totalSize': isAdditional ? fileSizeKb : -fileSizeKb,
-			'incCount': isAdditional ? 1 : 0,
-			'incSize': isAdditional ? fileSizeKb : 0,
-			'decCount': isAdditional ? 0 : 1,
-			'decSize': isAdditional ? 0 : fileSizeKb,
+			totalCount: isAdditional ? 1 : -1,
+			totalSize: isAdditional ? fileSizeKb : -fileSizeKb,
+			incCount: isAdditional ? 1 : 0,
+			incSize: isAdditional ? fileSizeKb : 0,
+			decCount: isAdditional ? 0 : 1,
+			decSize: isAdditional ? 0 : fileSizeKb,
 		}, file.userId);
 	}
 }

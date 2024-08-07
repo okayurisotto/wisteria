@@ -16,9 +16,9 @@ export type FanoutTimelineName =
 export class FanoutTimelineService {
 	constructor(
 		@Inject(DI.redisForTimelines)
-		private redisForTimelines: Redis.Redis,
+		private readonly redisForTimelines: Redis.Redis,
 
-		private idService: IdService,
+		private readonly idService: IdService,
 	) {}
 
 	public push(tl: FanoutTimelineName, id: string, maxlen: number, pipeline: Redis.ChainableCommander) {

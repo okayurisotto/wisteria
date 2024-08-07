@@ -38,7 +38,7 @@ export class MiPoll {
 	})
 	public votes: number[];
 
-	//#region Denormalized fields
+	// #region Denormalized fields
 	@Column('enum', {
 		enum: noteVisibilities,
 		comment: '[Denormalized]',
@@ -58,7 +58,7 @@ export class MiPoll {
 		comment: '[Denormalized]',
 	})
 	public userHost: string | null;
-	//#endregion
+	// #endregion
 
 	constructor(data: Partial<MiPoll>) {
 		if (data == null) return;

@@ -31,15 +31,15 @@ import type {
 export class WebAuthnService {
 	constructor(
 		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
+		private readonly redisClient: Redis.Redis,
 
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.userSecurityKeysRepository)
-		private userSecurityKeysRepository: UserSecurityKeysRepository,
+		private readonly userSecurityKeysRepository: UserSecurityKeysRepository,
 
-		private metaService: MetaService,
+		private readonly metaService: MetaService,
 	) {}
 
 	public async getRelyingParty(): Promise<{ origin: string; rpId: string; rpName: string; rpIcon?: string }> {

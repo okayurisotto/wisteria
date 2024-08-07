@@ -74,13 +74,13 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.antennasRepository)
-		private antennasRepository: AntennasRepository,
+		private readonly antennasRepository: AntennasRepository,
 
 		@Inject(DI.userListsRepository)
-		private userListsRepository: UserListsRepository,
+		private readonly userListsRepository: UserListsRepository,
 
-		private antennaEntityService: AntennaEntityService,
-		private globalEventService: GlobalEventService,
+		private readonly antennaEntityService: AntennaEntityService,
+		private readonly globalEventService: GlobalEventService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			if (ps.keywords.flat().every(x => x === '') && ps.excludeKeywords.flat().every(x => x === '')) {

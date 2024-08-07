@@ -188,17 +188,17 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.signinsRepository)
-		private signinsRepository: SigninsRepository,
+		private readonly signinsRepository: SigninsRepository,
 
-		private roleUserService: RoleUserService,
-		private roleEntityService: RoleEntityService,
-		private idService: IdService,
+		private readonly roleUserService: RoleUserService,
+		private readonly roleEntityService: RoleEntityService,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const [user, profile] = await Promise.all([

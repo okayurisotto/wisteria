@@ -53,11 +53,11 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private getterService: GetterService,
-		private roleUserService: RoleUserService,
-		private noteDeleteService: NoteDeleteService,
+		private readonly getterService: GetterService,
+		private readonly roleUserService: RoleUserService,
+		private readonly noteDeleteService: NoteDeleteService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const note = await this.getterService.getNote(ps.noteId).catch((err: unknown) => {

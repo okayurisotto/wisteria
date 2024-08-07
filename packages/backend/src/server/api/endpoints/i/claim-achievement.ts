@@ -24,7 +24,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private achievementService: AchievementService,
+		private readonly achievementService: AchievementService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			await this.achievementService.create(me.id, ps.name);

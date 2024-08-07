@@ -25,20 +25,20 @@ import { MetaService } from '@/core/MetaService.js';
 export class SignupService {
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		private readonly db: DataSource,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.usedUsernamesRepository)
-		private usedUsernamesRepository: UsedUsernamesRepository,
+		private readonly usedUsernamesRepository: UsedUsernamesRepository,
 
-		private utilityService: UtilityService,
-		private userEntityService: UserEntityService,
-		private idService: IdService,
-		private metaService: MetaService,
-		private instanceActorService: InstanceActorService,
-		private usersChart: UsersChart,
+		private readonly utilityService: UtilityService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
+		private readonly metaService: MetaService,
+		private readonly instanceActorService: InstanceActorService,
+		private readonly usersChart: UsersChart,
 	) {}
 
 	public async signup(opts: {
@@ -90,7 +90,7 @@ export class SignupService {
 			}
 		}
 
-		const keyPair = await new Promise<string[]>((res, rej) =>
+		const keyPair = await new Promise<string[]>((res, rej) => {
 			generateKeyPair('rsa', {
 				modulusLength: 2048,
 				publicKeyEncoding: {
@@ -103,9 +103,11 @@ export class SignupService {
 					cipher: undefined,
 					passphrase: undefined,
 				},
-			}, (err, publicKey, privateKey) =>
-				err ? rej(err) : res([publicKey, privateKey]),
-			));
+			}, (err, publicKey, privateKey) => {
+				err ? rej(err) : res([publicKey, privateKey]);
+			},
+			);
+		});
 
 		let account!: MiUser;
 

@@ -28,29 +28,29 @@ import { isPureRenote } from '@/misc/is-pure-renote.js';
 export class NoteDeleteService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
-		private userEntityService: UserEntityService,
-		private globalEventService: GlobalEventService,
-		private relayService: RelayService,
-		private federatedInstanceService: FederatedInstanceService,
-		private apRendererService: ApRendererService,
-		private apDeliverManagerService: ApDeliverManagerService,
-		private metaService: MetaService,
-		private searchService: SearchService,
-		private moderationLogService: ModerationLogService,
-		private notesChart: NotesChart,
-		private perUserNotesChart: PerUserNotesChart,
-		private instanceChart: InstanceChart,
+		private readonly userEntityService: UserEntityService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly relayService: RelayService,
+		private readonly federatedInstanceService: FederatedInstanceService,
+		private readonly apRendererService: ApRendererService,
+		private readonly apDeliverManagerService: ApDeliverManagerService,
+		private readonly metaService: MetaService,
+		private readonly searchService: SearchService,
+		private readonly moderationLogService: ModerationLogService,
+		private readonly notesChart: NotesChart,
+		private readonly perUserNotesChart: PerUserNotesChart,
+		private readonly instanceChart: InstanceChart,
 	) {}
 
 	/**
@@ -71,7 +71,7 @@ export class NoteDeleteService {
 				deletedAt: deletedAt,
 			});
 
-			//#region ローカルの投稿なら削除アクティビティを配送
+			// #region ローカルの投稿なら削除アクティビティを配送
 			if (this.userEntityService.isLocalUser(user) && !note.localOnly) {
 				let renote: MiNote | null = null;
 
@@ -97,7 +97,7 @@ export class NoteDeleteService {
 				const content = this.apRendererService.addContext(this.apRendererService.renderDelete(this.apRendererService.renderTombstone(`${this.config.url}/notes/${cascadingNote.id}`), cascadingNote.user));
 				this.deliverToConcerned(cascadingNote.user, cascadingNote, content);
 			}
-			//#endregion
+			// #endregion
 
 			const meta = await this.metaService.fetch();
 

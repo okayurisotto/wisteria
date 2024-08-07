@@ -47,55 +47,55 @@ export class UserEntityService implements OnModuleInit {
 	private roleUserService: RoleUserService;
 
 	constructor(
-		private moduleRef: ModuleRef,
+		private readonly moduleRef: ModuleRef,
 
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
+		private readonly redisClient: Redis.Redis,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userSecurityKeysRepository)
-		private userSecurityKeysRepository: UserSecurityKeysRepository,
+		private readonly userSecurityKeysRepository: UserSecurityKeysRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
 		@Inject(DI.followRequestsRepository)
-		private followRequestsRepository: FollowRequestsRepository,
+		private readonly followRequestsRepository: FollowRequestsRepository,
 
 		@Inject(DI.blockingsRepository)
-		private blockingsRepository: BlockingsRepository,
+		private readonly blockingsRepository: BlockingsRepository,
 
 		@Inject(DI.mutingsRepository)
-		private mutingsRepository: MutingsRepository,
+		private readonly mutingsRepository: MutingsRepository,
 
 		@Inject(DI.renoteMutingsRepository)
-		private renoteMutingsRepository: RenoteMutingsRepository,
+		private readonly renoteMutingsRepository: RenoteMutingsRepository,
 
 		@Inject(DI.noteUnreadsRepository)
-		private noteUnreadsRepository: NoteUnreadsRepository,
+		private readonly noteUnreadsRepository: NoteUnreadsRepository,
 
 		@Inject(DI.userNotePiningsRepository)
-		private userNotePiningsRepository: UserNotePiningsRepository,
+		private readonly userNotePiningsRepository: UserNotePiningsRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.userMemosRepository)
-		private userMemosRepository: UserMemoRepository,
+		private readonly userMemosRepository: UserMemoRepository,
 
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
-		private idService: IdService,
-		private announcementService: AnnouncementService,
-		private avatarDecorationService: AvatarDecorationService,
-		private noteEntityService: NoteEntityService,
-		private customEmojiPopulateService: CustomEmojiPopulateService,
+		private readonly idService: IdService,
+		private readonly announcementService: AnnouncementService,
+		private readonly avatarDecorationService: AvatarDecorationService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly customEmojiPopulateService: CustomEmojiPopulateService,
 	) {}
 
 	onModuleInit() {
@@ -104,14 +104,14 @@ export class UserEntityService implements OnModuleInit {
 		this.roleUserService = this.moduleRef.get('RoleUserService');
 	}
 
-	//#region Validators
+	// #region Validators
 	public validateLocalUsername = ajv.compile(localUsernameSchema);
 	public validatePassword = ajv.compile(passwordSchema);
 	public validateName = ajv.compile(nameSchema);
 	public validateDescription = ajv.compile(descriptionSchema);
 	public validateLocation = ajv.compile(locationSchema);
 	public validateBirthday = ajv.compile(birthdaySchema);
-	//#endregion
+	// #endregion
 
 	public isLocalUser = isLocalUser;
 	public isRemoteUser = isRemoteUser;
@@ -248,8 +248,10 @@ export class UserEntityService implements OnModuleInit {
 		if (user.lastActiveDate == null) return 'unknown';
 		const elapsed = Date.now() - user.lastActiveDate.getTime();
 		return (
-			elapsed < USER_ONLINE_THRESHOLD ? 'online'
-				: elapsed < USER_ACTIVE_THRESHOLD ? 'active'
+			elapsed < USER_ONLINE_THRESHOLD
+				? 'online'
+				: elapsed < USER_ACTIVE_THRESHOLD
+					? 'active'
 					: 'offline'
 		);
 	}
@@ -260,7 +262,8 @@ export class UserEntityService implements OnModuleInit {
 
 	public getUserUri(user: MiLocalUser | MiPartialLocalUser | MiRemoteUser | MiPartialRemoteUser): string {
 		return this.isRemoteUser(user)
-			? user.uri : this.genLocalUserUri(user.id);
+			? user.uri
+			: this.genLocalUserUri(user.id);
 	}
 
 	public genLocalUserUri(userId: string): string {
@@ -289,21 +292,29 @@ export class UserEntityService implements OnModuleInit {
 		const iAmModerator = me ? await this.roleUserService.isModerator(me as MiUser) : false;
 
 		const relation = meId && !isMe && isDetailed ? await this.getRelation(meId, user.id) : null;
-		const pins = isDetailed ? await this.userNotePiningsRepository.createQueryBuilder('pin')
-			.where('pin.userId = :userId', { userId: user.id })
-			.innerJoinAndSelect('pin.note', 'note')
-			.orderBy('pin.id', 'DESC')
-			.getMany() : [];
+		const pins = isDetailed
+			? await this.userNotePiningsRepository.createQueryBuilder('pin')
+				.where('pin.userId = :userId', { userId: user.id })
+				.innerJoinAndSelect('pin.note', 'note')
+				.orderBy('pin.id', 'DESC')
+				.getMany()
+			: [];
 		const profile = isDetailed ? (opts.userProfile ?? await this.userProfilesRepository.findOneByOrFail({ userId: user.id })) : null;
 
-		const followingCount = profile == null ? null
-			: (profile.followingVisibility === 'public') || isMe ? user.followingCount
-					: (profile.followingVisibility === 'followers') && (relation && relation.isFollowing) ? user.followingCount
+		const followingCount = profile == null
+			? null
+			: (profile.followingVisibility === 'public') || isMe
+					? user.followingCount
+					: (profile.followingVisibility === 'followers') && (relation && relation.isFollowing)
+							? user.followingCount
 							: null;
 
-		const followersCount = profile == null ? null
-			: (profile.followersVisibility === 'public') || isMe ? user.followersCount
-					: (profile.followersVisibility === 'followers') && (relation && relation.isFollowing) ? user.followersCount
+		const followersCount = profile == null
+			? null
+			: (profile.followersVisibility === 'public') || isMe
+					? user.followersCount
+					: (profile.followersVisibility === 'followers') && (relation && relation.isFollowing)
+							? user.followersCount
 							: null;
 
 		const isModerator = isMe && isDetailed ? this.roleUserService.isModerator(user) : null;
@@ -312,7 +323,8 @@ export class UserEntityService implements OnModuleInit {
 			? (await this.announcementService.getUnreadAnnouncements(user)).map(announcement => ({
 					createdAt: this.idService.parse(announcement.id).date.toISOString(),
 					...announcement,
-				})) : null;
+				}))
+			: null;
 
 		const notificationsInfo = isMe && isDetailed ? await this.getNotificationsInfo(user.id) : null;
 
@@ -323,32 +335,40 @@ export class UserEntityService implements OnModuleInit {
 			host: user.host,
 			avatarUrl: user.avatarUrl ?? this.getIdenticonUrl(user),
 			avatarBlurhash: user.avatarBlurhash,
-			avatarDecorations: user.avatarDecorations.length > 0 ? this.avatarDecorationService.getAll().then(decorations => user.avatarDecorations.filter(ud => decorations.some(d => d.id === ud.id)).map(ud => ({
-				id: ud.id,
-				angle: ud.angle || undefined,
-				flipH: ud.flipH || undefined,
-				offsetX: ud.offsetX || undefined,
-				offsetY: ud.offsetY || undefined,
-				url: decorations.find(d => d.id === ud.id)!.url,
-			}))) : [],
+			avatarDecorations: user.avatarDecorations.length > 0
+				? this.avatarDecorationService.getAll().then(decorations => user.avatarDecorations.filter(ud => decorations.some(d => d.id === ud.id)).map(ud => ({
+					id: ud.id,
+					angle: ud.angle || undefined,
+					flipH: ud.flipH || undefined,
+					offsetX: ud.offsetX || undefined,
+					offsetY: ud.offsetY || undefined,
+					url: decorations.find(d => d.id === ud.id)!.url,
+				})))
+				: [],
 			isBot: user.isBot,
 			isCat: user.isCat,
-			instance: user.host ? this.instancesRepository.findOneBy({ host: user.host }).then(instance => instance ? {
-				name: instance.name,
-				softwareName: instance.softwareName,
-				softwareVersion: instance.softwareVersion,
-				iconUrl: instance.iconUrl,
-				faviconUrl: instance.faviconUrl,
-				themeColor: instance.themeColor,
-			} : undefined) : undefined,
+			instance: user.host
+				? this.instancesRepository.findOneBy({ host: user.host }).then(instance => instance
+					? {
+							name: instance.name,
+							softwareName: instance.softwareName,
+							softwareVersion: instance.softwareVersion,
+							iconUrl: instance.iconUrl,
+							faviconUrl: instance.faviconUrl,
+							themeColor: instance.themeColor,
+						}
+					: undefined)
+				: undefined,
 			emojis: this.customEmojiPopulateService.populateEmojis(user.emojis, user.host),
 			onlineStatus: this.getOnlineStatus(user),
 			// パフォーマンス上の理由でローカルユーザーのみ
-			badgeRoles: user.host == null ? this.roleUserService.getUserBadgeRoles(user.id).then(rs => rs.sort((a, b) => b.displayOrder - a.displayOrder).map(r => ({
-				name: r.name,
-				iconUrl: r.iconUrl,
-				displayOrder: r.displayOrder,
-			}))) : undefined,
+			badgeRoles: user.host == null
+				? this.roleUserService.getUserBadgeRoles(user.id).then(rs => rs.sort((a, b) => b.displayOrder - a.displayOrder).map(r => ({
+					name: r.name,
+					iconUrl: r.iconUrl,
+					displayOrder: r.displayOrder,
+				})))
+				: undefined,
 
 			...(isDetailed ? {
 				url: profile!.url,
@@ -401,10 +421,12 @@ export class UserEntityService implements OnModuleInit {
 					isAdministrator: role.isAdministrator,
 					displayOrder: role.displayOrder,
 				}))),
-				memo: meId == null ? null : await this.userMemosRepository.findOneBy({
-					userId: meId,
-					targetUserId: user.id,
-				}).then(row => row?.memo ?? null),
+				memo: meId == null
+					? null
+					: await this.userMemosRepository.findOneBy({
+						userId: meId,
+						targetUserId: user.id,
+					}).then(row => row?.memo ?? null),
 				moderationNote: iAmModerator ? (profile!.moderationNote ?? '') : undefined,
 			} : {}),
 
@@ -451,35 +473,39 @@ export class UserEntityService implements OnModuleInit {
 				policies: this.roleUserService.getUserPolicies(user.id),
 			} : {}),
 
-			...(opts.includeSecrets ? {
-				email: profile!.email,
-				emailVerified: profile!.emailVerified,
-				securityKeysList: profile!.twoFactorEnabled
-					? this.userSecurityKeysRepository.find({
-						where: {
-							userId: user.id,
-						},
-						select: {
-							id: true,
-							name: true,
-							lastUsed: true,
-						},
-					})
-					: [],
-			} : {}),
+			...(opts.includeSecrets
+				? {
+						email: profile!.email,
+						emailVerified: profile!.emailVerified,
+						securityKeysList: profile!.twoFactorEnabled
+							? this.userSecurityKeysRepository.find({
+								where: {
+									userId: user.id,
+								},
+								select: {
+									id: true,
+									name: true,
+									lastUsed: true,
+								},
+							})
+							: [],
+					}
+				: {}),
 
-			...(relation ? {
-				isFollowing: relation.isFollowing,
-				isFollowed: relation.isFollowed,
-				hasPendingFollowRequestFromYou: relation.hasPendingFollowRequestFromYou,
-				hasPendingFollowRequestToYou: relation.hasPendingFollowRequestToYou,
-				isBlocking: relation.isBlocking,
-				isBlocked: relation.isBlocked,
-				isMuted: relation.isMuted,
-				isRenoteMuted: relation.isRenoteMuted,
-				notify: relation.following?.notify ?? 'none',
-				withReplies: relation.following?.withReplies ?? false,
-			} : {}),
+			...(relation
+				? {
+						isFollowing: relation.isFollowing,
+						isFollowed: relation.isFollowed,
+						hasPendingFollowRequestFromYou: relation.hasPendingFollowRequestFromYou,
+						hasPendingFollowRequestToYou: relation.hasPendingFollowRequestToYou,
+						isBlocking: relation.isBlocking,
+						isBlocked: relation.isBlocked,
+						isMuted: relation.isMuted,
+						isRenoteMuted: relation.isRenoteMuted,
+						notify: relation.following?.notify ?? 'none',
+						withReplies: relation.following?.withReplies ?? false,
+					}
+				: {}),
 		} as Promiseable<Packed<S>>;
 
 		return await awaitAll(packed);

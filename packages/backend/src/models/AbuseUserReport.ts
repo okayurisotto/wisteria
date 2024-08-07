@@ -60,7 +60,7 @@ export class MiAbuseUserReport {
 	})
 	public comment: string;
 
-	//#region Denormalized fields
+	// #region Denormalized fields
 	@Index()
 	@Column('varchar', {
 		length: 128, nullable: true,
@@ -74,5 +74,5 @@ export class MiAbuseUserReport {
 		comment: '[Denormalized]',
 	})
 	public reporterHost: string | null;
-	//#endregion
+	// #endregion
 }

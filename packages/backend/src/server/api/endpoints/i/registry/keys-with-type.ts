@@ -33,7 +33,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private registryApiService: RegistryApiService,
+		private readonly registryApiService: RegistryApiService,
 	) {
 		super(meta, paramDef, async (ps, me, accessToken) => {
 			const items = await this.registryApiService.getAllItemsOfScope(me.id, accessToken != null ? accessToken.id : (ps.domain ?? null), ps.scope);
@@ -43,12 +43,18 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			for (const item of items) {
 				const type = typeof item.value;
 				res[item.key] =
-					item.value === null ? 'null'
-						: Array.isArray(item.value) ? 'array'
-							: type === 'number' ? 'number'
-								: type === 'string' ? 'string'
-									: type === 'boolean' ? 'boolean'
-										: type === 'object' ? 'object'
+					item.value === null
+						? 'null'
+						: Array.isArray(item.value)
+							? 'array'
+							: type === 'number'
+								? 'number'
+								: type === 'string'
+									? 'string'
+									: type === 'boolean'
+										? 'boolean'
+										: type === 'object'
+											? 'object'
 											: null as never;
 			}
 

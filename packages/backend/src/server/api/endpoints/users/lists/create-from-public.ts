@@ -75,19 +75,19 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userListsRepository)
-		private userListsRepository: UserListsRepository,
+		private readonly userListsRepository: UserListsRepository,
 
 		@Inject(DI.userListMembershipsRepository)
-		private userListMembershipsRepository: UserListMembershipsRepository,
+		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
 		@Inject(DI.blockingsRepository)
-		private blockingsRepository: BlockingsRepository,
+		private readonly blockingsRepository: BlockingsRepository,
 
-		private userListService: UserListService,
-		private userListEntityService: UserListEntityService,
-		private idService: IdService,
-		private getterService: GetterService,
-		private roleUserService: RoleUserService,
+		private readonly userListService: UserListService,
+		private readonly userListEntityService: UserListEntityService,
+		private readonly idService: IdService,
+		private readonly getterService: GetterService,
+		private readonly roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const listExist = await this.userListsRepository.exists({

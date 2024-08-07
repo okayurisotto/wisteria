@@ -40,12 +40,12 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.usedUsernamesRepository)
-		private usedUsernamesRepository: UsedUsernamesRepository,
+		private readonly usedUsernamesRepository: UsedUsernamesRepository,
 
-		private metaService: MetaService,
+		private readonly metaService: MetaService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const exist = await this.usersRepository.countBy({

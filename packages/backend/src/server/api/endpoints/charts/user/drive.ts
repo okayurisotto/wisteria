@@ -32,7 +32,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private perUserDriveChart: PerUserDriveChart,
+		private readonly perUserDriveChart: PerUserDriveChart,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			return await this.perUserDriveChart.getChart(ps.span, ps.limit, ps.offset ? new Date(ps.offset) : null, ps.userId);

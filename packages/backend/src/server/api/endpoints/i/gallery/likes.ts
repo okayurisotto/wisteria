@@ -53,10 +53,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.galleryLikesRepository)
-		private galleryLikesRepository: GalleryLikesRepository,
+		private readonly galleryLikesRepository: GalleryLikesRepository,
 
-		private galleryLikeEntityService: GalleryLikeEntityService,
-		private queryService: QueryService,
+		private readonly galleryLikeEntityService: GalleryLikeEntityService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.galleryLikesRepository.createQueryBuilder('like'), ps.sinceId, ps.untilId)

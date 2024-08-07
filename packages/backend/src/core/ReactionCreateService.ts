@@ -40,33 +40,33 @@ const isCustomEmojiRegexp = /^:([\w+-]+)(?:@\.)?:$/;
 export class ReactionCreateService {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.noteReactionsRepository)
-		private noteReactionsRepository: NoteReactionsRepository,
+		private readonly noteReactionsRepository: NoteReactionsRepository,
 
 		@Inject(DI.emojisRepository)
-		private emojisRepository: EmojisRepository,
+		private readonly emojisRepository: EmojisRepository,
 
-		private utilityService: UtilityService,
-		private metaService: MetaService,
-		private customEmojiService: CustomEmojiService,
-		private roleUserService: RoleUserService,
-		private userEntityService: UserEntityService,
-		private noteEntityService: NoteEntityService,
-		private userBlockingCheckService: UserBlockingCheckService,
-		private idService: IdService,
-		private featuredService: FeaturedService,
-		private globalEventService: GlobalEventService,
-		private apRendererService: ApRendererService,
-		private apDeliverManagerService: ApDeliverManagerService,
-		private notificationCreateService: NotificationCreateService,
-		private perUserReactionsChart: PerUserReactionsChart,
-		private reactionDecodeService: ReactionDecodeService,
-		private reactionDeleteService: ReactionDeleteService,
+		private readonly utilityService: UtilityService,
+		private readonly metaService: MetaService,
+		private readonly customEmojiService: CustomEmojiService,
+		private readonly roleUserService: RoleUserService,
+		private readonly userEntityService: UserEntityService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly userBlockingCheckService: UserBlockingCheckService,
+		private readonly idService: IdService,
+		private readonly featuredService: FeaturedService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly apRendererService: ApRendererService,
+		private readonly apDeliverManagerService: ApDeliverManagerService,
+		private readonly notificationCreateService: NotificationCreateService,
+		private readonly perUserReactionsChart: PerUserReactionsChart,
+		private readonly reactionDecodeService: ReactionDecodeService,
+		private readonly reactionDeleteService: ReactionDeleteService,
 	) {}
 
 	public async create(user: { id: MiUser['id']; host: MiUser['host']; isBot: MiUser['isBot'] }, note: MiNote, _reaction?: string | null) {
@@ -155,9 +155,11 @@ export class ReactionCreateService {
 		await this.notesRepository.createQueryBuilder().update()
 			.set({
 				reactions: () => sql,
-				...(note.reactionAndUserPairCache.length < PER_NOTE_REACTION_USER_PAIR_CACHE_MAX ? {
-					reactionAndUserPairCache: () => `array_append("reactionAndUserPairCache", '${user.id}/${reaction}')`,
-				} : {}),
+				...(note.reactionAndUserPairCache.length < PER_NOTE_REACTION_USER_PAIR_CACHE_MAX
+					? {
+							reactionAndUserPairCache: () => `array_append("reactionAndUserPairCache", '${user.id}/${reaction}')`,
+						}
+					: {}),
 			})
 			.where('id = :id', { id: note.id })
 			.execute();
@@ -189,15 +191,17 @@ export class ReactionCreateService {
 		// カスタム絵文字リアクションだったら絵文字情報も送る
 		const decodedReaction = this.reactionDecodeService.decodeReaction(reaction);
 
-		const customEmoji = decodedReaction.name == null ? null : decodedReaction.host == null
-			? (await this.customEmojiService.fetch()).get(decodedReaction.name)
-			: await this.emojisRepository.findOne(
-				{
-					where: {
-						name: decodedReaction.name,
-						host: decodedReaction.host,
-					},
-				});
+		const customEmoji = decodedReaction.name == null
+			? null
+			: decodedReaction.host == null
+				? (await this.customEmojiService.fetch()).get(decodedReaction.name)
+				: await this.emojisRepository.findOne(
+					{
+						where: {
+							name: decodedReaction.name,
+							host: decodedReaction.host,
+						},
+					});
 
 		this.globalEventService.publishNoteStream(note.id, 'reacted', {
 			reaction: decodedReaction.reaction,
@@ -217,7 +221,7 @@ export class ReactionCreateService {
 			}, user.id);
 		}
 
-		//#region 配信
+		// #region 配信
 		if (this.userEntityService.isLocalUser(user) && !note.localOnly) {
 			const content = this.apRendererService.addContext(await this.apRendererService.renderLike(record, note));
 			const dm = this.apDeliverManagerService.createDeliverManager(user, content);
@@ -237,7 +241,7 @@ export class ReactionCreateService {
 
 			trackPromise(dm.execute());
 		}
-		//#endregion
+		// #endregion
 	}
 
 	public normalize(reaction: string | null): string {

@@ -82,11 +82,11 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.emojisRepository)
-		private emojisRepository: EmojisRepository,
+		private readonly emojisRepository: EmojisRepository,
 
-		private utilityService: UtilityService,
-		private queryService: QueryService,
-		private emojiEntityService: EmojiEntityService,
+		private readonly utilityService: UtilityService,
+		private readonly queryService: QueryService,
+		private readonly emojiEntityService: EmojiEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const q = this.queryService.makePaginationQuery(this.emojisRepository.createQueryBuilder('emoji'), ps.sinceId, ps.untilId);

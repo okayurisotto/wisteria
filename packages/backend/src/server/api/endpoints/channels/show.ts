@@ -42,9 +42,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.channelsRepository)
-		private channelsRepository: ChannelsRepository,
+		private readonly channelsRepository: ChannelsRepository,
 
-		private channelEntityService: ChannelEntityService,
+		private readonly channelEntityService: ChannelEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const channel = await this.channelsRepository.findOneBy({

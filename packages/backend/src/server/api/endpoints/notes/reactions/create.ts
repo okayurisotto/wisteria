@@ -51,8 +51,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private getterService: GetterService,
-		private reactionCreateService: ReactionCreateService,
+		private readonly getterService: GetterService,
+		private readonly reactionCreateService: ReactionCreateService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const note = await this.getterService.getNote(ps.noteId).catch((err: unknown) => {

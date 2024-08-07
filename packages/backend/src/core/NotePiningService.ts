@@ -22,23 +22,23 @@ import { RoleUserService } from './RoleUserService.js';
 export class NotePiningService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.userNotePiningsRepository)
-		private userNotePiningsRepository: UserNotePiningsRepository,
+		private readonly userNotePiningsRepository: UserNotePiningsRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
-		private roleUserService: RoleUserService,
-		private relayService: RelayService,
-		private apDeliverManagerService: ApDeliverManagerService,
-		private apRendererService: ApRendererService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
+		private readonly roleUserService: RoleUserService,
+		private readonly relayService: RelayService,
+		private readonly apDeliverManagerService: ApDeliverManagerService,
+		private readonly apRendererService: ApRendererService,
 	) {}
 
 	/**

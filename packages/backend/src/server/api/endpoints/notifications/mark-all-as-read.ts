@@ -24,7 +24,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private notificationService: NotificationService,
+		private readonly notificationService: NotificationService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			this.notificationService.readAllNotification(me.id, true);

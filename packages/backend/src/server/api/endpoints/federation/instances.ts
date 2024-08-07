@@ -71,10 +71,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
-		private instanceEntityService: InstanceEntityService,
-		private metaService: MetaService,
+		private readonly instanceEntityService: InstanceEntityService,
+		private readonly metaService: MetaService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.instancesRepository.createQueryBuilder('instance');

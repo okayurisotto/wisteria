@@ -38,7 +38,7 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.hashtagsRepository)
-		private hashtagsRepository: HashtagsRepository,
+		private readonly hashtagsRepository: HashtagsRepository,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const hashtags = await this.hashtagsRepository.createQueryBuilder('tag')

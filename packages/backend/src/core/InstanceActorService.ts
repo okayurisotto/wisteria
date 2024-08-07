@@ -16,9 +16,9 @@ const ACTOR_USERNAME = 'instance.actor';
 export class InstanceActorService {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private createSystemUserService: CreateSystemUserService,
+		private readonly createSystemUserService: CreateSystemUserService,
 	) {}
 
 	public async realLocalUsersPresent(): Promise<boolean> {

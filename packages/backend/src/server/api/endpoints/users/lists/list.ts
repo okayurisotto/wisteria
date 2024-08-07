@@ -58,12 +58,12 @@ export const paramDef = {
 @Injectable() export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userListsRepository)
-		private userListsRepository: UserListsRepository,
+		private readonly userListsRepository: UserListsRepository,
 
-		private userListEntityService: UserListEntityService,
+		private readonly userListEntityService: UserListEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			if (typeof ps.userId !== 'undefined') {
@@ -74,12 +74,14 @@ export const paramDef = {
 				throw new ApiError(meta.errors.invalidParam);
 			}
 
-			const userLists = await this.userListsRepository.findBy(typeof ps.userId === 'undefined' && me !== null ? {
-				userId: me.id,
-			} : {
-				userId: ps.userId,
-				isPublic: true,
-			});
+			const userLists = await this.userListsRepository.findBy(typeof ps.userId === 'undefined' && me !== null
+				? {
+						userId: me.id,
+					}
+				: {
+						userId: ps.userId,
+						isPublic: true,
+					});
 
 			return await Promise.all(userLists.map(x => this.userListEntityService.pack(x)));
 		});

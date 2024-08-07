@@ -18,12 +18,12 @@ import { ModerationLogService } from '@/core/ModerationLogService.js';
 export class CustomEmojiService {
 	constructor(
 		@Inject(DI.emojisRepository)
-		private emojisRepository: EmojisRepository,
+		private readonly emojisRepository: EmojisRepository,
 
-		private idService: IdService,
-		private emojiEntityService: EmojiEntityService,
-		private moderationLogService: ModerationLogService,
-		private globalEventService: GlobalEventService,
+		private readonly idService: IdService,
+		private readonly emojiEntityService: EmojiEntityService,
+		private readonly moderationLogService: ModerationLogService,
+		private readonly globalEventService: GlobalEventService,
 	) {}
 
 	public async fetch(): Promise<Map<string, MiEmoji>> {

@@ -38,9 +38,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.announcementsRepository)
-		private announcementsRepository: AnnouncementsRepository,
+		private readonly announcementsRepository: AnnouncementsRepository,
 
-		private announcementService: AnnouncementService,
+		private readonly announcementService: AnnouncementService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const announcement = await this.announcementsRepository.findOneBy({ id: ps.id });

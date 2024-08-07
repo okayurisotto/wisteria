@@ -29,9 +29,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private deleteAccountService: DeleteAccountService,
+		private readonly deleteAccountService: DeleteAccountService,
 	) {
 		super(meta, paramDef, async (ps) => {
 			const user = await this.usersRepository.findOneByOrFail({ id: ps.userId });

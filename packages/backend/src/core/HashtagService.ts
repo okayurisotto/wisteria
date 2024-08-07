@@ -20,16 +20,16 @@ import { UtilityService } from '@/core/UtilityService.js';
 export class HashtagService {
 	constructor(
 		@Inject(DI.redis)
-		private redisClient: Redis.Redis, // TODO: 専用のRedisサーバーを設定できるようにする
+		private readonly redisClient: Redis.Redis, // TODO: 専用のRedisサーバーを設定できるようにする
 
 		@Inject(DI.hashtagsRepository)
-		private hashtagsRepository: HashtagsRepository,
+		private readonly hashtagsRepository: HashtagsRepository,
 
-		private userEntityService: UserEntityService,
-		private featuredService: FeaturedService,
-		private idService: IdService,
-		private metaService: MetaService,
-		private utilityService: UtilityService,
+		private readonly userEntityService: UserEntityService,
+		private readonly featuredService: FeaturedService,
+		private readonly idService: IdService,
+		private readonly metaService: MetaService,
+		private readonly utilityService: UtilityService,
 	) {}
 
 	public async updateHashtags(user: { id: MiUser['id']; host: MiUser['host'] }, tags: string[]) {

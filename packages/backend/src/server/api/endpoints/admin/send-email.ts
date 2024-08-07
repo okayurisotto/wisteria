@@ -28,7 +28,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private emailService: EmailService,
+		private readonly emailService: EmailService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			await this.emailService.sendEmail(ps.to, ps.subject, ps.text, ps.text);

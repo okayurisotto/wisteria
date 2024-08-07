@@ -18,10 +18,10 @@ import { UserEntityService } from './UserEntityService.js';
 export class MutingEntityService {
 	constructor(
 		@Inject(DI.mutingsRepository)
-		private mutingsRepository: MutingsRepository,
+		private readonly mutingsRepository: MutingsRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(

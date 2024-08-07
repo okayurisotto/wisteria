@@ -22,7 +22,7 @@ import { envOption } from '@/env.js';
 
 @Injectable()
 export class ChartManagementService implements OnApplicationShutdown {
-	private charts;
+	private readonly charts;
 	private saveIntervalId: NodeJS.Timeout;
 
 	constructor(

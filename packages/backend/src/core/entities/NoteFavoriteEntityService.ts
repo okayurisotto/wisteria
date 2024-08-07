@@ -16,10 +16,10 @@ import { NoteEntityService } from './NoteEntityService.js';
 export class NoteFavoriteEntityService {
 	constructor(
 		@Inject(DI.noteFavoritesRepository)
-		private noteFavoritesRepository: NoteFavoritesRepository,
+		private readonly noteFavoritesRepository: NoteFavoritesRepository,
 
-		private noteEntityService: NoteEntityService,
-		private idService: IdService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(

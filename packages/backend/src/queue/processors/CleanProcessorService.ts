@@ -14,23 +14,23 @@ import { QueueLoggerService } from '../QueueLoggerService.js';
 
 @Injectable()
 export class CleanProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.userIpsRepository)
-		private userIpsRepository: UserIpsRepository,
+		private readonly userIpsRepository: UserIpsRepository,
 
 		@Inject(DI.antennasRepository)
-		private antennasRepository: AntennasRepository,
+		private readonly antennasRepository: AntennasRepository,
 
 		@Inject(DI.roleAssignmentsRepository)
-		private roleAssignmentsRepository: RoleAssignmentsRepository,
+		private readonly roleAssignmentsRepository: RoleAssignmentsRepository,
 
-		private queueLoggerService: QueueLoggerService,
-		private reversiService: ReversiService,
+		private readonly queueLoggerService: QueueLoggerService,
+		private readonly reversiService: ReversiService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('clean');
 	}

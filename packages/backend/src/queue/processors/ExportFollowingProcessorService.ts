@@ -21,23 +21,23 @@ import type { Config } from '@/config.js';
 
 @Injectable()
 export class ExportFollowingProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
 		@Inject(DI.mutingsRepository)
-		private mutingsRepository: MutingsRepository,
+		private readonly mutingsRepository: MutingsRepository,
 
-		private driveService: DriveService,
-		private queueLoggerService: QueueLoggerService,
+		private readonly driveService: DriveService,
+		private readonly queueLoggerService: QueueLoggerService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('export-following');
 	}
@@ -60,9 +60,11 @@ export class ExportFollowingProcessorService {
 
 			let cursor: MiFollowing['id'] | null = null;
 
-			const mutings = job.data.excludeMuting ? await this.mutingsRepository.findBy({
-				muterId: user.id,
-			}) : [];
+			const mutings = job.data.excludeMuting
+				? await this.mutingsRepository.findBy({
+					muterId: user.id,
+				})
+				: [];
 
 			while (true) {
 				const followings = await this.followingsRepository.find({

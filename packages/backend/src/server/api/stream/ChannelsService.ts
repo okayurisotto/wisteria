@@ -25,22 +25,22 @@ import type { MiChannelService } from './channel.js';
 @Injectable()
 export class ChannelsService {
 	constructor(
-		private mainChannelService: MainChannelService,
-		private homeTimelineChannelService: HomeTimelineChannelService,
-		private localTimelineChannelService: LocalTimelineChannelService,
-		private hybridTimelineChannelService: HybridTimelineChannelService,
-		private globalTimelineChannelService: GlobalTimelineChannelService,
-		private userListChannelService: UserListChannelService,
-		private hashtagChannelService: HashtagChannelService,
-		private roleTimelineChannelService: RoleTimelineChannelService,
-		private antennaChannelService: AntennaChannelService,
-		private channelChannelService: ChannelChannelService,
-		private driveChannelService: DriveChannelService,
-		private serverStatsChannelService: ServerStatsChannelService,
-		private queueStatsChannelService: QueueStatsChannelService,
-		private adminChannelService: AdminChannelService,
-		private reversiChannelService: ReversiChannelService,
-		private reversiGameChannelService: ReversiGameChannelService,
+		private readonly mainChannelService: MainChannelService,
+		private readonly homeTimelineChannelService: HomeTimelineChannelService,
+		private readonly localTimelineChannelService: LocalTimelineChannelService,
+		private readonly hybridTimelineChannelService: HybridTimelineChannelService,
+		private readonly globalTimelineChannelService: GlobalTimelineChannelService,
+		private readonly userListChannelService: UserListChannelService,
+		private readonly hashtagChannelService: HashtagChannelService,
+		private readonly roleTimelineChannelService: RoleTimelineChannelService,
+		private readonly antennaChannelService: AntennaChannelService,
+		private readonly channelChannelService: ChannelChannelService,
+		private readonly driveChannelService: DriveChannelService,
+		private readonly serverStatsChannelService: ServerStatsChannelService,
+		private readonly queueStatsChannelService: QueueStatsChannelService,
+		private readonly adminChannelService: AdminChannelService,
+		private readonly reversiChannelService: ReversiChannelService,
+		private readonly reversiGameChannelService: ReversiGameChannelService,
 	) {}
 
 	public getChannelService(name: string): MiChannelService<boolean> {

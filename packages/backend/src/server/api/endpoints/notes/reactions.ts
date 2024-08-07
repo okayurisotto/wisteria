@@ -53,10 +53,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.noteReactionsRepository)
-		private noteReactionsRepository: NoteReactionsRepository,
+		private readonly noteReactionsRepository: NoteReactionsRepository,
 
-		private noteReactionEntityService: NoteReactionEntityService,
-		private queryService: QueryService,
+		private readonly noteReactionEntityService: NoteReactionEntityService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.noteReactionsRepository.createQueryBuilder('reaction'), ps.sinceId, ps.untilId)

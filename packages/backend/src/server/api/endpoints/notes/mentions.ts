@@ -45,14 +45,14 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
-		private noteEntityService: NoteEntityService,
-		private queryService: QueryService,
-		private noteReadService: NoteReadService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly queryService: QueryService,
+		private readonly noteReadService: NoteReadService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const followingQuery = this.followingsRepository.createQueryBuilder('following')

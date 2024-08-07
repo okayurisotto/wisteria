@@ -15,7 +15,7 @@ import type { IObject, IApMention } from '../type.js';
 @Injectable()
 export class ApMentionService {
 	constructor(
-		private apPersonService: ApPersonService,
+		private readonly apPersonService: ApPersonService,
 	) {}
 
 	public async extractApMentions(tags: IObject | IObject[] | null | undefined, resolver: Resolver): Promise<MiUser[]> {

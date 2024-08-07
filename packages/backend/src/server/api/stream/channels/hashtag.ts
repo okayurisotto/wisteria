@@ -17,13 +17,13 @@ class HashtagChannel extends Channel {
 	private q: string[][];
 
 	constructor(
-		private noteEntityService: NoteEntityService,
+		private readonly noteEntityService: NoteEntityService,
 
 		id: string,
 		connection: Channel['connection'],
 	) {
 		super(id, connection);
-		//this.onNote = this.onNote.bind(this);
+		// this.onNote = this.onNote.bind(this);
 	}
 
 	public async init(params: any) {
@@ -35,7 +35,7 @@ class HashtagChannel extends Channel {
 		this.subscriber.on('notesStream', this.onNote);
 	}
 
-	private onNote = async (note: Packed<'Note'>) => {
+	private readonly onNote = async (note: Packed<'Note'>) => {
 		const noteTags = note.tags ? note.tags.map((t: string) => t.toLowerCase()) : [];
 		const matched = this.q.some(tags => tags.every(tag => noteTags.includes(normalizeForSearch(tag))));
 		if (!matched) return;
@@ -72,7 +72,7 @@ export class HashtagChannelService implements MiChannelService<false> {
 	public readonly kind = HashtagChannel.kind;
 
 	constructor(
-		private noteEntityService: NoteEntityService,
+		private readonly noteEntityService: NoteEntityService,
 	) {}
 
 	public create(id: string, connection: Channel['connection']): HashtagChannel {

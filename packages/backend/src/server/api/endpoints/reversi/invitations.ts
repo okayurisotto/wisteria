@@ -26,8 +26,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private userEntityService: UserEntityService,
-		private reversiService: ReversiService,
+		private readonly userEntityService: UserEntityService,
+		private readonly reversiService: ReversiService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const invitations = await this.reversiService.getInvitations(me);

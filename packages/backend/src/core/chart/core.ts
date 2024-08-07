@@ -100,16 +100,18 @@ export function getJsonSchema<S extends Schema>(schema: S): ToJsonSchema<Unflatt
 		if (key == null) return;
 
 		if (parent.properties[key] == null) {
-			parent.properties[key] = nextKey ? {
-				type: 'object',
-				properties: {},
-				required: [],
-			} : {
-				type: 'array',
-				items: {
-					type: 'number',
-				},
-			};
+			parent.properties[key] = nextKey
+				? {
+						type: 'object',
+						properties: {},
+						required: [],
+					}
+				: {
+						type: 'array',
+						items: {
+							type: 'number',
+						},
+					};
 		}
 
 		if (nextKey) unflatten(keys.join('.'), parent.properties[key] as Record<string, any>);
@@ -132,21 +134,21 @@ export function getJsonSchema<S extends Schema>(schema: S): ToJsonSchema<Unflatt
  * 様々なチャートの管理を司るクラス
  */
 export default abstract class Chart<T extends Schema> {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	public schema: T;
 
-	private name: string;
+	private readonly name: string;
 	private buffer: {
 		diff: Commit<T>;
 		group: string | null;
 	}[] = [];
 
 	// ↓にしたいけどfindOneとかで型エラーになる
-	//private repositoryForHour: Repository<RawRecord<T>>;
-	//private repositoryForDay: Repository<RawRecord<T>>;
-	private repositoryForHour: Repository<{ id: number; group?: string | null; date: number }>;
-	private repositoryForDay: Repository<{ id: number; group?: string | null; date: number }>;
+	// private repositoryForHour: Repository<RawRecord<T>>;
+	// private repositoryForDay: Repository<RawRecord<T>>;
+	private readonly repositoryForHour: Repository<{ id: number; group?: string | null; date: number }>;
+	private readonly repositoryForDay: Repository<{ id: number; group?: string | null; date: number }>;
 
 	/**
 	 * 1日に一回程度実行されれば良いような計算処理を入れる(主にCASCADE削除などアプリケーション側で感知できない変動によるズレの修正用)
@@ -209,8 +211,10 @@ export default abstract class Chart<T extends Schema> {
 	} {
 		const createEntity = (span: 'hour' | 'day'): EntitySchema => new EntitySchema({
 			name:
-				span === 'hour' ? `__chart__${camelToSnake(name)}`
-					: span === 'day' ? `__chart_day__${camelToSnake(name)}`
+				span === 'hour'
+					? `__chart__${camelToSnake(name)}`
+					: span === 'day'
+						? `__chart_day__${camelToSnake(name)}`
 						: new Error('not happen') as never,
 			columns: {
 				id: {
@@ -221,12 +225,14 @@ export default abstract class Chart<T extends Schema> {
 				date: {
 					type: 'integer',
 				},
-				...(grouped ? {
-					group: {
-						type: 'varchar',
-						length: 128,
-					},
-				} : {}),
+				...(grouped
+					? {
+							group: {
+								type: 'varchar',
+								length: 128,
+							},
+						}
+					: {}),
 				...Chart.convertSchemaToColumnDefinitions(schema),
 			},
 			indices: [{
@@ -253,7 +259,7 @@ export default abstract class Chart<T extends Schema> {
 		};
 	}
 
-	private lock: (key: string) => Promise<() => void>;
+	private readonly lock: (key: string) => Promise<() => void>;
 
 	constructor(
 		db: DataSource,
@@ -295,14 +301,18 @@ export default abstract class Chart<T extends Schema> {
 
 	private getLatestLog(group: string | null, span: 'hour' | 'day'): Promise<RawRecord<T> | null> {
 		const repository =
-			span === 'hour' ? this.repositoryForHour
-				: span === 'day' ? this.repositoryForDay
+			span === 'hour'
+				? this.repositoryForHour
+				: span === 'day'
+					? this.repositoryForDay
 					: new Error('not happen') as never;
 
 		return repository.findOne({
-			where: group ? {
-				group: group,
-			} : {},
+			where: group
+				? {
+						group: group,
+					}
+				: {},
 			order: {
 				date: -1,
 			},
@@ -316,13 +326,17 @@ export default abstract class Chart<T extends Schema> {
 		const [y, m, d, h] = Chart.getCurrentDate();
 
 		const current = dateUTC(
-			span === 'hour' ? [y, m, d, h]
-				: span === 'day' ? [y, m, d]
+			span === 'hour'
+				? [y, m, d, h]
+				: span === 'day'
+					? [y, m, d]
 					: new Error('not happen') as never);
 
 		const repository =
-			span === 'hour' ? this.repositoryForHour
-				: span === 'day' ? this.repositoryForDay
+			span === 'hour'
+				? this.repositoryForHour
+				: span === 'day'
+					? this.repositoryForDay
 					: new Error('not happen') as never;
 
 		// 現在(=今のHour or Day)のログ
@@ -603,13 +617,17 @@ export default abstract class Chart<T extends Schema> {
 		const lt = dateUTC([y, m, d, h, _m, _s, _ms]);
 
 		const gt =
-			span === 'day' ? subtractTime(cursor ? dateUTC([y2, m2, d2, 0]) : dateUTC([y, m, d, 0]), amount - 1, 'day')
-				: span === 'hour' ? subtractTime(cursor ? dateUTC([y2, m2, d2, h2]) : dateUTC([y, m, d, h]), amount - 1, 'hour')
+			span === 'day'
+				? subtractTime(cursor ? dateUTC([y2, m2, d2, 0]) : dateUTC([y, m, d, 0]), amount - 1, 'day')
+				: span === 'hour'
+					? subtractTime(cursor ? dateUTC([y2, m2, d2, h2]) : dateUTC([y, m, d, h]), amount - 1, 'hour')
 					: new Error('not happen') as never;
 
 		const repository =
-			span === 'hour' ? this.repositoryForHour
-				: span === 'day' ? this.repositoryForDay
+			span === 'hour'
+				? this.repositoryForHour
+				: span === 'day'
+					? this.repositoryForDay
 					: new Error('not happen') as never;
 
 		// ログ取得
@@ -628,9 +646,11 @@ export default abstract class Chart<T extends Schema> {
 			// もっとも新しいログを持ってくる
 			// (すくなくともひとつログが無いと隙間埋めできないため)
 			const recentLog = await repository.findOne({
-				where: group ? {
-					group: group,
-				} : {},
+				where: group
+					? {
+							group: group,
+						}
+					: {},
 				order: {
 					date: -1,
 				},
@@ -663,8 +683,10 @@ export default abstract class Chart<T extends Schema> {
 
 		for (let i = (amount - 1); i >= 0; i--) {
 			const current =
-				span === 'hour' ? subtractTime(dateUTC([y, m, d, h]), i, 'hour')
-					: span === 'day' ? subtractTime(dateUTC([y, m, d]), i, 'day')
+				span === 'hour'
+					? subtractTime(dateUTC([y, m, d, h]), i, 'hour')
+					: span === 'day'
+						? subtractTime(dateUTC([y, m, d]), i, 'day')
 						: new Error('not happen') as never;
 
 			const log = logs.find(l => isTimeSame(new Date(l.date * 1000), current));

@@ -19,14 +19,14 @@ class LocalTimelineChannel extends Channel {
 	private withFiles: boolean;
 
 	constructor(
-		private roleUserService: RoleUserService,
-		private noteEntityService: NoteEntityService,
+		private readonly roleUserService: RoleUserService,
+		private readonly noteEntityService: NoteEntityService,
 
 		id: string,
 		connection: Channel['connection'],
 	) {
 		super(id, connection);
-		//this.onNote = this.onNote.bind(this);
+		// this.onNote = this.onNote.bind(this);
 	}
 
 	public async init(params: any) {
@@ -41,7 +41,7 @@ class LocalTimelineChannel extends Channel {
 		this.subscriber.on('notesStream', this.onNote);
 	}
 
-	private onNote = async (note: Packed<'Note'>) => {
+	private readonly onNote = async (note: Packed<'Note'>) => {
 		if (this.withFiles && (note.fileIds == null || note.fileIds.length === 0)) return;
 
 		if (note.user.host !== null) return;
@@ -89,8 +89,8 @@ export class LocalTimelineChannelService implements MiChannelService<false> {
 	public readonly kind = LocalTimelineChannel.kind;
 
 	constructor(
-		private roleUserService: RoleUserService,
-		private noteEntityService: NoteEntityService,
+		private readonly roleUserService: RoleUserService,
+		private readonly noteEntityService: NoteEntityService,
 	) {}
 
 	public create(id: string, connection: Channel['connection']): LocalTimelineChannel {

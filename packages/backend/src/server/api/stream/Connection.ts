@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as WebSocket from 'ws';
+import type * as WebSocket from 'ws';
 import type { MiUser } from '@/models/User.js';
 import type { MiAccessToken } from '@/models/AccessToken.js';
 import type { Packed } from '@/misc/json-schema.js';
@@ -36,15 +36,15 @@ export class Connection {
 	private fetchIntervalId: NodeJS.Timeout | null = null;
 
 	constructor(
-		private userProfilesRepository: UserProfilesRepository,
-		private mutingsRepository: MutingsRepository,
-		private blockingsRepository: BlockingsRepository,
-		private renoteMutingsRepository: RenoteMutingsRepository,
-		private followingsRepository: FollowingsRepository,
-		private channelFollowingsRepository: ChannelFollowingsRepository,
-		private channelsService: ChannelsService,
-		private noteReadService: NoteReadService,
-		private notificationService: NotificationService,
+		private readonly userProfilesRepository: UserProfilesRepository,
+		private readonly mutingsRepository: MutingsRepository,
+		private readonly blockingsRepository: BlockingsRepository,
+		private readonly renoteMutingsRepository: RenoteMutingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
+		private readonly channelFollowingsRepository: ChannelFollowingsRepository,
+		private readonly channelsService: ChannelsService,
+		private readonly noteReadService: NoteReadService,
+		private readonly notificationService: NotificationService,
 
 		user: MiUser | null | undefined,
 		token: MiAccessToken | null | undefined,
@@ -115,7 +115,7 @@ export class Connection {
 	/**
 	 * クライアントからメッセージ受信時
 	 */
-	private onWsConnectionMessage = (data: WebSocket.RawData) => {
+	private readonly onWsConnectionMessage = (data: WebSocket.RawData) => {
 		let obj: Record<string, any>;
 
 		try {
@@ -208,7 +208,7 @@ export class Connection {
 		}
 	}
 
-	private onNoteStreamMessage = async (data: GlobalEvents['note']['payload']) => {
+	private readonly onNoteStreamMessage = async (data: GlobalEvents['note']['payload']) => {
 		this.sendMessageToWs('noteUpdated', {
 			id: data.body.id,
 			type: data.type,

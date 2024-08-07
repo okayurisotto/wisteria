@@ -150,7 +150,7 @@ import { NotificationCreateService } from './NotificationCreateService.js';
 import { FeedService } from './FeedService.js';
 import { FileGetService } from './FileGetService.js';
 
-//#region 文字列ベースでのinjection用(循環参照対応のため)
+// #region 文字列ベースでのinjection用(循環参照対応のため)
 const $NotificationCreateService: Provider = { provide: 'NotificationCreateService', useExisting: NotificationCreateService };
 const $RoleUserService: Provider = { provide: 'RoleUserService', useExisting: RoleUserService };
 const $UserFollowingService: Provider = { provide: 'UserFollowingService', useExisting: UserFollowingService };
@@ -164,7 +164,7 @@ const $ApResolverService: Provider = { provide: 'ApResolverService', useExisting
 const $ApImageService: Provider = { provide: 'ApImageService', useExisting: ApImageService };
 const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNoteService };
 const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: ApPersonService };
-//#endregion
+// #endregion
 
 @Module({
 	imports: [
@@ -315,7 +315,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		ApQuestionService,
 		QueueService,
 
-		//#region 文字列ベースでのinjection用(循環参照対応のため)
+		// #region 文字列ベースでのinjection用(循環参照対応のため)
 		$NotificationCreateService,
 		$RoleUserService,
 		$UserFollowingService,
@@ -329,7 +329,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		$ApImageService,
 		$ApNoteService,
 		$ApPersonService,
-		//#endregion
+		// #endregion
 	],
 	exports: [
 		QueueModule,

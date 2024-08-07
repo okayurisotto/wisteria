@@ -69,7 +69,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private announcementService: AnnouncementService,
+		private readonly announcementService: AnnouncementService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const { raw, packed } = await this.announcementService.create({

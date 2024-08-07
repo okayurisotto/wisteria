@@ -50,9 +50,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.registrationTicketsRepository)
-		private registrationTicketsRepository: RegistrationTicketsRepository,
+		private readonly registrationTicketsRepository: RegistrationTicketsRepository,
 
-		private roleUserService: RoleUserService,
+		private readonly roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const ticket = await this.registrationTicketsRepository.findOneBy({ id: ps.inviteId });

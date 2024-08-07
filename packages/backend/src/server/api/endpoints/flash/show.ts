@@ -42,9 +42,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.flashsRepository)
-		private flashsRepository: FlashsRepository,
+		private readonly flashsRepository: FlashsRepository,
 
-		private flashEntityService: FlashEntityService,
+		private readonly flashEntityService: FlashEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const flash = await this.flashsRepository.findOneBy({ id: ps.flashId });

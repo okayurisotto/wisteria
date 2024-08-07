@@ -20,9 +20,9 @@ import { generateUserToken } from '@/misc/generate-native-user-token.js';
 export class CreateSystemUserService {
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		private readonly db: DataSource,
 
-		private idService: IdService,
+		private readonly idService: IdService,
 	) {}
 
 	public async createSystemUser(username: string): Promise<MiUser> {

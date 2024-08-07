@@ -9,9 +9,9 @@ import type { MiLocalUser } from '@/models/User.js';
 export class ChannelFollowingService {
 	constructor(
 		@Inject(DI.channelFollowingsRepository)
-		private channelFollowingsRepository: ChannelFollowingsRepository,
+		private readonly channelFollowingsRepository: ChannelFollowingsRepository,
 
-		private idService: IdService,
+		private readonly idService: IdService,
 	) {}
 
 	public async follow(

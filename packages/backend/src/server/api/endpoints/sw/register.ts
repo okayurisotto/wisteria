@@ -62,10 +62,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.swSubscriptionsRepository)
-		private swSubscriptionsRepository: SwSubscriptionsRepository,
+		private readonly swSubscriptionsRepository: SwSubscriptionsRepository,
 
-		private idService: IdService,
-		private metaService: MetaService,
+		private readonly idService: IdService,
+		private readonly metaService: MetaService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// if already subscribed

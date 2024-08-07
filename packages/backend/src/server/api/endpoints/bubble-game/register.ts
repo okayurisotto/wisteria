@@ -55,9 +55,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.bubbleGameRecordsRepository)
-		private bubbleGameRecordsRepository: BubbleGameRecordsRepository,
+		private readonly bubbleGameRecordsRepository: BubbleGameRecordsRepository,
 
-		private idService: IdService,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const seedDate = new Date(parseInt(ps.seed, 10));

@@ -45,10 +45,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.pagesRepository)
-		private pagesRepository: PagesRepository,
+		private readonly pagesRepository: PagesRepository,
 
 		@Inject(DI.pageLikesRepository)
-		private pageLikesRepository: PageLikesRepository,
+		private readonly pageLikesRepository: PageLikesRepository,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const page = await this.pagesRepository.findOneBy({ id: ps.pageId });

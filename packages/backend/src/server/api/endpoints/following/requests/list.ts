@@ -58,10 +58,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.followRequestsRepository)
-		private followRequestsRepository: FollowRequestsRepository,
+		private readonly followRequestsRepository: FollowRequestsRepository,
 
-		private followRequestEntityService: FollowRequestEntityService,
-		private queryService: QueryService,
+		private readonly followRequestEntityService: FollowRequestEntityService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.followRequestsRepository.createQueryBuilder('request'), ps.sinceId, ps.untilId)

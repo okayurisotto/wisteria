@@ -48,13 +48,13 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.clipsRepository)
-		private clipsRepository: ClipsRepository,
+		private readonly clipsRepository: ClipsRepository,
 
 		@Inject(DI.clipNotesRepository)
-		private clipNotesRepository: ClipNotesRepository,
+		private readonly clipNotesRepository: ClipNotesRepository,
 
-		private clipEntityService: ClipEntityService,
-		private getterService: GetterService,
+		private readonly clipEntityService: ClipEntityService,
+		private readonly getterService: GetterService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const note = await this.getterService.getNote(ps.noteId).catch((err: unknown) => {

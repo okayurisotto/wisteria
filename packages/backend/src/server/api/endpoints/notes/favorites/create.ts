@@ -53,11 +53,11 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.noteFavoritesRepository)
-		private noteFavoritesRepository: NoteFavoritesRepository,
+		private readonly noteFavoritesRepository: NoteFavoritesRepository,
 
-		private idService: IdService,
-		private getterService: GetterService,
-		private achievementService: AchievementService,
+		private readonly idService: IdService,
+		private readonly getterService: GetterService,
+		private readonly achievementService: AchievementService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Get favoritee

@@ -5,10 +5,10 @@
 
 declare module 'hcaptcha' {
 	interface IVerifyResponse {
-		success: boolean;
-		challenge_ts: string;
-		hostname: string;
-		credit?: boolean;
+		'success': boolean;
+		'challenge_ts': string;
+		'hostname': string;
+		'credit'?: boolean;
 		'error-codes'?: unknown[];
 	}
 

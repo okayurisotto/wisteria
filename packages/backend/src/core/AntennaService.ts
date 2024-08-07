@@ -25,22 +25,22 @@ export class AntennaService implements OnApplicationShutdown {
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.redisForTimelines)
-		private redisForTimelines: Redis.Redis,
+		private readonly redisForTimelines: Redis.Redis,
 
 		@Inject(DI.redisForSub)
-		private redisForSub: Redis.Redis,
+		private readonly redisForSub: Redis.Redis,
 
 		@Inject(DI.antennasRepository)
-		private antennasRepository: AntennasRepository,
+		private readonly antennasRepository: AntennasRepository,
 
 		@Inject(DI.userListMembershipsRepository)
-		private userListMembershipsRepository: UserListMembershipsRepository,
+		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
-		private globalEventService: GlobalEventService,
-		private fanoutTimelineService: FanoutTimelineService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly fanoutTimelineService: FanoutTimelineService,
 	) {
 		this.antennasFetched = false;
 		this.antennas = [];
@@ -48,7 +48,7 @@ export class AntennaService implements OnApplicationShutdown {
 		this.redisForSub.on('message', this.onRedisMessage);
 	}
 
-	private onRedisMessage = async (_: string, data: string): Promise<void> => {
+	private readonly onRedisMessage = async (_: string, data: string): Promise<void> => {
 		const obj = JSON.parse(data);
 
 		if (obj.channel === 'internal') {

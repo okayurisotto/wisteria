@@ -94,9 +94,9 @@ export const ACHIEVEMENT_TYPES = [
 export class AchievementService {
 	constructor(
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
-		private notificationCreateService: NotificationCreateService,
+		private readonly notificationCreateService: NotificationCreateService,
 	) {}
 
 	public async create(

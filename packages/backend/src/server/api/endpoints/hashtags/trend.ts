@@ -52,8 +52,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private featuredService: FeaturedService,
-		private hashtagService: HashtagService,
+		private readonly featuredService: FeaturedService,
+		private readonly hashtagService: HashtagService,
 	) {
 		super(meta, paramDef, async () => {
 			const ranking = await this.featuredService.getHashtagsRanking(10);

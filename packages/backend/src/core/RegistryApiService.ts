@@ -14,10 +14,10 @@ import { GlobalEventService } from '@/core/GlobalEventService.js';
 export class RegistryApiService {
 	constructor(
 		@Inject(DI.registryItemsRepository)
-		private registryItemsRepository: RegistryItemsRepository,
+		private readonly registryItemsRepository: RegistryItemsRepository,
 
-		private idService: IdService,
-		private globalEventService: GlobalEventService,
+		private readonly idService: IdService,
+		private readonly globalEventService: GlobalEventService,
 	) {}
 
 	public async set(userId: MiUser['id'], domain: string | null, scope: string[], key: string, value: any) {

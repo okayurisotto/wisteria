@@ -49,12 +49,12 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.pagesRepository)
-		private pagesRepository: PagesRepository,
+		private readonly pagesRepository: PagesRepository,
 
-		private pageEntityService: PageEntityService,
+		private readonly pageEntityService: PageEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			let page: MiPage | null = null;

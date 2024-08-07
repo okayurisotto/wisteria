@@ -14,9 +14,9 @@ import { DI } from '@/di-symbols.js';
 export class UserMutingService {
 	constructor(
 		@Inject(DI.mutingsRepository)
-		private mutingsRepository: MutingsRepository,
+		private readonly mutingsRepository: MutingsRepository,
 
-		private idService: IdService,
+		private readonly idService: IdService,
 	) {}
 
 	public async mute(user: MiUser, target: MiUser, expiresAt: Date | null = null): Promise<void> {

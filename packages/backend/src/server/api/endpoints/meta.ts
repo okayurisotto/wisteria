@@ -329,14 +329,14 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.adsRepository)
-		private adsRepository: AdsRepository,
+		private readonly adsRepository: AdsRepository,
 
-		private userEntityService: UserEntityService,
-		private metaService: MetaService,
-		private instanceActorService: InstanceActorService,
+		private readonly userEntityService: UserEntityService,
+		private readonly metaService: MetaService,
+		private readonly instanceActorService: InstanceActorService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const instance = await this.metaService.fetch();
@@ -413,11 +413,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 				mediaProxy: this.config.mediaProxy,
 
-				...(ps.detail ? {
-					cacheRemoteFiles: instance.cacheRemoteFiles,
-					cacheRemoteSensitiveFiles: instance.cacheRemoteSensitiveFiles,
-					requireSetup: !await this.instanceActorService.realLocalUsersPresent(),
-				} : {}),
+				...(ps.detail
+					? {
+							cacheRemoteFiles: instance.cacheRemoteFiles,
+							cacheRemoteSensitiveFiles: instance.cacheRemoteSensitiveFiles,
+							requireSetup: !await this.instanceActorService.realLocalUsersPresent(),
+						}
+					: {}),
 			};
 
 			if (ps.detail) {

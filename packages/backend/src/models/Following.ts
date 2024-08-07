@@ -58,7 +58,7 @@ export class MiFollowing {
 	})
 	public notify: 'normal' | null;
 
-	//#region Denormalized fields
+	// #region Denormalized fields
 	@Index()
 	@Column('varchar', {
 		length: 128, nullable: true,
@@ -96,5 +96,5 @@ export class MiFollowing {
 		comment: '[Denormalized]',
 	})
 	public followeeSharedInbox: string | null;
-	//#endregion
+	// #endregion
 }

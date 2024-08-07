@@ -15,9 +15,9 @@ import { FlashEntityService } from './FlashEntityService.js';
 export class FlashLikeEntityService {
 	constructor(
 		@Inject(DI.flashLikesRepository)
-		private flashLikesRepository: FlashLikesRepository,
+		private readonly flashLikesRepository: FlashLikesRepository,
 
-		private flashEntityService: FlashEntityService,
+		private readonly flashEntityService: FlashEntityService,
 	) {}
 
 	public async pack(

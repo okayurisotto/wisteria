@@ -49,7 +49,7 @@ export class MiNoteUnread {
 	@Column('boolean')
 	public isSpecified: boolean;
 
-	//#region Denormalized fields
+	// #region Denormalized fields
 	@Index()
 	@Column({
 		...id(),
@@ -64,5 +64,5 @@ export class MiNoteUnread {
 		comment: '[Denormalized]',
 	})
 	public noteChannelId: MiChannel['id'] | null;
-	//#endregion
+	// #endregion
 }

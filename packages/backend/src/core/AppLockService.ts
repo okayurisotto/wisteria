@@ -16,11 +16,11 @@ const retryDelay = 100;
 
 @Injectable()
 export class AppLockService {
-	private lock: (key: string, timeout?: number, _?: (() => Promise<void>) | undefined) => Promise<() => void>;
+	private readonly lock: (key: string, timeout?: number, _?: (() => Promise<void>) | undefined) => Promise<() => void>;
 
 	constructor(
 		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
+		private readonly redisClient: Redis.Redis,
 	) {
 		this.lock = promisify(redisLock(this.redisClient, retryDelay));
 	}

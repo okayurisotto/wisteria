@@ -58,14 +58,14 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.rolesRepository)
-		private rolesRepository: RolesRepository,
+		private readonly rolesRepository: RolesRepository,
 
 		@Inject(DI.roleAssignmentsRepository)
-		private roleAssignmentsRepository: RoleAssignmentsRepository,
+		private readonly roleAssignmentsRepository: RoleAssignmentsRepository,
 
-		private queryService: QueryService,
-		private userEntityService: UserEntityService,
-		private idService: IdService,
+		private readonly queryService: QueryService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const role = await this.rolesRepository.findOneBy({

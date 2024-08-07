@@ -36,10 +36,12 @@ export const entities = [
 	PerUserDriveChart.hour, PerUserDriveChart.day,
 	ApRequestChart.hour, ApRequestChart.day,
 
-	...(envOption.isTest ? [
-		TestChart.hour, TestChart.day,
-		TestGroupedChart.hour, TestGroupedChart.day,
-		TestUniqueChart.hour, TestUniqueChart.day,
-		TestIntersectionChart.hour, TestIntersectionChart.day,
-	] : []),
+	...(envOption.isTest
+		? [
+				TestChart.hour, TestChart.day,
+				TestGroupedChart.hour, TestGroupedChart.day,
+				TestUniqueChart.hour, TestUniqueChart.day,
+				TestIntersectionChart.hour, TestIntersectionChart.day,
+			]
+		: []),
 ];

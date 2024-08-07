@@ -38,9 +38,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.antennasRepository)
-		private antennasRepository: AntennasRepository,
+		private readonly antennasRepository: AntennasRepository,
 
-		private globalEventService: GlobalEventService,
+		private readonly globalEventService: GlobalEventService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const antenna = await this.antennasRepository.findOneBy({

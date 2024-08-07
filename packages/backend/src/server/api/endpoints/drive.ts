@@ -40,8 +40,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private driveFileEntityService: DriveFileEntityService,
-		private roleUserService: RoleUserService,
+		private readonly driveFileEntityService: DriveFileEntityService,
+		private readonly roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Calculate drive usage

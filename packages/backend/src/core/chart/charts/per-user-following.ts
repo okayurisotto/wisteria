@@ -25,10 +25,10 @@ export default class PerUserFollowingChart extends Chart<typeof schema> {
 		db: DataSource,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
 		appLockService: AppLockService,
-		private userEntityService: UserEntityService,
+		private readonly userEntityService: UserEntityService,
 		chartLoggerService: ChartLoggerService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);

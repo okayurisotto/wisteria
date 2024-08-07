@@ -36,10 +36,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.reversiGamesRepository)
-		private reversiGamesRepository: ReversiGamesRepository,
+		private readonly reversiGamesRepository: ReversiGamesRepository,
 
-		private reversiGameEntityService: ReversiGameEntityService,
-		private queryService: QueryService,
+		private readonly reversiGameEntityService: ReversiGameEntityService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.reversiGamesRepository.createQueryBuilder('game'), ps.sinceId, ps.untilId)

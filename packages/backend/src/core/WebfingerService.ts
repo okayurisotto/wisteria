@@ -25,7 +25,7 @@ const mRegex = /^([^@]+)@(.*)/;
 @Injectable()
 export class WebfingerService {
 	constructor(
-		private httpRequestService: HttpRequestService,
+		private readonly httpRequestService: HttpRequestService,
 	) {}
 
 	public async webfinger(query: string): Promise<IWebFinger> {

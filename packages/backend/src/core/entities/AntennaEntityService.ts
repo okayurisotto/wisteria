@@ -14,9 +14,9 @@ import { IdService } from '@/core/IdService.js';
 export class AntennaEntityService {
 	constructor(
 		@Inject(DI.antennasRepository)
-		private antennasRepository: AntennasRepository,
+		private readonly antennasRepository: AntennasRepository,
 
-		private idService: IdService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(

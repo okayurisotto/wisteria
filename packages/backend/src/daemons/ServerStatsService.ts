@@ -22,7 +22,7 @@ export class ServerStatsService implements OnApplicationShutdown {
 	private intervalId: NodeJS.Timeout | null = null;
 
 	constructor(
-		private metaService: MetaService,
+		private readonly metaService: MetaService,
 	) {}
 
 	/**

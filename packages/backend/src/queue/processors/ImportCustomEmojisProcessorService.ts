@@ -20,19 +20,19 @@ import type { DbUserImportJobData } from '../types.js';
 // TODO: 名前衝突時の動作を選べるようにする
 @Injectable()
 export class ImportCustomEmojisProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
 		@Inject(DI.emojisRepository)
-		private emojisRepository: EmojisRepository,
+		private readonly emojisRepository: EmojisRepository,
 
-		private customEmojiService: CustomEmojiService,
-		private driveService: DriveService,
-		private downloadService: DownloadService,
-		private queueLoggerService: QueueLoggerService,
+		private readonly customEmojiService: CustomEmojiService,
+		private readonly driveService: DriveService,
+		private readonly downloadService: DownloadService,
+		private readonly queueLoggerService: QueueLoggerService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('import-custom-emojis');
 	}

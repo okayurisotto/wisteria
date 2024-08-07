@@ -13,7 +13,7 @@ import { DI } from '@/di-symbols.js';
 export class UserKeypairService {
 	constructor(
 		@Inject(DI.userKeypairsRepository)
-		private userKeypairsRepository: UserKeypairsRepository,
+		private readonly userKeypairsRepository: UserKeypairsRepository,
 	) {}
 
 	public async getUserKeypair(userId: MiUser['id']): Promise<MiUserKeypair> {

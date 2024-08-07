@@ -21,14 +21,14 @@ class HybridTimelineChannel extends Channel {
 	private withFiles: boolean;
 
 	constructor(
-		private roleUserService: RoleUserService,
-		private noteEntityService: NoteEntityService,
+		private readonly roleUserService: RoleUserService,
+		private readonly noteEntityService: NoteEntityService,
 
 		id: string,
 		connection: Channel['connection'],
 	) {
 		super(id, connection);
-		//this.onNote = this.onNote.bind(this);
+		// this.onNote = this.onNote.bind(this);
 	}
 
 	public async init(params: any): Promise<void> {
@@ -43,7 +43,7 @@ class HybridTimelineChannel extends Channel {
 		this.subscriber.on('notesStream', this.onNote);
 	}
 
-	private onNote = async (note: Packed<'Note'>) => {
+	private readonly onNote = async (note: Packed<'Note'>) => {
 		const isMe = this.user!.id === note.userId;
 
 		if (this.withFiles && (note.fileIds == null || note.fileIds.length === 0)) return;
@@ -114,8 +114,8 @@ export class HybridTimelineChannelService implements MiChannelService<true> {
 	public readonly kind = HybridTimelineChannel.kind;
 
 	constructor(
-		private roleUserService: RoleUserService,
-		private noteEntityService: NoteEntityService,
+		private readonly roleUserService: RoleUserService,
+		private readonly noteEntityService: NoteEntityService,
 	) {}
 
 	public create(id: string, connection: Channel['connection']): HybridTimelineChannel {

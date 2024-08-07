@@ -25,7 +25,7 @@ import type Emitter from 'strict-event-emitter-types';
 import type { EventEmitter } from 'events';
 import type { UnionToIntersection, ValueOf } from 'type-fest';
 
-//#region Stream type-body definitions
+// #region Stream type-body definitions
 export interface BroadcastTypes {
 	emojiAdded: {
 		emoji: Packed<'EmojiDetailed'>;
@@ -189,7 +189,7 @@ export interface ReversiGameEventTypes {
 		userId: MiUser['id'];
 	};
 }
-//#endregion
+// #endregion
 
 // 辞書(interface or type)から{ type, body }ユニオンを定義
 // https://stackoverflow.com/questions/49311989/can-i-infer-the-type-of-a-value-using-extends-keyof-type
@@ -279,16 +279,18 @@ export type StreamChannels = GlobalEvents[keyof GlobalEvents]['name'];
 export class GlobalEventService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.redisForPub)
-		private redisForPub: Redis.Redis,
+		private readonly redisForPub: Redis.Redis,
 	) {}
 
 	private publish(channel: StreamChannels, type: string | null, value?: any): void {
-		const message = type == null ? value : value == null
-			? { type: type, body: null }
-			: { type: type, body: value };
+		const message = type == null
+			? value
+			: value == null
+				? { type: type, body: null }
+				: { type: type, body: value };
 
 		this.redisForPub.publish(this.config.host, JSON.stringify({
 			channel: channel,

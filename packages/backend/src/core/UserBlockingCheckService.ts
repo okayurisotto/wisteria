@@ -12,7 +12,7 @@ import type { BlockingsRepository } from '@/models/_.js';
 export class UserBlockingCheckService {
 	constructor(
 		@Inject(DI.blockingsRepository)
-		private blockingsRepository: BlockingsRepository,
+		private readonly blockingsRepository: BlockingsRepository,
 	) {}
 
 	public async checkBlocked(

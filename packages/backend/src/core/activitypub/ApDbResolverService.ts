@@ -34,18 +34,18 @@ export type UriParseResult = {
 export class ApDbResolverService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.userPublickeysRepository)
-		private userPublickeysRepository: UserPublickeysRepository,
+		private readonly userPublickeysRepository: UserPublickeysRepository,
 
-		private apPersonService: ApPersonService,
+		private readonly apPersonService: ApPersonService,
 	) {}
 
 	public parseUri(value: string | IObject): UriParseResult {

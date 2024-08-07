@@ -21,21 +21,21 @@ import type { DbJobDataWithUser } from '../types.js';
 
 @Injectable()
 export class ExportFavoritesProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.pollsRepository)
-		private pollsRepository: PollsRepository,
+		private readonly pollsRepository: PollsRepository,
 
 		@Inject(DI.noteFavoritesRepository)
-		private noteFavoritesRepository: NoteFavoritesRepository,
+		private readonly noteFavoritesRepository: NoteFavoritesRepository,
 
-		private driveService: DriveService,
-		private queueLoggerService: QueueLoggerService,
-		private idService: IdService,
+		private readonly driveService: DriveService,
+		private readonly queueLoggerService: QueueLoggerService,
+		private readonly idService: IdService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('export-favorites');
 	}

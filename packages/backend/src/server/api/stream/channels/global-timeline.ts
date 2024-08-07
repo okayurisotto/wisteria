@@ -19,14 +19,14 @@ class GlobalTimelineChannel extends Channel {
 	private withFiles: boolean;
 
 	constructor(
-		private roleUserService: RoleUserService,
-		private noteEntityService: NoteEntityService,
+		private readonly roleUserService: RoleUserService,
+		private readonly noteEntityService: NoteEntityService,
 
 		id: string,
 		connection: Channel['connection'],
 	) {
 		super(id, connection);
-		//this.onNote = this.onNote.bind(this);
+		// this.onNote = this.onNote.bind(this);
 	}
 
 	public async init(params: any) {
@@ -40,7 +40,7 @@ class GlobalTimelineChannel extends Channel {
 		this.subscriber.on('notesStream', this.onNote);
 	}
 
-	private onNote = async (note: Packed<'Note'>) => {
+	private readonly onNote = async (note: Packed<'Note'>) => {
 		if (this.withFiles && (note.fileIds == null || note.fileIds.length === 0)) return;
 
 		if (note.visibility !== 'public') return;
@@ -90,8 +90,8 @@ export class GlobalTimelineChannelService implements MiChannelService<false> {
 	public readonly kind = GlobalTimelineChannel.kind;
 
 	constructor(
-		private roleUserService: RoleUserService,
-		private noteEntityService: NoteEntityService,
+		private readonly roleUserService: RoleUserService,
+		private readonly noteEntityService: NoteEntityService,
 	) {}
 
 	public create(id: string, connection: Channel['connection']): GlobalTimelineChannel {

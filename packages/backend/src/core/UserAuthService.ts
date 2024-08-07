@@ -12,7 +12,7 @@ import type { MiUserProfile, UserProfilesRepository } from '@/models/_.js';
 export class UserAuthService {
 	constructor(
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 	) {}
 
 	public async twoFactorAuthenticate(profile: MiUserProfile, token: string): Promise<void> {

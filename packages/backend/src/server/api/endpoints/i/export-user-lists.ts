@@ -26,7 +26,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private queueService: QueueService,
+		private readonly queueService: QueueService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			this.queueService.createExportUserListsJob(me);

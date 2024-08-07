@@ -21,23 +21,23 @@ import { QueueLoggerService } from '../QueueLoggerService.js';
 
 @Injectable()
 export class TickChartsProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
-		private federationChart: FederationChart,
-		private notesChart: NotesChart,
-		private usersChart: UsersChart,
-		private activeUsersChart: ActiveUsersChart,
-		private instanceChart: InstanceChart,
-		private perUserNotesChart: PerUserNotesChart,
-		private perUserPvChart: PerUserPvChart,
-		private driveChart: DriveChart,
-		private perUserReactionsChart: PerUserReactionsChart,
-		private perUserFollowingChart: PerUserFollowingChart,
-		private perUserDriveChart: PerUserDriveChart,
-		private apRequestChart: ApRequestChart,
+		private readonly federationChart: FederationChart,
+		private readonly notesChart: NotesChart,
+		private readonly usersChart: UsersChart,
+		private readonly activeUsersChart: ActiveUsersChart,
+		private readonly instanceChart: InstanceChart,
+		private readonly perUserNotesChart: PerUserNotesChart,
+		private readonly perUserPvChart: PerUserPvChart,
+		private readonly driveChart: DriveChart,
+		private readonly perUserReactionsChart: PerUserReactionsChart,
+		private readonly perUserFollowingChart: PerUserFollowingChart,
+		private readonly perUserDriveChart: PerUserDriveChart,
+		private readonly apRequestChart: ApRequestChart,
 
-		private queueLoggerService: QueueLoggerService,
+		private readonly queueLoggerService: QueueLoggerService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('tick-charts');
 	}

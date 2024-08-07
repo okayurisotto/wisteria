@@ -13,7 +13,7 @@ import type { IObject } from './type.js';
 @Injectable()
 export class ApMfmService {
 	constructor(
-		private mfmService: MfmService,
+		private readonly mfmService: MfmService,
 	) {}
 
 	public htmlToMfm(html: string, tag?: IObject | IObject[]): string {
@@ -27,7 +27,7 @@ export class ApMfmService {
 
 		const parsed = mfm.parse(srcMfm);
 
-		if (!apAppend && parsed?.every(n => ['text', 'unicodeEmoji', 'emojiCode', 'mention', 'hashtag', 'url'].includes(n.type))) {
+		if (!apAppend && parsed.every(n => ['text', 'unicodeEmoji', 'emojiCode', 'mention', 'hashtag', 'url'].includes(n.type))) {
 			noMisskeyContent = true;
 		}
 

@@ -16,13 +16,13 @@ class ChannelChannel extends Channel {
 	private channelId: string;
 
 	constructor(
-		private noteEntityService: NoteEntityService,
+		private readonly noteEntityService: NoteEntityService,
 
 		id: string,
 		connection: Channel['connection'],
 	) {
 		super(id, connection);
-		//this.onNote = this.onNote.bind(this);
+		// this.onNote = this.onNote.bind(this);
 	}
 
 	public async init(params: any) {
@@ -32,7 +32,7 @@ class ChannelChannel extends Channel {
 		this.subscriber.on('notesStream', this.onNote);
 	}
 
-	private onNote = async (note: Packed<'Note'>) => {
+	private readonly onNote = async (note: Packed<'Note'>) => {
 		if (note.channelId !== this.channelId) return;
 
 		// 流れてきたNoteがミュートしているユーザーが関わるものだったら無視する
@@ -67,7 +67,7 @@ export class ChannelChannelService implements MiChannelService<false> {
 	public readonly kind = ChannelChannel.kind;
 
 	constructor(
-		private noteEntityService: NoteEntityService,
+		private readonly noteEntityService: NoteEntityService,
 	) {}
 
 	public create(id: string, connection: Channel['connection']): ChannelChannel {

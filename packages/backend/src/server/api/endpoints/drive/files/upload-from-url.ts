@@ -43,9 +43,9 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private driveFileEntityService: DriveFileEntityService,
-		private driveService: DriveService,
-		private globalEventService: GlobalEventService,
+		private readonly driveFileEntityService: DriveFileEntityService,
+		private readonly driveService: DriveService,
+		private readonly globalEventService: GlobalEventService,
 	) {
 		super(meta, paramDef, async (ps, user, _1, _2, _3, ip, headers) => {
 			this.driveService.uploadFromUrl({ url: ps.url, user, folderId: ps.folderId, sensitive: ps.isSensitive, force: ps.force, comment: ps.comment, requestIp: ip, requestHeaders: headers }).then((file) => {

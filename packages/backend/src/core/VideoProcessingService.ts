@@ -16,9 +16,9 @@ import { appendQuery, query } from '@/misc/prelude/url.js';
 export class VideoProcessingService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
-		private imageProcessingService: ImageProcessingService,
+		private readonly imageProcessingService: ImageProcessingService,
 	) {}
 
 	public async generateVideoThumbnail(source: string): Promise<IImage> {

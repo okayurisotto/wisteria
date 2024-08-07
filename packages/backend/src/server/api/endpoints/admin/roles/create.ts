@@ -62,8 +62,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private roleEntityService: RoleEntityService,
-		private roleService: RoleService,
+		private readonly roleEntityService: RoleEntityService,
+		private readonly roleService: RoleService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const created = await this.roleService.create(ps, me);

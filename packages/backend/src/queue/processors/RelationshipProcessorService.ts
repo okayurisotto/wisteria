@@ -19,22 +19,22 @@ import type * as Bull from 'bullmq';
 
 @Injectable()
 export class RelationshipProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private queueLoggerService: QueueLoggerService,
-		private userFollowingService: UserFollowingService,
-		private userBlockingUnblockService: UserBlockingUnblockService,
-		private userBlockingBlockService: UserBlockingBlockService,
+		private readonly queueLoggerService: QueueLoggerService,
+		private readonly userFollowingService: UserFollowingService,
+		private readonly userBlockingUnblockService: UserBlockingUnblockService,
+		private readonly userBlockingBlockService: UserBlockingBlockService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('follow-block');
 	}
 
 	public async processFollow(job: Bull.Job<RelationshipJobData>): Promise<string> {
-		this.logger.info(`${job.data.from.id} is trying to follow ${job.data.to.id} ${job.data.withReplies ? "with replies" : "without replies"}`);
+		this.logger.info(`${job.data.from.id} is trying to follow ${job.data.to.id} ${job.data.withReplies ? 'with replies' : 'without replies'}`);
 		await this.userFollowingService.follow(job.data.from, job.data.to, {
 			requestId: job.data.requestId,
 			silent: job.data.silent,

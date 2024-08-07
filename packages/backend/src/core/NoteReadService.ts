@@ -17,20 +17,20 @@ import { trackPromise } from '@/misc/promise-tracker.js';
 
 @Injectable()
 export class NoteReadService implements OnApplicationShutdown {
-	#shutdownController = new AbortController();
+	readonly #shutdownController = new AbortController();
 
 	constructor(
 		@Inject(DI.noteUnreadsRepository)
-		private noteUnreadsRepository: NoteUnreadsRepository,
+		private readonly noteUnreadsRepository: NoteUnreadsRepository,
 
 		@Inject(DI.mutingsRepository)
-		private mutingsRepository: MutingsRepository,
+		private readonly mutingsRepository: MutingsRepository,
 
 		@Inject(DI.noteThreadMutingsRepository)
-		private noteThreadMutingsRepository: NoteThreadMutingsRepository,
+		private readonly noteThreadMutingsRepository: NoteThreadMutingsRepository,
 
-		private idService: IdService,
-		private globalEventService: GlobalEventService,
+		private readonly idService: IdService,
+		private readonly globalEventService: GlobalEventService,
 	) {}
 
 	public async insertNoteUnread(userId: MiUser['id'], note: MiNote, params: {
@@ -38,12 +38,12 @@ export class NoteReadService implements OnApplicationShutdown {
 		isSpecified: boolean;
 		isMentioned: boolean;
 	}): Promise<void> {
-		//#region ミュートしているなら無視
+		// #region ミュートしているなら無視
 		const mute = await this.mutingsRepository.findBy({
 			muterId: userId,
 		});
 		if (mute.map(m => m.muteeId).includes(note.userId)) return;
-		//#endregion
+		// #endregion
 
 		// スレッドミュート
 		const isThreadMuted = await this.noteThreadMutingsRepository.exists({

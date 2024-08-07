@@ -61,18 +61,18 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.noteReactionsRepository)
-		private noteReactionsRepository: NoteReactionsRepository,
+		private readonly noteReactionsRepository: NoteReactionsRepository,
 
-		private userEntityService: UserEntityService,
-		private noteReactionEntityService: NoteReactionEntityService,
-		private queryService: QueryService,
-		private roleUserService: RoleUserService,
+		private readonly userEntityService: UserEntityService,
+		private readonly noteReactionEntityService: NoteReactionEntityService,
+		private readonly queryService: QueryService,
+		private readonly roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const iAmModerator = me ? await this.roleUserService.isModerator(me) : false; // Moderators can see reactions of all users

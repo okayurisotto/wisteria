@@ -19,12 +19,12 @@ import { LegacyReactionConvertService } from '../LegacyReactionConvertService co
 export class NoteReactionEntityService {
 	constructor(
 		@Inject(DI.noteReactionsRepository)
-		private noteReactionsRepository: NoteReactionsRepository,
+		private readonly noteReactionsRepository: NoteReactionsRepository,
 
-		private legacyReactionConvertService: LegacyReactionConvertService,
-		private idService: IdService,
-		private userEntityService: UserEntityService,
-		private noteEntityService: NoteEntityService,
+		private readonly legacyReactionConvertService: LegacyReactionConvertService,
+		private readonly idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly noteEntityService: NoteEntityService,
 	) {}
 
 	public async pack(
@@ -45,9 +45,11 @@ export class NoteReactionEntityService {
 			createdAt: this.idService.parse(reaction.id).date.toISOString(),
 			user: await this.userEntityService.pack(reaction.user ?? reaction.userId, me),
 			type: this.legacyReactionConvertService.convertLegacyReaction(reaction.reaction),
-			...(opts.withNote ? {
-				note: await this.noteEntityService.pack(reaction.note ?? reaction.noteId, me),
-			} : {}),
+			...(opts.withNote
+				? {
+						note: await this.noteEntityService.pack(reaction.note ?? reaction.noteId, me),
+					}
+				: {}),
 		};
 	}
 }

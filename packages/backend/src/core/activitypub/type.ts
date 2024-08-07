@@ -8,27 +8,27 @@ export type ApObject = IObject | string | (IObject | string)[];
 
 export interface IObject {
 	'@context'?: string | string[] | Obj | Obj[];
-	type: string | string[];
-	id?: string;
-	name?: string | null;
-	summary?: string;
-	_misskey_summary?: string;
-	published?: string;
-	cc?: ApObject;
-	to?: ApObject;
-	attributedTo?: ApObject;
-	attachment?: any[];
-	inReplyTo?: any;
-	replies?: ICollection;
-	content?: string | null;
-	startTime?: Date;
-	endTime?: Date;
-	icon?: any;
-	image?: any;
-	url?: ApObject | string;
-	href?: string;
-	tag?: IObject | IObject[];
-	sensitive?: boolean;
+	'type': string | string[];
+	'id'?: string;
+	'name'?: string | null;
+	'summary'?: string;
+	'_misskey_summary'?: string;
+	'published'?: string;
+	'cc'?: ApObject;
+	'to'?: ApObject;
+	'attributedTo'?: ApObject;
+	'attachment'?: any[];
+	'inReplyTo'?: any;
+	'replies'?: ICollection;
+	'content'?: string | null;
+	'startTime'?: Date;
+	'endTime'?: Date;
+	'icon'?: any;
+	'image'?: any;
+	'url'?: ApObject | string;
+	'href'?: string;
+	'tag'?: IObject | IObject[];
+	'sensitive'?: boolean;
 }
 
 /**
@@ -78,7 +78,7 @@ export function getApHrefNullable(value: string | IObject | undefined): string |
 }
 
 export interface IActivity extends IObject {
-	//type: 'Activity';
+	// type: 'Activity';
 	actor: IObject | string;
 	object: IObject | string;
 	target?: IObject | string;
@@ -159,24 +159,24 @@ export const isActor = (object: IObject): object is IActor =>
 	validActor.includes(getApType(object));
 
 export interface IActor extends IObject {
-	type: 'Person' | 'Service' | 'Organization' | 'Group' | 'Application';
-	name?: string;
-	preferredUsername?: string;
-	manuallyApprovesFollowers?: boolean;
-	movedTo?: string;
-	alsoKnownAs?: string[];
-	discoverable?: boolean;
-	inbox: string;
-	sharedInbox?: string;	// 後方互換性のため
-	publicKey?: {
+	'type': 'Person' | 'Service' | 'Organization' | 'Group' | 'Application';
+	'name'?: string;
+	'preferredUsername'?: string;
+	'manuallyApprovesFollowers'?: boolean;
+	'movedTo'?: string;
+	'alsoKnownAs'?: string[];
+	'discoverable'?: boolean;
+	'inbox': string;
+	'sharedInbox'?: string;	// 後方互換性のため
+	'publicKey'?: {
 		id: string;
 		publicKeyPem: string;
 	};
-	followers?: string | ICollection | IOrderedCollection;
-	following?: string | ICollection | IOrderedCollection;
-	featured?: string | IOrderedCollection;
-	outbox: string | IOrderedCollection;
-	endpoints?: {
+	'followers'?: string | ICollection | IOrderedCollection;
+	'following'?: string | ICollection | IOrderedCollection;
+	'featured'?: string | IOrderedCollection;
+	'outbox': string | IOrderedCollection;
+	'endpoints'?: {
 		sharedInbox?: string;
 	};
 	'vcard:bday'?: string;

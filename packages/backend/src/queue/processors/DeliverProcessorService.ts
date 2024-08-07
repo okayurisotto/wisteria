@@ -22,16 +22,16 @@ import type { DeliverJobData } from '../types.js';
 export class DeliverProcessorService {
 	constructor(
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
-		private metaService: MetaService,
-		private utilityService: UtilityService,
-		private federatedInstanceService: FederatedInstanceService,
-		private fetchInstanceMetadataService: FetchInstanceMetadataService,
-		private apRequestService: ApRequestService,
-		private instanceChart: InstanceChart,
-		private apRequestChart: ApRequestChart,
-		private federationChart: FederationChart,
+		private readonly metaService: MetaService,
+		private readonly utilityService: UtilityService,
+		private readonly federatedInstanceService: FederatedInstanceService,
+		private readonly fetchInstanceMetadataService: FetchInstanceMetadataService,
+		private readonly apRequestService: ApRequestService,
+		private readonly instanceChart: InstanceChart,
+		private readonly apRequestChart: ApRequestChart,
+		private readonly federationChart: FederationChart,
 	) {}
 
 	public async process(job: Bull.Job<DeliverJobData>): Promise<string> {

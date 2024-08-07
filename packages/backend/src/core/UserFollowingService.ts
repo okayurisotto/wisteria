@@ -48,39 +48,39 @@ export class UserFollowingService {
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
 		@Inject(DI.followRequestsRepository)
-		private followRequestsRepository: FollowRequestsRepository,
+		private readonly followRequestsRepository: FollowRequestsRepository,
 
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
-		private utilityService: UtilityService,
-		private userEntityService: UserEntityService,
-		private idService: IdService,
-		private queueService: QueueService,
-		private globalEventService: GlobalEventService,
-		private metaService: MetaService,
-		private notificationCreateService: NotificationCreateService,
-		private federatedInstanceService: FederatedInstanceService,
-		private webhookService: WebhookService,
-		private apRendererService: ApRendererService,
-		private perUserFollowingChart: PerUserFollowingChart,
-		private instanceChart: InstanceChart,
-		private userBlockingCheckService: UserBlockingCheckService,
-		private userBlockingUnblockService: UserBlockingUnblockService,
-		private loggerService: LoggerService,
-		private alsoKnownAsValidateService: AlsoKnownAsValidateService,
+		private readonly utilityService: UtilityService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
+		private readonly queueService: QueueService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly metaService: MetaService,
+		private readonly notificationCreateService: NotificationCreateService,
+		private readonly federatedInstanceService: FederatedInstanceService,
+		private readonly webhookService: WebhookService,
+		private readonly apRendererService: ApRendererService,
+		private readonly perUserFollowingChart: PerUserFollowingChart,
+		private readonly instanceChart: InstanceChart,
+		private readonly userBlockingCheckService: UserBlockingCheckService,
+		private readonly userBlockingUnblockService: UserBlockingUnblockService,
+		private readonly loggerService: LoggerService,
+		private readonly alsoKnownAsValidateService: AlsoKnownAsValidateService,
 	) {
 		this.logger = this.loggerService.getLogger('following/create');
 	}
@@ -247,14 +247,14 @@ export class UserFollowingService {
 
 		// Neither followee nor follower has moved.
 		if (!followeeUser.movedToUri && !followerUser.movedToUri) {
-			//#region Increment counts
+			// #region Increment counts
 			await Promise.all([
 				this.usersRepository.increment({ id: follower.id }, 'followingCount', 1),
 				this.usersRepository.increment({ id: followee.id }, 'followersCount', 1),
 			]);
-			//#endregion
+			// #endregion
 
-			//#region Update instance stats
+			// #region Update instance stats
 			if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee)) {
 				this.federatedInstanceService.fetch(follower.host).then(async (i) => {
 					this.instancesRepository.increment({ id: i.id }, 'followingCount', 1);
@@ -270,7 +270,7 @@ export class UserFollowingService {
 					}
 				});
 			}
-			//#endregion
+			// #endregion
 
 			this.perUserFollowingChart.update(follower, followee, true);
 		}
@@ -373,14 +373,14 @@ export class UserFollowingService {
 	): Promise<void> {
 		// Neither followee nor follower has moved.
 		if (!follower.movedToUri && !followee.movedToUri) {
-			//#region Decrement following / followers counts
+			// #region Decrement following / followers counts
 			await Promise.all([
 				this.usersRepository.decrement({ id: follower.id }, 'followingCount', 1),
 				this.usersRepository.decrement({ id: followee.id }, 'followersCount', 1),
 			]);
-			//#endregion
+			// #endregion
 
-			//#region Update instance stats
+			// #region Update instance stats
 			if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee)) {
 				this.federatedInstanceService.fetch(follower.host).then(async (i) => {
 					this.instancesRepository.decrement({ id: i.id }, 'followingCount', 1);
@@ -396,7 +396,7 @@ export class UserFollowingService {
 					}
 				});
 			}
-			//#endregion
+			// #endregion
 
 			this.perUserFollowingChart.update(follower, followee, false);
 		} else {
@@ -475,11 +475,15 @@ export class UserFollowingService {
 
 		// Publish receiveRequest event
 		if (this.userEntityService.isLocalUser(followee)) {
-			this.userEntityService.pack(follower.id, followee).then(packed => this.globalEventService.publishMainStream(followee.id, 'receiveFollowRequest', packed));
+			this.userEntityService.pack(follower.id, followee).then((packed) => {
+				this.globalEventService.publishMainStream(followee.id, 'receiveFollowRequest', packed);
+			});
 
 			this.userEntityService.pack(followee.id, followee, {
 				schema: 'MeDetailed',
-			}).then(packed => this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed));
+			}).then((packed) => {
+				this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed);
+			});
 
 			// 通知を作成
 			this.notificationCreateService.createNotification(followee.id, 'receiveFollowRequest', {
@@ -526,7 +530,9 @@ export class UserFollowingService {
 
 		this.userEntityService.pack(followee.id, followee, {
 			schema: 'MeDetailed',
-		}).then(packed => this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed));
+		}).then((packed) => {
+			this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed);
+		});
 	}
 
 	public async acceptFollowRequest(
@@ -553,7 +559,9 @@ export class UserFollowingService {
 
 		this.userEntityService.pack(followee.id, followee, {
 			schema: 'MeDetailed',
-		}).then(packed => this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed));
+		}).then((packed) => {
+			this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed);
+		});
 	}
 
 	public async acceptAllFollowRequests(

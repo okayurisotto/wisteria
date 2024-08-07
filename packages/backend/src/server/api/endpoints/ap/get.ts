@@ -39,7 +39,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private apResolverService: ApResolverService,
+		private readonly apResolverService: ApResolverService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const resolver = this.apResolverService.createResolver();

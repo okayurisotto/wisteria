@@ -73,9 +73,9 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private driveFileEntityService: DriveFileEntityService,
-		private metaService: MetaService,
-		private driveService: DriveService,
+		private readonly driveFileEntityService: DriveFileEntityService,
+		private readonly metaService: MetaService,
+		private readonly driveService: DriveService,
 	) {
 		super(meta, paramDef, async (ps, me, _, file, cleanup, ip, headers) => {
 			// Get 'name' parameter

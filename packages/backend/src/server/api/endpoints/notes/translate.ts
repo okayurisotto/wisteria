@@ -54,11 +54,11 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private noteEntityService: NoteEntityService,
-		private getterService: GetterService,
-		private metaService: MetaService,
-		private httpRequestService: HttpRequestService,
-		private roleUserService: RoleUserService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly getterService: GetterService,
+		private readonly metaService: MetaService,
+		private readonly httpRequestService: HttpRequestService,
+		private readonly roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const policies = await this.roleUserService.getUserPolicies(me.id);
@@ -99,7 +99,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
-					Accept: 'application/json, */*',
+					'Accept': 'application/json, */*',
 				},
 				body: params.toString(),
 			});

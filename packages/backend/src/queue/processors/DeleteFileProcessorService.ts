@@ -11,7 +11,7 @@ import type { ObjectStorageFileJobData } from '../types.js';
 @Injectable()
 export class DeleteFileProcessorService {
 	constructor(
-		private driveService: DriveService,
+		private readonly driveService: DriveService,
 	) {}
 
 	public async process(job: Bull.Job<ObjectStorageFileJobData>): Promise<string> {

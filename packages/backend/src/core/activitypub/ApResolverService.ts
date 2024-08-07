@@ -22,26 +22,26 @@ import { ApRequestService } from './ApRequestService.js';
 import type { IObject, ICollection, IOrderedCollection } from './type.js';
 
 export class Resolver {
-	private history: Set<string>;
+	private readonly history: Set<string>;
 	private user?: MiLocalUser;
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
-		private config: Config,
-		private usersRepository: UsersRepository,
-		private notesRepository: NotesRepository,
-		private pollsRepository: PollsRepository,
-		private noteReactionsRepository: NoteReactionsRepository,
-		private followRequestsRepository: FollowRequestsRepository,
-		private utilityService: UtilityService,
-		private instanceActorService: InstanceActorService,
-		private metaService: MetaService,
-		private apRequestService: ApRequestService,
-		private httpRequestService: HttpRequestService,
-		private apRendererService: ApRendererService,
-		private apDbResolverService: ApDbResolverService,
-		private loggerService: LoggerService,
-		private recursionLimit = 100,
+		private readonly config: Config,
+		private readonly usersRepository: UsersRepository,
+		private readonly notesRepository: NotesRepository,
+		private readonly pollsRepository: PollsRepository,
+		private readonly noteReactionsRepository: NoteReactionsRepository,
+		private readonly followRequestsRepository: FollowRequestsRepository,
+		private readonly utilityService: UtilityService,
+		private readonly instanceActorService: InstanceActorService,
+		private readonly metaService: MetaService,
+		private readonly apRequestService: ApRequestService,
+		private readonly httpRequestService: HttpRequestService,
+		private readonly apRendererService: ApRendererService,
+		private readonly apDbResolverService: ApDbResolverService,
+		private readonly loggerService: LoggerService,
+		private readonly recursionLimit = 100,
 	) {
 		this.history = new Set();
 		this.logger = this.loggerService.getLogger('ap-resolve');
@@ -171,31 +171,31 @@ export class Resolver {
 export class ApResolverService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.pollsRepository)
-		private pollsRepository: PollsRepository,
+		private readonly pollsRepository: PollsRepository,
 
 		@Inject(DI.noteReactionsRepository)
-		private noteReactionsRepository: NoteReactionsRepository,
+		private readonly noteReactionsRepository: NoteReactionsRepository,
 
 		@Inject(DI.followRequestsRepository)
-		private followRequestsRepository: FollowRequestsRepository,
+		private readonly followRequestsRepository: FollowRequestsRepository,
 
-		private utilityService: UtilityService,
-		private instanceActorService: InstanceActorService,
-		private metaService: MetaService,
-		private apRequestService: ApRequestService,
-		private httpRequestService: HttpRequestService,
-		private apRendererService: ApRendererService,
-		private apDbResolverService: ApDbResolverService,
-		private loggerService: LoggerService,
+		private readonly utilityService: UtilityService,
+		private readonly instanceActorService: InstanceActorService,
+		private readonly metaService: MetaService,
+		private readonly apRequestService: ApRequestService,
+		private readonly httpRequestService: HttpRequestService,
+		private readonly apRendererService: ApRendererService,
+		private readonly apDbResolverService: ApDbResolverService,
+		private readonly loggerService: LoggerService,
 	) {}
 
 	public createResolver(): Resolver {

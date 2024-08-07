@@ -32,19 +32,19 @@ type PackOptions = {
 export class DriveFileEntityService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
 		// 循環参照のため / for circular dependency
 		@Inject(forwardRef(() => UserEntityService))
-		private userEntityService: UserEntityService,
+		private readonly userEntityService: UserEntityService,
 
-		private utilityService: UtilityService,
-		private driveFolderEntityService: DriveFolderEntityService,
-		private videoProcessingService: VideoProcessingService,
-		private idService: IdService,
+		private readonly utilityService: UtilityService,
+		private readonly driveFolderEntityService: DriveFolderEntityService,
+		private readonly videoProcessingService: VideoProcessingService,
+		private readonly idService: IdService,
 	) {}
 
 	public validateFileName(name: string): boolean {
@@ -198,9 +198,11 @@ export class DriveFileEntityService {
 			thumbnailUrl: this.getThumbnailUrl(file),
 			comment: file.comment,
 			folderId: file.folderId,
-			folder: opts.detail && file.folderId ? this.driveFolderEntityService.pack(file.folderId, {
-				detail: true,
-			}) : null,
+			folder: opts.detail && file.folderId
+				? this.driveFolderEntityService.pack(file.folderId, {
+					detail: true,
+				})
+				: null,
 			userId: opts.withUser ? file.userId : null,
 			user: (opts.withUser && file.userId) ? this.userEntityService.pack(file.userId) : null,
 		});
@@ -232,9 +234,11 @@ export class DriveFileEntityService {
 			thumbnailUrl: this.getThumbnailUrl(file),
 			comment: file.comment,
 			folderId: file.folderId,
-			folder: opts.detail && file.folderId ? this.driveFolderEntityService.pack(file.folderId, {
-				detail: true,
-			}) : null,
+			folder: opts.detail && file.folderId
+				? this.driveFolderEntityService.pack(file.folderId, {
+					detail: true,
+				})
+				: null,
 			userId: opts.withUser ? file.userId : null,
 			user: (opts.withUser && file.userId) ? this.userEntityService.pack(file.userId) : null,
 		});

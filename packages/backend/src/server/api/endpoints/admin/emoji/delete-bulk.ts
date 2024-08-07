@@ -28,7 +28,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private customEmojiService: CustomEmojiService,
+		private readonly customEmojiService: CustomEmojiService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			await this.customEmojiService.deleteBulk(ps.ids, me);

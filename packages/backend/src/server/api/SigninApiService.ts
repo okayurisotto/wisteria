@@ -28,22 +28,22 @@ import { getConnInfo } from '@hono/node-server/conninfo';
 export class SigninApiService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.signinsRepository)
-		private signinsRepository: SigninsRepository,
+		private readonly signinsRepository: SigninsRepository,
 
-		private idService: IdService,
-		private rateLimiterService: RateLimiterService,
-		private signinService: SigninService,
-		private userAuthService: UserAuthService,
-		private webAuthnService: WebAuthnService,
+		private readonly idService: IdService,
+		private readonly rateLimiterService: RateLimiterService,
+		private readonly signinService: SigninService,
+		private readonly userAuthService: UserAuthService,
+		private readonly webAuthnService: WebAuthnService,
 	) {}
 
 	public async signin(c: Context): Promise<Response> {

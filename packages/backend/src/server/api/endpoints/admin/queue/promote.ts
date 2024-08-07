@@ -27,8 +27,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private moderationLogService: ModerationLogService,
-		private queueService: QueueService,
+		private readonly moderationLogService: ModerationLogService,
+		private readonly queueService: QueueService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			let delayedQueues;

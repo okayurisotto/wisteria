@@ -15,9 +15,9 @@ import { UserEntityService } from './UserEntityService.js';
 export class FollowRequestEntityService {
 	constructor(
 		@Inject(DI.followRequestsRepository)
-		private followRequestsRepository: FollowRequestsRepository,
+		private readonly followRequestsRepository: FollowRequestsRepository,
 
-		private userEntityService: UserEntityService,
+		private readonly userEntityService: UserEntityService,
 	) {}
 
 	public async pack(

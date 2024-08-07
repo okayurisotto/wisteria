@@ -42,10 +42,10 @@ type RemoteFolloweeFollowing = MiFollowing & {
 export class FollowingEntityService {
 	constructor(
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public isLocalFollower(following: MiFollowing): following is LocalFollowerFollowing {
@@ -81,12 +81,16 @@ export class FollowingEntityService {
 			createdAt: this.idService.parse(following.id).date.toISOString(),
 			followeeId: following.followeeId,
 			followerId: following.followerId,
-			followee: opts.populateFollowee ? this.userEntityService.pack(following.followee ?? following.followeeId, me, {
-				schema: 'UserDetailedNotMe',
-			}) : undefined,
-			follower: opts.populateFollower ? this.userEntityService.pack(following.follower ?? following.followerId, me, {
-				schema: 'UserDetailedNotMe',
-			}) : undefined,
+			followee: opts.populateFollowee
+				? this.userEntityService.pack(following.followee ?? following.followeeId, me, {
+					schema: 'UserDetailedNotMe',
+				})
+				: undefined,
+			follower: opts.populateFollower
+				? this.userEntityService.pack(following.follower ?? following.followerId, me, {
+					schema: 'UserDetailedNotMe',
+				})
+				: undefined,
 		});
 	}
 

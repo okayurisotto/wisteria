@@ -29,12 +29,12 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.notesRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
-		private queueService: QueueService,
+		private readonly queueService: QueueService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const followings = await this.followingsRepository.findBy({

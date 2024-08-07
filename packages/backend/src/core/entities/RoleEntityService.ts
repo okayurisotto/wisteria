@@ -17,12 +17,12 @@ import { IdService } from '@/core/IdService.js';
 export class RoleEntityService {
 	constructor(
 		@Inject(DI.rolesRepository)
-		private rolesRepository: RolesRepository,
+		private readonly rolesRepository: RolesRepository,
 
 		@Inject(DI.roleAssignmentsRepository)
-		private roleAssignmentsRepository: RoleAssignmentsRepository,
+		private readonly roleAssignmentsRepository: RoleAssignmentsRepository,
 
-		private idService: IdService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(

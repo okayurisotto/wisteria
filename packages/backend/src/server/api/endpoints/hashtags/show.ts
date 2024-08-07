@@ -43,9 +43,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.hashtagsRepository)
-		private hashtagsRepository: HashtagsRepository,
+		private readonly hashtagsRepository: HashtagsRepository,
 
-		private hashtagEntityService: HashtagEntityService,
+		private readonly hashtagEntityService: HashtagEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const hashtag = await this.hashtagsRepository.findOneBy({ name: normalizeForSearch(ps.tag) });

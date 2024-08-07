@@ -375,7 +375,7 @@ export const packedUserDetailedNotMeOnlySchema = {
 			type: 'string',
 			nullable: false, optional: true,
 		},
-		//#region relations
+		// #region relations
 		isFollowing: {
 			type: 'boolean',
 			nullable: false, optional: true,
@@ -417,7 +417,7 @@ export const packedUserDetailedNotMeOnlySchema = {
 			type: 'boolean',
 			nullable: false, optional: true,
 		},
-		//#endregion
+		// #endregion
 	},
 } as const;
 
@@ -619,7 +619,7 @@ export const packedMeDetailedOnlySchema = {
 			nullable: false, optional: false,
 			ref: 'RolePolicies',
 		},
-		//#region secrets
+		// #region secrets
 		email: {
 			type: 'string',
 			nullable: true, optional: true,
@@ -653,7 +653,7 @@ export const packedMeDetailedOnlySchema = {
 				},
 			},
 		},
-		//#endregion
+		// #endregion
 	},
 } as const;
 

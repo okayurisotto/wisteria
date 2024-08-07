@@ -54,9 +54,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.bubbleGameRecordsRepository)
-		private bubbleGameRecordsRepository: BubbleGameRecordsRepository,
+		private readonly bubbleGameRecordsRepository: BubbleGameRecordsRepository,
 
-		private userEntityService: UserEntityService,
+		private readonly userEntityService: UserEntityService,
 	) {
 		super(meta, paramDef, async (ps) => {
 			const records = await this.bubbleGameRecordsRepository.find({

@@ -34,10 +34,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
-		private utilityService: UtilityService,
-		private instanceEntityService: InstanceEntityService,
+		private readonly utilityService: UtilityService,
+		private readonly instanceEntityService: InstanceEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const instance = await this.instancesRepository

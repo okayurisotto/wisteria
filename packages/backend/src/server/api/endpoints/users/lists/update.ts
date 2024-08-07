@@ -48,9 +48,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userListsRepository)
-		private userListsRepository: UserListsRepository,
+		private readonly userListsRepository: UserListsRepository,
 
-		private userListEntityService: UserListEntityService,
+		private readonly userListEntityService: UserListEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const userList = await this.userListsRepository.findOneBy({

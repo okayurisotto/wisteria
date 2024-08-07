@@ -23,22 +23,22 @@ import type { DbJobDataWithUser } from '../types.js';
 
 @Injectable()
 export class ExportNotesProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.pollsRepository)
-		private pollsRepository: PollsRepository,
+		private readonly pollsRepository: PollsRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
-		private driveService: DriveService,
-		private queueLoggerService: QueueLoggerService,
-		private driveFileEntityService: DriveFileEntityService,
-		private idService: IdService,
+		private readonly driveService: DriveService,
+		private readonly queueLoggerService: QueueLoggerService,
+		private readonly driveFileEntityService: DriveFileEntityService,
+		private readonly idService: IdService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('export-notes');
 	}

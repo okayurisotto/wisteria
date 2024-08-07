@@ -40,18 +40,20 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.registrationTicketsRepository)
-		private registrationTicketsRepository: RegistrationTicketsRepository,
+		private readonly registrationTicketsRepository: RegistrationTicketsRepository,
 
-		private roleUserService: RoleUserService,
-		private idService: IdService,
+		private readonly roleUserService: RoleUserService,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const policies = await this.roleUserService.getUserPolicies(me.id);
 
-			const count = policies.inviteLimit ? await this.registrationTicketsRepository.countBy({
-				id: MoreThan(this.idService.gen(Date.now() - (policies.inviteExpirationTime * 60 * 1000))),
-				createdById: me.id,
-			}) : null;
+			const count = policies.inviteLimit
+				? await this.registrationTicketsRepository.countBy({
+					id: MoreThan(this.idService.gen(Date.now() - (policies.inviteExpirationTime * 60 * 1000))),
+					createdById: me.id,
+				})
+				: null;
 
 			return {
 				remaining: count !== null ? Math.max(0, policies.inviteLimit - count) : null,

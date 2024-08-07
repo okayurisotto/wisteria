@@ -85,16 +85,16 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private userEntityService: UserEntityService,
-		private remoteUserResolveService: RemoteUserResolveService,
-		private roleUserService: RoleUserService,
-		private perUserPvChart: PerUserPvChart,
-		private apiLoggerService: ApiLoggerService,
+		private readonly userEntityService: UserEntityService,
+		private readonly remoteUserResolveService: RemoteUserResolveService,
+		private readonly roleUserService: RoleUserService,
+		private readonly perUserPvChart: PerUserPvChart,
+		private readonly apiLoggerService: ApiLoggerService,
 	) {
 		super(meta, paramDef, async (ps, me, _1, _2, _3, ip) => {
 			let user;
@@ -107,12 +107,14 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 					return [];
 				}
 
-				const users = await this.usersRepository.findBy(isModerator ? {
-					id: In(ps.userIds),
-				} : {
-					id: In(ps.userIds),
-					isSuspended: false,
-				});
+				const users = await this.usersRepository.findBy(isModerator
+					? {
+							id: In(ps.userIds),
+						}
+					: {
+							id: In(ps.userIds),
+							isSuspended: false,
+						});
 
 				// リクエストされた通りに並べ替え
 				const _users: MiUser[] = [];

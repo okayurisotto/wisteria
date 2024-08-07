@@ -89,43 +89,43 @@ export class DriveService {
 	public static NoSuchFolderError = class extends Error {};
 	public static InvalidFileNameError = class extends Error {};
 	public static CannotUnmarkSensitiveError = class extends Error {};
-	private registerLogger: Logger;
-	private downloaderLogger: Logger;
-	private deleteLogger: Logger;
+	private readonly registerLogger: Logger;
+	private readonly downloaderLogger: Logger;
+	private readonly deleteLogger: Logger;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
 		@Inject(DI.driveFoldersRepository)
-		private driveFoldersRepository: DriveFoldersRepository,
+		private readonly driveFoldersRepository: DriveFoldersRepository,
 
-		private fileInfoService: FileInfoService,
-		private userEntityService: UserEntityService,
-		private driveFileEntityService: DriveFileEntityService,
-		private idService: IdService,
-		private metaService: MetaService,
-		private downloadService: DownloadService,
-		private internalStorageService: InternalStorageService,
-		private s3Service: S3Service,
-		private imageProcessingService: ImageProcessingService,
-		private videoProcessingService: VideoProcessingService,
-		private globalEventService: GlobalEventService,
-		private queueService: QueueService,
-		private roleUserService: RoleUserService,
-		private moderationLogService: ModerationLogService,
-		private driveChart: DriveChart,
-		private perUserDriveChart: PerUserDriveChart,
-		private instanceChart: InstanceChart,
+		private readonly fileInfoService: FileInfoService,
+		private readonly userEntityService: UserEntityService,
+		private readonly driveFileEntityService: DriveFileEntityService,
+		private readonly idService: IdService,
+		private readonly metaService: MetaService,
+		private readonly downloadService: DownloadService,
+		private readonly internalStorageService: InternalStorageService,
+		private readonly s3Service: S3Service,
+		private readonly imageProcessingService: ImageProcessingService,
+		private readonly videoProcessingService: VideoProcessingService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly queueService: QueueService,
+		private readonly roleUserService: RoleUserService,
+		private readonly moderationLogService: ModerationLogService,
+		private readonly driveChart: DriveChart,
+		private readonly perUserDriveChart: PerUserDriveChart,
+		private readonly instanceChart: InstanceChart,
 	) {
 		const logger = new Logger('drive', 'blue');
 		this.registerLogger = logger.createSubLogger('register', 'yellow');
@@ -148,7 +148,7 @@ export class DriveService {
 		const meta = await this.metaService.fetch();
 
 		if (meta.useObjectStorage) {
-		//#region ObjectStorage params
+		// #region ObjectStorage params
 			let [ext] = (name.match(/\.([a-zA-Z0-9_-]+)$/) ?? ['']);
 
 			if (ext === '') {
@@ -178,9 +178,9 @@ export class DriveService {
 			let webpublicUrl: string | null = null;
 			let thumbnailKey: string | null = null;
 			let thumbnailUrl: string | null = null;
-			//#endregion
+			// #endregion
 
-			//#region Uploads
+			// #region Uploads
 			this.registerLogger.info(`uploading original: ${key}`);
 			const uploads = [
 				this.upload(key, fs.createReadStream(path), type, null, name),
@@ -203,7 +203,7 @@ export class DriveService {
 			}
 
 			await Promise.all(uploads);
-			//#endregion
+			// #endregion
 
 			file.url = url;
 			file.thumbnailUrl = thumbnailUrl;
@@ -419,7 +419,7 @@ export class DriveService {
 			q.andWhere('file.id != :bannerId', { bannerId: user.bannerId });
 		}
 
-		//This selete is hard coded, be careful if change database schema
+		// This selete is hard coded, be careful if change database schema
 		q.addSelect('SUM("file"."size") OVER (ORDER BY "file"."id" DESC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)', 'acc_usage');
 		q.orderBy('file.id', 'ASC');
 
@@ -467,10 +467,14 @@ export class DriveService {
 		const info = await this.fileInfoService.getFileInfo(path, {
 			skipSensitiveDetection: skipNsfwCheck,
 			sensitiveThreshold: // 感度が高いほどしきい値は低くすることになる
-			instance.sensitiveMediaDetectionSensitivity === 'veryHigh' ? 0.1
-				: instance.sensitiveMediaDetectionSensitivity === 'high' ? 0.3
-					: instance.sensitiveMediaDetectionSensitivity === 'low' ? 0.7
-						: instance.sensitiveMediaDetectionSensitivity === 'veryLow' ? 0.9
+			instance.sensitiveMediaDetectionSensitivity === 'veryHigh'
+				? 0.1
+				: instance.sensitiveMediaDetectionSensitivity === 'high'
+					? 0.3
+					: instance.sensitiveMediaDetectionSensitivity === 'low'
+						? 0.7
+						: instance.sensitiveMediaDetectionSensitivity === 'veryLow'
+							? 0.9
 							: 0.5,
 			sensitiveThresholdForPorn: 0.75,
 			enableSensitiveMediaDetectionForVideos: instance.enableSensitiveMediaDetectionForVideos,
@@ -478,9 +482,9 @@ export class DriveService {
 		this.registerLogger.info(JSON.stringify(info));
 
 		// 現状 false positive が多すぎて実用に耐えない
-		//if (info.porn && instance.disallowUploadWhenPredictedAsPorn) {
+		// if (info.porn && instance.disallowUploadWhenPredictedAsPorn) {
 		//	throw new IdentifiableError('282f77bf-5816-4f72-9264-aa14d8261a21', 'Detected as porn.');
-		//}
+		// }
 
 		// detect name
 		const detectedName = correctFilename(
@@ -505,7 +509,7 @@ export class DriveService {
 
 		this.registerLogger.debug(`ADD DRIVE FILE: user ${user?.id ?? 'not set'}, name ${detectedName}, tmp ${path}`);
 
-		//#region Check drive usage
+		// #region Check drive usage
 		if (user && !isLink) {
 			const usage = await this.driveFileEntityService.calcDriveUsageOf(user);
 			const isLocalUser = this.userEntityService.isLocalUser(user);
@@ -523,7 +527,7 @@ export class DriveService {
 				await this.expireOldFile(await this.usersRepository.findOneByOrFail({ id: user.id }) as MiRemoteUser, driveCapacity - info.size);
 			}
 		}
-		//#endregion
+		// #endregion
 
 		const fetchFolder = async () => {
 			if (!folderId) {
@@ -572,7 +576,8 @@ export class DriveService {
 		file.maybeSensitive = info.sensitive;
 		file.maybePorn = info.porn;
 		file.isSensitive = user
-			? this.userEntityService.isLocalUser(user) && profile!.alwaysMarkNsfw ? true
+			? this.userEntityService.isLocalUser(user) && profile!.alwaysMarkNsfw
+				? true
 				: sensitive ?? false
 			: false;
 

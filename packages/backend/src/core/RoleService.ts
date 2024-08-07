@@ -81,19 +81,19 @@ export class RoleService implements OnModuleInit {
 	public static NotAssignedError = class extends Error {};
 
 	constructor(
-		private moduleRef: ModuleRef,
+		private readonly moduleRef: ModuleRef,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.rolesRepository)
-		private rolesRepository: RolesRepository,
+		private readonly rolesRepository: RolesRepository,
 
 		@Inject(DI.roleAssignmentsRepository)
-		private roleAssignmentsRepository: RoleAssignmentsRepository,
+		private readonly roleAssignmentsRepository: RoleAssignmentsRepository,
 
-		private idService: IdService,
-		private moderationLogService: ModerationLogService,
+		private readonly idService: IdService,
+		private readonly moderationLogService: ModerationLogService,
 	) {}
 
 	async onModuleInit() {
@@ -115,36 +115,44 @@ export class RoleService implements OnModuleInit {
 	public async getModeratorIds(includeAdmins = true): Promise<MiUser['id'][]> {
 		const roles = await this.rolesRepository.findBy({});
 		const moderatorRoles = includeAdmins ? roles.filter(r => r.isModerator || r.isAdministrator) : roles.filter(r => r.isModerator);
-		const assigns = moderatorRoles.length > 0 ? await this.roleAssignmentsRepository.findBy({
-			roleId: In(moderatorRoles.map(r => r.id)),
-		}) : [];
+		const assigns = moderatorRoles.length > 0
+			? await this.roleAssignmentsRepository.findBy({
+				roleId: In(moderatorRoles.map(r => r.id)),
+			})
+			: [];
 		// TODO: isRootなアカウントも含める
 		return assigns.map(a => a.userId);
 	}
 
 	public async getModerators(includeAdmins = true): Promise<MiUser[]> {
 		const ids = await this.getModeratorIds(includeAdmins);
-		const users = ids.length > 0 ? await this.usersRepository.findBy({
-			id: In(ids),
-		}) : [];
+		const users = ids.length > 0
+			? await this.usersRepository.findBy({
+				id: In(ids),
+			})
+			: [];
 		return users;
 	}
 
 	public async getAdministratorIds(): Promise<MiUser['id'][]> {
 		const roles = await this.rolesRepository.findBy({});
 		const administratorRoles = roles.filter(r => r.isAdministrator);
-		const assigns = administratorRoles.length > 0 ? await this.roleAssignmentsRepository.findBy({
-			roleId: In(administratorRoles.map(r => r.id)),
-		}) : [];
+		const assigns = administratorRoles.length > 0
+			? await this.roleAssignmentsRepository.findBy({
+				roleId: In(administratorRoles.map(r => r.id)),
+			})
+			: [];
 		// TODO: isRootなアカウントも含める
 		return assigns.map(a => a.userId);
 	}
 
 	public async getAdministrators(): Promise<MiUser[]> {
 		const ids = await this.getAdministratorIds();
-		const users = ids.length > 0 ? await this.usersRepository.findBy({
-			id: In(ids),
-		}) : [];
+		const users = ids.length > 0
+			? await this.usersRepository.findBy({
+				id: In(ids),
+			})
+			: [];
 		return users;
 	}
 

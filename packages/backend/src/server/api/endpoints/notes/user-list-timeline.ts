@@ -67,18 +67,18 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.userListsRepository)
-		private userListsRepository: UserListsRepository,
+		private readonly userListsRepository: UserListsRepository,
 
 		@Inject(DI.userListMembershipsRepository)
-		private userListMembershipsRepository: UserListMembershipsRepository,
+		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
-		private noteEntityService: NoteEntityService,
-		private activeUsersChart: ActiveUsersChart,
-		private idService: IdService,
-		private queryService: QueryService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly activeUsersChart: ActiveUsersChart,
+		private readonly idService: IdService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate) : null);
@@ -120,7 +120,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		withFiles: boolean;
 		withRenotes: boolean;
 	}, me: MiLocalUser) {
-		//#region Construct query
+		// #region Construct query
 		const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), ps.sinceId, ps.untilId)
 			.innerJoin(this.userListMembershipsRepository.metadata.targetName, 'userListMemberships', 'userListMemberships.userId = note.userId')
 			.innerJoinAndSelect('note.user', 'user')
@@ -198,7 +198,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		if (ps.withFiles) {
 			query.andWhere('note.fileIds != \'{}\'');
 		}
-		//#endregion
+		// #endregion
 
 		return await query.limit(ps.limit).getMany();
 	}

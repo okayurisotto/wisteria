@@ -15,9 +15,9 @@ import { PageEntityService } from './PageEntityService.js';
 export class PageLikeEntityService {
 	constructor(
 		@Inject(DI.pageLikesRepository)
-		private pageLikesRepository: PageLikesRepository,
+		private readonly pageLikesRepository: PageLikesRepository,
 
-		private pageEntityService: PageEntityService,
+		private readonly pageEntityService: PageEntityService,
 	) {}
 
 	public async pack(

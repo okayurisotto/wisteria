@@ -128,11 +128,11 @@ const $redisForTimelines: Provider<Redis.Redis> = {
 })
 export class GlobalModule implements OnApplicationShutdown {
 	constructor(
-		@Inject(DI.db) private db: DataSource,
-		@Inject(DI.redis) private redisClient: Redis.Redis,
-		@Inject(DI.redisForPub) private redisForPub: Redis.Redis,
-		@Inject(DI.redisForSub) private redisForSub: Redis.Redis,
-		@Inject(DI.redisForTimelines) private redisForTimelines: Redis.Redis,
+		@Inject(DI.db) private readonly db: DataSource,
+		@Inject(DI.redis) private readonly redisClient: Redis.Redis,
+		@Inject(DI.redisForPub) private readonly redisForPub: Redis.Redis,
+		@Inject(DI.redisForSub) private readonly redisForSub: Redis.Redis,
+		@Inject(DI.redisForTimelines) private readonly redisForTimelines: Redis.Redis,
 	) {}
 
 	public async dispose(): Promise<void> {

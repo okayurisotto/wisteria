@@ -21,7 +21,7 @@ import { ApRequestCreator } from '@/core/activitypub/ApRequestService.js';
 export class QueueService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject('queue:system') public systemQueue: SystemQueue,
 		@Inject('queue:endedPollNotification') public endedPollNotificationQueue: EndedPollNotificationQueue,
@@ -420,12 +420,12 @@ export class QueueService {
 
 	public destroy() {
 		this.deliverQueue.once('cleaned', (jobs, status) => {
-			//deliverLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);
+			// deliverLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);
 		});
 		this.deliverQueue.clean(0, 0, 'delayed');
 
 		this.inboxQueue.once('cleaned', (jobs, status) => {
-			//inboxLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);
+			// inboxLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);
 		});
 		this.inboxQueue.clean(0, 0, 'delayed');
 	}

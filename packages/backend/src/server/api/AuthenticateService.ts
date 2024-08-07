@@ -15,13 +15,13 @@ import { AuthenticationError } from '@/misc/AuthenticationError.js';
 export class AuthenticateService {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.accessTokensRepository)
-		private accessTokensRepository: AccessTokensRepository,
+		private readonly accessTokensRepository: AccessTokensRepository,
 
 		@Inject(DI.appsRepository)
-		private appsRepository: AppsRepository,
+		private readonly appsRepository: AppsRepository,
 	) {}
 
 	public async authenticate(token: string | null | undefined): Promise<[MiLocalUser | null, MiAccessToken | null]> {

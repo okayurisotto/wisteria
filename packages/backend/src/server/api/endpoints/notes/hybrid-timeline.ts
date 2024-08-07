@@ -71,17 +71,17 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.channelFollowingsRepository)
-		private channelFollowingsRepository: ChannelFollowingsRepository,
+		private readonly channelFollowingsRepository: ChannelFollowingsRepository,
 
-		private noteEntityService: NoteEntityService,
-		private roleUserService: RoleUserService,
-		private activeUsersChart: ActiveUsersChart,
-		private idService: IdService,
-		private queryService: QueryService,
-		private userFollowingService: UserFollowingService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly roleUserService: RoleUserService,
+		private readonly activeUsersChart: ActiveUsersChart,
+		private readonly idService: IdService,
+		private readonly queryService: QueryService,
+		private readonly userFollowingService: UserFollowingService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate) : null);
@@ -208,7 +208,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		if (ps.withFiles) {
 			query.andWhere('note.fileIds != \'{}\'');
 		}
-		//#endregion
+		// #endregion
 
 		return await query.limit(ps.limit).getMany();
 	}

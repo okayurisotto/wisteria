@@ -14,7 +14,7 @@ import type { MiEmoji } from '@/models/Emoji.js';
 export class EmojiEntityService {
 	constructor(
 		@Inject(DI.emojisRepository)
-		private emojisRepository: EmojisRepository,
+		private readonly emojisRepository: EmojisRepository,
 	) {}
 
 	public async packSimple(

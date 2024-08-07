@@ -59,13 +59,13 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
 		@Inject(DI.channelsRepository)
-		private channelsRepository: ChannelsRepository,
+		private readonly channelsRepository: ChannelsRepository,
 
-		private idService: IdService,
-		private channelEntityService: ChannelEntityService,
+		private readonly idService: IdService,
+		private readonly channelEntityService: ChannelEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			let banner = null;

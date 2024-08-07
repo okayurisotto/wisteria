@@ -52,10 +52,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.flashLikesRepository)
-		private flashLikesRepository: FlashLikesRepository,
+		private readonly flashLikesRepository: FlashLikesRepository,
 
-		private flashLikeEntityService: FlashLikeEntityService,
-		private queryService: QueryService,
+		private readonly flashLikeEntityService: FlashLikeEntityService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.flashLikesRepository.createQueryBuilder('like'), ps.sinceId, ps.untilId)

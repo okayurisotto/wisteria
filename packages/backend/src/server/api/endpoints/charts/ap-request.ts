@@ -31,7 +31,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private apRequestChart: ApRequestChart,
+		private readonly apRequestChart: ApRequestChart,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			return await this.apRequestChart.getChart(ps.span, ps.limit, ps.offset ? new Date(ps.offset) : null);

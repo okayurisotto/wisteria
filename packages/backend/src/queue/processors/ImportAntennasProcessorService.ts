@@ -50,15 +50,15 @@ const validate = new Ajv().compile({
 
 @Injectable()
 export class ImportAntennasProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.antennasRepository)
-		private antennasRepository: AntennasRepository,
+		private readonly antennasRepository: AntennasRepository,
 
-		private queueLoggerService: QueueLoggerService,
-		private idService: IdService,
-		private globalEventService: GlobalEventService,
+		private readonly queueLoggerService: QueueLoggerService,
+		private readonly idService: IdService,
+		private readonly globalEventService: GlobalEventService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('import-antennas');
 	}

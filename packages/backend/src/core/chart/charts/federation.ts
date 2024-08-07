@@ -24,12 +24,12 @@ export default class FederationChart extends Chart<typeof schema> {
 		db: DataSource,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
-		private metaService: MetaService,
+		private readonly metaService: MetaService,
 		appLockService: AppLockService,
 		chartLoggerService: ChartLoggerService,
 	) {
@@ -103,25 +103,27 @@ export default class FederationChart extends Chart<typeof schema> {
 		]);
 
 		return {
-			'sub': sub,
-			'pub': pub,
-			'pubsub': pubsub,
-			'subActive': subActive,
-			'pubActive': pubActive,
+			sub: sub,
+			pub: pub,
+			pubsub: pubsub,
+			subActive: subActive,
+			pubActive: pubActive,
 		};
 	}
 
 	public async deliverd(host: string, succeeded: boolean): Promise<void> {
-		await this.commit(succeeded ? {
-			'deliveredInstances': [host],
-		} : {
-			'stalled': [host],
-		});
+		await this.commit(succeeded
+			? {
+					deliveredInstances: [host],
+				}
+			: {
+					stalled: [host],
+				});
 	}
 
 	public async inbox(host: string): Promise<void> {
 		await this.commit({
-			'inboxInstances': [host],
+			inboxInstances: [host],
 		});
 	}
 }

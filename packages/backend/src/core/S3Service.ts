@@ -17,7 +17,7 @@ import type { DeleteObjectCommandInput, PutObjectCommandInput } from '@aws-sdk/c
 @Injectable()
 export class S3Service {
 	constructor(
-		private httpRequestService: HttpRequestService,
+		private readonly httpRequestService: HttpRequestService,
 	) {}
 
 	public getS3Client(meta: MiMeta): S3Client {
@@ -35,10 +35,12 @@ export class S3Service {
 
 		return new S3Client({
 			endpoint: meta.objectStorageEndpoint ? u : undefined,
-			credentials: (meta.objectStorageAccessKey !== null && meta.objectStorageSecretKey !== null) ? {
-				accessKeyId: meta.objectStorageAccessKey,
-				secretAccessKey: meta.objectStorageSecretKey,
-			} : undefined,
+			credentials: (meta.objectStorageAccessKey !== null && meta.objectStorageSecretKey !== null)
+				? {
+						accessKeyId: meta.objectStorageAccessKey,
+						secretAccessKey: meta.objectStorageSecretKey,
+					}
+				: undefined,
 			region: meta.objectStorageRegion ? meta.objectStorageRegion : undefined, // 空文字列もundefinedにするため ?? は使わない
 			tls: meta.objectStorageUseSSL,
 			forcePathStyle: meta.objectStorageEndpoint ? meta.objectStorageS3ForcePathStyle : false, // AWS with endPoint omitted

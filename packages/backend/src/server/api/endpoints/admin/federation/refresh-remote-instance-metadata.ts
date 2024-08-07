@@ -30,10 +30,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
-		private utilityService: UtilityService,
-		private fetchInstanceMetadataService: FetchInstanceMetadataService,
+		private readonly utilityService: UtilityService,
+		private readonly fetchInstanceMetadataService: FetchInstanceMetadataService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const instance = await this.instancesRepository.findOneBy({ host: this.utilityService.toPuny(ps.host) });

@@ -37,9 +37,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.clipsRepository)
-		private clipsRepository: ClipsRepository,
+		private readonly clipsRepository: ClipsRepository,
 
-		private clipEntityService: ClipEntityService,
+		private readonly clipEntityService: ClipEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const clips = await this.clipsRepository.findBy({

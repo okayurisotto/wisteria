@@ -17,22 +17,24 @@ import { UserEntityService } from './UserEntityService.js';
 export class InviteCodeEntityService {
 	constructor(
 		@Inject(DI.registrationTicketsRepository)
-		private registrationTicketsRepository: RegistrationTicketsRepository,
+		private readonly registrationTicketsRepository: RegistrationTicketsRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(
 		src: MiRegistrationTicket['id'] | MiRegistrationTicket,
 		me?: { id: MiUser['id'] } | null | undefined,
 	): Promise<Packed<'InviteCode'>> {
-		const target = typeof src === 'object' ? src : await this.registrationTicketsRepository.findOneOrFail({
-			where: {
-				id: src,
-			},
-			relations: ['createdBy', 'usedBy'],
-		});
+		const target = typeof src === 'object'
+			? src
+			: await this.registrationTicketsRepository.findOneOrFail({
+				where: {
+					id: src,
+				},
+				relations: ['createdBy', 'usedBy'],
+			});
 
 		return await awaitAll({
 			id: target.id,

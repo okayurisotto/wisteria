@@ -40,18 +40,18 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.pollsRepository)
-		private pollsRepository: PollsRepository,
+		private readonly pollsRepository: PollsRepository,
 
 		@Inject(DI.pollVotesRepository)
-		private pollVotesRepository: PollVotesRepository,
+		private readonly pollVotesRepository: PollVotesRepository,
 
 		@Inject(DI.mutingsRepository)
-		private mutingsRepository: MutingsRepository,
+		private readonly mutingsRepository: MutingsRepository,
 
-		private noteEntityService: NoteEntityService,
+		private readonly noteEntityService: NoteEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.pollsRepository.createQueryBuilder('poll')
@@ -64,7 +64,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 						.orWhere('poll.expiresAt > :now', { now: new Date() });
 				}));
 
-			//#region exclude arleady voted polls
+			// #region exclude arleady voted polls
 			const votedQuery = this.pollVotesRepository.createQueryBuilder('vote')
 				.select('vote.noteId')
 				.where('vote.userId = :meId', { meId: me.id });
@@ -73,9 +73,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				.andWhere(`poll.noteId NOT IN (${votedQuery.getQuery()})`);
 
 			query.setParameters(votedQuery.getParameters());
-			//#endregion
+			// #endregion
 
-			//#region mute
+			// #region mute
 			const mutingQuery = this.mutingsRepository.createQueryBuilder('muting')
 				.select('muting.muteeId')
 				.where('muting.muterId = :muterId', { muterId: me.id });
@@ -84,7 +84,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				.andWhere(`poll.userId NOT IN (${mutingQuery.getQuery()})`);
 
 			query.setParameters(mutingQuery.getParameters());
-			//#endregion
+			// #endregion
 
 			const polls = await query
 				.orderBy('poll.noteId', 'DESC')

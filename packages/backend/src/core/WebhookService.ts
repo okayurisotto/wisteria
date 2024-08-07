@@ -18,10 +18,10 @@ export class WebhookService implements OnApplicationShutdown {
 
 	constructor(
 		@Inject(DI.redisForSub)
-		private redisForSub: Redis.Redis,
+		private readonly redisForSub: Redis.Redis,
 
 		@Inject(DI.webhooksRepository)
-		private webhooksRepository: WebhooksRepository,
+		private readonly webhooksRepository: WebhooksRepository,
 	) {
 		this.redisForSub.on('message', this.onMessage);
 	}
@@ -37,7 +37,7 @@ export class WebhookService implements OnApplicationShutdown {
 		return this.webhooks;
 	}
 
-	private onMessage = async (_: string, data: string): Promise<void> => {
+	private readonly onMessage = async (_: string, data: string): Promise<void> => {
 		const obj = JSON.parse(data);
 
 		if (obj.channel === 'internal') {

@@ -16,12 +16,12 @@ import { IdService } from '@/core/IdService.js';
 export class DriveFolderEntityService {
 	constructor(
 		@Inject(DI.driveFoldersRepository)
-		private driveFoldersRepository: DriveFoldersRepository,
+		private readonly driveFoldersRepository: DriveFoldersRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private idService: IdService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(
@@ -42,20 +42,24 @@ export class DriveFolderEntityService {
 			name: folder.name,
 			parentId: folder.parentId,
 
-			...(opts.detail ? {
-				foldersCount: this.driveFoldersRepository.countBy({
-					parentId: folder.id,
-				}),
-				filesCount: this.driveFilesRepository.countBy({
-					folderId: folder.id,
-				}),
+			...(opts.detail
+				? {
+						foldersCount: this.driveFoldersRepository.countBy({
+							parentId: folder.id,
+						}),
+						filesCount: this.driveFilesRepository.countBy({
+							folderId: folder.id,
+						}),
 
-				...(folder.parentId ? {
-					parent: this.pack(folder.parentId, {
-						detail: true,
-					}),
-				} : {}),
-			} : {}),
+						...(folder.parentId
+							? {
+									parent: this.pack(folder.parentId, {
+										detail: true,
+									}),
+								}
+							: {}),
+					}
+				: {}),
 		});
 	}
 }

@@ -43,10 +43,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFoldersRepository)
-		private driveFoldersRepository: DriveFoldersRepository,
+		private readonly driveFoldersRepository: DriveFoldersRepository,
 
-		private driveFolderEntityService: DriveFolderEntityService,
-		private queryService: QueryService,
+		private readonly driveFolderEntityService: DriveFolderEntityService,
+		private readonly queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.driveFoldersRepository.createQueryBuilder('folder'), ps.sinceId, ps.untilId)

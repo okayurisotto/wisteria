@@ -19,7 +19,7 @@ class LdSignature {
 	public loderTimeout = 5000;
 
 	constructor(
-		private httpRequestService: HttpRequestService,
+		private readonly httpRequestService: HttpRequestService,
 	) {}
 
 	public async signRsaSignature2017(data: any, privateKey: string, creator: string, domain?: string, created?: Date): Promise<any> {
@@ -151,7 +151,7 @@ class LdSignature {
 @Injectable()
 export class LdSignatureService {
 	constructor(
-		private httpRequestService: HttpRequestService,
+		private readonly httpRequestService: HttpRequestService,
 	) {}
 
 	public use(): LdSignature {

@@ -41,7 +41,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private httpRequestService: HttpRequestService,
+		private readonly httpRequestService: HttpRequestService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const res = await this.httpRequestService.send(ps.url, {

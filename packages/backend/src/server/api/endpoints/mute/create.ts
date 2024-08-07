@@ -63,10 +63,10 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.mutingsRepository)
-		private mutingsRepository: MutingsRepository,
+		private readonly mutingsRepository: MutingsRepository,
 
-		private getterService: GetterService,
-		private userMutingService: UserMutingService,
+		private readonly getterService: GetterService,
+		private readonly userMutingService: UserMutingService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const muter = me;

@@ -16,10 +16,10 @@ import { UserEntityService } from './UserEntityService.js';
 export class ModerationLogEntityService {
 	constructor(
 		@Inject(DI.moderationLogsRepository)
-		private moderationLogsRepository: ModerationLogsRepository,
+		private readonly moderationLogsRepository: ModerationLogsRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(

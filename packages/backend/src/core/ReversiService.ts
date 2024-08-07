@@ -26,15 +26,15 @@ const INVITATION_TIMEOUT_MS = 1000 * 20; // 20sec
 export class ReversiService implements OnApplicationShutdown {
 	constructor(
 		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
+		private readonly redisClient: Redis.Redis,
 
 		@Inject(DI.reversiGamesRepository)
-		private reversiGamesRepository: ReversiGamesRepository,
+		private readonly reversiGamesRepository: ReversiGamesRepository,
 
-		private userEntityService: UserEntityService,
-		private globalEventService: GlobalEventService,
-		private reversiGameEntityService: ReversiGameEntityService,
-		private idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly reversiGameEntityService: ReversiGameEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	private async cacheGame(game: MiReversiGame) {
@@ -50,8 +50,8 @@ export class ReversiService implements OnApplicationShutdown {
 			startedAt: game.startedAt,
 			endedAt: game.endedAt,
 			// ゲームの途中からユーザーが変わることは無いので
-			//user1Id: game.user1Id,
-			//user2Id: game.user2Id,
+			// user1Id: game.user1Id,
+			// user2Id: game.user2Id,
 			user1Ready: game.user1Ready,
 			user2Ready: game.user2Ready,
 			black: game.black,
@@ -92,7 +92,7 @@ export class ReversiService implements OnApplicationShutdown {
 			}
 		}
 
-		//#region 相手から既に招待されてないか確認
+		// #region 相手から既に招待されてないか確認
 		const invitations = await this.redisClient.zrange(
 			`reversi:matchSpecific:${me.id}`,
 			Date.now() - INVITATION_TIMEOUT_MS,
@@ -108,7 +108,7 @@ export class ReversiService implements OnApplicationShutdown {
 
 			return game;
 		}
-		//#endregion
+		// #endregion
 
 		const redisPipeline = this.redisClient.pipeline();
 		redisPipeline.zadd(`reversi:matchSpecific:${targetUser.id}`, Date.now(), me.id);
@@ -138,7 +138,7 @@ export class ReversiService implements OnApplicationShutdown {
 			}
 		}
 
-		//#region まず自分宛ての招待を探す
+		// #region まず自分宛ての招待を探す
 		const invitations = await this.redisClient.zrange(
 			`reversi:matchSpecific:${me.id}`,
 			Date.now() - INVITATION_TIMEOUT_MS,
@@ -155,7 +155,7 @@ export class ReversiService implements OnApplicationShutdown {
 
 			return game;
 		}
-		//#endregion
+		// #endregion
 
 		const matchings = await this.redisClient.zrange(
 			'reversi:matchAny',
@@ -316,7 +316,7 @@ export class ReversiService implements OnApplicationShutdown {
 		updatedGame.user2 = game.user2;
 		this.cacheGame(updatedGame);
 
-		//#region 盤面に最初から石がないなどして始まった瞬間に勝敗が決定する場合があるのでその処理
+		// #region 盤面に最初から石がないなどして始まった瞬間に勝敗が決定する場合があるのでその処理
 		if (engine.isEnded) {
 			let winnerId;
 			if (engine.winner === true) {
@@ -331,7 +331,7 @@ export class ReversiService implements OnApplicationShutdown {
 
 			return;
 		}
-		//#endregion
+		// #endregion
 
 		this.redisClient.setex(`reversi:game:turnTimer:${game.id}:1`, updatedGame.timeLimitForEachTurn, '');
 
@@ -525,24 +525,28 @@ export class ReversiService implements OnApplicationShutdown {
 				...parsed,
 				startedAt: parsed.startedAt != null ? new Date(parsed.startedAt) : null,
 				endedAt: parsed.endedAt != null ? new Date(parsed.endedAt) : null,
-				user1: parsed.user1 != null ? {
-					...parsed.user1,
-					avatar: null,
-					banner: null,
-					updatedAt: parsed.user1.updatedAt != null ? new Date(parsed.user1.updatedAt) : null,
-					lastActiveDate: parsed.user1.lastActiveDate != null ? new Date(parsed.user1.lastActiveDate) : null,
-					lastFetchedAt: parsed.user1.lastFetchedAt != null ? new Date(parsed.user1.lastFetchedAt) : null,
-					movedAt: parsed.user1.movedAt != null ? new Date(parsed.user1.movedAt) : null,
-				} : null,
-				user2: parsed.user2 != null ? {
-					...parsed.user2,
-					avatar: null,
-					banner: null,
-					updatedAt: parsed.user2.updatedAt != null ? new Date(parsed.user2.updatedAt) : null,
-					lastActiveDate: parsed.user2.lastActiveDate != null ? new Date(parsed.user2.lastActiveDate) : null,
-					lastFetchedAt: parsed.user2.lastFetchedAt != null ? new Date(parsed.user2.lastFetchedAt) : null,
-					movedAt: parsed.user2.movedAt != null ? new Date(parsed.user2.movedAt) : null,
-				} : null,
+				user1: parsed.user1 != null
+					? {
+							...parsed.user1,
+							avatar: null,
+							banner: null,
+							updatedAt: parsed.user1.updatedAt != null ? new Date(parsed.user1.updatedAt) : null,
+							lastActiveDate: parsed.user1.lastActiveDate != null ? new Date(parsed.user1.lastActiveDate) : null,
+							lastFetchedAt: parsed.user1.lastFetchedAt != null ? new Date(parsed.user1.lastFetchedAt) : null,
+							movedAt: parsed.user1.movedAt != null ? new Date(parsed.user1.movedAt) : null,
+						}
+					: null,
+				user2: parsed.user2 != null
+					? {
+							...parsed.user2,
+							avatar: null,
+							banner: null,
+							updatedAt: parsed.user2.updatedAt != null ? new Date(parsed.user2.updatedAt) : null,
+							lastActiveDate: parsed.user2.lastActiveDate != null ? new Date(parsed.user2.lastActiveDate) : null,
+							lastFetchedAt: parsed.user2.lastFetchedAt != null ? new Date(parsed.user2.lastFetchedAt) : null,
+							movedAt: parsed.user2.movedAt != null ? new Date(parsed.user2.movedAt) : null,
+						}
+					: null,
 			};
 		} else {
 			const game = await this.reversiGamesRepository.findOne({

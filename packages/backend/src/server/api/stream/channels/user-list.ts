@@ -23,16 +23,16 @@ class UserListChannel extends Channel {
 	private withRenotes: boolean;
 
 	constructor(
-		private userListsRepository: UserListsRepository,
-		private userListMembershipsRepository: UserListMembershipsRepository,
-		private noteEntityService: NoteEntityService,
+		private readonly userListsRepository: UserListsRepository,
+		private readonly userListMembershipsRepository: UserListMembershipsRepository,
+		private readonly noteEntityService: NoteEntityService,
 
 		id: string,
 		connection: Channel['connection'],
 	) {
 		super(id, connection);
-		//this.updateListUsers = this.updateListUsers.bind(this);
-		//this.onNote = this.onNote.bind(this);
+		// this.updateListUsers = this.updateListUsers.bind(this);
+		// this.onNote = this.onNote.bind(this);
 	}
 
 	public async init(params: any) {
@@ -58,7 +58,7 @@ class UserListChannel extends Channel {
 		this.listUsersClock = setInterval(this.updateListUsers, 5000);
 	}
 
-	private updateListUsers = async () => {
+	private readonly updateListUsers = async () => {
 		const memberships = await this.userListMembershipsRepository.find({
 			where: {
 				userListId: this.listId,
@@ -75,7 +75,7 @@ class UserListChannel extends Channel {
 		this.membershipsMap = membershipsMap;
 	};
 
-	private onNote = async (note: Packed<'Note'>) => {
+	private readonly onNote = async (note: Packed<'Note'>) => {
 		const isMe = this.user!.id === note.userId;
 
 		// チャンネル投稿は無視する
@@ -143,12 +143,12 @@ export class UserListChannelService implements MiChannelService<false> {
 
 	constructor(
 		@Inject(DI.userListsRepository)
-		private userListsRepository: UserListsRepository,
+		private readonly userListsRepository: UserListsRepository,
 
 		@Inject(DI.userListMembershipsRepository)
-		private userListMembershipsRepository: UserListMembershipsRepository,
+		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
-		private noteEntityService: NoteEntityService,
+		private readonly noteEntityService: NoteEntityService,
 	) {}
 
 	public create(id: string, connection: Channel['connection']): UserListChannel {

@@ -60,20 +60,20 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.redisForTimelines)
-		private redisForTimelines: Redis.Redis,
+		private readonly redisForTimelines: Redis.Redis,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.antennasRepository)
-		private antennasRepository: AntennasRepository,
+		private readonly antennasRepository: AntennasRepository,
 
-		private idService: IdService,
-		private noteEntityService: NoteEntityService,
-		private queryService: QueryService,
-		private noteReadService: NoteReadService,
-		private fanoutTimelineService: FanoutTimelineService,
-		private globalEventService: GlobalEventService,
+		private readonly idService: IdService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly queryService: QueryService,
+		private readonly noteReadService: NoteReadService,
+		private readonly fanoutTimelineService: FanoutTimelineService,
+		private readonly globalEventService: GlobalEventService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate) : null);

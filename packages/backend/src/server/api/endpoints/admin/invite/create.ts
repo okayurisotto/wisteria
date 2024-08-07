@@ -52,11 +52,11 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.registrationTicketsRepository)
-		private registrationTicketsRepository: RegistrationTicketsRepository,
+		private readonly registrationTicketsRepository: RegistrationTicketsRepository,
 
-		private inviteCodeEntityService: InviteCodeEntityService,
-		private idService: IdService,
-		private moderationLogService: ModerationLogService,
+		private readonly inviteCodeEntityService: InviteCodeEntityService,
+		private readonly idService: IdService,
+		private readonly moderationLogService: ModerationLogService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			if (ps.expiresAt && isNaN(Date.parse(ps.expiresAt))) {

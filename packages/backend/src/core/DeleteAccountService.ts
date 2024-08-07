@@ -13,10 +13,10 @@ import { DI } from '@/di-symbols.js';
 export class DeleteAccountService {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private userSuspendService: UserSuspendService,
-		private queueService: QueueService,
+		private readonly userSuspendService: UserSuspendService,
+		private readonly queueService: QueueService,
 	) {}
 
 	public async deleteAccount(user: {

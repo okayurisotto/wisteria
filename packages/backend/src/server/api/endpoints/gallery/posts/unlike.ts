@@ -47,13 +47,13 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.galleryPostsRepository)
-		private galleryPostsRepository: GalleryPostsRepository,
+		private readonly galleryPostsRepository: GalleryPostsRepository,
 
 		@Inject(DI.galleryLikesRepository)
-		private galleryLikesRepository: GalleryLikesRepository,
+		private readonly galleryLikesRepository: GalleryLikesRepository,
 
-		private featuredService: FeaturedService,
-		private idService: IdService,
+		private readonly featuredService: FeaturedService,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const post = await this.galleryPostsRepository.findOneBy({ id: ps.postId });

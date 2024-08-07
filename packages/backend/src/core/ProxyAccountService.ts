@@ -13,9 +13,9 @@ import { MetaService } from '@/core/MetaService.js';
 export class ProxyAccountService {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private metaService: MetaService,
+		private readonly metaService: MetaService,
 	) {}
 
 	public async fetch(): Promise<MiLocalUser | null> {

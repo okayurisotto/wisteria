@@ -15,9 +15,9 @@ import { AppEntityService } from './AppEntityService.js';
 export class AuthSessionEntityService {
 	constructor(
 		@Inject(DI.authSessionsRepository)
-		private authSessionsRepository: AuthSessionsRepository,
+		private readonly authSessionsRepository: AuthSessionsRepository,
 
-		private appEntityService: AppEntityService,
+		private readonly appEntityService: AppEntityService,
 	) {}
 
 	public async pack(

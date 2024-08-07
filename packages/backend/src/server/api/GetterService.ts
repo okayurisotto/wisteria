@@ -15,12 +15,12 @@ import { UserEntityService } from '@/core/entities/UserEntityService.js';
 export class GetterService {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
-		private userEntityService: UserEntityService,
+		private readonly userEntityService: UserEntityService,
 	) {}
 
 	/**

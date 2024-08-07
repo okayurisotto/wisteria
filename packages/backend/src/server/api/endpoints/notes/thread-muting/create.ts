@@ -46,14 +46,14 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.noteThreadMutingsRepository)
-		private noteThreadMutingsRepository: NoteThreadMutingsRepository,
+		private readonly noteThreadMutingsRepository: NoteThreadMutingsRepository,
 
-		private getterService: GetterService,
-		private noteReadService: NoteReadService,
-		private idService: IdService,
+		private readonly getterService: GetterService,
+		private readonly noteReadService: NoteReadService,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const note = await this.getterService.getNote(ps.noteId).catch((err: unknown) => {

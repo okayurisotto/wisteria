@@ -40,37 +40,37 @@ import { AcctEntity } from '@/misc/AcctEntity.js';
 
 @Injectable()
 export class ApNoteService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.pollsRepository)
-		private pollsRepository: PollsRepository,
+		private readonly pollsRepository: PollsRepository,
 
 		@Inject(DI.emojisRepository)
-		private emojisRepository: EmojisRepository,
+		private readonly emojisRepository: EmojisRepository,
 
-		private idService: IdService,
-		private apMfmService: ApMfmService,
-		private apResolverService: ApResolverService,
+		private readonly idService: IdService,
+		private readonly apMfmService: ApMfmService,
+		private readonly apResolverService: ApResolverService,
 
 		// 循環参照のため / for circular dependency
 		@Inject(forwardRef(() => ApPersonService))
-		private apPersonService: ApPersonService,
+		private readonly apPersonService: ApPersonService,
 
-		private utilityService: UtilityService,
-		private apAudienceService: ApAudienceService,
-		private apMentionService: ApMentionService,
-		private apImageService: ApImageService,
-		private apQuestionService: ApQuestionService,
-		private metaService: MetaService,
-		private appLockService: AppLockService,
-		private pollService: PollService,
-		private noteCreateService: NoteCreateService,
-		private apDbResolverService: ApDbResolverService,
-		private apLoggerService: ApLoggerService,
+		private readonly utilityService: UtilityService,
+		private readonly apAudienceService: ApAudienceService,
+		private readonly apMentionService: ApMentionService,
+		private readonly apImageService: ApImageService,
+		private readonly apQuestionService: ApQuestionService,
+		private readonly metaService: MetaService,
+		private readonly appLockService: AppLockService,
+		private readonly pollService: PollService,
+		private readonly noteCreateService: NoteCreateService,
+		private readonly apDbResolverService: ApDbResolverService,
+		private readonly apLoggerService: ApLoggerService,
 	) {
 		this.logger = this.apLoggerService.logger;
 	}
@@ -323,10 +323,10 @@ export class ApNoteService {
 		const unlock = await this.appLockService.getApLock(uri);
 
 		try {
-			//#region このサーバーに既に登録されていたらそれを返す
+			// #region このサーバーに既に登録されていたらそれを返す
 			const exist = await this.fetchNote(uri);
 			if (exist) return exist;
-			//#endregion
+			// #endregion
 
 			if (uri.startsWith(this.config.url)) {
 				throw new StatusError('cannot resolve local note', 400, 'cannot resolve local note');

@@ -26,7 +26,7 @@ import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
 export class NoteEntityService implements OnModuleInit {
 	private userEntityService!: UserEntityService;
 	private driveFileEntityService!: DriveFileEntityService;
-	private noteLoader = new DebounceLoader((id: string) => {
+	private readonly noteLoader = new DebounceLoader((id: string) => {
 		return this.notesRepository.findOneOrFail({
 			where: { id },
 			relations: ['user'],
@@ -34,33 +34,33 @@ export class NoteEntityService implements OnModuleInit {
 	});
 
 	constructor(
-		private moduleRef: ModuleRef,
+		private readonly moduleRef: ModuleRef,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
 		@Inject(DI.pollsRepository)
-		private pollsRepository: PollsRepository,
+		private readonly pollsRepository: PollsRepository,
 
 		@Inject(DI.pollVotesRepository)
-		private pollVotesRepository: PollVotesRepository,
+		private readonly pollVotesRepository: PollVotesRepository,
 
 		@Inject(DI.noteReactionsRepository)
-		private noteReactionsRepository: NoteReactionsRepository,
+		private readonly noteReactionsRepository: NoteReactionsRepository,
 
 		@Inject(DI.channelsRepository)
-		private channelsRepository: ChannelsRepository,
+		private readonly channelsRepository: ChannelsRepository,
 
-		private reactionDecodeService: ReactionDecodeService,
-		private legacyReactionConvertService: LegacyReactionConvertService,
-		private idService: IdService,
-		private customEmojiPopulateService: CustomEmojiPopulateService,
+		private readonly reactionDecodeService: ReactionDecodeService,
+		private readonly legacyReactionConvertService: LegacyReactionConvertService,
+		private readonly idService: IdService,
+		private readonly customEmojiPopulateService: CustomEmojiPopulateService,
 	) {}
 
 	onModuleInit() {
@@ -334,41 +334,51 @@ export class NoteEntityService implements OnModuleInit {
 			replyId: note.replyId,
 			renoteId: note.renoteId,
 			channelId: note.channelId ?? undefined,
-			channel: channel ? {
-				id: channel.id,
-				name: channel.name,
-				color: channel.color,
-				isSensitive: channel.isSensitive,
-				allowRenoteToExternal: channel.allowRenoteToExternal,
-				userId: channel.userId,
-			} : undefined,
+			channel: channel
+				? {
+						id: channel.id,
+						name: channel.name,
+						color: channel.color,
+						isSensitive: channel.isSensitive,
+						allowRenoteToExternal: channel.allowRenoteToExternal,
+						userId: channel.userId,
+					}
+				: undefined,
 			mentions: note.mentions.length > 0 ? note.mentions : undefined,
 			uri: note.uri ?? undefined,
 			url: note.url ?? undefined,
 
-			...(opts.detail ? {
-				clippedCount: note.clippedCount,
+			...(opts.detail
+				? {
+						clippedCount: note.clippedCount,
 
-				reply: note.replyId ? this.pack(note.reply ?? note.replyId, me, {
-					detail: false,
-					skipHide: opts.skipHide,
-					withReactionAndUserPairCache: opts.withReactionAndUserPairCache,
-					_hint_: options?._hint_,
-				}) : undefined,
+						reply: note.replyId
+							? this.pack(note.reply ?? note.replyId, me, {
+								detail: false,
+								skipHide: opts.skipHide,
+								withReactionAndUserPairCache: opts.withReactionAndUserPairCache,
+								_hint_: options?._hint_,
+							})
+							: undefined,
 
-				renote: note.renoteId ? this.pack(note.renote ?? note.renoteId, me, {
-					detail: true,
-					skipHide: opts.skipHide,
-					withReactionAndUserPairCache: opts.withReactionAndUserPairCache,
-					_hint_: options?._hint_,
-				}) : undefined,
+						renote: note.renoteId
+							? this.pack(note.renote ?? note.renoteId, me, {
+								detail: true,
+								skipHide: opts.skipHide,
+								withReactionAndUserPairCache: opts.withReactionAndUserPairCache,
+								_hint_: options?._hint_,
+							})
+							: undefined,
 
-				poll: note.hasPoll ? this.populatePoll(note, meId) : undefined,
+						poll: note.hasPoll ? this.populatePoll(note, meId) : undefined,
 
-				...(meId && Object.keys(note.reactions).length > 0 ? {
-					myReaction: this.populateMyReaction(note, meId, options?._hint_),
-				} : {}),
-			} : {}),
+						...(meId && Object.keys(note.reactions).length > 0
+							? {
+									myReaction: this.populateMyReaction(note, meId, options?._hint_),
+								}
+							: {}),
+					}
+				: {}),
 		});
 
 		if (!opts.skipHide) {
@@ -424,10 +434,12 @@ export class NoteEntityService implements OnModuleInit {
 				}
 			}
 
-			const myReactions = idsNeedFetchMyReaction.size > 0 ? await this.noteReactionsRepository.findBy({
-				userId: meId,
-				noteId: In(Array.from(idsNeedFetchMyReaction)),
-			}) : [];
+			const myReactions = idsNeedFetchMyReaction.size > 0
+				? await this.noteReactionsRepository.findBy({
+					userId: meId,
+					noteId: In(Array.from(idsNeedFetchMyReaction)),
+				})
+				: [];
 
 			for (const id of idsNeedFetchMyReaction) {
 				myReactionsMap.set(id, myReactions.find(reaction => reaction.noteId === id)?.reaction ?? null);

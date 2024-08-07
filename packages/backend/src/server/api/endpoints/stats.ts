@@ -61,13 +61,13 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
 		@Inject(DI.noteReactionsRepository)
-		private noteReactionsRepository: NoteReactionsRepository,
+		private readonly noteReactionsRepository: NoteReactionsRepository,
 
-		private notesChart: NotesChart,
-		private usersChart: UsersChart,
+		private readonly notesChart: NotesChart,
+		private readonly usersChart: UsersChart,
 	) {
 		super(meta, paramDef, async () => {
 			const notesChart = await this.notesChart.getChart('hour', 1, null);
@@ -80,11 +80,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			const [
 				reactionsCount,
-				//originalReactionsCount,
+				// originalReactionsCount,
 				instances,
 			] = await Promise.all([
 				this.noteReactionsRepository.count({ cache: 3600000 }), // 1 hour
-				//this.noteReactionsRepository.count({ where: { userHost: IsNull() }, cache: 3600000 }),
+				// this.noteReactionsRepository.count({ where: { userHost: IsNull() }, cache: 3600000 }),
 				this.instancesRepository.count({ cache: 3600000 }),
 			]);
 
@@ -94,7 +94,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				usersCount,
 				originalUsersCount,
 				reactionsCount,
-				//originalReactionsCount,
+				// originalReactionsCount,
 				instances,
 				driveUsageLocal: 0,
 				driveUsageRemote: 0,

@@ -11,7 +11,7 @@ import { IdService } from '@/core/IdService.js';
 @Injectable()
 export class SigninEntityService {
 	constructor(
-		private idService: IdService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(

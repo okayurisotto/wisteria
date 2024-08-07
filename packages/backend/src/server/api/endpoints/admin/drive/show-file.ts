@@ -177,32 +177,36 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private roleUserService: RoleUserService,
-		private idService: IdService,
+		private readonly roleUserService: RoleUserService,
+		private readonly idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const file = ps.fileId ? await this.driveFilesRepository.findOneBy({ id: ps.fileId }) : await this.driveFilesRepository.findOne({
-				where: [{
-					url: ps.url,
-				}, {
-					thumbnailUrl: ps.url,
-				}, {
-					webpublicUrl: ps.url,
-				}],
-			});
+			const file = ps.fileId
+				? await this.driveFilesRepository.findOneBy({ id: ps.fileId })
+				: await this.driveFilesRepository.findOne({
+					where: [{
+						url: ps.url,
+					}, {
+						thumbnailUrl: ps.url,
+					}, {
+						webpublicUrl: ps.url,
+					}],
+				});
 
 			if (file == null) {
 				throw new ApiError(meta.errors.noSuchFile);
 			}
 
-			const owner = file.userId ? await this.usersRepository.findOneByOrFail({
-				id: file.userId,
-			}) : null;
+			const owner = file.userId
+				? await this.usersRepository.findOneByOrFail({
+					id: file.userId,
+				})
+				: null;
 
 			const iAmModerator = await this.roleUserService.isModerator(me);
 			const ownerIsModerator = owner ? await this.roleUserService.isModerator(owner) : false;

@@ -14,14 +14,14 @@ import { envOption } from '@/env.js';
 
 @Injectable()
 export class RateLimiterService {
-	private logger: Logger;
-	private disabled = false;
+	private readonly logger: Logger;
+	private readonly disabled = false;
 
 	constructor(
 		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
+		private readonly redisClient: Redis.Redis,
 
-		private loggerService: LoggerService,
+		private readonly loggerService: LoggerService,
 	) {
 		this.logger = this.loggerService.getLogger('limiter');
 
@@ -45,7 +45,7 @@ export class RateLimiterService {
 
 				minIntervalLimiter.get((err, info) => {
 					if (err) {
-						return reject('ERR');
+						reject('ERR'); return;
 					}
 
 					this.logger.debug(`${actor} ${limitation.key} min remaining: ${info.remaining}`);
@@ -73,7 +73,7 @@ export class RateLimiterService {
 
 				limiter.get((err, info) => {
 					if (err) {
-						return reject('ERR');
+						reject('ERR'); return;
 					}
 
 					this.logger.debug(`${actor} ${limitation.key} max remaining: ${info.remaining}`);

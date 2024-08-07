@@ -22,24 +22,24 @@ import type { DbJobDataWithUser } from '../types.js';
 
 @Injectable()
 export class ExportClipsProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.pollsRepository)
-		private pollsRepository: PollsRepository,
+		private readonly pollsRepository: PollsRepository,
 
 		@Inject(DI.clipsRepository)
-		private clipsRepository: ClipsRepository,
+		private readonly clipsRepository: ClipsRepository,
 
 		@Inject(DI.clipNotesRepository)
-		private clipNotesRepository: ClipNotesRepository,
+		private readonly clipNotesRepository: ClipNotesRepository,
 
-		private driveService: DriveService,
-		private queueLoggerService: QueueLoggerService,
-		private idService: IdService,
+		private readonly driveService: DriveService,
+		private readonly queueLoggerService: QueueLoggerService,
+		private readonly idService: IdService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('export-clips');
 	}

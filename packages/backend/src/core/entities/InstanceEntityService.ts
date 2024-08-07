@@ -12,9 +12,9 @@ import { UtilityService } from '../UtilityService.js';
 @Injectable()
 export class InstanceEntityService {
 	constructor(
-		private metaService: MetaService,
+		private readonly metaService: MetaService,
 
-		private utilityService: UtilityService,
+		private readonly utilityService: UtilityService,
 	) {}
 
 	public async pack(

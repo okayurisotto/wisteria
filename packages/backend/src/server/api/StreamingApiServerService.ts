@@ -22,36 +22,36 @@ import type * as http from 'node:http';
 @Injectable()
 export class StreamingApiServerService {
 	#wss: WebSocket.WebSocketServer;
-	#connections = new Map<WebSocket.WebSocket, number>();
+	readonly #connections = new Map<WebSocket.WebSocket, number>();
 	#cleanConnectionsIntervalId: NodeJS.Timeout | null = null;
 
 	constructor(
 		@Inject(DI.redisForSub)
-		private redisForSub: Redis.Redis,
+		private readonly redisForSub: Redis.Redis,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.mutingsRepository)
-		private mutingsRepository: MutingsRepository,
+		private readonly mutingsRepository: MutingsRepository,
 
 		@Inject(DI.blockingsRepository)
-		private blockingsRepository: BlockingsRepository,
+		private readonly blockingsRepository: BlockingsRepository,
 
 		@Inject(DI.renoteMutingsRepository)
-		private renoteMutingsRepository: RenoteMutingsRepository,
+		private readonly renoteMutingsRepository: RenoteMutingsRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
 		@Inject(DI.channelFollowingsRepository)
-		private channelFollowingsRepository: ChannelFollowingsRepository,
+		private readonly channelFollowingsRepository: ChannelFollowingsRepository,
 
-		private channelsService: ChannelsService,
-		private noteReadService: NoteReadService,
-		private notificationService: NotificationService,
-		private authenticateService: AuthenticateService,
-		private usersService: UserService,
+		private readonly channelsService: ChannelsService,
+		private readonly noteReadService: NoteReadService,
+		private readonly notificationService: NotificationService,
+		private readonly authenticateService: AuthenticateService,
+		private readonly usersService: UserService,
 	) {}
 
 	public attach(server: http.Server): void {
@@ -152,9 +152,11 @@ export class StreamingApiServerService {
 
 			this.#connections.set(connection, Date.now());
 
-			const userUpdateIntervalId = user ? setInterval(() => {
-				this.usersService.updateLastActiveDate(user);
-			}, 1000 * 60 * 5) : null;
+			const userUpdateIntervalId = user
+				? setInterval(() => {
+					this.usersService.updateLastActiveDate(user);
+				}, 1000 * 60 * 5)
+				: null;
 			if (user) {
 				this.usersService.updateLastActiveDate(user);
 			}
@@ -192,7 +194,9 @@ export class StreamingApiServerService {
 			this.#cleanConnectionsIntervalId = null;
 		}
 		return new Promise((resolve) => {
-			this.#wss.close(() => resolve());
+			this.#wss.close(() => {
+				resolve();
+			});
 		});
 	}
 }

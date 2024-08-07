@@ -44,9 +44,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.antennasRepository)
-		private antennasRepository: AntennasRepository,
+		private readonly antennasRepository: AntennasRepository,
 
-		private antennaEntityService: AntennaEntityService,
+		private readonly antennaEntityService: AntennaEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Fetch the antenna

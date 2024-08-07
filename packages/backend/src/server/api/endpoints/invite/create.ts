@@ -46,11 +46,11 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.registrationTicketsRepository)
-		private registrationTicketsRepository: RegistrationTicketsRepository,
+		private readonly registrationTicketsRepository: RegistrationTicketsRepository,
 
-		private inviteCodeEntityService: InviteCodeEntityService,
-		private idService: IdService,
-		private roleUserService: RoleUserService,
+		private readonly inviteCodeEntityService: InviteCodeEntityService,
+		private readonly idService: IdService,
+		private readonly roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const policies = await this.roleUserService.getUserPolicies(me.id);

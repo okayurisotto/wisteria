@@ -196,7 +196,7 @@ export class MiNote {
 	@JoinColumn()
 	public channel: MiChannel | null;
 
-	//#region Denormalized fields
+	// #region Denormalized fields
 	@Index()
 	@Column('varchar', {
 		length: 128, nullable: true,
@@ -229,7 +229,7 @@ export class MiNote {
 		comment: '[Denormalized]',
 	})
 	public renoteUserHost: string | null;
-	//#endregion
+	// #endregion
 
 	constructor(data: Partial<MiNote>) {
 		if (data == null) return;

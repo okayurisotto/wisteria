@@ -7,14 +7,14 @@ import { Injectable } from '@nestjs/common';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 
 type CaptchaResponse = {
-	success: boolean;
+	'success': boolean;
 	'error-codes'?: string[];
 };
 
 @Injectable()
 export class CaptchaService {
 	constructor(
-		private httpRequestService: HttpRequestService,
+		private readonly httpRequestService: HttpRequestService,
 	) {}
 
 	private async getCaptchaResponse(url: string, secret: string, response: string): Promise<CaptchaResponse> {

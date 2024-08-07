@@ -14,10 +14,10 @@ import type { MiUser } from '@/models/User.js';
 export class AppEntityService {
 	constructor(
 		@Inject(DI.appsRepository)
-		private appsRepository: AppsRepository,
+		private readonly appsRepository: AppsRepository,
 
 		@Inject(DI.accessTokensRepository)
-		private accessTokensRepository: AccessTokensRepository,
+		private readonly accessTokensRepository: AccessTokensRepository,
 	) {}
 
 	public async pack(
@@ -43,12 +43,14 @@ export class AppEntityService {
 			callbackUrl: app.callbackUrl,
 			permission: app.permission,
 			...(opts.includeSecret ? { secret: app.secret } : {}),
-			...(me ? {
-				isAuthorized: await this.accessTokensRepository.countBy({
-					appId: app.id,
-					userId: me.id,
-				}).then(count => count > 0),
-			} : {}),
+			...(me
+				? {
+						isAuthorized: await this.accessTokensRepository.countBy({
+							appId: app.id,
+							userId: me.id,
+						}).then(count => count > 0),
+					}
+				: {}),
 		};
 	}
 }

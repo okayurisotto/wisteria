@@ -14,9 +14,9 @@ const parseEmojiStrRegexp = /^(\w+)(?:@([\w.-]+))?$/;
 export class CustomEmojiPopulateService {
 	constructor(
 		@Inject(DI.emojisRepository)
-		private emojisRepository: EmojisRepository,
+		private readonly emojisRepository: EmojisRepository,
 
-		private utilityService: UtilityService,
+		private readonly utilityService: UtilityService,
 	) {}
 
 	private normalizeHost(src: string | undefined, noteUserHost: string | null): string | null {

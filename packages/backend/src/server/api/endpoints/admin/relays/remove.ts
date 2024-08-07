@@ -26,10 +26,10 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private relayService: RelayService,
+		private readonly relayService: RelayService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			return await this.relayService.removeRelay(ps.inbox);
+			await this.relayService.removeRelay(ps.inbox);
 		});
 	}
 }

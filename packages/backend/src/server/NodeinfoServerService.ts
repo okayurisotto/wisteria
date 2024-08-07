@@ -22,12 +22,12 @@ const nodeinfo_homepage = 'https://misskey-hub.net';
 export class NodeinfoServerService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
-		private userEntityService: UserEntityService,
-		private metaService: MetaService,
-		private notesChart: NotesChart,
-		private usersChart: UsersChart,
+		private readonly userEntityService: UserEntityService,
+		private readonly metaService: MetaService,
+		private readonly notesChart: NotesChart,
+		private readonly usersChart: UsersChart,
 	) {}
 
 	public getLinks() {

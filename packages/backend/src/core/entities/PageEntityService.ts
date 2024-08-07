@@ -20,17 +20,17 @@ import { DriveFileEntityService } from './DriveFileEntityService.js';
 export class PageEntityService {
 	constructor(
 		@Inject(DI.pagesRepository)
-		private pagesRepository: PagesRepository,
+		private readonly pagesRepository: PagesRepository,
 
 		@Inject(DI.pageLikesRepository)
-		private pageLikesRepository: PageLikesRepository,
+		private readonly pageLikesRepository: PageLikesRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private userEntityService: UserEntityService,
-		private driveFileEntityService: DriveFileEntityService,
-		private idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly driveFileEntityService: DriveFileEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(

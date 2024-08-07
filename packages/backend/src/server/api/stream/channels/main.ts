@@ -15,7 +15,7 @@ class MainChannel extends Channel {
 	public static kind = 'read:account';
 
 	constructor(
-		private noteEntityService: NoteEntityService,
+		private readonly noteEntityService: NoteEntityService,
 
 		id: string,
 		connection: Channel['connection'],
@@ -68,7 +68,7 @@ export class MainChannelService implements MiChannelService<true> {
 	public readonly kind = MainChannel.kind;
 
 	constructor(
-		private noteEntityService: NoteEntityService,
+		private readonly noteEntityService: NoteEntityService,
 	) {}
 
 	public create(id: string, connection: Channel['connection']): MainChannel {

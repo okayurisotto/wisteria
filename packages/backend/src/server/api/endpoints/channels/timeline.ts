@@ -56,15 +56,15 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.channelsRepository)
-		private channelsRepository: ChannelsRepository,
+		private readonly channelsRepository: ChannelsRepository,
 
-		private idService: IdService,
-		private noteEntityService: NoteEntityService,
-		private queryService: QueryService,
-		private activeUsersChart: ActiveUsersChart,
+		private readonly idService: IdService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly queryService: QueryService,
+		private readonly activeUsersChart: ActiveUsersChart,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate) : null);
@@ -90,7 +90,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		limit: number;
 		channelId: string;
 	}, me: MiLocalUser | null) {
-		//#region fallback to database
+		// #region fallback to database
 		const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), ps.sinceId, ps.untilId)
 			.andWhere('note.channelId = :channelId', { channelId: ps.channelId })
 			.innerJoinAndSelect('note.user', 'user')
@@ -104,7 +104,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			this.queryService.generateMutedUserQuery(query, me);
 			this.queryService.generateBlockedUserQuery(query, me);
 		}
-		//#endregion
+		// #endregion
 
 		return await query.limit(ps.limit).getMany();
 	}

@@ -14,10 +14,10 @@ import { PushNotificationService } from '@/core/PushNotificationService.js';
 export class NotificationService {
 	constructor(
 		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
+		private readonly redisClient: Redis.Redis,
 
-		private globalEventService: GlobalEventService,
-		private pushNotificationService: PushNotificationService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly pushNotificationService: PushNotificationService,
 	) {}
 
 	public async readAllNotification(
@@ -38,7 +38,7 @@ export class NotificationService {
 		this.redisClient.set(`latestReadNotification:${userId}`, latestNotificationId);
 
 		if (force || latestReadNotificationId == null || (latestReadNotificationId < latestNotificationId)) {
-			return this.postReadAllNotifications(userId);
+			this.postReadAllNotifications(userId); return;
 		}
 	}
 

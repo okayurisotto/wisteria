@@ -75,11 +75,11 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.webhooksRepository)
-		private webhooksRepository: WebhooksRepository,
+		private readonly webhooksRepository: WebhooksRepository,
 
-		private idService: IdService,
-		private globalEventService: GlobalEventService,
-		private roleUserService: RoleUserService,
+		private readonly idService: IdService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const currentWebhooksCount = await this.webhooksRepository.countBy({

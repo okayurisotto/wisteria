@@ -31,8 +31,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private metaService: MetaService,
-		private globalEventService: GlobalEventService,
+		private readonly metaService: MetaService,
+		private readonly globalEventService: GlobalEventService,
 	) {
 		super(meta, paramDef, async (ps) => {
 			await this.metaService.update({ policies: ps.policies });

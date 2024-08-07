@@ -57,9 +57,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.authSessionsRepository)
-		private authSessionsRepository: AuthSessionsRepository,
+		private readonly authSessionsRepository: AuthSessionsRepository,
 
-		private authSessionEntityService: AuthSessionEntityService,
+		private readonly authSessionEntityService: AuthSessionEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Lookup session

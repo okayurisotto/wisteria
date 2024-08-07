@@ -14,10 +14,10 @@ import { UtilityService } from '@/core/UtilityService.js';
 export class FederatedInstanceService {
 	constructor(
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
-		private utilityService: UtilityService,
-		private idService: IdService,
+		private readonly utilityService: UtilityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async fetch(host: string): Promise<MiInstance> {

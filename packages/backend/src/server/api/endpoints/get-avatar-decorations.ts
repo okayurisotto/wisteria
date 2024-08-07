@@ -61,8 +61,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private avatarDecorationService: AvatarDecorationService,
-		private roleService: RoleService,
+		private readonly avatarDecorationService: AvatarDecorationService,
+		private readonly roleService: RoleService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const decorations = await this.avatarDecorationService.getAll();

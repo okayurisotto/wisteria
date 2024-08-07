@@ -27,12 +27,12 @@ export class HttpRequestService {
 	/**
 	 * Get http non-proxy agent
 	 */
-	private http: http.Agent;
+	private readonly http: http.Agent;
 
 	/**
 	 * Get https non-proxy agent
 	 */
-	private https: https.Agent;
+	private readonly https: https.Agent;
 
 	/**
 	 * Get http proxy or non-proxy agent
@@ -46,7 +46,7 @@ export class HttpRequestService {
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 	) {
 		const cache = new CacheableLookup({
 			maxTtl: 3600,	// 1hours
@@ -57,14 +57,18 @@ export class HttpRequestService {
 		this.http = new http.Agent({
 			keepAlive: true,
 			keepAliveMsecs: 30 * 1000,
-			lookup: (...args) => cache.lookup(...args),
+			lookup: (...args) => {
+				cache.lookup(...args);
+			},
 			localAddress: config.outgoingAddress,
 		});
 
 		this.https = new https.Agent({
 			keepAlive: true,
 			keepAliveMsecs: 30 * 1000,
-			lookup: (...args) => cache.lookup(...args),
+			lookup: (...args) => {
+				cache.lookup(...args);
+			},
 			localAddress: config.outgoingAddress,
 		});
 

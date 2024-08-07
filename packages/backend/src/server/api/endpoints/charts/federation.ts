@@ -31,7 +31,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private federationChart: FederationChart,
+		private readonly federationChart: FederationChart,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			return await this.federationChart.getChart(ps.span, ps.limit, ps.offset ? new Date(ps.offset) : null);

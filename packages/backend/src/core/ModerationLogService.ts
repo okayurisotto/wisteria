@@ -14,9 +14,9 @@ import { type ModerationLogPayloads, moderationLogTypes } from '@/types.js';
 export class ModerationLogService {
 	constructor(
 		@Inject(DI.moderationLogsRepository)
-		private moderationLogsRepository: ModerationLogsRepository,
+		private readonly moderationLogsRepository: ModerationLogsRepository,
 
-		private idService: IdService,
+		private readonly idService: IdService,
 	) {}
 
 	public async log<T extends typeof moderationLogTypes[number]>(moderator: { id: MiUser['id'] }, type: T, info?: ModerationLogPayloads[T]) {

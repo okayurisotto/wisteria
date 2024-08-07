@@ -56,7 +56,7 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.retentionAggregationsRepository)
-		private retentionAggregationsRepository: RetentionAggregationsRepository,
+		private readonly retentionAggregationsRepository: RetentionAggregationsRepository,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const records = await this.retentionAggregationsRepository.find({

@@ -43,16 +43,16 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.mutingsRepository)
-		private mutingsRepository: MutingsRepository,
+		private readonly mutingsRepository: MutingsRepository,
 
 		@Inject(DI.blockingsRepository)
-		private blockingsRepository: BlockingsRepository,
+		private readonly blockingsRepository: BlockingsRepository,
 
-		private noteEntityService: NoteEntityService,
-		private featuredService: FeaturedService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly featuredService: FeaturedService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const userIdsWhoBlockingMe = me ? await this.blockingsRepository.find({ where: { blockeeId: me.id }, select: ['blockerId'] }).then(xs => new Set(xs.map(x => x.blockerId))) : new Set<string>();
@@ -76,9 +76,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			const [
 				userIdsWhoMeMuting,
-			] = me ? await Promise.all([
-				this.mutingsRepository.find({ where: { muterId: me.id }, select: ['muteeId'] }).then(xs => new Set(xs.map(x => x.muteeId))),
-			]) : [new Set<string>()];
+			] = me
+				? await Promise.all([
+					this.mutingsRepository.find({ where: { muterId: me.id }, select: ['muteeId'] }).then(xs => new Set(xs.map(x => x.muteeId))),
+				])
+				: [new Set<string>()];
 
 			const query = this.notesRepository.createQueryBuilder('note')
 				.where('note.id IN (:...noteIds)', { noteIds: noteIds })

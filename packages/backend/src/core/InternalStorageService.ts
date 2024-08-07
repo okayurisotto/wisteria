@@ -14,7 +14,7 @@ import { INTERNAL_STORAGE_DIR } from '@/path.js';
 export class InternalStorageService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 	) {}
 
 	public resolvePath(key: string) {

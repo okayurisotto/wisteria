@@ -27,7 +27,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private reversiService: ReversiService,
+		private readonly reversiService: ReversiService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			if (ps.userId) {

@@ -46,10 +46,10 @@ export class MiUserListMembership {
 	})
 	public withReplies: boolean;
 
-	//#region Denormalized fields
+	// #region Denormalized fields
 	@Column({
 		...id(),
 	})
 	public userListUserId: MiUser['id'];
-	//#endregion
+	// #endregion
 }

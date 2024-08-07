@@ -22,14 +22,14 @@ export class UserListService {
 
 	constructor(
 		@Inject(DI.userListMembershipsRepository)
-		private userListMembershipsRepository: UserListMembershipsRepository,
+		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
-		private globalEventService: GlobalEventService,
-		private proxyAccountService: ProxyAccountService,
-		private queueService: QueueService,
-		private roleUserService: RoleUserService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly proxyAccountService: ProxyAccountService,
+		private readonly queueService: QueueService,
+		private readonly roleUserService: RoleUserService,
 	) {}
 
 	public async addMember(target: MiUser, list: MiUserList, me: MiUser) {

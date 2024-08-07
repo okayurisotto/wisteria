@@ -29,7 +29,7 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private announcementService: AnnouncementService,
+		private readonly announcementService: AnnouncementService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			await this.announcementService.read(me, ps.announcementId);

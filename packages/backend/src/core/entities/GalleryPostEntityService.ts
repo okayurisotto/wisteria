@@ -19,14 +19,14 @@ import { DriveFileEntityService } from './DriveFileEntityService.js';
 export class GalleryPostEntityService {
 	constructor(
 		@Inject(DI.galleryPostsRepository)
-		private galleryPostsRepository: GalleryPostsRepository,
+		private readonly galleryPostsRepository: GalleryPostsRepository,
 
 		@Inject(DI.galleryLikesRepository)
-		private galleryLikesRepository: GalleryLikesRepository,
+		private readonly galleryLikesRepository: GalleryLikesRepository,
 
-		private userEntityService: UserEntityService,
-		private driveFileEntityService: DriveFileEntityService,
-		private idService: IdService,
+		private readonly userEntityService: UserEntityService,
+		private readonly driveFileEntityService: DriveFileEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(

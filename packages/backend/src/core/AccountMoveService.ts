@@ -28,35 +28,35 @@ import { envOption } from '@/env.js';
 export class AccountMoveService {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
 		@Inject(DI.blockingsRepository)
-		private blockingsRepository: BlockingsRepository,
+		private readonly blockingsRepository: BlockingsRepository,
 
 		@Inject(DI.mutingsRepository)
-		private mutingsRepository: MutingsRepository,
+		private readonly mutingsRepository: MutingsRepository,
 
 		@Inject(DI.userListMembershipsRepository)
-		private userListMembershipsRepository: UserListMembershipsRepository,
+		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
-		private userEntityService: UserEntityService,
-		private idService: IdService,
-		private apRendererService: ApRendererService,
-		private apDeliverManagerService: ApDeliverManagerService,
-		private globalEventService: GlobalEventService,
-		private proxyAccountService: ProxyAccountService,
-		private perUserFollowingChart: PerUserFollowingChart,
-		private federatedInstanceService: FederatedInstanceService,
-		private instanceChart: InstanceChart,
-		private metaService: MetaService,
-		private relayService: RelayService,
-		private queueService: QueueService,
+		private readonly userEntityService: UserEntityService,
+		private readonly idService: IdService,
+		private readonly apRendererService: ApRendererService,
+		private readonly apDeliverManagerService: ApDeliverManagerService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly proxyAccountService: ProxyAccountService,
+		private readonly perUserFollowingChart: PerUserFollowingChart,
+		private readonly federatedInstanceService: FederatedInstanceService,
+		private readonly instanceChart: InstanceChart,
+		private readonly metaService: MetaService,
+		private readonly relayService: RelayService,
+		private readonly queueService: QueueService,
 	) {}
 
 	/**

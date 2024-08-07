@@ -57,9 +57,9 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private noteEntityService: NoteEntityService,
-		private searchService: SearchService,
-		private roleUserService: RoleUserService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly searchService: SearchService,
+		private readonly roleUserService: RoleUserService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const policies = await this.roleUserService.getUserPolicies(me ? me.id : null);

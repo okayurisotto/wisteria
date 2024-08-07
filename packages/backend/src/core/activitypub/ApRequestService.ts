@@ -68,9 +68,9 @@ export class ApRequestCreator {
 			url: u.href,
 			method: 'GET',
 			headers: this.#objectAssignWithLcKey({
-				'Accept': 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-				'Date': new Date().toUTCString(),
-				'Host': new URL(args.url).host,
+				Accept: 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+				Date: new Date().toUTCString(),
+				Host: new URL(args.url).host,
 			}, args.additionalHeaders),
 		};
 
@@ -134,10 +134,10 @@ export class ApRequestCreator {
 export class ApRequestService {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
-		private userKeypairService: UserKeypairService,
-		private httpRequestService: HttpRequestService,
+		private readonly userKeypairService: UserKeypairService,
+		private readonly httpRequestService: HttpRequestService,
 	) {}
 
 	public async signedPost(user: { id: MiUser['id'] }, url: string, object: unknown, digest?: string): Promise<void> {

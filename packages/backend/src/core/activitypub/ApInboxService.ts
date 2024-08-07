@@ -42,51 +42,51 @@ import { ReactionDeleteService } from '../ReactionDeleteService.js';
 
 @Injectable()
 export class ApInboxService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
 		@Inject(DI.abuseUserReportsRepository)
-		private abuseUserReportsRepository: AbuseUserReportsRepository,
+		private readonly abuseUserReportsRepository: AbuseUserReportsRepository,
 
 		@Inject(DI.followRequestsRepository)
-		private followRequestsRepository: FollowRequestsRepository,
+		private readonly followRequestsRepository: FollowRequestsRepository,
 
-		private userEntityService: UserEntityService,
-		private noteEntityService: NoteEntityService,
-		private utilityService: UtilityService,
-		private idService: IdService,
-		private metaService: MetaService,
-		private userFollowingService: UserFollowingService,
-		private apAudienceService: ApAudienceService,
-		private reactionCreateService: ReactionCreateService,
-		private reactionDeleteService: ReactionDeleteService,
-		private relayService: RelayService,
-		private notePiningService: NotePiningService,
-		private userBlockingBlockService: UserBlockingBlockService,
-		private userBlockingUnblockService: UserBlockingUnblockService,
-		private noteCreateService: NoteCreateService,
-		private noteDeleteService: NoteDeleteService,
-		private appLockService: AppLockService,
-		private apResolverService: ApResolverService,
-		private apDbResolverService: ApDbResolverService,
-		private apLoggerService: ApLoggerService,
-		private apNoteService: ApNoteService,
-		private apPersonService: ApPersonService,
-		private apQuestionService: ApQuestionService,
-		private queueService: QueueService,
-		private globalEventService: GlobalEventService,
+		private readonly userEntityService: UserEntityService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly utilityService: UtilityService,
+		private readonly idService: IdService,
+		private readonly metaService: MetaService,
+		private readonly userFollowingService: UserFollowingService,
+		private readonly apAudienceService: ApAudienceService,
+		private readonly reactionCreateService: ReactionCreateService,
+		private readonly reactionDeleteService: ReactionDeleteService,
+		private readonly relayService: RelayService,
+		private readonly notePiningService: NotePiningService,
+		private readonly userBlockingBlockService: UserBlockingBlockService,
+		private readonly userBlockingUnblockService: UserBlockingUnblockService,
+		private readonly noteCreateService: NoteCreateService,
+		private readonly noteDeleteService: NoteDeleteService,
+		private readonly appLockService: AppLockService,
+		private readonly apResolverService: ApResolverService,
+		private readonly apDbResolverService: ApDbResolverService,
+		private readonly apLoggerService: ApLoggerService,
+		private readonly apNoteService: ApNoteService,
+		private readonly apPersonService: ApPersonService,
+		private readonly apQuestionService: ApQuestionService,
+		private readonly queueService: QueueService,
+		private readonly globalEventService: GlobalEventService,
 	) {
 		this.logger = this.apLoggerService.logger;
 	}
@@ -136,9 +136,13 @@ export class ApInboxService {
 		} else if (isReject(activity)) {
 			await this.reject(actor, activity);
 		} else if (isAdd(activity)) {
-			await this.add(actor, activity).catch((err: unknown) => this.logger.error(err));
+			await this.add(actor, activity).catch((err: unknown) => {
+				this.logger.error(err);
+			});
 		} else if (isRemove(activity)) {
-			await this.remove(actor, activity).catch((err: unknown) => this.logger.error(err));
+			await this.remove(actor, activity).catch((err: unknown) => {
+				this.logger.error(err);
+			});
 		} else if (isAnnounce(activity)) {
 			await this.announce(actor, activity);
 		} else if (isLike(activity)) {
@@ -726,7 +730,9 @@ export class ApInboxService {
 			await this.apPersonService.updatePerson(actor.uri, resolver, object);
 			return 'ok: Person updated';
 		} else if (getApType(object) === 'Question') {
-			await this.apQuestionService.updateQuestion(object, resolver).catch((err: unknown) => console.error(err));
+			await this.apQuestionService.updateQuestion(object, resolver).catch((err: unknown) => {
+				console.error(err);
+			});
 			return 'ok: Question updated';
 		} else {
 			return `skip: Unknown type: ${getApType(object)}`;

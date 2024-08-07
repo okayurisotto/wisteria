@@ -17,14 +17,14 @@ class RoleTimelineChannel extends Channel {
 	private roleId: string;
 
 	constructor(
-		private noteEntityService: NoteEntityService,
-		private roleservice: RoleService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly roleservice: RoleService,
 
 		id: string,
 		connection: Channel['connection'],
 	) {
 		super(id, connection);
-		//this.onNote = this.onNote.bind(this);
+		// this.onNote = this.onNote.bind(this);
 	}
 
 	public async init(params: any) {
@@ -33,7 +33,7 @@ class RoleTimelineChannel extends Channel {
 		this.subscriber.on(`roleTimelineStream:${this.roleId}`, this.onEvent);
 	}
 
-	private onEvent = async (data: GlobalEvents['roleTimeline']['payload']) => {
+	private readonly onEvent = async (data: GlobalEvents['roleTimeline']['payload']) => {
 		if (data.type === 'note') {
 			const note = data.body;
 
@@ -68,8 +68,8 @@ export class RoleTimelineChannelService implements MiChannelService<false> {
 	public readonly kind = RoleTimelineChannel.kind;
 
 	constructor(
-		private noteEntityService: NoteEntityService,
-		private roleservice: RoleService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly roleservice: RoleService,
 	) {}
 
 	public create(id: string, connection: Channel['connection']): RoleTimelineChannel {

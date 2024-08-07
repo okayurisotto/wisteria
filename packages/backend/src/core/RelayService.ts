@@ -21,15 +21,15 @@ const ACTOR_USERNAME = 'relay.actor';
 export class RelayService {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.relaysRepository)
-		private relaysRepository: RelaysRepository,
+		private readonly relaysRepository: RelaysRepository,
 
-		private idService: IdService,
-		private queueService: QueueService,
-		private createSystemUserService: CreateSystemUserService,
-		private apRendererService: ApRendererService,
+		private readonly idService: IdService,
+		private readonly queueService: QueueService,
+		private readonly createSystemUserService: CreateSystemUserService,
+		private readonly apRendererService: ApRendererService,
 	) {}
 
 	private async getRelayActor(): Promise<MiLocalUser> {

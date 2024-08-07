@@ -211,22 +211,22 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.blockingsRepository)
-		private blockingsRepository: BlockingsRepository,
+		private readonly blockingsRepository: BlockingsRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
 		@Inject(DI.channelsRepository)
-		private channelsRepository: ChannelsRepository,
+		private readonly channelsRepository: ChannelsRepository,
 
-		private noteEntityService: NoteEntityService,
-		private noteCreateService: NoteCreateService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly noteCreateService: NoteCreateService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			let visibleUsers: MiUser[] = [];
@@ -350,11 +350,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				const note = await this.noteCreateService.create(me, {
 					createdAt: new Date(),
 					files: files,
-					poll: ps.poll ? {
-						choices: ps.poll.choices,
-						multiple: ps.poll.multiple ?? false,
-						expiresAt: ps.poll.expiresAt ? new Date(ps.poll.expiresAt) : null,
-					} : undefined,
+					poll: ps.poll
+						? {
+								choices: ps.poll.choices,
+								multiple: ps.poll.multiple ?? false,
+								expiresAt: ps.poll.expiresAt ? new Date(ps.poll.expiresAt) : null,
+							}
+						: undefined,
 					text: ps.text ?? undefined,
 					reply,
 					renote,

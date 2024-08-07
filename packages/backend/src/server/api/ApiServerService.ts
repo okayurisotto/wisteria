@@ -20,21 +20,21 @@ import { bodyLimit } from 'hono/body-limit';
 @Injectable()
 export class ApiServerService {
 	constructor(
-		private moduleRef: ModuleRef,
+		private readonly moduleRef: ModuleRef,
 
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.instancesRepository)
-		private instancesRepository: InstancesRepository,
+		private readonly instancesRepository: InstancesRepository,
 
 		@Inject(DI.accessTokensRepository)
-		private accessTokensRepository: AccessTokensRepository,
+		private readonly accessTokensRepository: AccessTokensRepository,
 
-		private userEntityService: UserEntityService,
-		private apiCallService: ApiCallService,
-		private signupApiService: SignupApiService,
-		private signinApiService: SigninApiService,
+		private readonly userEntityService: UserEntityService,
+		private readonly apiCallService: ApiCallService,
+		private readonly signupApiService: SignupApiService,
+		private readonly signinApiService: SigninApiService,
 	) {}
 
 	public createServer(): Hono {

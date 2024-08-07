@@ -36,7 +36,7 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		private readonly db: DataSource,
 	) {
 		super(meta, paramDef, async () => {
 			const stats = await this.db.query('SELECT * FROM pg_indexes;').then((recs) => {

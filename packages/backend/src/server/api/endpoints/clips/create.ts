@@ -47,8 +47,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private clipEntityService: ClipEntityService,
-		private clipService: ClipService,
+		private readonly clipEntityService: ClipEntityService,
+		private readonly clipService: ClipService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			let clip: MiClip;

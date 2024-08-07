@@ -53,11 +53,11 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFoldersRepository)
-		private driveFoldersRepository: DriveFoldersRepository,
+		private readonly driveFoldersRepository: DriveFoldersRepository,
 
-		private driveFolderEntityService: DriveFolderEntityService,
-		private idService: IdService,
-		private globalEventService: GlobalEventService,
+		private readonly driveFolderEntityService: DriveFolderEntityService,
+		private readonly idService: IdService,
+		private readonly globalEventService: GlobalEventService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// If the parent folder is specified

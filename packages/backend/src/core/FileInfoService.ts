@@ -48,7 +48,7 @@ const TYPE_SVG = {
 @Injectable()
 export class FileInfoService {
 	constructor(
-		private aiService: AiService,
+		private readonly aiService: AiService,
 	) {}
 
 	/**
@@ -402,14 +402,16 @@ export class FileInfoService {
 				.ensureAlpha()
 				.resize(64, 64, { fit: 'inside' })
 				.toBuffer((err, buffer, info) => {
-					if (err) return reject(err);
+					if (err) {
+						reject(err); return;
+					}
 
 					let hash;
 
 					try {
 						hash = encode(new Uint8ClampedArray(buffer), info.width, info.height, 5, 5);
 					} catch (e) {
-						return reject(e);
+						reject(e); return;
 					}
 
 					resolve(hash);

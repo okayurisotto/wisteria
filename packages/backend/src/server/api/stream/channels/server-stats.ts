@@ -18,7 +18,7 @@ class ServerStatsChannel extends Channel {
 		ev.addListener('serverStats', this.onStats);
 	}
 
-	private onStats = (stats: any) => {
+	private readonly onStats = (stats: any) => {
 		this.send('stats', stats);
 	};
 

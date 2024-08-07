@@ -35,7 +35,7 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const exist = await this.driveFilesRepository.exists({

@@ -21,14 +21,14 @@ export const initialize = async () => {
 	const coreLogger = new Logger('core', 'cyan');
 	const bootLogger = coreLogger.createSubLogger('boot', 'magenta');
 
-	//#region Boot Message
+	// #region Boot Message
 	{
 		bootLogger.info('Welcome to Wisteria!');
 		bootLogger.info(`Wisteria v${meta.version}`, null, true);
 	}
-	//#endregion
+	// #endregion
 
-	//#region NODE_ENV Log
+	// #region NODE_ENV Log
 	{
 		const envLogger = bootLogger.createSubLogger('env');
 
@@ -45,9 +45,9 @@ export const initialize = async () => {
 			envLogger.warn('DO NOT USE FOR PRODUCTION PURPOSE!', null, true);
 		}
 	}
-	//#endregion
+	// #endregion
 
-	//#region Machine Information Log
+	// #region Machine Information Log
 	{
 		const machineLogger = bootLogger.createSubLogger('machine');
 
@@ -65,16 +65,16 @@ export const initialize = async () => {
 			].join(' '),
 		);
 	}
-	//#endregion
+	// #endregion
 
-	//#region Node.js Version Log
+	// #region Node.js Version Log
 	{
 		const nodejsLogger = bootLogger.createSubLogger('nodejs');
 		nodejsLogger.info(`Version ${process.version} detected.`);
 	}
-	//#endregion
+	// #endregion
 
-	//#region PID File Creation
+	// #region PID File Creation
 	{
 		const configLogger = bootLogger.createSubLogger('config');
 
@@ -100,7 +100,7 @@ export const initialize = async () => {
 			await fs.writeFile(config.pidFile, process.pid.toString());
 		}
 	}
-	//#endregion
+	// #endregion
 
 	bootLogger.succ('Wisteria initialized');
 

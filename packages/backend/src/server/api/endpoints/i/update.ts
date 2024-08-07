@@ -220,32 +220,32 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
-		private userProfilesRepository: UserProfilesRepository,
+		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
 		@Inject(DI.pagesRepository)
-		private pagesRepository: PagesRepository,
+		private readonly pagesRepository: PagesRepository,
 
-		private userEntityService: UserEntityService,
-		private driveFileEntityService: DriveFileEntityService,
-		private globalEventService: GlobalEventService,
-		private userFollowingService: UserFollowingService,
-		private accountUpdateService: AccountUpdateService,
-		private remoteUserResolveService: RemoteUserResolveService,
-		private apiLoggerService: ApiLoggerService,
-		private hashtagService: HashtagService,
-		private roleService: RoleService,
-		private roleUserService: RoleUserService,
-		private httpRequestService: HttpRequestService,
-		private avatarDecorationService: AvatarDecorationService,
+		private readonly userEntityService: UserEntityService,
+		private readonly driveFileEntityService: DriveFileEntityService,
+		private readonly globalEventService: GlobalEventService,
+		private readonly userFollowingService: UserFollowingService,
+		private readonly accountUpdateService: AccountUpdateService,
+		private readonly remoteUserResolveService: RemoteUserResolveService,
+		private readonly apiLoggerService: ApiLoggerService,
+		private readonly hashtagService: HashtagService,
+		private readonly roleService: RoleService,
+		private readonly roleUserService: RoleUserService,
+		private readonly httpRequestService: HttpRequestService,
+		private readonly avatarDecorationService: AvatarDecorationService,
 	) {
 		super(meta, paramDef, async (ps, _user, token) => {
 			const user = await this.usersRepository.findOneByOrFail({ id: _user.id }) as MiLocalUser;
@@ -421,7 +421,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				updates.alsoKnownAs = newAlsoKnownAs.size > 0 ? Array.from(newAlsoKnownAs) : null;
 			}
 
-			//#region emojis/tags
+			// #region emojis/tags
 
 			let emojis = [] as string[];
 			let tags = [] as string[];
@@ -455,7 +455,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			// ハッシュタグ更新
 			this.hashtagService.updateUsertags(user, tags);
-			//#endregion
+			// #endregion
 
 			if (Object.keys(updates).length > 0) await this.usersRepository.update(user.id, updates);
 

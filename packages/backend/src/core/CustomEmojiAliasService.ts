@@ -15,10 +15,10 @@ import type { EmojisRepository } from '@/models/_.js';
 export class CustomEmojiAliasService {
 	constructor(
 		@Inject(DI.emojisRepository)
-		private emojisRepository: EmojisRepository,
+		private readonly emojisRepository: EmojisRepository,
 
-		private emojiEntityService: EmojiEntityService,
-		private globalEventService: GlobalEventService,
+		private readonly emojiEntityService: EmojiEntityService,
+		private readonly globalEventService: GlobalEventService,
 	) {}
 
 	public async addAliasesBulk(ids: MiEmoji['id'][], aliases: string[]) {

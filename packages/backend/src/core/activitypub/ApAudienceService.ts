@@ -25,7 +25,7 @@ type GroupedAudience = Record<'public' | 'followers' | 'other', string[]>;
 @Injectable()
 export class ApAudienceService {
 	constructor(
-		private apPersonService: ApPersonService,
+		private readonly apPersonService: ApPersonService,
 	) {}
 
 	public async parseAudience(actor: MiRemoteUser, to?: ApObject, cc?: ApObject, resolver?: Resolver): Promise<AudienceInfo> {

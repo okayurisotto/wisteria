@@ -49,7 +49,7 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		private readonly db: DataSource,
 	) {
 		super(meta, paramDef, async () => {
 			const sizes = await this.db.query(`

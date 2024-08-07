@@ -32,9 +32,9 @@ const isDirect = (recipe: IRecipe): recipe is IDirectRecipe =>
 	recipe.type === 'Direct';
 
 class DeliverManager {
-	private actor: ThinUser;
-	private activity: IActivity | null;
-	private recipes: IRecipe[] = [];
+	private readonly actor: ThinUser;
+	private readonly activity: IActivity | null;
+	private readonly recipes: IRecipe[] = [];
 
 	/**
 	 * Constructor
@@ -45,8 +45,8 @@ class DeliverManager {
 	 * @param activity Activity to deliver
 	 */
 	constructor(
-		private followingsRepository: FollowingsRepository,
-		private queueService: QueueService,
+		private readonly followingsRepository: FollowingsRepository,
+		private readonly queueService: QueueService,
 
 		actor: { id: MiUser['id']; host: null },
 		activity: IActivity | null,
@@ -144,9 +144,9 @@ class DeliverManager {
 export class ApDeliverManagerService {
 	constructor(
 		@Inject(DI.followingsRepository)
-		private followingsRepository: FollowingsRepository,
+		private readonly followingsRepository: FollowingsRepository,
 
-		private queueService: QueueService,
+		private readonly queueService: QueueService,
 	) {}
 
 	/**

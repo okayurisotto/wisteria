@@ -12,14 +12,14 @@ import { QueueLoggerService } from '../QueueLoggerService.js';
 
 @Injectable()
 export class CheckExpiredMutingsProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.mutingsRepository)
-		private mutingsRepository: MutingsRepository,
+		private readonly mutingsRepository: MutingsRepository,
 
-		private userMutingService: UserMutingService,
-		private queueLoggerService: QueueLoggerService,
+		private readonly userMutingService: UserMutingService,
+		private readonly queueLoggerService: QueueLoggerService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('check-expired-mutings');
 	}

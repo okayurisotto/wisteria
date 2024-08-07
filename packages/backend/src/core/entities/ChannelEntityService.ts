@@ -19,23 +19,23 @@ import { In } from 'typeorm';
 export class ChannelEntityService {
 	constructor(
 		@Inject(DI.channelsRepository)
-		private channelsRepository: ChannelsRepository,
+		private readonly channelsRepository: ChannelsRepository,
 
 		@Inject(DI.channelFollowingsRepository)
-		private channelFollowingsRepository: ChannelFollowingsRepository,
+		private readonly channelFollowingsRepository: ChannelFollowingsRepository,
 
 		@Inject(DI.channelFavoritesRepository)
-		private channelFavoritesRepository: ChannelFavoritesRepository,
+		private readonly channelFavoritesRepository: ChannelFavoritesRepository,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private noteEntityService: NoteEntityService,
-		private driveFileEntityService: DriveFileEntityService,
-		private idService: IdService,
+		private readonly noteEntityService: NoteEntityService,
+		private readonly driveFileEntityService: DriveFileEntityService,
+		private readonly idService: IdService,
 	) {}
 
 	public async pack(
@@ -48,25 +48,31 @@ export class ChannelEntityService {
 
 		const banner = channel.bannerId ? await this.driveFilesRepository.findOneBy({ id: channel.bannerId }) : null;
 
-		const isFollowing = meId ? await this.channelFollowingsRepository.exists({
-			where: {
-				followerId: meId,
-				followeeId: channel.id,
-			},
-		}) : false;
+		const isFollowing = meId
+			? await this.channelFollowingsRepository.exists({
+				where: {
+					followerId: meId,
+					followeeId: channel.id,
+				},
+			})
+			: false;
 
-		const isFavorited = meId ? await this.channelFavoritesRepository.exists({
-			where: {
-				userId: meId,
-				channelId: channel.id,
-			},
-		}) : false;
+		const isFavorited = meId
+			? await this.channelFavoritesRepository.exists({
+				where: {
+					userId: meId,
+					channelId: channel.id,
+				},
+			})
+			: false;
 
-		const pinnedNotes = channel.pinnedNoteIds.length > 0 ? await this.notesRepository.find({
-			where: {
-				id: In(channel.pinnedNoteIds),
-			},
-		}) : [];
+		const pinnedNotes = channel.pinnedNoteIds.length > 0
+			? await this.notesRepository.find({
+				where: {
+					id: In(channel.pinnedNoteIds),
+				},
+			})
+			: [];
 
 		return {
 			id: channel.id,
@@ -90,9 +96,11 @@ export class ChannelEntityService {
 				hasUnreadNote: false, // 後方互換性のため
 			} : {}),
 
-			...(detailed ? {
-				pinnedNotes: (await this.noteEntityService.packMany(pinnedNotes, me)).sort((a, b) => channel.pinnedNoteIds.indexOf(a.id) - channel.pinnedNoteIds.indexOf(b.id)),
-			} : {}),
+			...(detailed
+				? {
+						pinnedNotes: (await this.noteEntityService.packMany(pinnedNotes, me)).sort((a, b) => channel.pinnedNoteIds.indexOf(a.id) - channel.pinnedNoteIds.indexOf(b.id)),
+					}
+				: {}),
 		};
 	}
 }

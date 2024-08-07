@@ -57,17 +57,17 @@ export const paramDef = {
 @Injectable() export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFilesRepository)
-		private driveFilesRepository: DriveFilesRepository,
+		private readonly driveFilesRepository: DriveFilesRepository,
 
 		@Inject(DI.antennasRepository)
-		private antennasRepository: AntennasRepository,
+		private readonly antennasRepository: AntennasRepository,
 
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private roleUserService: RoleUserService,
-		private queueService: QueueService,
-		private downloadService: DownloadService,
+		private readonly roleUserService: RoleUserService,
+		private readonly queueService: QueueService,
+		private readonly downloadService: DownloadService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const userExist = await this.usersRepository.exists({ where: { id: me.id } });

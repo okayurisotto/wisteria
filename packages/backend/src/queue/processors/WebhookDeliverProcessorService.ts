@@ -16,17 +16,17 @@ import type { WebhookDeliverJobData } from '../types.js';
 
 @Injectable()
 export class WebhookDeliverProcessorService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
 		@Inject(DI.webhooksRepository)
-		private webhooksRepository: WebhooksRepository,
+		private readonly webhooksRepository: WebhooksRepository,
 
-		private httpRequestService: HttpRequestService,
-		private queueLoggerService: QueueLoggerService,
+		private readonly httpRequestService: HttpRequestService,
+		private readonly queueLoggerService: QueueLoggerService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('webhook');
 	}

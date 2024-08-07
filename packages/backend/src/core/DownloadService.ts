@@ -22,14 +22,14 @@ import { envOption } from '@/env.js';
 
 @Injectable()
 export class DownloadService {
-	private logger: Logger;
+	private readonly logger: Logger;
 
 	constructor(
 		@Inject(DI.config)
-		private config: Config,
+		private readonly config: Config,
 
-		private httpRequestService: HttpRequestService,
-		private loggerService: LoggerService,
+		private readonly httpRequestService: HttpRequestService,
+		private readonly loggerService: LoggerService,
 	) {
 		this.logger = this.loggerService.getLogger('download');
 	}

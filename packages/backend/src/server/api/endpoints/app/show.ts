@@ -40,9 +40,9 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.appsRepository)
-		private appsRepository: AppsRepository,
+		private readonly appsRepository: AppsRepository,
 
-		private appEntityService: AppEntityService,
+		private readonly appEntityService: AppEntityService,
 	) {
 		super(meta, paramDef, async (ps, user, token) => {
 			const isSecure = user != null && token == null;

@@ -16,12 +16,12 @@ import { UserEntityService } from '@/core/entities/UserEntityService.js';
 export class AccountUpdateService {
 	constructor(
 		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 
-		private userEntityService: UserEntityService,
-		private apRendererService: ApRendererService,
-		private apDeliverManagerService: ApDeliverManagerService,
-		private relayService: RelayService,
+		private readonly userEntityService: UserEntityService,
+		private readonly apRendererService: ApRendererService,
+		private readonly apDeliverManagerService: ApDeliverManagerService,
+		private readonly relayService: RelayService,
 	) {}
 
 	public async publishToFollowers(userId: MiUser['id']) {

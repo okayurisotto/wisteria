@@ -62,26 +62,26 @@ function compileQuery(q: Q): string {
 @Injectable()
 export class SearchService {
 	private readonly meilisearchIndexScope: 'local' | 'global' | string[] = 'local';
-	private meilisearchNoteIndex: Index | null = null;
+	private readonly meilisearchNoteIndex: Index | null = null;
 
 	constructor(
 		@Inject(DI.config)
 		config: Config,
 
 		@Inject(DI.meilisearch)
-		private meilisearch: MeiliSearch | null,
+		private readonly meilisearch: MeiliSearch | null,
 
 		@Inject(DI.notesRepository)
-		private notesRepository: NotesRepository,
+		private readonly notesRepository: NotesRepository,
 
 		@Inject(DI.mutingsRepository)
-		private mutingsRepository: MutingsRepository,
+		private readonly mutingsRepository: MutingsRepository,
 
 		@Inject(DI.blockingsRepository)
-		private blockingsRepository: BlockingsRepository,
+		private readonly blockingsRepository: BlockingsRepository,
 
-		private queryService: QueryService,
-		private idService: IdService,
+		private readonly queryService: QueryService,
+		private readonly idService: IdService,
 	) {
 		if (meilisearch) {
 			this.meilisearchNoteIndex = meilisearch.index(`${config.meilisearch!.index}---notes`);

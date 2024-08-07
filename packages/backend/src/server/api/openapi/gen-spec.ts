@@ -14,8 +14,8 @@ export function genOpenapiSpec(config: Config, includeSelfRef = false) {
 		openapi: '3.1.0',
 
 		info: {
-			version: config.version,
-			title: 'Wisteria API',
+			'version': config.version,
+			'title': 'Wisteria API',
 			'x-logo': { url: '/static-assets/api-doc.png' },
 		},
 
@@ -101,45 +101,55 @@ export function genOpenapiSpec(config: Config, includeSelfRef = false) {
 				description: 'Source code',
 				url: `https://github.com/misskey-dev/misskey/blob/develop/packages/backend/src/server/api/endpoints/${endpoint.name}.ts`,
 			},
-			...(endpoint.meta.tags ? {
-				tags: [endpoint.meta.tags[0]],
-			} : {}),
-			...(endpoint.meta.requireCredential ? {
-				security: [{
-					bearerAuth: [],
-				}],
-			} : {}),
-			...(hasBody ? {
-				requestBody: {
-					required: true,
-					content: {
-						[requestType]: {
-							schema,
-						},
-					},
-				},
-			} : {}),
-			responses: {
-				...(endpoint.meta.res ? {
-					'200': {
-						description: 'OK (with results)',
-						content: {
-							'application/json': {
-								schema: resSchema,
+			...(endpoint.meta.tags
+				? {
+						tags: [endpoint.meta.tags[0]],
+					}
+				: {}),
+			...(endpoint.meta.requireCredential
+				? {
+						security: [{
+							bearerAuth: [],
+						}],
+					}
+				: {}),
+			...(hasBody
+				? {
+						requestBody: {
+							required: true,
+							content: {
+								[requestType]: {
+									schema,
+								},
 							},
 						},
-					},
-				} : {
-					'204': {
-						description: 'OK (without any results)',
-					},
-				}),
-				...(endpoint.meta.res?.optional === true || endpoint.meta.res?.nullable === true ? {
-					'204': {
-						description: 'OK (without any results)',
-					},
-				} : {}),
-				'400': {
+					}
+				: {}),
+			responses: {
+				...(endpoint.meta.res
+					? {
+							200: {
+								description: 'OK (with results)',
+								content: {
+									'application/json': {
+										schema: resSchema,
+									},
+								},
+							},
+						}
+					: {
+							204: {
+								description: 'OK (without any results)',
+							},
+						}),
+				...(endpoint.meta.res?.optional === true || endpoint.meta.res?.nullable === true
+					? {
+							204: {
+								description: 'OK (without any results)',
+							},
+						}
+					: {}),
+				400: {
 					description: 'Client error',
 					content: {
 						'application/json': {
@@ -150,7 +160,7 @@ export function genOpenapiSpec(config: Config, includeSelfRef = false) {
 						},
 					},
 				},
-				'401': {
+				401: {
 					description: 'Authentication error',
 					content: {
 						'application/json': {
@@ -161,7 +171,7 @@ export function genOpenapiSpec(config: Config, includeSelfRef = false) {
 						},
 					},
 				},
-				'403': {
+				403: {
 					description: 'Forbidden error',
 					content: {
 						'application/json': {
@@ -172,7 +182,7 @@ export function genOpenapiSpec(config: Config, includeSelfRef = false) {
 						},
 					},
 				},
-				'418': {
+				418: {
 					description: 'I\'m Ai',
 					content: {
 						'application/json': {
@@ -183,20 +193,22 @@ export function genOpenapiSpec(config: Config, includeSelfRef = false) {
 						},
 					},
 				},
-				...(endpoint.meta.limit ? {
-					'429': {
-						description: 'To many requests',
-						content: {
-							'application/json': {
-								schema: {
-									$ref: '#/components/schemas/Error',
+				...(endpoint.meta.limit
+					? {
+							429: {
+								description: 'To many requests',
+								content: {
+									'application/json': {
+										schema: {
+											$ref: '#/components/schemas/Error',
+										},
+										examples: basicErrors['429'],
+									},
 								},
-								examples: basicErrors['429'],
 							},
-						},
-					},
-				} : {}),
-				'500': {
+						}
+					: {}),
+				500: {
 					description: 'Internal server error',
 					content: {
 						'application/json': {
@@ -211,9 +223,11 @@ export function genOpenapiSpec(config: Config, includeSelfRef = false) {
 		};
 
 		spec.paths['/' + endpoint.name] = {
-			...(endpoint.meta.allowGet ? {
-				get: info,
-			} : {}),
+			...(endpoint.meta.allowGet
+				? {
+						get: info,
+					}
+				: {}),
 			post: info,
 		};
 	}
