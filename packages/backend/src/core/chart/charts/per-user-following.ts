@@ -22,14 +22,14 @@ import type { KVs } from '../core.js';
 export default class PerUserFollowingChart extends Chart<typeof schema> {
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		db: DataSource,
 
 		@Inject(DI.followingsRepository)
 		private followingsRepository: FollowingsRepository,
 
-		private appLockService: AppLockService,
+		appLockService: AppLockService,
 		private userEntityService: UserEntityService,
-		private chartLoggerService: ChartLoggerService,
+		chartLoggerService: ChartLoggerService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);
 	}

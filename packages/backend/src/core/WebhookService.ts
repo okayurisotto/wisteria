@@ -23,7 +23,6 @@ export class WebhookService implements OnApplicationShutdown {
 		@Inject(DI.webhooksRepository)
 		private webhooksRepository: WebhooksRepository,
 	) {
-		//this.onMessage = this.onMessage.bind(this);
 		this.redisForSub.on('message', this.onMessage);
 	}
 

@@ -23,7 +23,7 @@ import type { KVs } from '../core.js';
 export default class InstanceChart extends Chart<typeof schema> {
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		db: DataSource,
 
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
@@ -38,8 +38,8 @@ export default class InstanceChart extends Chart<typeof schema> {
 		private followingsRepository: FollowingsRepository,
 
 		private utilityService: UtilityService,
-		private appLockService: AppLockService,
-		private chartLoggerService: ChartLoggerService,
+		appLockService: AppLockService,
+		chartLoggerService: ChartLoggerService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);
 	}

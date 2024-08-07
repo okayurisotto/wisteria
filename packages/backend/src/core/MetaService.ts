@@ -7,7 +7,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import { MiMeta } from '@/models/Meta.js';
-import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
 
 @Injectable()
@@ -17,7 +16,6 @@ export class MetaService {
 		private db: DataSource,
 
 		private featuredService: FeaturedService,
-		private globalEventService: GlobalEventService,
 	) {}
 
 	public async fetch(): Promise<MiMeta> {

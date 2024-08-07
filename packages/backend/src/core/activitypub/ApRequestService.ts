@@ -11,8 +11,6 @@ import type { Config } from '@/config.js';
 import type { MiUser } from '@/models/User.js';
 import { UserKeypairService } from '@/core/UserKeypairService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
-import { LoggerService } from '@/core/LoggerService.js';
-import type { Logger } from '@/logger.js';
 import { validateContentTypeSetAsActivityPub } from '@/core/activitypub/misc/validator.js';
 
 type Request = {
@@ -134,17 +132,13 @@ export class ApRequestCreator {
 
 @Injectable()
 export class ApRequestService {
-	private logger: Logger;
-
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
 
 		private userKeypairService: UserKeypairService,
 		private httpRequestService: HttpRequestService,
-		private loggerService: LoggerService,
 	) {
-		this.logger = this.loggerService?.getLogger('ap-request'); // なぜか TypeError: Cannot read properties of undefined (reading 'getLogger') と言われる
 	}
 
 	public async signedPost(user: { id: MiUser['id'] }, url: string, object: unknown, digest?: string): Promise<void> {

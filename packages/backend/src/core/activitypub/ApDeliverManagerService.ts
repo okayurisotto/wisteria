@@ -9,7 +9,6 @@ import { DI } from '@/di-symbols.js';
 import type { FollowingsRepository } from '@/models/_.js';
 import type { MiLocalUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import { QueueService } from '@/core/QueueService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import type { IActivity } from '@/core/activitypub/type.js';
 import type { ThinUser } from '@/queue/types.js';
 
@@ -46,7 +45,6 @@ class DeliverManager {
 	 * @param activity Activity to deliver
 	 */
 	constructor(
-		private userEntityService: UserEntityService,
 		private followingsRepository: FollowingsRepository,
 		private queueService: QueueService,
 
@@ -148,7 +146,6 @@ export class ApDeliverManagerService {
 		@Inject(DI.followingsRepository)
 		private followingsRepository: FollowingsRepository,
 
-		private userEntityService: UserEntityService,
 		private queueService: QueueService,
 	) {
 	}
@@ -160,7 +157,6 @@ export class ApDeliverManagerService {
 	 */
 	public async deliverToFollowers(actor: { id: MiLocalUser['id']; host: null }, activity: IActivity): Promise<void> {
 		const manager = new DeliverManager(
-			this.userEntityService,
 			this.followingsRepository,
 			this.queueService,
 			actor,
@@ -178,7 +174,6 @@ export class ApDeliverManagerService {
 	 */
 	public async deliverToUser(actor: { id: MiLocalUser['id']; host: null }, activity: IActivity, to: MiRemoteUser): Promise<void> {
 		const manager = new DeliverManager(
-			this.userEntityService,
 			this.followingsRepository,
 			this.queueService,
 			actor,
@@ -190,7 +185,6 @@ export class ApDeliverManagerService {
 
 	public createDeliverManager(actor: { id: MiUser['id']; host: null }, activity: IActivity | null): DeliverManager {
 		return new DeliverManager(
-			this.userEntityService,
 			this.followingsRepository,
 			this.queueService,
 

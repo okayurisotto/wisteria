@@ -4,21 +4,15 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import type { Logger } from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
-import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { ObjectStorageFileJobData } from '../types.js';
 
 @Injectable()
 export class DeleteFileProcessorService {
-	private logger: Logger;
-
 	constructor(
 		private driveService: DriveService,
-		private queueLoggerService: QueueLoggerService,
 	) {
-		this.logger = this.queueLoggerService.logger.createSubLogger('delete-file');
 	}
 
 	public async process(job: Bull.Job<ObjectStorageFileJobData>): Promise<string> {

@@ -21,7 +21,7 @@ import type { KVs } from '../core.js';
 export default class FederationChart extends Chart<typeof schema> {
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		db: DataSource,
 
 		@Inject(DI.followingsRepository)
 		private followingsRepository: FollowingsRepository,
@@ -30,8 +30,8 @@ export default class FederationChart extends Chart<typeof schema> {
 		private instancesRepository: InstancesRepository,
 
 		private metaService: MetaService,
-		private appLockService: AppLockService,
-		private chartLoggerService: ChartLoggerService,
+		appLockService: AppLockService,
+		chartLoggerService: ChartLoggerService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema);
 	}

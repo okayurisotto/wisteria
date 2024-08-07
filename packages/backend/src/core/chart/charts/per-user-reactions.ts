@@ -22,11 +22,11 @@ import type { KVs } from '../core.js';
 export default class PerUserReactionsChart extends Chart<typeof schema> {
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		db: DataSource,
 
-		private appLockService: AppLockService,
+		appLockService: AppLockService,
 		private userEntityService: UserEntityService,
-		private chartLoggerService: ChartLoggerService,
+		chartLoggerService: ChartLoggerService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);
 	}

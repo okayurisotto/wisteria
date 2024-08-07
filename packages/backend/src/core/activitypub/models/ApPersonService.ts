@@ -20,7 +20,6 @@ import type { MiNote } from '@/models/Note.js';
 import { IdService } from '@/core/IdService.js';
 import { MfmService } from '@/core/MfmService.js';
 import { toArray } from '@/misc/prelude/array.js';
-import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { FetchInstanceMetadataService } from '@/core/FetchInstanceMetadataService.js';
 import { MiUserProfile } from '@/models/UserProfile.js';
@@ -92,7 +91,6 @@ export class ApPersonService implements OnModuleInit {
 		private mfmService: MfmService,
 		private userEntityService: UserEntityService,
 		private driveFileEntityService: DriveFileEntityService,
-		private globalEventService: GlobalEventService,
 		private federatedInstanceService: FederatedInstanceService,
 		private fetchInstanceMetadataService: FetchInstanceMetadataService,
 		private apMfmService: ApMfmService,

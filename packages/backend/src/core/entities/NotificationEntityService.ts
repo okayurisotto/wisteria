@@ -26,7 +26,6 @@ const NOTE_REQUIRED_GROUPED_NOTIFICATION_TYPES = new Set(['note', 'mention', 're
 export class NotificationEntityService implements OnModuleInit {
 	private userEntityService: UserEntityService;
 	private noteEntityService: NoteEntityService;
-	private roleEntityService: RoleEntityService;
 
 	constructor(
 		private moduleRef: ModuleRef,
@@ -40,15 +39,13 @@ export class NotificationEntityService implements OnModuleInit {
 		@Inject(DI.followRequestsRepository)
 		private followRequestsRepository: FollowRequestsRepository,
 
-		//private userEntityService: UserEntityService,
-		//private noteEntityService: NoteEntityService,
+		private roleEntityService: RoleEntityService,
 	) {
 	}
 
 	onModuleInit() {
 		this.userEntityService = this.moduleRef.get('UserEntityService');
 		this.noteEntityService = this.moduleRef.get('NoteEntityService');
-		this.roleEntityService = this.moduleRef.get('RoleEntityService');
 	}
 
 	public async pack(

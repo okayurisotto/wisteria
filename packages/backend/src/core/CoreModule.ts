@@ -159,7 +159,6 @@ const $DriveFileEntityService: Provider = { provide: 'DriveFileEntityService', u
 const $NoteEntityService: Provider = { provide: 'NoteEntityService', useExisting: NoteEntityService };
 const $PageEntityService: Provider = { provide: 'PageEntityService', useExisting: PageEntityService };
 const $UserEntityService: Provider = { provide: 'UserEntityService', useExisting: UserEntityService };
-const $RoleEntityService: Provider = { provide: 'RoleEntityService', useExisting: RoleEntityService };
 
 const $ApResolverService: Provider = { provide: 'ApResolverService', useExisting: ApResolverService };
 const $ApImageService: Provider = { provide: 'ApImageService', useExisting: ApImageService };
@@ -325,7 +324,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		$NoteEntityService,
 		$PageEntityService,
 		$UserEntityService,
-		$RoleEntityService,
 
 		$ApResolverService,
 		$ApImageService,
@@ -477,23 +475,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		ApPersonService,
 		ApQuestionService,
 		QueueService,
-
-		//#region 文字列ベースでのinjection用(循環参照対応のため)
-		$NotificationCreateService,
-		$RoleUserService,
-		$UserFollowingService,
-
-		$DriveFileEntityService,
-		$NoteEntityService,
-		$PageEntityService,
-		$UserEntityService,
-		$RoleEntityService,
-
-		$ApResolverService,
-		$ApImageService,
-		$ApNoteService,
-		$ApPersonService,
-		//#endregion
 	],
 })
-export class CoreModule { }
+export class CoreModule {}

@@ -3,7 +3,6 @@ import { DI } from '@/di-symbols.js';
 import type { ChannelFollowingsRepository } from '@/models/_.js';
 import { MiChannel } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
-import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { MiLocalUser } from '@/models/User.js';
 
 @Injectable()
@@ -13,7 +12,6 @@ export class ChannelFollowingService {
 		private channelFollowingsRepository: ChannelFollowingsRepository,
 
 		private idService: IdService,
-		private globalEventService: GlobalEventService,
 	) {}
 
 	public async follow(

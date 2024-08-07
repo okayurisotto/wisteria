@@ -25,10 +25,10 @@ const year = 1000 * 60 * 60 * 24 * 365;
 export default class ActiveUsersChart extends Chart<typeof schema> {
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		db: DataSource,
 
-		private appLockService: AppLockService,
-		private chartLoggerService: ChartLoggerService,
+		appLockService: AppLockService,
+		chartLoggerService: ChartLoggerService,
 		private idService: IdService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema);

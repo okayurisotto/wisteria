@@ -19,9 +19,9 @@ import type { KVs } from '../core.js';
 export default class TestUniqueChart extends Chart<typeof schema> {
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		db: DataSource,
 
-		private appLockService: AppLockService,
+		appLockService: AppLockService,
 		logger: Logger,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), logger, name, schema);

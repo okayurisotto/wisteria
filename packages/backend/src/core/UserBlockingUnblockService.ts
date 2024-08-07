@@ -6,7 +6,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { MiUser } from '@/models/User.js';
 import { QueueService } from '@/core/QueueService.js';
-import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
 import type { BlockingsRepository } from '@/models/_.js';
 import { Logger } from '@/logger.js';
@@ -24,7 +23,6 @@ export class UserBlockingUnblockService {
 
 		private readonly userEntityService: UserEntityService,
 		private readonly queueService: QueueService,
-		private readonly globalEventService: GlobalEventService,
 		private readonly apRendererService: ApRendererService,
 		private readonly loggerService: LoggerService,
 	) {

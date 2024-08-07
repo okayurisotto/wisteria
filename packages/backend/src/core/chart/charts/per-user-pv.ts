@@ -20,10 +20,10 @@ import type { KVs } from '../core.js';
 export default class PerUserPvChart extends Chart<typeof schema> {
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		db: DataSource,
 
-		private appLockService: AppLockService,
-		private chartLoggerService: ChartLoggerService,
+		appLockService: AppLockService,
+		chartLoggerService: ChartLoggerService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);
 	}

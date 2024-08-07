@@ -22,14 +22,14 @@ import type { KVs } from '../core.js';
 export default class PerUserDriveChart extends Chart<typeof schema> {
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		db: DataSource,
 
 		@Inject(DI.driveFilesRepository)
 		private driveFilesRepository: DriveFilesRepository,
 
-		private appLockService: AppLockService,
+		appLockService: AppLockService,
 		private driveFileEntityService: DriveFileEntityService,
-		private chartLoggerService: ChartLoggerService,
+		chartLoggerService: ChartLoggerService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);
 	}

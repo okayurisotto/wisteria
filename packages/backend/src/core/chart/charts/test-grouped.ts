@@ -21,9 +21,9 @@ export default class TestGroupedChart extends Chart<typeof schema> {
 
 	constructor(
 		@Inject(DI.db)
-		private db: DataSource,
+		db: DataSource,
 
-		private appLockService: AppLockService,
+		appLockService: AppLockService,
 		logger: Logger,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), logger, name, schema, true);

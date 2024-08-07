@@ -6,14 +6,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as OTPAuth from 'otpauth';
 import { DI } from '@/di-symbols.js';
-import type { MiUserProfile, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import type { MiUserProfile, UserProfilesRepository } from '@/models/_.js';
 
 @Injectable()
 export class UserAuthService {
 	constructor(
-		@Inject(DI.usersRepository)
-		private usersRepository: UsersRepository,
-
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
 	) {

@@ -6,7 +6,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { AvatarDecorationsRepository, MiAvatarDecoration, MiUser } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
-import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 
@@ -18,7 +17,6 @@ export class AvatarDecorationService {
 
 		private idService: IdService,
 		private moderationLogService: ModerationLogService,
-		private globalEventService: GlobalEventService,
 	) {}
 
 	public async create(options: Partial<MiAvatarDecoration>, moderator?: MiUser): Promise<MiAvatarDecoration> {

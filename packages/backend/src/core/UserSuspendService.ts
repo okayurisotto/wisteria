@@ -8,7 +8,6 @@ import { Not, IsNull } from 'typeorm';
 import type { FollowingsRepository } from '@/models/_.js';
 import type { MiUser } from '@/models/User.js';
 import { QueueService } from '@/core/QueueService.js';
-import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
@@ -21,7 +20,6 @@ export class UserSuspendService {
 
 		private userEntityService: UserEntityService,
 		private queueService: QueueService,
-		private globalEventService: GlobalEventService,
 		private apRendererService: ApRendererService,
 	) {
 	}
