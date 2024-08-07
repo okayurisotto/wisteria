@@ -70,8 +70,27 @@ services:
   #  volumes:
   #    - meili_data:/meili_data
 
+  # prometheus:
+  #   image: prom/prometheus
+  #   restart: unless-stopped
+  #   command:
+  #     - '--config.file=/etc/prometheus/prometheus.yml'
+  #   volumes:
+  #     - ./.config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #     - prometheus:/prometheus
+
+  # grafana:
+  #   image: grafana/grafana
+  #   restart: unless-stopped
+  #   ports:
+  #     - 4000:3000
+  #   volumes:
+  #     - grafana:/var/lib/grafana
+
 volumes:
   files:
   redis:
   db:
-  meili_data:
+  # meili_data:
+  # prometheus:
+  # grafana:

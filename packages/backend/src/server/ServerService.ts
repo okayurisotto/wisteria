@@ -29,6 +29,7 @@ import { UserFeedServerService } from './UserFeedServerService.js';
 import { EmojiServerService } from './EmojiServerService.js';
 import { BullDashboardServerService } from './BullDashboardServerService.js';
 import { FileProxyServerService } from './FileProxyServerService.js';
+import { MetricsServerService } from './MetricsServerService.js';
 
 @Injectable()
 export class ServerService implements OnApplicationShutdown {
@@ -58,6 +59,7 @@ export class ServerService implements OnApplicationShutdown {
 		private readonly emojiServerService: EmojiServerService,
 		private readonly bullDashboardServerService: BullDashboardServerService,
 		private readonly fileProxyServerService: FileProxyServerService,
+		private readonly metricsServerService: MetricsServerService,
 	) {
 		this.logger = this.loggerService.getLogger('server', 'gray');
 	}
@@ -80,6 +82,7 @@ export class ServerService implements OnApplicationShutdown {
 		hono.route('/emoji', this.emojiRedirectServerService.createServer());
 		hono.route('/files', this.fileServerService.createServer());
 		hono.route('/identicon', this.identiconServerService.createServer());
+		hono.route('/metrics', this.metricsServerService.createServer());
 		hono.route('/nodeinfo', this.nodeinfoServerService.createServer());
 		hono.route('/proxy', this.fileProxyServerService.createServer());
 		hono.route('/queue', this.bullDashboardServerService.createServer());

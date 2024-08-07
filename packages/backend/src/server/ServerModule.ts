@@ -52,6 +52,7 @@ import { EmojiServerService } from './EmojiServerService.js';
 import { BullDashboardServerService } from './BullDashboardServerService.js';
 import { IpAddressLoggingService } from './api/IpAddressLoggingService.js';
 import { FileProxyServerService } from './FileProxyServerService.js';
+import { MetricsServerService } from './MetricsServerService.js';
 
 @Module({
 	imports: [
@@ -104,6 +105,7 @@ import { FileProxyServerService } from './FileProxyServerService.js';
 		BullDashboardServerService,
 		IpAddressLoggingService,
 		FileProxyServerService,
+		MetricsServerService,
 	],
 	exports: [
 		ServerService,

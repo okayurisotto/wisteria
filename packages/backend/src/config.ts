@@ -103,6 +103,13 @@ const configSchema = z.object({
 	perUserNotificationsMaxCount: z.number().default(500),
 	deactivateAntennaThreshold: z.number().default(1000 * 60 * 60 * 24 * 7),
 	pidFile: z.string().optional(),
+
+	prometheus: z.object({
+		basicAuth: z.object({
+			username: z.string(),
+			password: z.string(),
+		}).strict(),
+	}).strict().optional(),
 }).strict();
 
 export type Config = ReturnType<typeof loadConfig>;
@@ -180,6 +187,7 @@ export const loadConfig = () => {
 		perUserNotificationsMaxCount: config.perUserNotificationsMaxCount,
 		deactivateAntennaThreshold: config.deactivateAntennaThreshold,
 		pidFile: config.pidFile,
+		prometheus: config.prometheus,
 	} as const;
 };
 

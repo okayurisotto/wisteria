@@ -205,6 +205,14 @@ redis:
 
 id: 'aidx'
 
+#   ┌────────────┐
+#───┘ Prometheus └──────────────────────────────────────────────
+
+#prometheus:
+#  basicAuth:
+#    username: wisteria-example-user
+#    password: wisteria-example-pass
+
 #   ┌─────────────────────┐
 #───┘ Other configuration └─────────────────────────────────────
 

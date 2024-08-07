@@ -205,6 +205,14 @@ redis:
 
 id: 'aidx'
 
+#   ┌────────────┐
+#───┘ Prometheus └──────────────────────────────────────────────
+
+#prometheus:
+#  basicAuth:
+#    username:
+#    password:
+
 #   ┌─────────────────────┐
 #───┘ Other configuration └─────────────────────────────────────
 
