@@ -86,8 +86,7 @@ export class ReversiGameChannelService implements MiChannelService<false> {
 	constructor(
 		private reversiService: ReversiService,
 		private reversiGameEntityService: ReversiGameEntityService,
-	) {
-	}
+	) {}
 
 	public create(id: string, connection: Channel['connection']): ReversiGameChannel {
 		return new ReversiGameChannel(

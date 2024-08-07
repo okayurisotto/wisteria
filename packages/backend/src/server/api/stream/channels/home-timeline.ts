@@ -102,8 +102,7 @@ export class HomeTimelineChannelService implements MiChannelService<true> {
 
 	constructor(
 		private noteEntityService: NoteEntityService,
-	) {
-	}
+	) {}
 
 	public create(id: string, connection: Channel['connection']): HomeTimelineChannel {
 		return new HomeTimelineChannel(

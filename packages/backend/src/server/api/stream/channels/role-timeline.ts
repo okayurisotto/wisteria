@@ -70,8 +70,7 @@ export class RoleTimelineChannelService implements MiChannelService<false> {
 	constructor(
 		private noteEntityService: NoteEntityService,
 		private roleservice: RoleService,
-	) {
-	}
+	) {}
 
 	public create(id: string, connection: Channel['connection']): RoleTimelineChannel {
 		return new RoleTimelineChannel(

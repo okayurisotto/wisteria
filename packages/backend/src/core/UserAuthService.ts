@@ -13,8 +13,7 @@ export class UserAuthService {
 	constructor(
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
-	) {
-	}
+	) {}
 
 	public async twoFactorAuthenticate(profile: MiUserProfile, token: string): Promise<void> {
 		if (profile.twoFactorBackupSecret?.includes(token)) {

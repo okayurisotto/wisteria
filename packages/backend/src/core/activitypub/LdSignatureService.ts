@@ -20,8 +20,7 @@ class LdSignature {
 
 	constructor(
 		private httpRequestService: HttpRequestService,
-	) {
-	}
+	) {}
 
 	public async signRsaSignature2017(data: any, privateKey: string, creator: string, domain?: string, created?: Date): Promise<any> {
 		const options: {
@@ -153,8 +152,7 @@ class LdSignature {
 export class LdSignatureService {
 	constructor(
 		private httpRequestService: HttpRequestService,
-	) {
-	}
+	) {}
 
 	public use(): LdSignature {
 		return new LdSignature(this.httpRequestService);

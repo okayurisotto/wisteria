@@ -28,8 +28,7 @@ export class AnnouncementService {
 		private idService: IdService,
 		private globalEventService: GlobalEventService,
 		private moderationLogService: ModerationLogService,
-	) {
-	}
+	) {}
 
 	public async getReads(userId: MiUser['id']): Promise<MiAnnouncementRead[]> {
 		return this.announcementReadsRepository.findBy({

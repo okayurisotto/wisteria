@@ -26,8 +26,7 @@ type GroupedAudience = Record<'public' | 'followers' | 'other', string[]>;
 export class ApAudienceService {
 	constructor(
 		private apPersonService: ApPersonService,
-	) {
-	}
+	) {}
 
 	public async parseAudience(actor: MiRemoteUser, to?: ApObject, cc?: ApObject, resolver?: Resolver): Promise<AudienceInfo> {
 		const toGroups = this.groupingAudience(getApIds(to), actor);

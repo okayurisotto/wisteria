@@ -32,8 +32,7 @@ export class ClipService {
 
 		private roleUserService: RoleUserService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async create(me: MiLocalUser, name: string, isPublic: boolean, description: string | null): Promise<MiClip> {
 		const currentCount = await this.clipsRepository.countBy({

@@ -23,8 +23,7 @@ export class RoleEntityService {
 		private roleAssignmentsRepository: RoleAssignmentsRepository,
 
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiRole['id'] | MiRole,

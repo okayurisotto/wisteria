@@ -18,8 +18,7 @@ export class PageLikeEntityService {
 		private pageLikesRepository: PageLikesRepository,
 
 		private pageEntityService: PageEntityService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiPageLike['id'] | MiPageLike,

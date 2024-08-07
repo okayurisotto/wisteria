@@ -16,8 +16,7 @@ export class ProxyAccountService {
 		private usersRepository: UsersRepository,
 
 		private metaService: MetaService,
-	) {
-	}
+	) {}
 
 	public async fetch(): Promise<MiLocalUser | null> {
 		const meta = await this.metaService.fetch();

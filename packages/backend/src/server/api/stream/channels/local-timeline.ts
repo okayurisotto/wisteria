@@ -91,8 +91,7 @@ export class LocalTimelineChannelService implements MiChannelService<false> {
 	constructor(
 		private roleUserService: RoleUserService,
 		private noteEntityService: NoteEntityService,
-	) {
-	}
+	) {}
 
 	public create(id: string, connection: Channel['connection']): LocalTimelineChannel {
 		return new LocalTimelineChannel(

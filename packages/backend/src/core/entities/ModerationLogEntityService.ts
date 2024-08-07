@@ -20,8 +20,7 @@ export class ModerationLogEntityService {
 
 		private userEntityService: UserEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiModerationLog['id'] | MiModerationLog,

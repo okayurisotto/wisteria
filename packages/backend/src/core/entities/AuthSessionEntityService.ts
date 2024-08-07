@@ -18,8 +18,7 @@ export class AuthSessionEntityService {
 		private authSessionsRepository: AuthSessionsRepository,
 
 		private appEntityService: AppEntityService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiAuthSession['id'] | MiAuthSession,

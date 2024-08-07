@@ -195,7 +195,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		private instanceChart: InstanceChart,
 		private utilityService: UtilityService,
 		private userBlockingCheckService: UserBlockingCheckService,
-	) { }
+	) {}
 
 	public async create(user: {
 		id: MiUser['id'];

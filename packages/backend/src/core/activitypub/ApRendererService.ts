@@ -60,8 +60,7 @@ export class ApRendererService {
 		private apMfmService: ApMfmService,
 		private mfmService: MfmService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public renderAccept(object: string | IObject, user: { id: MiUser['id']; host: null }): IAccept {
 		return {

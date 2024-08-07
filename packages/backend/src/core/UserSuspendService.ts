@@ -21,8 +21,7 @@ export class UserSuspendService {
 		private userEntityService: UserEntityService,
 		private queueService: QueueService,
 		private apRendererService: ApRendererService,
-	) {
-	}
+	) {}
 
 	public async doPostSuspend(user: { id: MiUser['id']; host: MiUser['host'] }): Promise<void> {
 		if (this.userEntityService.isLocalUser(user)) {

@@ -25,8 +25,7 @@ export class QueueStatsService implements OnApplicationShutdown {
 		private config: Config,
 
 		private queueService: QueueService,
-	) {
-	}
+	) {}
 
 	/**
 	 * Report queue stats regularly

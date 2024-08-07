@@ -196,8 +196,7 @@ export class ApResolverService {
 		private apRendererService: ApRendererService,
 		private apDbResolverService: ApDbResolverService,
 		private loggerService: LoggerService,
-	) {
-	}
+	) {}
 
 	public createResolver(): Resolver {
 		return new Resolver(

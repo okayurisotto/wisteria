@@ -49,8 +49,7 @@ const TYPE_SVG = {
 export class FileInfoService {
 	constructor(
 		private aiService: AiService,
-	) {
-	}
+	) {}
 
 	/**
 	 * Get file information

@@ -283,8 +283,7 @@ export class GlobalEventService {
 
 		@Inject(DI.redisForPub)
 		private redisForPub: Redis.Redis,
-	) {
-	}
+	) {}
 
 	private publish(channel: StreamChannels, type: string | null, value?: any): void {
 		const message = type == null ? value : value == null

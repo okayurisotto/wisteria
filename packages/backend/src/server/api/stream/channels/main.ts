@@ -69,8 +69,7 @@ export class MainChannelService implements MiChannelService<true> {
 
 	constructor(
 		private noteEntityService: NoteEntityService,
-	) {
-	}
+	) {}
 
 	public create(id: string, connection: Channel['connection']): MainChannel {
 		return new MainChannel(

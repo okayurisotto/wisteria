@@ -18,8 +18,7 @@ export class FlashLikeEntityService {
 		private flashLikesRepository: FlashLikesRepository,
 
 		private flashEntityService: FlashEntityService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiFlashLike['id'] | MiFlashLike,

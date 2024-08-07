@@ -21,8 +21,7 @@ export class ReversiGameEntityService {
 
 		private userEntityService: UserEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async packDetail(
 		src: MiReversiGame['id'] | MiReversiGame,

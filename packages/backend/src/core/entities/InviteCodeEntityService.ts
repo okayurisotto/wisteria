@@ -21,8 +21,7 @@ export class InviteCodeEntityService {
 
 		private userEntityService: UserEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiRegistrationTicket['id'] | MiRegistrationTicket,

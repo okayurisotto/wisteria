@@ -17,8 +17,7 @@ export class AntennaEntityService {
 		private antennasRepository: AntennasRepository,
 
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiAntenna['id'] | MiAntenna,

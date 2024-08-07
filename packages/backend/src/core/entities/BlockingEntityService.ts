@@ -21,8 +21,7 @@ export class BlockingEntityService {
 
 		private userEntityService: UserEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiBlocking['id'] | MiBlocking,

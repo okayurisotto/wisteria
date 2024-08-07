@@ -33,8 +33,7 @@ export class QueryService {
 		private renoteMutingsRepository: RenoteMutingsRepository,
 
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public makePaginationQuery<T extends ObjectLiteral>(q: SelectQueryBuilder<T>, sinceId?: string | null, untilId?: string | null, sinceDate?: number | null, untilDate?: number | null): SelectQueryBuilder<T> {
 		if (sinceId && untilId) {

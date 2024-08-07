@@ -16,8 +16,7 @@ export class UserService {
 
 		@Inject(DI.followingsRepository)
 		private followingsRepository: FollowingsRepository,
-	) {
-	}
+	) {}
 
 	public async updateLastActiveDate(user: MiUser): Promise<void> {
 		if (user.isHibernated) {

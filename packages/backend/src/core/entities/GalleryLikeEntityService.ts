@@ -17,8 +17,7 @@ export class GalleryLikeEntityService {
 		private galleryLikesRepository: GalleryLikesRepository,
 
 		private galleryPostEntityService: GalleryPostEntityService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiGalleryLike['id'] | MiGalleryLike,

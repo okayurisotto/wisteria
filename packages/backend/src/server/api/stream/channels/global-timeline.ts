@@ -92,8 +92,7 @@ export class GlobalTimelineChannelService implements MiChannelService<false> {
 	constructor(
 		private roleUserService: RoleUserService,
 		private noteEntityService: NoteEntityService,
-	) {
-	}
+	) {}
 
 	public create(id: string, connection: Channel['connection']): GlobalTimelineChannel {
 		return new GlobalTimelineChannel(

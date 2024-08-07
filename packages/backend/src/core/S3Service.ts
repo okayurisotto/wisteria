@@ -18,8 +18,7 @@ import type { DeleteObjectCommandInput, PutObjectCommandInput } from '@aws-sdk/c
 export class S3Service {
 	constructor(
 		private httpRequestService: HttpRequestService,
-	) {
-	}
+	) {}
 
 	public getS3Client(meta: MiMeta): S3Client {
 		const u = meta.objectStorageEndpoint

@@ -19,8 +19,7 @@ export class VideoProcessingService {
 		private config: Config,
 
 		private imageProcessingService: ImageProcessingService,
-	) {
-	}
+	) {}
 
 	public async generateVideoThumbnail(source: string): Promise<IImage> {
 		const [dir, cleanup] = await createTempDir();

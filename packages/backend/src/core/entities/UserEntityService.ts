@@ -96,8 +96,7 @@ export class UserEntityService implements OnModuleInit {
 		private avatarDecorationService: AvatarDecorationService,
 		private noteEntityService: NoteEntityService,
 		private customEmojiPopulateService: CustomEmojiPopulateService,
-	) {
-	}
+	) {}
 
 	onModuleInit() {
 		this.apPersonService = this.moduleRef.get('ApPersonService');

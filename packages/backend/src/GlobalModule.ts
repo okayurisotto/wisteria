@@ -133,7 +133,7 @@ export class GlobalModule implements OnApplicationShutdown {
 		@Inject(DI.redisForPub) private redisForPub: Redis.Redis,
 		@Inject(DI.redisForSub) private redisForSub: Redis.Redis,
 		@Inject(DI.redisForTimelines) private redisForTimelines: Redis.Redis,
-	) { }
+	) {}
 
 	public async dispose(): Promise<void> {
 		// Wait for all potential DB queries

@@ -16,8 +16,7 @@ import type { IObject, IApMention } from '../type.js';
 export class ApMentionService {
 	constructor(
 		private apPersonService: ApPersonService,
-	) {
-	}
+	) {}
 
 	public async extractApMentions(tags: IObject | IObject[] | null | undefined, resolver: Resolver): Promise<MiUser[]> {
 		const hrefs = unique(this.extractApMentionObjects(tags).map(x => x.href));

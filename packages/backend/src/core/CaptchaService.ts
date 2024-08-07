@@ -15,8 +15,7 @@ type CaptchaResponse = {
 export class CaptchaService {
 	constructor(
 		private httpRequestService: HttpRequestService,
-	) {
-	}
+	) {}
 
 	private async getCaptchaResponse(url: string, secret: string, response: string): Promise<CaptchaResponse> {
 		const params = new URLSearchParams({

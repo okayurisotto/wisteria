@@ -18,8 +18,7 @@ export class NotificationService {
 
 		private globalEventService: GlobalEventService,
 		private pushNotificationService: PushNotificationService,
-	) {
-	}
+	) {}
 
 	public async readAllNotification(
 		userId: MiUser['id'],

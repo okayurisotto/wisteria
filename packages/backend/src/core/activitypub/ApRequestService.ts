@@ -138,8 +138,7 @@ export class ApRequestService {
 
 		private userKeypairService: UserKeypairService,
 		private httpRequestService: HttpRequestService,
-	) {
-	}
+	) {}
 
 	public async signedPost(user: { id: MiUser['id'] }, url: string, object: unknown, digest?: string): Promise<void> {
 		const body = typeof object === 'string' ? object : JSON.stringify(object);

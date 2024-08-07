@@ -23,8 +23,7 @@ export class ServerStatsService implements OnApplicationShutdown {
 
 	constructor(
 		private metaService: MetaService,
-	) {
-	}
+	) {}
 
 	/**
 	 * Report server stats regularly

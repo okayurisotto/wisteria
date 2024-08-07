@@ -22,8 +22,7 @@ export class AccountUpdateService {
 		private apRendererService: ApRendererService,
 		private apDeliverManagerService: ApDeliverManagerService,
 		private relayService: RelayService,
-	) {
-	}
+	) {}
 
 	public async publishToFollowers(userId: MiUser['id']) {
 		const user = await this.usersRepository.findOneBy({ id: userId });

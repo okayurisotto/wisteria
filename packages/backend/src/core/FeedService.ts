@@ -33,8 +33,7 @@ export class FeedService {
 		private userEntityService: UserEntityService,
 		private driveFileEntityService: DriveFileEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async packFeed(user: MiUser) {
 		const author = {

@@ -40,8 +40,7 @@ export class NotificationEntityService implements OnModuleInit {
 		private followRequestsRepository: FollowRequestsRepository,
 
 		private roleEntityService: RoleEntityService,
-	) {
-	}
+	) {}
 
 	onModuleInit() {
 		this.userEntityService = this.moduleRef.get('UserEntityService');

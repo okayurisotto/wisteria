@@ -17,8 +17,7 @@ export class DeleteAccountService {
 
 		private userSuspendService: UserSuspendService,
 		private queueService: QueueService,
-	) {
-	}
+	) {}
 
 	public async deleteAccount(user: {
 		id: string;

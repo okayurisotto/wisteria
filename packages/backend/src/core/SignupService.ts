@@ -39,8 +39,7 @@ export class SignupService {
 		private metaService: MetaService,
 		private instanceActorService: InstanceActorService,
 		private usersChart: UsersChart,
-	) {
-	}
+	) {}
 
 	public async signup(opts: {
 		username: MiUser['username'];

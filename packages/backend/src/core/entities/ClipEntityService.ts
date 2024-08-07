@@ -24,8 +24,7 @@ export class ClipEntityService {
 
 		private userEntityService: UserEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiClip['id'] | MiClip,

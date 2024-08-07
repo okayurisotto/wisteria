@@ -97,8 +97,7 @@ export class AchievementService {
 		private userProfilesRepository: UserProfilesRepository,
 
 		private notificationCreateService: NotificationCreateService,
-	) {
-	}
+	) {}
 
 	public async create(
 		userId: MiUser['id'],

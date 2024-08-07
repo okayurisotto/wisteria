@@ -44,8 +44,7 @@ export class SigninApiService {
 		private signinService: SigninService,
 		private userAuthService: UserAuthService,
 		private webAuthnService: WebAuthnService,
-	) {
-	}
+	) {}
 
 	public async signin(c: Context): Promise<Response> {
 		c.header('Access-Control-Allow-Origin', this.config.url);

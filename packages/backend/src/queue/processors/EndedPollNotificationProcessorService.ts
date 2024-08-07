@@ -20,8 +20,7 @@ export class EndedPollNotificationProcessorService {
 		private pollVotesRepository: PollVotesRepository,
 
 		private notificationCreateService: NotificationCreateService,
-	) {
-	}
+	) {}
 
 	public async process(job: Bull.Job<EndedPollNotificationJobData>): Promise<void> {
 		const note = await this.notesRepository.findOneBy({ id: job.data.noteId });

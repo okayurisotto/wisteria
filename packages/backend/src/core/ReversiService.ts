@@ -35,8 +35,7 @@ export class ReversiService implements OnApplicationShutdown {
 		private globalEventService: GlobalEventService,
 		private reversiGameEntityService: ReversiGameEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	private async cacheGame(game: MiReversiGame) {
 		await this.redisClient.setex(`reversi:game:cache:${game.id}`, 60 * 60, JSON.stringify(game));

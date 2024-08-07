@@ -57,8 +57,7 @@ export class AccountMoveService {
 		private metaService: MetaService,
 		private relayService: RelayService,
 		private queueService: QueueService,
-	) {
-	}
+	) {}
 
 	/**
 	 * Move a local account to a new account.

@@ -14,8 +14,7 @@ import type { IObject } from './type.js';
 export class ApMfmService {
 	constructor(
 		private mfmService: MfmService,
-	) {
-	}
+	) {}
 
 	public htmlToMfm(html: string, tag?: IObject | IObject[]): string {
 		const hashtagNames = extractApHashtagObjects(tag).map(x => x.name);

@@ -15,8 +15,7 @@ export class InternalStorageService {
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
-	) {
-	}
+	) {}
 
 	public resolvePath(key: string) {
 		return Path.resolve(INTERNAL_STORAGE_DIR, key);

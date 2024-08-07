@@ -61,8 +61,7 @@ export class NoteEntityService implements OnModuleInit {
 		private legacyReactionConvertService: LegacyReactionConvertService,
 		private idService: IdService,
 		private customEmojiPopulateService: CustomEmojiPopulateService,
-	) {
-	}
+	) {}
 
 	onModuleInit() {
 		this.userEntityService = this.moduleRef.get('UserEntityService');

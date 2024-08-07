@@ -22,8 +22,7 @@ export class DriveFolderEntityService {
 		private driveFilesRepository: DriveFilesRepository,
 
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiDriveFolder['id'] | MiDriveFolder,

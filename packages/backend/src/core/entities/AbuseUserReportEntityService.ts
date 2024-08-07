@@ -19,8 +19,7 @@ export class AbuseUserReportEntityService {
 
 		private userEntityService: UserEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiAbuseUserReport['id'] | MiAbuseUserReport,

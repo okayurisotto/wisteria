@@ -20,8 +20,7 @@ export class FeaturedService {
 	constructor(
 		@Inject(DI.redis)
 		private redisClient: Redis.Redis, // TODO: 専用のRedisサーバーを設定できるようにする
-	) {
-	}
+	) {}
 
 	private getCurrentWindow(windowRange: number): number {
 		const passed = new Date().getTime() - featuredEpoc;

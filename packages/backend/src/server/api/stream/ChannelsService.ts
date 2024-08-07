@@ -41,8 +41,7 @@ export class ChannelsService {
 		private adminChannelService: AdminChannelService,
 		private reversiChannelService: ReversiChannelService,
 		private reversiGameChannelService: ReversiGameChannelService,
-	) {
-	}
+	) {}
 
 	public getChannelService(name: string): MiChannelService<boolean> {
 		switch (name) {

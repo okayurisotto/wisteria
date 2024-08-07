@@ -18,8 +18,7 @@ export class RegistryApiService {
 
 		private idService: IdService,
 		private globalEventService: GlobalEventService,
-	) {
-	}
+	) {}
 
 	public async set(userId: MiUser['id'], domain: string | null, scope: string[], key: string, value: any) {
 		// TODO: 作成できるキーの数を制限する

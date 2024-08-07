@@ -40,8 +40,7 @@ export class WebAuthnService {
 		private userSecurityKeysRepository: UserSecurityKeysRepository,
 
 		private metaService: MetaService,
-	) {
-	}
+	) {}
 
 	public async getRelyingParty(): Promise<{ origin: string; rpId: string; rpName: string; rpIcon?: string }> {
 		const instance = await this.metaService.fetch();

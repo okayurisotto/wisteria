@@ -147,8 +147,7 @@ export class ApDeliverManagerService {
 		private followingsRepository: FollowingsRepository,
 
 		private queueService: QueueService,
-	) {
-	}
+	) {}
 
 	/**
 	 * Deliver activity to followers

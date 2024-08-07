@@ -39,8 +39,7 @@ export class NotePiningService {
 		private relayService: RelayService,
 		private apDeliverManagerService: ApDeliverManagerService,
 		private apRendererService: ApRendererService,
-	) {
-	}
+	) {}
 
 	/**
 	 * 指定した投稿をピン留めします

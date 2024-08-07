@@ -66,8 +66,7 @@ export class AntennaChannelService implements MiChannelService<true> {
 
 	constructor(
 		private noteEntityService: NoteEntityService,
-	) {
-	}
+	) {}
 
 	public create(id: string, connection: Channel['connection']): AntennaChannel {
 		return new AntennaChannel(

@@ -22,8 +22,7 @@ export class MutingEntityService {
 
 		private userEntityService: UserEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiMuting['id'] | MiMuting,

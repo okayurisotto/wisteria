@@ -37,8 +37,7 @@ export class PollService {
 		private userBlockingCheckService: UserBlockingCheckService,
 		private apRendererService: ApRendererService,
 		private apDeliverManagerService: ApDeliverManagerService,
-	) {
-	}
+	) {}
 
 	public async vote(user: MiUser, note: MiNote, choice: number) {
 		const poll = await this.pollsRepository.findOneBy({ noteId: note.id });

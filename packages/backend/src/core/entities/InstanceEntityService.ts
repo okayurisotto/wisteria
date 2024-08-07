@@ -15,8 +15,7 @@ export class InstanceEntityService {
 		private metaService: MetaService,
 
 		private utilityService: UtilityService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		instance: MiInstance,

@@ -21,8 +21,7 @@ export class GetterService {
 		private notesRepository: NotesRepository,
 
 		private userEntityService: UserEntityService,
-	) {
-	}
+	) {}
 
 	/**
 	 * Get note for API processing

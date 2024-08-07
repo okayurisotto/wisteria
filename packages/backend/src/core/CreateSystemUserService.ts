@@ -23,8 +23,7 @@ export class CreateSystemUserService {
 		private db: DataSource,
 
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async createSystemUser(username: string): Promise<MiUser> {
 		const password = randomUUID();

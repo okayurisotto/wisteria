@@ -18,8 +18,7 @@ export class AppEntityService {
 
 		@Inject(DI.accessTokensRepository)
 		private accessTokensRepository: AccessTokensRepository,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiApp['id'] | MiApp,

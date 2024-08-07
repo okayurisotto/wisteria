@@ -18,8 +18,7 @@ export class FollowRequestEntityService {
 		private followRequestsRepository: FollowRequestsRepository,
 
 		private userEntityService: UserEntityService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiFollowRequest['id'] | MiFollowRequest,

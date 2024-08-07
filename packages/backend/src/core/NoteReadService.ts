@@ -31,8 +31,7 @@ export class NoteReadService implements OnApplicationShutdown {
 
 		private idService: IdService,
 		private globalEventService: GlobalEventService,
-	) {
-	}
+	) {}
 
 	public async insertNoteUnread(userId: MiUser['id'], note: MiNote, params: {
 		// NOTE: isSpecifiedがtrueならisMentionedは必ずfalse

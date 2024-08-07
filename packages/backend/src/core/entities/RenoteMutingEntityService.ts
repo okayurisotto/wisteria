@@ -22,8 +22,7 @@ export class RenoteMutingEntityService {
 
 		private userEntityService: UserEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiRenoteMuting['id'] | MiRenoteMuting,

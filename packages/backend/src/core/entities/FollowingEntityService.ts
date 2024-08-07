@@ -46,8 +46,7 @@ export class FollowingEntityService {
 
 		private userEntityService: UserEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public isLocalFollower(following: MiFollowing): following is LocalFollowerFollowing {
 		return following.followerHost == null;

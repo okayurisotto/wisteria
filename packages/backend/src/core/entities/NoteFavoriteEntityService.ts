@@ -20,8 +20,7 @@ export class NoteFavoriteEntityService {
 
 		private noteEntityService: NoteEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiNoteFavorite['id'] | MiNoteFavorite,

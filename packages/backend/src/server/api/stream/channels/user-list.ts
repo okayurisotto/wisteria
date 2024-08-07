@@ -149,8 +149,7 @@ export class UserListChannelService implements MiChannelService<false> {
 		private userListMembershipsRepository: UserListMembershipsRepository,
 
 		private noteEntityService: NoteEntityService,
-	) {
-	}
+	) {}
 
 	public create(id: string, connection: Channel['connection']): UserListChannel {
 		return new UserListChannel(

@@ -73,8 +73,7 @@ export class HashtagChannelService implements MiChannelService<false> {
 
 	constructor(
 		private noteEntityService: NoteEntityService,
-	) {
-	}
+	) {}
 
 	public create(id: string, connection: Channel['connection']): HashtagChannel {
 		return new HashtagChannel(

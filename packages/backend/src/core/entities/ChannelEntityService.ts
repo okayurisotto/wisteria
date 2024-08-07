@@ -36,8 +36,7 @@ export class ChannelEntityService {
 		private noteEntityService: NoteEntityService,
 		private driveFileEntityService: DriveFileEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiChannel['id'] | MiChannel,

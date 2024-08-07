@@ -24,8 +24,7 @@ export class MfmService {
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
-	) {
-	}
+	) {}
 
 	public fromHtml(html: string, hashtagNames?: string[]): string {
 		// some AP servers like Pixelfed use br tags as well as newlines

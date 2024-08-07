@@ -15,8 +15,7 @@ export class EmojiEntityService {
 	constructor(
 		@Inject(DI.emojisRepository)
 		private emojisRepository: EmojisRepository,
-	) {
-	}
+	) {}
 
 	public async packSimple(
 		src: MiEmoji['id'] | MiEmoji,

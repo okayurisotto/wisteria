@@ -12,8 +12,7 @@ import { IdService } from '@/core/IdService.js';
 export class SigninEntityService {
 	constructor(
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiSignin,

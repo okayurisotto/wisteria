@@ -25,8 +25,7 @@ export class NoteReactionEntityService {
 		private idService: IdService,
 		private userEntityService: UserEntityService,
 		private noteEntityService: NoteEntityService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiNoteReaction['id'] | MiNoteReaction,

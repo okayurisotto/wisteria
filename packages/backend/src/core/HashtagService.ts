@@ -30,8 +30,7 @@ export class HashtagService {
 		private idService: IdService,
 		private metaService: MetaService,
 		private utilityService: UtilityService,
-	) {
-	}
+	) {}
 
 	public async updateHashtags(user: { id: MiUser['id']; host: MiUser['host'] }, tags: string[]) {
 		for (const tag of tags) {

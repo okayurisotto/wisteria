@@ -12,8 +12,7 @@ import type { ObjectStorageFileJobData } from '../types.js';
 export class DeleteFileProcessorService {
 	constructor(
 		private driveService: DriveService,
-	) {
-	}
+	) {}
 
 	public async process(job: Bull.Job<ObjectStorageFileJobData>): Promise<string> {
 		const key: string = job.data.key;

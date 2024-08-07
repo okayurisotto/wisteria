@@ -27,8 +27,7 @@ export class GalleryPostEntityService {
 		private userEntityService: UserEntityService,
 		private driveFileEntityService: DriveFileEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiGalleryPost['id'] | MiGalleryPost,

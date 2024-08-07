@@ -25,8 +25,7 @@ export class FlashEntityService {
 
 		private userEntityService: UserEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiFlash['id'] | MiFlash,

@@ -116,8 +116,7 @@ export class HybridTimelineChannelService implements MiChannelService<true> {
 	constructor(
 		private roleUserService: RoleUserService,
 		private noteEntityService: NoteEntityService,
-	) {
-	}
+	) {}
 
 	public create(id: string, connection: Channel['connection']): HybridTimelineChannel {
 		return new HybridTimelineChannel(

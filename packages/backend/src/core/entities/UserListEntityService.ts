@@ -23,8 +23,7 @@ export class UserListEntityService {
 
 		private userEntityService: UserEntityService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public async pack(
 		src: MiUserList['id'] | MiUserList,

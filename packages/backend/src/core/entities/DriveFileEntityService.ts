@@ -45,8 +45,7 @@ export class DriveFileEntityService {
 		private driveFolderEntityService: DriveFolderEntityService,
 		private videoProcessingService: VideoProcessingService,
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	public validateFileName(name: string): boolean {
 		return (

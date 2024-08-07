@@ -26,8 +26,7 @@ const mRegex = /^([^@]+)@(.*)/;
 export class WebfingerService {
 	constructor(
 		private httpRequestService: HttpRequestService,
-	) {
-	}
+	) {}
 
 	public async webfinger(query: string): Promise<IWebFinger> {
 		const url = this.genUrl(query);
