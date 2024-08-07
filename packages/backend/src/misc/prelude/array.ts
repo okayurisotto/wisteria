@@ -3,16 +3,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { Predicate } from './relation.js';
-
-/**
- * Count the number of elements that satisfy the predicate
- */
-
-export function countIf<T>(f: Predicate<T>, xs: T[]): number {
-	return xs.filter(f).length;
-}
-
 /**
  * Concatenate an array of arrays
  */

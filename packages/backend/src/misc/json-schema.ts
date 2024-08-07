@@ -195,8 +195,6 @@ type ObjectSchemaTypeDef<p extends Schema> =
 				p['allOf'] extends ReadonlyArray<Schema> ? UnionToIntersection<UnionSchemaType<p['allOf']>> :
 					any;
 
-type ObjectSchemaType<p extends Schema> = NullOrUndefined<p, ObjectSchemaTypeDef<p>>;
-
 export type SchemaTypeDef<p extends Schema> =
 	p['type'] extends 'null' ? null :
 		p['type'] extends 'integer' ? number :

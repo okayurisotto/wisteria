@@ -5,15 +5,11 @@
 
 export const envOption = {
 	isTest: process.env['NODE_ENV'] === 'test',
-	isDevelopment: process.env['NODE_ENV'] === 'development',
 	isProduction: process.env['NODE_ENV'] === 'production',
 
 	PORT: process.env['PORT'] ? parseInt(process.env['PORT'], 10) : null,
-	VITE_PORT: process.env['VITE_PORT'] ?? '5173',
 
 	MISSKEY_CONFIG_YML: process.env['MISSKEY_CONFIG_YML'] ?? null,
-	MISSKEY_TEST_CHECK_IP_RANGE:
-		process.env['MISSKEY_TEST_CHECK_IP_RANGE'] === '1',
 	MISSKEY_WEBFINGER_USE_HTTP:
 		process.env['MISSKEY_WEBFINGER_USE_HTTP']?.toLowerCase() === 'true',
 
