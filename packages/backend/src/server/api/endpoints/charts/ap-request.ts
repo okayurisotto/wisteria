@@ -6,7 +6,6 @@
 import { Injectable } from '@nestjs/common';
 import { getJsonSchema } from '@/core/chart/core.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
-import ApRequestChart from '@/core/chart/charts/ap-request.js';
 import { schema } from '@/core/chart/charts/entities/ap-request.js';
 import { z } from 'zod';
 
@@ -27,11 +26,15 @@ export const paramDef = z.object({
 
 @Injectable()
 export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
-	constructor(
-		private readonly apRequestChart: ApRequestChart,
-	) {
-		super(meta, paramDef, async (ps, me) => {
-			return await this.apRequestChart.getChart(ps.span, ps.limit, ps.offset ? new Date(ps.offset) : null);
+	constructor() {
+		super(meta, paramDef, async (ps) => {
+			const dummy = new Array<number>(ps.limit).fill(0);
+
+			return {
+				deliverFailed: dummy,
+				deliverSucceeded: dummy,
+				inboxReceived: dummy,
+			};
 		});
 	}
 }

@@ -6,7 +6,6 @@
 import { Injectable } from '@nestjs/common';
 import { getJsonSchema } from '@/core/chart/core.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
-import FederationChart from '@/core/chart/charts/federation.js';
 import { schema } from '@/core/chart/charts/entities/federation.js';
 import { z } from 'zod';
 
@@ -27,11 +26,20 @@ export const paramDef = z.object({
 
 @Injectable()
 export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
-	constructor(
-		private readonly federationChart: FederationChart,
-	) {
-		super(meta, paramDef, async (ps, me) => {
-			return await this.federationChart.getChart(ps.span, ps.limit, ps.offset ? new Date(ps.offset) : null);
+	constructor() {
+		super(meta, paramDef, async (ps) => {
+			const dummy = new Array<number>(ps.limit).fill(0);
+
+			return {
+				deliveredInstances: dummy,
+				inboxInstances: dummy,
+				pub: dummy,
+				pubActive: dummy,
+				pubsub: dummy,
+				stalled: dummy,
+				sub: dummy,
+				subActive: dummy,
+			};
 		});
 	}
 }

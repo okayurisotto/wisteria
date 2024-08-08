@@ -6,7 +6,6 @@
 import { Injectable } from '@nestjs/common';
 import { getJsonSchema } from '@/core/chart/core.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
-import InstanceChart from '@/core/chart/charts/instance.js';
 import { schema } from '@/core/chart/charts/entities/instance.js';
 import { z } from 'zod';
 
@@ -28,11 +27,18 @@ export const paramDef = z.object({
 
 @Injectable()
 export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
-	constructor(
-		private readonly instanceChart: InstanceChart,
-	) {
-		super(meta, paramDef, async (ps, me) => {
-			return await this.instanceChart.getChart(ps.span, ps.limit, ps.offset ? new Date(ps.offset) : null, ps.host);
+	constructor() {
+		super(meta, paramDef, async (ps) => {
+			const dummy = new Array<number>(ps.limit).fill(0);
+
+			return {
+				drive: { decFiles: dummy, decUsage: dummy, incFiles: dummy, incUsage: dummy, totalFiles: dummy },
+				followers: { dec: dummy, inc: dummy, total: dummy },
+				following: { dec: dummy, inc: dummy, total: dummy },
+				notes: { dec: dummy, diffs: { normal: dummy, renote: dummy, reply: dummy, withFile: dummy }, inc: dummy, total: dummy },
+				requests: { failed: dummy, received: dummy, succeeded: dummy },
+				users: { dec: dummy, inc: dummy, total: dummy },
+			};
 		});
 	}
 }

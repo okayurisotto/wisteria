@@ -9,10 +9,10 @@ import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
 import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import NotesChart from '@/core/chart/charts/notes.js';
-import UsersChart from '@/core/chart/charts/users.js';
 import { DEFAULT_POLICIES } from '@/core/RoleService.js';
 import { Hono } from 'hono';
+import type { NotesRepository, UsersRepository } from '@/models/_.js';
+import { IsNull } from 'typeorm';
 
 const nodeinfo2_1path = '/nodeinfo/2.1';
 const nodeinfo2_0path = '/nodeinfo/2.0';
@@ -24,10 +24,14 @@ export class NodeinfoServerService {
 		@Inject(DI.config)
 		private readonly config: Config,
 
+		@Inject(DI.usersRepository)
+		private readonly usersRepository: UsersRepository,
+
+		@Inject(DI.notesRepository)
+		private readonly notesRespository: NotesRepository,
+
 		private readonly userEntityService: UserEntityService,
 		private readonly metaService: MetaService,
-		private readonly notesChart: NotesChart,
-		private readonly usersChart: UsersChart,
 	) {}
 
 	public getLinks() {
@@ -41,11 +45,8 @@ export class NodeinfoServerService {
 	}
 
 	private async nodeinfo2(version: '2.0' | '2.1') {
-		const notesChart = await this.notesChart.getChart('hour', 1, null);
-		const localPosts = notesChart.local.total[0];
-
-		const usersChart = await this.usersChart.getChart('hour', 1, null);
-		const total = usersChart.local.total[0];
+		const localPosts = await this.notesRespository.countBy({ user: { host: IsNull() } });
+		const total = await this.usersRepository.count();
 
 		const meta = await this.metaService.fetch();
 

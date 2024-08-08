@@ -6,7 +6,6 @@
 import { Injectable } from '@nestjs/common';
 import { getJsonSchema } from '@/core/chart/core.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
-import PerUserDriveChart from '@/core/chart/charts/per-user-drive.js';
 import { schema } from '@/core/chart/charts/entities/per-user-drive.js';
 import { z } from 'zod';
 import { IdSchema } from '@/models/zod/IdSchema.js';
@@ -29,11 +28,18 @@ export const paramDef = z.object({
 
 @Injectable()
 export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
-	constructor(
-		private readonly perUserDriveChart: PerUserDriveChart,
-	) {
-		super(meta, paramDef, async (ps, me) => {
-			return await this.perUserDriveChart.getChart(ps.span, ps.limit, ps.offset ? new Date(ps.offset) : null, ps.userId);
+	constructor() {
+		super(meta, paramDef, async (ps) => {
+			const dummy = new Array<number>(ps.limit).fill(0);
+
+			return {
+				decCount: dummy,
+				decSize: dummy,
+				incCount: dummy,
+				incSize: dummy,
+				totalCount: dummy,
+				totalSize: dummy,
+			};
 		});
 	}
 }

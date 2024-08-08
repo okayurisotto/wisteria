@@ -6,7 +6,6 @@
 import { Injectable } from '@nestjs/common';
 import { getJsonSchema } from '@/core/chart/core.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
-import PerUserPvChart from '@/core/chart/charts/per-user-pv.js';
 import { schema } from '@/core/chart/charts/entities/per-user-pv.js';
 import { z } from 'zod';
 import { IdSchema } from '@/models/zod/IdSchema.js';
@@ -29,11 +28,14 @@ export const paramDef = z.object({
 
 @Injectable()
 export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
-	constructor(
-		private readonly perUserPvChart: PerUserPvChart,
-	) {
+	constructor() {
 		super(meta, paramDef, async (ps, me) => {
-			return await this.perUserPvChart.getChart(ps.span, ps.limit, ps.offset ? new Date(ps.offset) : null, ps.userId);
+			const dummy = new Array<number>(ps.limit).fill(0);
+
+			return {
+				pv: { user: dummy, visitor: dummy },
+				upv: { user: dummy, visitor: dummy },
+			};
 		});
 	}
 }
