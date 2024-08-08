@@ -151,15 +151,9 @@ import { FeedService } from './FeedService.js';
 import { FileGetService } from './FileGetService.js';
 
 // #region 文字列ベースでのinjection用(循環参照対応のため)
-const $NotificationCreateService: Provider = { provide: 'NotificationCreateService', useExisting: NotificationCreateService };
-const $RoleUserService: Provider = { provide: 'RoleUserService', useExisting: RoleUserService };
-const $UserFollowingService: Provider = { provide: 'UserFollowingService', useExisting: UserFollowingService };
-
 const $DriveFileEntityService: Provider = { provide: 'DriveFileEntityService', useExisting: DriveFileEntityService };
-const $NoteEntityService: Provider = { provide: 'NoteEntityService', useExisting: NoteEntityService };
 const $PageEntityService: Provider = { provide: 'PageEntityService', useExisting: PageEntityService };
 const $UserEntityService: Provider = { provide: 'UserEntityService', useExisting: UserEntityService };
-
 const $ApResolverService: Provider = { provide: 'ApResolverService', useExisting: ApResolverService };
 const $ApImageService: Provider = { provide: 'ApImageService', useExisting: ApImageService };
 const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNoteService };
@@ -316,15 +310,9 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		QueueService,
 
 		// #region 文字列ベースでのinjection用(循環参照対応のため)
-		$NotificationCreateService,
-		$RoleUserService,
-		$UserFollowingService,
-
 		$DriveFileEntityService,
-		$NoteEntityService,
 		$PageEntityService,
 		$UserEntityService,
-
 		$ApResolverService,
 		$ApImageService,
 		$ApNoteService,

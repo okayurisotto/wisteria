@@ -5,7 +5,6 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { In } from 'typeorm';
-import { ModuleRef } from '@nestjs/core';
 import type {
 	MiRole,
 	RoleAssignmentsRepository,
@@ -16,8 +15,7 @@ import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import { IdService } from '@/core/IdService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
-import type { NotificationCreateService } from './NotificationCreateService.js';
-import type { OnModuleInit } from '@nestjs/common';
+import { NotificationCreateService } from './NotificationCreateService.js';
 
 export type RolePolicies = {
 	gtlAvailable: boolean;
@@ -74,15 +72,11 @@ export const DEFAULT_POLICIES: RolePolicies = {
 };
 
 @Injectable()
-export class RoleService implements OnModuleInit {
-	private notificationCreateService!: NotificationCreateService;
-
+export class RoleService {
 	public static AlreadyAssignedError = class extends Error {};
 	public static NotAssignedError = class extends Error {};
 
 	constructor(
-		private readonly moduleRef: ModuleRef,
-
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,
 
@@ -94,11 +88,8 @@ export class RoleService implements OnModuleInit {
 
 		private readonly idService: IdService,
 		private readonly moderationLogService: ModerationLogService,
+		private readonly notificationCreateService: NotificationCreateService,
 	) {}
-
-	async onModuleInit() {
-		this.notificationCreateService = this.moduleRef.get('NotificationCreateService');
-	}
 
 	public async getRoles() {
 		const roles = await this.rolesRepository.findBy({});

@@ -4,7 +4,6 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
 import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { FollowRequestsRepository, NotesRepository, MiUser, UsersRepository } from '@/models/_.js';
@@ -15,21 +14,15 @@ import type { Packed } from '@/misc/json-schema.js';
 import { isNotNull } from '@/misc/is-not-null.js';
 import { type FilterUnionByProperty, notificationTypes } from '@/types.js';
 import { RoleEntityService } from './RoleEntityService.js';
-import type { OnModuleInit } from '@nestjs/common';
-import type { UserEntityService } from './UserEntityService.js';
-import type { NoteEntityService } from './NoteEntityService.js';
+import { UserEntityService } from './UserEntityService.js';
+import { NoteEntityService } from './NoteEntityService.js';
 
 const NOTE_REQUIRED_NOTIFICATION_TYPES = new Set(['note', 'mention', 'reply', 'renote', 'quote', 'reaction', 'pollEnded'] as (typeof notificationTypes[number])[]);
 const NOTE_REQUIRED_GROUPED_NOTIFICATION_TYPES = new Set(['note', 'mention', 'reply', 'renote', 'renote:grouped', 'quote', 'reaction', 'reaction:grouped', 'pollEnded']);
 
 @Injectable()
-export class NotificationEntityService implements OnModuleInit {
-	private userEntityService: UserEntityService;
-	private noteEntityService: NoteEntityService;
-
+export class NotificationEntityService {
 	constructor(
-		private readonly moduleRef: ModuleRef,
-
 		@Inject(DI.notesRepository)
 		private readonly notesRepository: NotesRepository,
 
@@ -40,12 +33,9 @@ export class NotificationEntityService implements OnModuleInit {
 		private readonly followRequestsRepository: FollowRequestsRepository,
 
 		private readonly roleEntityService: RoleEntityService,
+		private readonly userEntityService: UserEntityService,
+		private readonly noteEntityService: NoteEntityService,
 	) {}
-
-	onModuleInit() {
-		this.userEntityService = this.moduleRef.get('UserEntityService');
-		this.noteEntityService = this.moduleRef.get('NoteEntityService');
-	}
 
 	public async pack(
 		src: MiNotification,

@@ -24,7 +24,7 @@ import type { OnModuleInit } from '@nestjs/common';
 import { NoteEntityService } from './NoteEntityService.js';
 import type { PageEntityService } from './PageEntityService.js';
 import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
-import type { RoleUserService } from '../RoleUserService.js';
+import { RoleUserService } from '../RoleUserService.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
@@ -34,7 +34,6 @@ const ajv = new Ajv();
 export class UserEntityService implements OnModuleInit {
 	private apPersonService: ApPersonService;
 	private pageEntityService: PageEntityService;
-	private roleUserService: RoleUserService;
 
 	constructor(
 		private readonly moduleRef: ModuleRef,
@@ -86,12 +85,12 @@ export class UserEntityService implements OnModuleInit {
 		private readonly avatarDecorationService: AvatarDecorationService,
 		private readonly noteEntityService: NoteEntityService,
 		private readonly customEmojiPopulateService: CustomEmojiPopulateService,
+		private readonly roleUserService: RoleUserService,
 	) {}
 
 	onModuleInit() {
 		this.apPersonService = this.moduleRef.get('ApPersonService');
 		this.pageEntityService = this.moduleRef.get('PageEntityService');
-		this.roleUserService = this.moduleRef.get('RoleUserService');
 	}
 
 	// #region Validators

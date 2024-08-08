@@ -3,8 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
+import { Inject, Injectable } from '@nestjs/common';
 import { IdService } from '@/core/IdService.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiBlocking } from '@/models/Blocking.js';
@@ -20,12 +19,8 @@ import { isLocalUser } from '@/misc/isLocalUser.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 @Injectable()
-export class UserBlockingBlockService implements OnModuleInit {
-	private userFollowingService!: UserFollowingService;
-
+export class UserBlockingBlockService {
 	constructor(
-		private readonly moduleRef: ModuleRef,
-
 		@Inject(DI.followRequestsRepository)
 		private readonly followRequestsRepository: FollowRequestsRepository,
 
@@ -44,11 +39,8 @@ export class UserBlockingBlockService implements OnModuleInit {
 		private readonly globalEventService: GlobalEventService,
 		private readonly webhookService: WebhookService,
 		private readonly apRendererService: ApRendererService,
+		private readonly userFollowingService: UserFollowingService,
 	) {}
-
-	onModuleInit() {
-		this.userFollowingService = this.moduleRef.get('UserFollowingService');
-	}
 
 	public async block(blocker: MiUser, blockee: MiUser, silent = false): Promise<void> {
 		await Promise.all([
