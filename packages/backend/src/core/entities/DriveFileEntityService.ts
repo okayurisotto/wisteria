@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { DriveFilesRepository } from '@/models/_.js';
@@ -37,10 +37,7 @@ export class DriveFileEntityService {
 		@Inject(DI.driveFilesRepository)
 		private readonly driveFilesRepository: DriveFilesRepository,
 
-		// 循環参照のため / for circular dependency
-		@Inject(forwardRef(() => UserEntityService))
 		private readonly userEntityService: UserEntityService,
-
 		private readonly utilityService: UtilityService,
 		private readonly driveFolderEntityService: DriveFolderEntityService,
 		private readonly videoProcessingService: VideoProcessingService,

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import promiseLimit from 'promise-limit';
 import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
@@ -55,11 +55,7 @@ export class ApNoteService {
 		private readonly idService: IdService,
 		private readonly apMfmService: ApMfmService,
 		private readonly apResolverService: ApResolverService,
-
-		// 循環参照のため / for circular dependency
-		@Inject(forwardRef(() => ApPersonService))
 		private readonly apPersonService: ApPersonService,
-
 		private readonly utilityService: UtilityService,
 		private readonly apAudienceService: ApAudienceService,
 		private readonly apMentionService: ApMentionService,
