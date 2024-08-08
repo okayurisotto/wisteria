@@ -11,7 +11,6 @@ import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { DI } from '@/di-symbols.js';
-import PerUserPvChart from '@/core/chart/charts/per-user-pv.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { ApiError } from '../../error.js';
 import { ApiLoggerService } from '../../ApiLoggerService.js';
@@ -83,7 +82,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly userEntityService: UserEntityService,
 		private readonly remoteUserResolveService: RemoteUserResolveService,
 		private readonly roleUserService: RoleUserService,
-		private readonly perUserPvChart: PerUserPvChart,
 		private readonly apiLoggerService: ApiLoggerService,
 	) {
 		super(meta, paramDef, async (ps, me, _1, _2, _3, ip) => {
@@ -134,14 +132,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 				if (user == null || (!isModerator && user.isSuspended)) {
 					throw new ApiError(meta.errors.noSuchUser);
-				}
-
-				if (user.host == null) {
-					if (me == null && ip != null) {
-						this.perUserPvChart.commitByVisitor(user, ip);
-					} else if (me && me.id !== user.id) {
-						this.perUserPvChart.commitByUser(user, me.id);
-					}
 				}
 
 				return await this.userEntityService.pack(user, me, {

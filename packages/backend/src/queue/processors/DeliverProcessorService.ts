@@ -11,9 +11,6 @@ import { MetaService } from '@/core/MetaService.js';
 import { ApRequestService } from '@/core/activitypub/ApRequestService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { FetchInstanceMetadataService } from '@/core/FetchInstanceMetadataService.js';
-import InstanceChart from '@/core/chart/charts/instance.js';
-import ApRequestChart from '@/core/chart/charts/ap-request.js';
-import FederationChart from '@/core/chart/charts/federation.js';
 import { StatusError } from '@/misc/status-error.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import type { DeliverJobData } from '../types.js';
@@ -29,9 +26,6 @@ export class DeliverProcessorService {
 		private readonly federatedInstanceService: FederatedInstanceService,
 		private readonly fetchInstanceMetadataService: FetchInstanceMetadataService,
 		private readonly apRequestService: ApRequestService,
-		private readonly instanceChart: InstanceChart,
-		private readonly apRequestChart: ApRequestChart,
-		private readonly federationChart: FederationChart,
 	) {}
 
 	public async process(job: Bull.Job<DeliverJobData>): Promise<string> {
@@ -65,12 +59,6 @@ export class DeliverProcessorService {
 				}
 
 				this.fetchInstanceMetadataService.fetchInstanceMetadata(i);
-				this.apRequestChart.deliverSucc();
-				this.federationChart.deliverd(i.host, true);
-
-				if (meta.enableChartsForFederatedInstances) {
-					this.instanceChart.requestSent(i.host, true);
-				}
 			});
 
 			return 'Success';
@@ -81,13 +69,6 @@ export class DeliverProcessorService {
 					this.federatedInstanceService.update(i.id, {
 						isNotResponding: true,
 					});
-				}
-
-				this.apRequestChart.deliverFail();
-				this.federationChart.deliverd(i.host, false);
-
-				if (meta.enableChartsForFederatedInstances) {
-					this.instanceChart.requestSent(i.host, false);
 				}
 			});
 

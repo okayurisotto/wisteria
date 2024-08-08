@@ -67,21 +67,6 @@ import { FanoutTimelineService } from './FanoutTimelineService.js';
 import { ChannelFollowingService } from './ChannelFollowingService.js';
 import { RegistryApiService } from './RegistryApiService.js';
 
-import { ChartLoggerService } from './chart/ChartLoggerService.js';
-import FederationChart from './chart/charts/federation.js';
-import NotesChart from './chart/charts/notes.js';
-import UsersChart from './chart/charts/users.js';
-import ActiveUsersChart from './chart/charts/active-users.js';
-import InstanceChart from './chart/charts/instance.js';
-import PerUserNotesChart from './chart/charts/per-user-notes.js';
-import PerUserPvChart from './chart/charts/per-user-pv.js';
-import DriveChart from './chart/charts/drive.js';
-import PerUserReactionsChart from './chart/charts/per-user-reactions.js';
-import PerUserFollowingChart from './chart/charts/per-user-following.js';
-import PerUserDriveChart from './chart/charts/per-user-drive.js';
-import ApRequestChart from './chart/charts/ap-request.js';
-import { ChartManagementService } from './chart/ChartManagementService.js';
-
 import { AbuseUserReportEntityService } from './entities/AbuseUserReportEntityService.js';
 import { AntennaEntityService } from './entities/AntennaEntityService.js';
 import { AppEntityService } from './entities/AppEntityService.js';
@@ -235,21 +220,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		FeedService,
 		FileGetService,
 
-		ChartLoggerService,
-		FederationChart,
-		NotesChart,
-		UsersChart,
-		ActiveUsersChart,
-		InstanceChart,
-		PerUserNotesChart,
-		PerUserPvChart,
-		DriveChart,
-		PerUserReactionsChart,
-		PerUserFollowingChart,
-		PerUserDriveChart,
-		ApRequestChart,
-		ChartManagementService,
-
 		AbuseUserReportEntityService,
 		AntennaEntityService,
 		AppEntityService,
@@ -387,20 +357,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		AlsoKnownAsValidateService,
 		FeedService,
 		FileGetService,
-
-		FederationChart,
-		NotesChart,
-		UsersChart,
-		ActiveUsersChart,
-		InstanceChart,
-		PerUserNotesChart,
-		PerUserPvChart,
-		DriveChart,
-		PerUserReactionsChart,
-		PerUserFollowingChart,
-		PerUserDriveChart,
-		ApRequestChart,
-		ChartManagementService,
 
 		AbuseUserReportEntityService,
 		AntennaEntityService,

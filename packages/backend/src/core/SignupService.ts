@@ -17,7 +17,6 @@ import { MiUsedUsername } from '@/models/UsedUsername.js';
 import { generateUserToken } from '@/misc/generate-native-user-token.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { InstanceActorService } from '@/core/InstanceActorService.js';
-import UsersChart from '@/core/chart/charts/users.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { MetaService } from '@/core/MetaService.js';
 
@@ -38,7 +37,6 @@ export class SignupService {
 		private readonly idService: IdService,
 		private readonly metaService: MetaService,
 		private readonly instanceActorService: InstanceActorService,
-		private readonly usersChart: UsersChart,
 	) {}
 
 	public async signup(opts: {
@@ -146,8 +144,6 @@ export class SignupService {
 				username: username.toLowerCase(),
 			}));
 		});
-
-		this.usersChart.update(account, true);
 
 		return { account, secret };
 	}

@@ -11,9 +11,6 @@ import type { Logger } from '@/logger.js';
 import { MetaService } from '@/core/MetaService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { FetchInstanceMetadataService } from '@/core/FetchInstanceMetadataService.js';
-import InstanceChart from '@/core/chart/charts/instance.js';
-import ApRequestChart from '@/core/chart/charts/ap-request.js';
-import FederationChart from '@/core/chart/charts/federation.js';
 import { getApId } from '@/core/activitypub/type.js';
 import type { MiRemoteUser } from '@/models/User.js';
 import type { MiUserPublickey } from '@/models/UserPublickey.js';
@@ -39,9 +36,6 @@ export class InboxProcessorService {
 		private readonly ldSignatureService: LdSignatureService,
 		private readonly apPersonService: ApPersonService,
 		private readonly apDbResolverService: ApDbResolverService,
-		private readonly instanceChart: InstanceChart,
-		private readonly apRequestChart: ApRequestChart,
-		private readonly federationChart: FederationChart,
 		private readonly queueLoggerService: QueueLoggerService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('inbox');
@@ -167,13 +161,6 @@ export class InboxProcessorService {
 			});
 
 			this.fetchInstanceMetadataService.fetchInstanceMetadata(i);
-
-			this.apRequestChart.inbox();
-			this.federationChart.inbox(i.host);
-
-			if (meta.enableChartsForFederatedInstances) {
-				this.instanceChart.requestReceived(i.host);
-			}
 		});
 
 		// アクティビティを処理

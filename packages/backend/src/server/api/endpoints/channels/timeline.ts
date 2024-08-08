@@ -8,7 +8,6 @@ import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { ChannelsRepository, NotesRepository } from '@/models/_.js';
 import { QueryService } from '@/core/QueryService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import ActiveUsersChart from '@/core/chart/charts/active-users.js';
 import { DI } from '@/di-symbols.js';
 import { IdService } from '@/core/IdService.js';
 import type { MiLocalUser } from '@/models/User.js';
@@ -55,7 +54,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly idService: IdService,
 		private readonly noteEntityService: NoteEntityService,
 		private readonly queryService: QueryService,
-		private readonly activeUsersChart: ActiveUsersChart,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate) : null);
@@ -68,8 +66,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			if (channel == null) {
 				throw new ApiError(meta.errors.noSuchChannel);
 			}
-
-			if (me) this.activeUsersChart.read(me);
 
 			return await this.noteEntityService.packMany(await this.getFromDb({ untilId, sinceId, limit: ps.limit, channelId: channel.id }, me), me);
 		});

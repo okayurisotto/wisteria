@@ -8,7 +8,6 @@ import { Brackets } from 'typeorm';
 import type { MiUserList, NotesRepository, UserListMembershipsRepository, UserListsRepository } from '@/models/_.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import ActiveUsersChart from '@/core/chart/charts/active-users.js';
 import { DI } from '@/di-symbols.js';
 import { IdService } from '@/core/IdService.js';
 import { QueryService } from '@/core/QueryService.js';
@@ -63,7 +62,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
 		private readonly noteEntityService: NoteEntityService,
-		private readonly activeUsersChart: ActiveUsersChart,
 		private readonly idService: IdService,
 		private readonly queryService: QueryService,
 	) {
@@ -90,8 +88,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				withFiles: ps.withFiles,
 				withRenotes: ps.withRenotes,
 			}, me);
-
-			this.activeUsersChart.read(me);
 
 			return await this.noteEntityService.packMany(timeline, me);
 		});

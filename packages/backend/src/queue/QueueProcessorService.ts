@@ -32,9 +32,6 @@ import { ExportFavoritesProcessorService } from './processors/ExportFavoritesPro
 import { CleanRemoteFilesProcessorService } from './processors/CleanRemoteFilesProcessorService.js';
 import { DeleteFileProcessorService } from './processors/DeleteFileProcessorService.js';
 import { RelationshipProcessorService } from './processors/RelationshipProcessorService.js';
-import { TickChartsProcessorService } from './processors/TickChartsProcessorService.js';
-import { ResyncChartsProcessorService } from './processors/ResyncChartsProcessorService.js';
-import { CleanChartsProcessorService } from './processors/CleanChartsProcessorService.js';
 import { CheckExpiredMutingsProcessorService } from './processors/CheckExpiredMutingsProcessorService.js';
 import { CleanProcessorService } from './processors/CleanProcessorService.js';
 import { AggregateRetentionProcessorService } from './processors/AggregateRetentionProcessorService.js';
@@ -125,9 +122,6 @@ export class QueueProcessorService implements OnApplicationShutdown {
 		private readonly deleteFileProcessorService: DeleteFileProcessorService,
 		private readonly cleanRemoteFilesProcessorService: CleanRemoteFilesProcessorService,
 		private readonly relationshipProcessorService: RelationshipProcessorService,
-		private readonly tickChartsProcessorService: TickChartsProcessorService,
-		private readonly resyncChartsProcessorService: ResyncChartsProcessorService,
-		private readonly cleanChartsProcessorService: CleanChartsProcessorService,
 		private readonly aggregateRetentionProcessorService: AggregateRetentionProcessorService,
 		private readonly checkExpiredMutingsProcessorService: CheckExpiredMutingsProcessorService,
 		private readonly cleanProcessorService: CleanProcessorService,
@@ -153,9 +147,9 @@ export class QueueProcessorService implements OnApplicationShutdown {
 		// #region system
 		this.systemQueueWorker = new Bull.Worker(QUEUE.SYSTEM, (job) => {
 			switch (job.name) {
-				case 'tickCharts': return this.tickChartsProcessorService.process();
-				case 'resyncCharts': return this.resyncChartsProcessorService.process();
-				case 'cleanCharts': return this.cleanChartsProcessorService.process();
+				case 'tickCharts': return Promise.resolve();
+				case 'resyncCharts': return Promise.resolve();
+				case 'cleanCharts': return Promise.resolve();
 				case 'aggregateRetention': return this.aggregateRetentionProcessorService.process();
 				case 'checkExpiredMutings': return this.checkExpiredMutingsProcessorService.process();
 				case 'clean': return this.cleanProcessorService.process();

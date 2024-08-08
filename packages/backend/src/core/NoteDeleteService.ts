@@ -12,13 +12,9 @@ import { RelayService } from '@/core/RelayService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
-import NotesChart from '@/core/chart/charts/notes.js';
-import PerUserNotesChart from '@/core/chart/charts/per-user-notes.js';
-import InstanceChart from '@/core/chart/charts/instance.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
-import { MetaService } from '@/core/MetaService.js';
 import { SearchService } from '@/core/SearchService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 import { isPureRenote } from '@/misc/is-pure-renote.js';
@@ -45,12 +41,8 @@ export class NoteDeleteService {
 		private readonly federatedInstanceService: FederatedInstanceService,
 		private readonly apRendererService: ApRendererService,
 		private readonly apDeliverManagerService: ApDeliverManagerService,
-		private readonly metaService: MetaService,
 		private readonly searchService: SearchService,
 		private readonly moderationLogService: ModerationLogService,
-		private readonly notesChart: NotesChart,
-		private readonly perUserNotesChart: PerUserNotesChart,
-		private readonly instanceChart: InstanceChart,
 	) {}
 
 	/**
@@ -99,19 +91,9 @@ export class NoteDeleteService {
 			}
 			// #endregion
 
-			const meta = await this.metaService.fetch();
-
-			this.notesChart.update(note, false);
-			if (meta.enableChartsForRemoteUser || (user.host == null)) {
-				this.perUserNotesChart.update(user, note, false);
-			}
-
 			if (isRemoteUser(user)) {
 				this.federatedInstanceService.fetch(user.host).then(async (i) => {
 					this.instancesRepository.decrement({ id: i.id }, 'notesCount', 1);
-					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
-						this.instanceChart.updateNote(i.host, note, false);
-					}
 				});
 			}
 		}

@@ -14,12 +14,10 @@ import type { MiNoteReaction } from '@/models/NoteReaction.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { NotificationCreateService } from './NotificationCreateService.js';
-import PerUserReactionsChart from '@/core/chart/charts/per-user-reactions.js';
 import { emojiRegex } from '@/misc/emoji-regex.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
-import { MetaService } from '@/core/MetaService.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { UserBlockingCheckService } from './UserBlockingCheckService.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
@@ -53,7 +51,6 @@ export class ReactionCreateService {
 		private readonly emojisRepository: EmojisRepository,
 
 		private readonly utilityService: UtilityService,
-		private readonly metaService: MetaService,
 		private readonly customEmojiService: CustomEmojiService,
 		private readonly roleUserService: RoleUserService,
 		private readonly noteEntityService: NoteEntityService,
@@ -64,7 +61,6 @@ export class ReactionCreateService {
 		private readonly apRendererService: ApRendererService,
 		private readonly apDeliverManagerService: ApDeliverManagerService,
 		private readonly notificationCreateService: NotificationCreateService,
-		private readonly perUserReactionsChart: PerUserReactionsChart,
 		private readonly reactionDecodeService: ReactionDecodeService,
 		private readonly reactionDeleteService: ReactionDeleteService,
 	) {}
@@ -180,12 +176,6 @@ export class ReactionCreateService {
 					this.featuredService.updatePerUserNotesRanking(note.userId, note.id, 1);
 				}
 			}
-		}
-
-		const meta = await this.metaService.fetch();
-
-		if (meta.enableChartsForRemoteUser || (user.host == null)) {
-			this.perUserReactionsChart.update(user, note);
 		}
 
 		// カスタム絵文字リアクションだったら絵文字情報も送る

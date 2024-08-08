@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ChartManagementService } from '@/core/chart/ChartManagementService.js';
 import { QueueProcessorService } from '@/queue/QueueProcessorService.js';
 import { QueueStatsService } from '@/daemons/QueueStatsService.js';
 import { ServerStatsService } from '@/daemons/ServerStatsService.js';
@@ -16,7 +15,6 @@ export const server = (app: INestApplicationContext) => {
 	serverService.launch();
 
 	if (!envOption.isTest) {
-		app.get(ChartManagementService).start();
 		app.get(QueueStatsService).start();
 		void app.get(ServerStatsService).start();
 	}
@@ -26,7 +24,6 @@ export const server = (app: INestApplicationContext) => {
 
 export const jobQueue = async (app: INestApplicationContext) => {
 	await app.get(QueueProcessorService).start();
-	app.get(ChartManagementService).start();
 
 	return app;
 };

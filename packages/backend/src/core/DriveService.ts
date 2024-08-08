@@ -29,9 +29,6 @@ import type { IImage } from '@/core/ImageProcessingService.js';
 import { QueueService } from '@/core/QueueService.js';
 import type { MiDriveFolder } from '@/models/DriveFolder.js';
 import { createTemp } from '@/misc/create-temp.js';
-import DriveChart from '@/core/chart/charts/drive.js';
-import PerUserDriveChart from '@/core/chart/charts/per-user-drive.js';
-import InstanceChart from '@/core/chart/charts/instance.js';
 import { DownloadService } from '@/core/DownloadService.js';
 import { S3Service } from '@/core/S3Service.js';
 import { InternalStorageService } from '@/core/InternalStorageService.js';
@@ -123,9 +120,6 @@ export class DriveService {
 		private readonly queueService: QueueService,
 		private readonly roleUserService: RoleUserService,
 		private readonly moderationLogService: ModerationLogService,
-		private readonly driveChart: DriveChart,
-		private readonly perUserDriveChart: PerUserDriveChart,
-		private readonly instanceChart: InstanceChart,
 	) {
 		const logger = new Logger('drive', 'blue');
 		this.registerLogger = logger.createSubLogger('register', 'yellow');
@@ -638,16 +632,6 @@ export class DriveService {
 			});
 		}
 
-		this.driveChart.update(file, true);
-		if (file.userHost == null) {
-			// ローカルユーザーのみ
-			this.perUserDriveChart.update(file, true);
-		} else {
-			if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
-				this.instanceChart.updateDrive(file, true);
-			}
-		}
-
 		return file;
 	}
 
@@ -778,16 +762,6 @@ export class DriveService {
 			});
 		} else {
 			this.driveFilesRepository.delete(file.id);
-		}
-
-		this.driveChart.update(file, false);
-		if (file.userHost == null) {
-			// ローカルユーザーのみ
-			this.perUserDriveChart.update(file, false);
-		} else {
-			if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
-				this.instanceChart.updateDrive(file, false);
-			}
 		}
 
 		if (file.userId) {

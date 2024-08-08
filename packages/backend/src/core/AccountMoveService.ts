@@ -19,9 +19,6 @@ import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ProxyAccountService } from '@/core/ProxyAccountService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
-import { MetaService } from '@/core/MetaService.js';
-import InstanceChart from '@/core/chart/charts/instance.js';
-import PerUserFollowingChart from '@/core/chart/charts/per-user-following.js';
 import { envOption } from '@/env.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
@@ -52,10 +49,7 @@ export class AccountMoveService {
 		private readonly apDeliverManagerService: ApDeliverManagerService,
 		private readonly globalEventService: GlobalEventService,
 		private readonly proxyAccountService: ProxyAccountService,
-		private readonly perUserFollowingChart: PerUserFollowingChart,
 		private readonly federatedInstanceService: FederatedInstanceService,
-		private readonly instanceChart: InstanceChart,
-		private readonly metaService: MetaService,
 		private readonly relayService: RelayService,
 		private readonly queueService: QueueService,
 	) {}
@@ -268,15 +262,7 @@ export class AccountMoveService {
 		if (isRemoteUser(oldAccount)) {
 			this.federatedInstanceService.fetch(oldAccount.host).then(async (i) => {
 				this.instancesRepository.decrement({ id: i.id }, 'followersCount', localFollowerIds.length);
-				if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
-					this.instanceChart.updateFollowers(i.host, false);
-				}
 			});
-		}
-
-		// FIXME: expensive?
-		for (const followerId of localFollowerIds) {
-			this.perUserFollowingChart.update({ id: followerId, host: null }, oldAccount, false);
 		}
 	}
 }

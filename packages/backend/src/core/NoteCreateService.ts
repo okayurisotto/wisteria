@@ -27,10 +27,6 @@ import { RelayService } from '@/core/RelayService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
-import NotesChart from '@/core/chart/charts/notes.js';
-import PerUserNotesChart from '@/core/chart/charts/per-user-notes.js';
-import InstanceChart from '@/core/chart/charts/instance.js';
-import ActiveUsersChart from '@/core/chart/charts/active-users.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { WebhookService } from '@/core/WebhookService.js';
 import { HashtagService } from '@/core/HashtagService.js';
@@ -189,10 +185,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 		private readonly roleUserService: RoleUserService,
 		private readonly metaService: MetaService,
 		private readonly searchService: SearchService,
-		private readonly notesChart: NotesChart,
-		private readonly perUserNotesChart: PerUserNotesChart,
-		private readonly activeUsersChart: ActiveUsersChart,
-		private readonly instanceChart: InstanceChart,
 		private readonly utilityService: UtilityService,
 		private readonly userBlockingCheckService: UserBlockingCheckService,
 	) {}
@@ -466,20 +458,10 @@ export class NoteCreateService implements OnApplicationShutdown {
 		host: MiUser['host'];
 		isBot: MiUser['isBot'];
 	}, data: Option, silent: boolean, tags: string[], mentionedUsers: MinimumUser[]) {
-		const meta = await this.metaService.fetch();
-
-		this.notesChart.update(note, true);
-		if (meta.enableChartsForRemoteUser || (user.host == null)) {
-			this.perUserNotesChart.update(user, note, true);
-		}
-
 		// Register host
 		if (isRemoteUser(user)) {
 			this.federatedInstanceService.fetch(user.host).then(async (i) => {
 				this.instancesRepository.increment({ id: i.id }, 'notesCount', 1);
-				if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
-					this.instanceChart.updateNote(i.host, note, true);
-				}
 			});
 		}
 
@@ -529,8 +511,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 
 		if (!silent) {
-			if (isLocalUser(user)) this.activeUsersChart.write(user);
-
 			// 未読通知を作成
 			if (data.visibility === 'specified') {
 				if (data.visibleUsers == null) throw new Error('invalid param');

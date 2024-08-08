@@ -24,13 +24,10 @@ import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { FetchInstanceMetadataService } from '@/core/FetchInstanceMetadataService.js';
 import { MiUserProfile } from '@/models/UserProfile.js';
 import { MiUserPublickey } from '@/models/UserPublickey.js';
-import UsersChart from '@/core/chart/charts/users.js';
-import InstanceChart from '@/core/chart/charts/instance.js';
 import { HashtagService } from '@/core/HashtagService.js';
 import { MiUserNotePining } from '@/models/UserNotePining.js';
 import { StatusError } from '@/misc/status-error.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import { MetaService } from '@/core/MetaService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { AccountMoveService } from '@/core/AccountMoveService.js';
 import { checkHttps } from '@/misc/check-https.js';
@@ -85,7 +82,6 @@ export class ApPersonService implements OnModuleInit {
 		@Inject(DI.followingsRepository)
 		private readonly followingsRepository: FollowingsRepository,
 
-		private readonly metaService: MetaService,
 		private readonly idService: IdService,
 		private readonly utilityService: UtilityService,
 		private readonly apLoggerService: ApLoggerService,
@@ -95,8 +91,6 @@ export class ApPersonService implements OnModuleInit {
 		private readonly fetchInstanceMetadataService: FetchInstanceMetadataService,
 		private readonly apMfmService: ApMfmService,
 		private readonly hashtagService: HashtagService,
-		private readonly usersChart: UsersChart,
-		private readonly instanceChart: InstanceChart,
 	) {
 		this.logger = this.apLoggerService.logger;
 	}
@@ -358,12 +352,7 @@ export class ApPersonService implements OnModuleInit {
 		this.federatedInstanceService.fetch(host).then(async (i) => {
 			this.instancesRepository.increment({ id: i.id }, 'usersCount', 1);
 			this.fetchInstanceMetadataService.fetchInstanceMetadata(i);
-			if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
-				this.instanceChart.newUser(i.host);
-			}
 		});
-
-		this.usersChart.update(user, true);
 
 		// ハッシュタグ更新
 		this.hashtagService.updateUsertags(user, tags);

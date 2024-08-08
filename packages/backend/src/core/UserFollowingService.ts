@@ -8,11 +8,9 @@ import { IsNull } from 'typeorm';
 import type { MiLocalUser, MiPartialLocalUser, MiPartialRemoteUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
 import { QueueService } from '@/core/QueueService.js';
-import PerUserFollowingChart from '@/core/chart/charts/per-user-following.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { IdService } from '@/core/IdService.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
-import InstanceChart from '@/core/chart/charts/instance.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { WebhookService } from '@/core/WebhookService.js';
 import { NotificationCreateService } from './NotificationCreateService.js';
@@ -77,8 +75,6 @@ export class UserFollowingService {
 		private readonly federatedInstanceService: FederatedInstanceService,
 		private readonly webhookService: WebhookService,
 		private readonly apRendererService: ApRendererService,
-		private readonly perUserFollowingChart: PerUserFollowingChart,
-		private readonly instanceChart: InstanceChart,
 		private readonly userBlockingCheckService: UserBlockingCheckService,
 		private readonly userBlockingUnblockService: UserBlockingUnblockService,
 		private readonly loggerService: LoggerService,
@@ -260,21 +256,13 @@ export class UserFollowingService {
 			if (isRemoteUser(follower) && isLocalUser(followee)) {
 				this.federatedInstanceService.fetch(follower.host).then(async (i) => {
 					this.instancesRepository.increment({ id: i.id }, 'followingCount', 1);
-					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
-						this.instanceChart.updateFollowing(i.host, true);
-					}
 				});
 			} else if (isLocalUser(follower) && isRemoteUser(followee)) {
 				this.federatedInstanceService.fetch(followee.host).then(async (i) => {
 					this.instancesRepository.increment({ id: i.id }, 'followersCount', 1);
-					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
-						this.instanceChart.updateFollowers(i.host, true);
-					}
 				});
 			}
 			// #endregion
-
-			this.perUserFollowingChart.update(follower, followee, true);
 		}
 
 		if (isLocalUser(follower) && !silent) {
@@ -386,21 +374,13 @@ export class UserFollowingService {
 			if (isRemoteUser(follower) && isLocalUser(followee)) {
 				this.federatedInstanceService.fetch(follower.host).then(async (i) => {
 					this.instancesRepository.decrement({ id: i.id }, 'followingCount', 1);
-					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
-						this.instanceChart.updateFollowing(i.host, false);
-					}
 				});
 			} else if (isLocalUser(follower) && isRemoteUser(followee)) {
 				this.federatedInstanceService.fetch(followee.host).then(async (i) => {
 					this.instancesRepository.decrement({ id: i.id }, 'followersCount', 1);
-					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
-						this.instanceChart.updateFollowers(i.host, false);
-					}
 				});
 			}
 			// #endregion
-
-			this.perUserFollowingChart.update(follower, followee, false);
 		} else {
 			// Adjust following/followers counts
 			for (const user of [follower, followee]) {

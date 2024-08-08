@@ -9,7 +9,6 @@ import type { NotesRepository } from '@/models/_.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { QueryService } from '@/core/QueryService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import ActiveUsersChart from '@/core/chart/charts/active-users.js';
 import { DI } from '@/di-symbols.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { ApiError } from '../../error.js';
@@ -50,7 +49,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly noteEntityService: NoteEntityService,
 		private readonly queryService: QueryService,
 		private readonly roleUserService: RoleUserService,
-		private readonly activeUsersChart: ActiveUsersChart,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const policies = await this.roleUserService.getUserPolicies(me ? me.id : null);
@@ -91,12 +89,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			// #endregion
 
 			const timeline = await query.limit(ps.limit).getMany();
-
-			process.nextTick(() => {
-				if (me) {
-					this.activeUsersChart.read(me);
-				}
-			});
 
 			return await this.noteEntityService.packMany(timeline, me);
 		});
