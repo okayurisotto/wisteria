@@ -16,10 +16,11 @@ import type { MiUser } from '@/models/User.js';
 import type { MiNote } from '@/models/Note.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { trackPromise } from '@/misc/promise-tracker.js';
 import { ReactionDecodeService } from './ReactionDecodeService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 @Injectable()
 export class ReactionDeleteService {
@@ -33,7 +34,6 @@ export class ReactionDeleteService {
 		@Inject(DI.noteReactionsRepository)
 		private readonly noteReactionsRepository: NoteReactionsRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly globalEventService: GlobalEventService,
 		private readonly apRendererService: ApRendererService,
 		private readonly apDeliverManagerService: ApDeliverManagerService,
@@ -86,7 +86,7 @@ export class ReactionDeleteService {
 			userId: user.id,
 		});
 
-		if (this.userEntityService.isLocalUser(user) && !note.localOnly) {
+		if (isLocalUser(user) && !note.localOnly) {
 			await this.deliver(user, note, exist);
 		}
 	}
@@ -108,7 +108,7 @@ export class ReactionDeleteService {
 		const reactee = await this.usersRepository.findOneByOrFail({
 			id: note.userId,
 		});
-		if (this.userEntityService.isRemoteUser(reactee)) {
+		if (isRemoteUser(reactee)) {
 			dm.addDirectRecipe(reactee);
 		}
 

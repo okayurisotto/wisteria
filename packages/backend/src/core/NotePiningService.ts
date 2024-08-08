@@ -13,10 +13,10 @@ import { IdService } from '@/core/IdService.js';
 import type { MiUserNotePining } from '@/models/UserNotePining.js';
 import { RelayService } from '@/core/RelayService.js';
 import type { Config } from '@/config.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { RoleUserService } from './RoleUserService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
 
 @Injectable()
 export class NotePiningService {
@@ -33,7 +33,6 @@ export class NotePiningService {
 		@Inject(DI.userNotePiningsRepository)
 		private readonly userNotePiningsRepository: UserNotePiningsRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly idService: IdService,
 		private readonly roleUserService: RoleUserService,
 		private readonly relayService: RelayService,
@@ -74,7 +73,7 @@ export class NotePiningService {
 		} as MiUserNotePining);
 
 		// Deliver to remote followers
-		if (this.userEntityService.isLocalUser(user) && !note.localOnly && ['public', 'home'].includes(note.visibility)) {
+		if (isLocalUser(user) && !note.localOnly && ['public', 'home'].includes(note.visibility)) {
 			this.deliverPinnedChange(user.id, note.id, true);
 		}
 	}
@@ -101,7 +100,7 @@ export class NotePiningService {
 		});
 
 		// Deliver to remote followers
-		if (this.userEntityService.isLocalUser(user) && !note.localOnly && ['public', 'home'].includes(note.visibility)) {
+		if (isLocalUser(user) && !note.localOnly && ['public', 'home'].includes(note.visibility)) {
 			this.deliverPinnedChange(user.id, noteId, false);
 		}
 	}
@@ -110,7 +109,7 @@ export class NotePiningService {
 		const user = await this.usersRepository.findOneBy({ id: userId });
 		if (user == null) throw new Error('user not found');
 
-		if (!this.userEntityService.isLocalUser(user)) return;
+		if (!isLocalUser(user)) return;
 
 		const target = `${this.config.url}/users/${user.id}/collections/featured`;
 		const item = `${this.config.url}/notes/${noteId}`;

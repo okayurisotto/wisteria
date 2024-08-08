@@ -16,6 +16,8 @@ import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { WebhookService } from '@/core/WebhookService.js';
 import { UserFollowingService } from '@/core/UserFollowingService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 @Injectable()
 export class UserBlockingBlockService implements OnModuleInit {
@@ -67,7 +69,7 @@ export class UserBlockingBlockService implements OnModuleInit {
 
 		await this.blockingsRepository.insert(blocking);
 
-		if (this.userEntityService.isLocalUser(blocker) && this.userEntityService.isRemoteUser(blockee)) {
+		if (isLocalUser(blocker) && isRemoteUser(blockee)) {
 			const content = this.apRendererService.addContext(this.apRendererService.renderBlock(blocking));
 			await this.queueService.deliver(blocker, content, blockee.inbox, false);
 		}
@@ -86,14 +88,14 @@ export class UserBlockingBlockService implements OnModuleInit {
 			followerId: follower.id,
 		});
 
-		if (this.userEntityService.isLocalUser(followee)) {
+		if (isLocalUser(followee)) {
 			const packedUser = await this.userEntityService.pack(followee, followee, {
 				schema: 'MeDetailed',
 			});
 			this.globalEventService.publishMainStream(followee.id, 'meUpdated', packedUser);
 		}
 
-		if (this.userEntityService.isLocalUser(follower) && !silent) {
+		if (isLocalUser(follower) && !silent) {
 			const packedUser = await this.userEntityService.pack(followee, follower, {
 				schema: 'UserDetailedNotMe',
 			});
@@ -109,10 +111,7 @@ export class UserBlockingBlockService implements OnModuleInit {
 		}
 
 		// リモートにフォローリクエストをしていたらUndoFollow送信
-		if (
-			this.userEntityService.isLocalUser(follower) &&
-			this.userEntityService.isRemoteUser(followee)
-		) {
+		if (isLocalUser(follower) && isRemoteUser(followee)) {
 			const content = this.apRendererService.addContext(
 				this.apRendererService.renderUndo(
 					this.apRendererService.renderFollow(follower, followee),
@@ -123,10 +122,7 @@ export class UserBlockingBlockService implements OnModuleInit {
 		}
 
 		// リモートからフォローリクエストを受けていたらReject送信
-		if (
-			this.userEntityService.isRemoteUser(follower) &&
-			this.userEntityService.isLocalUser(followee)
-		) {
+		if (isRemoteUser(follower) && isLocalUser(followee)) {
 			const content = this.apRendererService.addContext(
 				this.apRendererService.renderReject(
 					this.apRendererService.renderFollow(follower, followee, request.requestId ?? undefined),

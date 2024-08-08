@@ -18,7 +18,6 @@ import PerUserReactionsChart from '@/core/chart/charts/per-user-reactions.js';
 import { emojiRegex } from '@/misc/emoji-regex.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { UtilityService } from '@/core/UtilityService.js';
@@ -30,6 +29,8 @@ import { trackPromise } from '@/misc/promise-tracker.js';
 import { ReactionDecodeService } from './ReactionDecodeService.js';
 import { LEGACY_EMOJIS } from './LEGACY_EMOJIS.js';
 import { ReactionDeleteService } from './ReactionDeleteService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 const FALLBACK = '\u2764';
 const PER_NOTE_REACTION_USER_PAIR_CACHE_MAX = 16;
@@ -55,7 +56,6 @@ export class ReactionCreateService {
 		private readonly metaService: MetaService,
 		private readonly customEmojiService: CustomEmojiService,
 		private readonly roleUserService: RoleUserService,
-		private readonly userEntityService: UserEntityService,
 		private readonly noteEntityService: NoteEntityService,
 		private readonly userBlockingCheckService: UserBlockingCheckService,
 		private readonly idService: IdService,
@@ -222,7 +222,7 @@ export class ReactionCreateService {
 		}
 
 		// #region 配信
-		if (this.userEntityService.isLocalUser(user) && !note.localOnly) {
+		if (isLocalUser(user) && !note.localOnly) {
 			const content = this.apRendererService.addContext(await this.apRendererService.renderLike(record, note));
 			const dm = this.apDeliverManagerService.createDeliverManager(user, content);
 			if (note.userHost !== null) {
@@ -234,7 +234,7 @@ export class ReactionCreateService {
 				dm.addFollowersRecipe();
 			} else if (note.visibility === 'specified') {
 				const visibleUsers = await Promise.all(note.visibleUserIds.map(id => this.usersRepository.findOneBy({ id })));
-				for (const u of visibleUsers.filter(u => u && this.userEntityService.isRemoteUser(u))) {
+				for (const u of visibleUsers.filter(u => u && isRemoteUser(u))) {
 					dm.addDirectRecipe(u as MiRemoteUser);
 				}
 			}

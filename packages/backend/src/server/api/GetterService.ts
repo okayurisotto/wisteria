@@ -9,7 +9,8 @@ import type { NotesRepository, UsersRepository } from '@/models/_.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
 import type { MiLocalUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import type { MiNote } from '@/models/Note.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 @Injectable()
 export class GetterService {
@@ -19,8 +20,6 @@ export class GetterService {
 
 		@Inject(DI.notesRepository)
 		private readonly notesRepository: NotesRepository,
-
-		private readonly userEntityService: UserEntityService,
 	) {}
 
 	/**
@@ -55,7 +54,7 @@ export class GetterService {
 	public async getRemoteUser(userId: MiUser['id']) {
 		const user = await this.getUser(userId);
 
-		if (!this.userEntityService.isRemoteUser(user)) {
+		if (!isRemoteUser(user)) {
 			throw new Error('user is not a remote user');
 		}
 
@@ -68,7 +67,7 @@ export class GetterService {
 	public async getLocalUser(userId: MiUser['id']) {
 		const user = await this.getUser(userId);
 
-		if (!this.userEntityService.isLocalUser(user)) {
+		if (!isLocalUser(user)) {
 			throw new Error('user is not a local user');
 		}
 

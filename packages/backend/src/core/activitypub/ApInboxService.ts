@@ -23,7 +23,6 @@ import { IdService } from '@/core/IdService.js';
 import { StatusError } from '@/misc/status-error.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { QueueService } from '@/core/QueueService.js';
 import type { UsersRepository, NotesRepository, FollowingsRepository, AbuseUserReportsRepository, FollowRequestsRepository } from '@/models/_.js';
 import type { MiRemoteUser } from '@/models/User.js';
@@ -39,6 +38,7 @@ import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { Resolver } from './ApResolverService.js';
 import type { IAccept, IAdd, IAnnounce, IBlock, ICreate, IDelete, IFlag, IFollow, ILike, IObject, IReject, IRemove, IUndo, IUpdate, IMove } from './type.js';
 import { ReactionDeleteService } from '../ReactionDeleteService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
 
 @Injectable()
 export class ApInboxService {
@@ -63,7 +63,6 @@ export class ApInboxService {
 		@Inject(DI.followRequestsRepository)
 		private readonly followRequestsRepository: FollowRequestsRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly noteEntityService: NoteEntityService,
 		private readonly utilityService: UtilityService,
 		private readonly idService: IdService,
@@ -552,7 +551,7 @@ export class ApInboxService {
 			return 'skip: follower not found';
 		}
 
-		if (!this.userEntityService.isLocalUser(follower)) {
+		if (!isLocalUser(follower)) {
 			return 'skip: follower is not a local user';
 		}
 

@@ -10,7 +10,7 @@ import type { MiUser } from '@/models/User.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { RelayService } from '@/core/RelayService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
 
 @Injectable()
 export class AccountUpdateService {
@@ -18,7 +18,6 @@ export class AccountUpdateService {
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly apRendererService: ApRendererService,
 		private readonly apDeliverManagerService: ApDeliverManagerService,
 		private readonly relayService: RelayService,
@@ -29,7 +28,7 @@ export class AccountUpdateService {
 		if (user == null) throw new Error('user not found');
 
 		// フォロワーがリモートユーザーかつ投稿者がローカルユーザーならUpdateを配信
-		if (this.userEntityService.isLocalUser(user)) {
+		if (isLocalUser(user)) {
 			const content = this.apRendererService.addContext(this.apRendererService.renderUpdate(await this.apRendererService.renderPerson(user), user));
 			this.apDeliverManagerService.deliverToFollowers(user, content);
 			this.relayService.deliverToRelays(user, content);

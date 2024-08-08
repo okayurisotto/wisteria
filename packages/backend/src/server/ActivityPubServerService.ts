@@ -16,11 +16,11 @@ import type { MiFollowing } from '@/models/Following.js';
 import type { MiNote } from '@/models/Note.js';
 import { QueryService } from '@/core/QueryService.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { isPureRenote } from '@/misc/is-pure-renote.js';
 import type { FindOptionsWhere } from 'typeorm';
 import { Hono, type Context } from 'hono';
 import { AcctEntity } from '@/misc/AcctEntity.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
 
 const ACTIVITY_JSON = 'application/activity+json; charset=utf-8';
 const LD_JSON = 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"; charset=utf-8';
@@ -57,7 +57,6 @@ export class ActivityPubServerService {
 		private readonly followRequestsRepository: FollowRequestsRepository,
 
 		private readonly utilityService: UtilityService,
-		private readonly userEntityService: UserEntityService,
 		private readonly apRendererService: ApRendererService,
 		private readonly userKeypairService: UserKeypairService,
 		private readonly queryService: QueryService,
@@ -201,7 +200,7 @@ export class ActivityPubServerService {
 
 			const keypair = await this.userKeypairService.getUserKeypair(user.id);
 
-			if (this.userEntityService.isLocalUser(user)) {
+			if (isLocalUser(user)) {
 				c.header('Content-Type', accepted);
 				c.header('Cache-Control', 'public, max-age=180');
 				return c.body(JSON.stringify(this.apRendererService.addContext(this.apRendererService.renderKey(user, keypair))));

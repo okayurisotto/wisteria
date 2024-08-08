@@ -9,9 +9,10 @@ import { QueueService } from '@/core/QueueService.js';
 import { DI } from '@/di-symbols.js';
 import type { BlockingsRepository } from '@/models/_.js';
 import { Logger } from '@/logger.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { LoggerService } from '@/core/LoggerService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 @Injectable()
 export class UserBlockingUnblockService {
@@ -21,7 +22,6 @@ export class UserBlockingUnblockService {
 		@Inject(DI.blockingsRepository)
 		private readonly blockingsRepository: BlockingsRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly queueService: QueueService,
 		private readonly apRendererService: ApRendererService,
 		private readonly loggerService: LoggerService,
@@ -50,10 +50,7 @@ export class UserBlockingUnblockService {
 		await this.blockingsRepository.delete(blocking.id);
 
 		// deliver if remote blocking
-		if (
-			this.userEntityService.isLocalUser(blocker) &&
-			this.userEntityService.isRemoteUser(blockee)
-		) {
+		if (isLocalUser(blocker) && isRemoteUser(blockee)) {
 			const content = this.apRendererService.addContext(
 				this.apRendererService.renderUndo(
 					this.apRendererService.renderBlock(blocking),

@@ -7,6 +7,7 @@ import { Injectable } from '@nestjs/common';
 import type { MiLocalUser, MiRemoteUser } from '@/models/User.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 @Injectable()
 export class AlsoKnownAsValidateService {
@@ -30,7 +31,7 @@ export class AlsoKnownAsValidateService {
 	): Promise<MiLocalUser | MiRemoteUser | null> {
 		let resultUser: MiLocalUser | MiRemoteUser | null = null;
 
-		if (this.userEntityService.isRemoteUser(dst)) {
+		if (isRemoteUser(dst)) {
 			if ((new Date()).getTime() - (dst.lastFetchedAt?.getTime() ?? 0) > 10 * 1000) {
 				await this.apPersonService.updatePerson(dst.uri);
 			}
@@ -46,7 +47,7 @@ export class AlsoKnownAsValidateService {
 				let src = await this.apPersonService.fetchPerson(srcUri);
 				if (!src) continue; // oldAccountを探してもこのサーバーに存在しない場合はフォロー関係もないということなのでスルー
 
-				if (this.userEntityService.isRemoteUser(dst)) {
+				if (isRemoteUser(dst)) {
 					if ((new Date()).getTime() - (src.lastFetchedAt?.getTime() ?? 0) > 10 * 1000) {
 						await this.apPersonService.updatePerson(srcUri);
 					}

@@ -37,7 +37,6 @@ import { HashtagService } from '@/core/HashtagService.js';
 import { AntennaService } from '@/core/AntennaService.js';
 import { QueueService } from '@/core/QueueService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
 import { NoteReadService } from '@/core/NoteReadService.js';
@@ -51,6 +50,8 @@ import { UtilityService } from '@/core/UtilityService.js';
 import { UserBlockingCheckService } from './UserBlockingCheckService.js';
 import { trackPromise } from '@/misc/promise-tracker.js';
 import { NotificationCreateService } from './NotificationCreateService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention';
 
@@ -170,7 +171,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 		@Inject(DI.followingsRepository)
 		private readonly followingsRepository: FollowingsRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly noteEntityService: NoteEntityService,
 		private readonly idService: IdService,
 		private readonly globalEventService: GlobalEventService,
@@ -409,7 +409,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		if (mentionedUsers.length > 0) {
 			insert.mentions = mentionedUsers.map(u => u.id);
 			const profiles = await this.userProfilesRepository.findBy({ userId: In(insert.mentions) });
-			insert.mentionedRemoteUsers = JSON.stringify(mentionedUsers.filter(u => this.userEntityService.isRemoteUser(u)).map((u) => {
+			insert.mentionedRemoteUsers = JSON.stringify(mentionedUsers.filter(u => isRemoteUser(u)).map((u) => {
 				const profile = profiles.find(p => p.userId === u.id);
 				const url = profile != null ? profile.url : null;
 				return {
@@ -474,7 +474,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 
 		// Register host
-		if (this.userEntityService.isRemoteUser(user)) {
+		if (isRemoteUser(user)) {
 			this.federatedInstanceService.fetch(user.host).then(async (i) => {
 				this.instancesRepository.increment({ id: i.id }, 'notesCount', 1);
 				if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
@@ -529,7 +529,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 
 		if (!silent) {
-			if (this.userEntityService.isLocalUser(user)) this.activeUsersChart.write(user);
+			if (isLocalUser(user)) this.activeUsersChart.write(user);
 
 			// 未読通知を作成
 			if (data.visibility === 'specified') {
@@ -537,7 +537,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 				for (const u of data.visibleUsers) {
 					// ローカルユーザーのみ
-					if (!this.userEntityService.isLocalUser(u)) continue;
+					if (!isLocalUser(u)) continue;
 
 					this.noteReadService.insertNoteUnread(u.id, note, {
 						isSpecified: true,
@@ -547,7 +547,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			} else {
 				for (const u of mentionedUsers) {
 					// ローカルユーザーのみ
-					if (!this.userEntityService.isLocalUser(u)) continue;
+					if (!isLocalUser(u)) continue;
 
 					this.noteReadService.insertNoteUnread(u.id, note, {
 						isSpecified: false,
@@ -626,26 +626,26 @@ export class NoteCreateService implements OnApplicationShutdown {
 			nm.notify();
 
 			// #region AP deliver
-			if (this.userEntityService.isLocalUser(user)) {
+			if (isLocalUser(user)) {
 				(async () => {
 					const noteActivity = await this.renderNoteOrRenoteActivity(data, note);
 					const dm = this.apDeliverManagerService.createDeliverManager(user, noteActivity);
 
 					// メンションされたリモートユーザーに配送
-					for (const u of mentionedUsers.filter(u => this.userEntityService.isRemoteUser(u))) {
+					for (const u of mentionedUsers.filter(u => isRemoteUser(u))) {
 						dm.addDirectRecipe(u as MiRemoteUser);
 					}
 
 					// 投稿がリプライかつ投稿者がローカルユーザーかつリプライ先の投稿の投稿者がリモートユーザーなら配送
 					if (data.reply && data.reply.userHost !== null) {
 						const u = await this.usersRepository.findOneBy({ id: data.reply.userId });
-						if (u && this.userEntityService.isRemoteUser(u)) dm.addDirectRecipe(u);
+						if (u && isRemoteUser(u)) dm.addDirectRecipe(u);
 					}
 
 					// 投稿がRenoteかつ投稿者がローカルユーザーかつRenote元の投稿の投稿者がリモートユーザーなら配送
 					if (data.renote && data.renote.userHost !== null) {
 						const u = await this.usersRepository.findOneBy({ id: data.renote.userId });
-						if (u && this.userEntityService.isRemoteUser(u)) dm.addDirectRecipe(u);
+						if (u && isRemoteUser(u)) dm.addDirectRecipe(u);
 					}
 
 					// フォロワーに配送
@@ -714,7 +714,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 	}
 
 	private async createMentionedEvents(mentionedUsers: MinimumUser[], note: MiNote, nm: NotificationManager) {
-		for (const u of mentionedUsers.filter(u => this.userEntityService.isLocalUser(u))) {
+		for (const u of mentionedUsers.filter(u => isLocalUser(u))) {
 			const isThreadMuted = await this.noteThreadMutingsRepository.exists({
 				where: {
 					userId: u.id,

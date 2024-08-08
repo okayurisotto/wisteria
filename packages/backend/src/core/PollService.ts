@@ -11,9 +11,9 @@ import { RelayService } from '@/core/RelayService.js';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
 import { UserBlockingCheckService } from './UserBlockingCheckService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
 
 @Injectable()
 export class PollService {
@@ -30,7 +30,6 @@ export class PollService {
 		@Inject(DI.pollVotesRepository)
 		private readonly pollVotesRepository: PollVotesRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly idService: IdService,
 		private readonly relayService: RelayService,
 		private readonly globalEventService: GlobalEventService,
@@ -95,7 +94,7 @@ export class PollService {
 		const user = await this.usersRepository.findOneBy({ id: note.userId });
 		if (user == null) throw new Error('note not found');
 
-		if (this.userEntityService.isLocalUser(user)) {
+		if (isLocalUser(user)) {
 			const content = this.apRendererService.addContext(this.apRendererService.renderUpdate(await this.apRendererService.renderNote(note, false), user));
 			this.apDeliverManagerService.deliverToFollowers(user, content);
 			this.relayService.deliverToRelays(user, content);

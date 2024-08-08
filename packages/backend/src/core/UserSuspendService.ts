@@ -11,6 +11,7 @@ import { QueueService } from '@/core/QueueService.js';
 import { DI } from '@/di-symbols.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
 
 @Injectable()
 export class UserSuspendService {
@@ -24,7 +25,7 @@ export class UserSuspendService {
 	) {}
 
 	public async doPostSuspend(user: { id: MiUser['id']; host: MiUser['host'] }): Promise<void> {
-		if (this.userEntityService.isLocalUser(user)) {
+		if (isLocalUser(user)) {
 			// 知り得る全SharedInboxにDelete配信
 			const content = this.apRendererService.addContext(this.apRendererService.renderDelete(this.userEntityService.genLocalUserUri(user.id), user));
 
@@ -51,7 +52,7 @@ export class UserSuspendService {
 	}
 
 	public async doPostUnsuspend(user: MiUser): Promise<void> {
-		if (this.userEntityService.isLocalUser(user)) {
+		if (isLocalUser(user)) {
 			// 知り得る全SharedInboxにUndo Delete配信
 			const content = this.apRendererService.addContext(this.apRendererService.renderUndo(this.apRendererService.renderDelete(this.userEntityService.genLocalUserUri(user.id), user), user));
 

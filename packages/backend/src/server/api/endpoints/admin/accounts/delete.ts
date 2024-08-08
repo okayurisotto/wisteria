@@ -9,7 +9,7 @@ import type { UsersRepository } from '@/models/_.js';
 import { QueueService } from '@/core/QueueService.js';
 import { UserSuspendService } from '@/core/UserSuspendService.js';
 import { DI } from '@/di-symbols.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -33,7 +33,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly queueService: QueueService,
 		private readonly userSuspendService: UserSuspendService,
 	) {
@@ -48,7 +47,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				throw new Error('cannot delete a root account');
 			}
 
-			if (this.userEntityService.isLocalUser(user)) {
+			if (isLocalUser(user)) {
 				// 物理削除する前にDelete activityを送信する
 				await this.userSuspendService.doPostSuspend(user).catch(() => {});
 

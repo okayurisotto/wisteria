@@ -30,7 +30,6 @@ import { HashtagService } from '@/core/HashtagService.js';
 import { MiUserNotePining } from '@/models/UserNotePining.js';
 import { StatusError } from '@/misc/status-error.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { AccountMoveService } from '@/core/AccountMoveService.js';
@@ -45,6 +44,8 @@ import { ApLoggerService } from '../ApLoggerService.js';
 import { ApImageService } from './ApImageService.js';
 import type { IActor, IObject } from '../type.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 const nameLength = 128;
 const summaryLength = 2048;
@@ -89,7 +90,6 @@ export class ApPersonService implements OnModuleInit {
 		private readonly utilityService: UtilityService,
 		private readonly apLoggerService: ApLoggerService,
 		private readonly mfmService: MfmService,
-		private readonly userEntityService: UserEntityService,
 		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly federatedInstanceService: FederatedInstanceService,
 		private readonly fetchInstanceMetadataService: FetchInstanceMetadataService,
@@ -571,7 +571,7 @@ export class ApPersonService implements OnModuleInit {
 
 	public async updateFeatured(userId: MiUser['id'], resolver?: Resolver): Promise<void> {
 		const user = await this.usersRepository.findOneByOrFail({ id: userId });
-		if (!this.userEntityService.isRemoteUser(user)) return;
+		if (!isRemoteUser(user)) return;
 		if (!user.featured) return;
 
 		this.logger.info(`Updating the featured: ${user.uri}`);
@@ -625,7 +625,7 @@ export class ApPersonService implements OnModuleInit {
 		// まずサーバー内で検索して様子見
 		let dst = await this.fetchPerson(src.movedToUri);
 
-		if (dst && this.userEntityService.isLocalUser(dst)) {
+		if (dst && isLocalUser(dst)) {
 			// targetがローカルユーザーだった場合データベースから引っ張ってくる
 			dst = await this.usersRepository.findOneByOrFail({ uri: src.movedToUri }) as MiLocalUser;
 		} else if (dst) {

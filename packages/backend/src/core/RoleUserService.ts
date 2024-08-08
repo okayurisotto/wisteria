@@ -10,11 +10,12 @@ import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import { MetaService } from '@/core/MetaService.js';
 import type { MiRole, RoleCondFormulaValue } from '@/models/Role.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { IdService } from '@/core/IdService.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 export type RolePolicies = {
 	gtlAvailable: boolean;
@@ -89,7 +90,6 @@ export class RoleUserService {
 		private readonly usersRepository: UsersRepository,
 
 		private readonly metaService: MetaService,
-		private readonly userEntityService: UserEntityService,
 		private readonly globalEventService: GlobalEventService,
 		private readonly idService: IdService,
 		private readonly fanoutTimelineService: FanoutTimelineService,
@@ -108,10 +108,10 @@ export class RoleUserService {
 					return !this.evalCond(user, value.value);
 				}
 				case 'isLocal': {
-					return this.userEntityService.isLocalUser(user);
+					return isLocalUser(user);
 				}
 				case 'isRemote': {
-					return this.userEntityService.isRemoteUser(user);
+					return isRemoteUser(user);
 				}
 				case 'createdLessThan': {
 					return (

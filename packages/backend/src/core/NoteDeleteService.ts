@@ -18,11 +18,12 @@ import InstanceChart from '@/core/chart/charts/instance.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { SearchService } from '@/core/SearchService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 import { isPureRenote } from '@/misc/is-pure-renote.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 @Injectable()
 export class NoteDeleteService {
@@ -39,7 +40,6 @@ export class NoteDeleteService {
 		@Inject(DI.instancesRepository)
 		private readonly instancesRepository: InstancesRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly globalEventService: GlobalEventService,
 		private readonly relayService: RelayService,
 		private readonly federatedInstanceService: FederatedInstanceService,
@@ -72,7 +72,7 @@ export class NoteDeleteService {
 			});
 
 			// #region ローカルの投稿なら削除アクティビティを配送
-			if (this.userEntityService.isLocalUser(user) && !note.localOnly) {
+			if (isLocalUser(user) && !note.localOnly) {
 				let renote: MiNote | null = null;
 
 				// if deleted note is renote
@@ -93,7 +93,7 @@ export class NoteDeleteService {
 			const federatedLocalCascadingNotes = (cascadingNotes).filter(note => !note.localOnly && note.userHost == null); // filter out local-only notes
 			for (const cascadingNote of federatedLocalCascadingNotes) {
 				if (!cascadingNote.user) continue;
-				if (!this.userEntityService.isLocalUser(cascadingNote.user)) continue;
+				if (!isLocalUser(cascadingNote.user)) continue;
 				const content = this.apRendererService.addContext(this.apRendererService.renderDelete(this.apRendererService.renderTombstone(`${this.config.url}/notes/${cascadingNote.id}`), cascadingNote.user));
 				this.deliverToConcerned(cascadingNote.user, cascadingNote, content);
 			}
@@ -106,7 +106,7 @@ export class NoteDeleteService {
 				this.perUserNotesChart.update(user, note, false);
 			}
 
-			if (this.userEntityService.isRemoteUser(user)) {
+			if (isRemoteUser(user)) {
 				this.federatedInstanceService.fetch(user.host).then(async (i) => {
 					this.instancesRepository.decrement({ id: i.id }, 'notesCount', 1);
 					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {

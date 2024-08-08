@@ -23,6 +23,7 @@ import { MetaService } from '@/core/MetaService.js';
 import InstanceChart from '@/core/chart/charts/instance.js';
 import PerUserFollowingChart from '@/core/chart/charts/per-user-following.js';
 import { envOption } from '@/env.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 @Injectable()
 export class AccountMoveService {
@@ -235,7 +236,7 @@ export class AccountMoveService {
 		await this.userListMembershipsRepository.insert(arrayToInsert);
 
 		// Have the proxy account follow the new account in the same way as UserListService.push
-		if (this.userEntityService.isRemoteUser(dst)) {
+		if (isRemoteUser(dst)) {
 			const proxy = await this.proxyAccountService.fetch();
 			if (proxy) {
 				this.queueService.createFollowJob([{ from: { id: proxy.id }, to: { id: dst.id } }]);
@@ -259,7 +260,7 @@ export class AccountMoveService {
 		}
 
 		// Update instance stats by decreasing remote followers count by the number of local followers who were following the old account.
-		if (this.userEntityService.isRemoteUser(oldAccount)) {
+		if (isRemoteUser(oldAccount)) {
 			this.federatedInstanceService.fetch(oldAccount.host).then(async (i) => {
 				this.instancesRepository.decrement({ id: i.id }, 'followersCount', localFollowerIds.length);
 				if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {

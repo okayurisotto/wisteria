@@ -25,20 +25,10 @@ import { NoteEntityService } from './NoteEntityService.js';
 import type { PageEntityService } from './PageEntityService.js';
 import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
 import type { RoleUserService } from '../RoleUserService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 const ajv = new Ajv();
-
-function isLocalUser(user: MiUser): user is MiLocalUser;
-function isLocalUser<T extends { host: MiUser['host'] }>(user: T): user is (T & { host: null });
-function isLocalUser(user: MiUser | { host: MiUser['host'] }): boolean {
-	return user.host == null;
-}
-
-function isRemoteUser(user: MiUser): user is MiRemoteUser;
-function isRemoteUser<T extends { host: MiUser['host'] }>(user: T): user is (T & { host: string });
-function isRemoteUser(user: MiUser | { host: MiUser['host'] }): boolean {
-	return !isLocalUser(user);
-}
 
 @Injectable()
 export class UserEntityService implements OnModuleInit {
@@ -112,9 +102,6 @@ export class UserEntityService implements OnModuleInit {
 	public validateLocation = ajv.compile(locationSchema);
 	public validateBirthday = ajv.compile(birthdaySchema);
 	// #endregion
-
-	public isLocalUser = isLocalUser;
-	public isRemoteUser = isRemoteUser;
 
 	public async getRelation(me: MiUser['id'], target: MiUser['id']) {
 		const [
@@ -261,9 +248,7 @@ export class UserEntityService implements OnModuleInit {
 	}
 
 	public getUserUri(user: MiLocalUser | MiPartialLocalUser | MiRemoteUser | MiPartialRemoteUser): string {
-		return this.isRemoteUser(user)
-			? user.uri
-			: this.genLocalUserUri(user.id);
+		return isRemoteUser(user) ? user.uri : this.genLocalUserUri(user.id);
 	}
 
 	public genLocalUserUri(userId: string): string {
@@ -401,7 +386,7 @@ export class UserEntityService implements OnModuleInit {
 				}),
 				pinnedPageId: profile!.pinnedPageId,
 				pinnedPage: profile!.pinnedPageId ? this.pageEntityService.pack(profile!.pinnedPageId, me) : null,
-				publicReactions: this.isLocalUser(user) ? profile!.publicReactions : false, // https://github.com/misskey-dev/misskey/issues/12964
+				publicReactions: isLocalUser(user) ? profile!.publicReactions : false, // https://github.com/misskey-dev/misskey/issues/12964
 				followersVisibility: profile!.followersVisibility,
 				followingVisibility: profile!.followingVisibility,
 				twoFactorEnabled: profile!.twoFactorEnabled,

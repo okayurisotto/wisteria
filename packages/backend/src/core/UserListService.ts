@@ -15,6 +15,7 @@ import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ProxyAccountService } from '@/core/ProxyAccountService.js';
 import { QueueService } from '@/core/QueueService.js';
 import { RoleUserService } from './RoleUserService.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 @Injectable()
 export class UserListService {
@@ -50,7 +51,7 @@ export class UserListService {
 		this.globalEventService.publishUserListStream(list.id, 'userAdded', await this.userEntityService.pack(target));
 
 		// このインスタンス内にこのリモートユーザーをフォローしているユーザーがいなくても投稿を受け取るためにダミーのユーザーがフォローしたということにする
-		if (this.userEntityService.isRemoteUser(target)) {
+		if (isRemoteUser(target)) {
 			const proxy = await this.proxyAccountService.fetch();
 			if (proxy) {
 				this.queueService.createFollowJob([{ from: { id: proxy.id }, to: { id: target.id } }]);

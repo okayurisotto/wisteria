@@ -36,12 +36,13 @@ import { DownloadService } from '@/core/DownloadService.js';
 import { S3Service } from '@/core/S3Service.js';
 import { InternalStorageService } from '@/core/InternalStorageService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { FileInfoService } from '@/core/FileInfoService.js';
 import { RoleUserService } from './RoleUserService.js';
 import { correctFilename } from '@/misc/correct-filename.js';
 import { isMimeImage } from '@/misc/is-mime-image.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 type AddFileArgs = {
 	/** User who wish to add file */
@@ -110,7 +111,6 @@ export class DriveService {
 		private readonly driveFoldersRepository: DriveFoldersRepository,
 
 		private readonly fileInfoService: FileInfoService,
-		private readonly userEntityService: UserEntityService,
 		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly idService: IdService,
 		private readonly metaService: MetaService,
@@ -461,8 +461,8 @@ export class DriveService {
 			skipNsfwCheck = true;
 		}
 		if (instance.sensitiveMediaDetection === 'none') skipNsfwCheck = true;
-		if (user && instance.sensitiveMediaDetection === 'local' && this.userEntityService.isRemoteUser(user)) skipNsfwCheck = true;
-		if (user && instance.sensitiveMediaDetection === 'remote' && this.userEntityService.isLocalUser(user)) skipNsfwCheck = true;
+		if (user && instance.sensitiveMediaDetection === 'local' && isRemoteUser(user)) skipNsfwCheck = true;
+		if (user && instance.sensitiveMediaDetection === 'remote' && isLocalUser(user)) skipNsfwCheck = true;
 
 		const info = await this.fileInfoService.getFileInfo(path, {
 			skipSensitiveDetection: skipNsfwCheck,
@@ -512,7 +512,7 @@ export class DriveService {
 		// #region Check drive usage
 		if (user && !isLink) {
 			const usage = await this.driveFileEntityService.calcDriveUsageOf(user);
-			const isLocalUser = this.userEntityService.isLocalUser(user);
+			const localUser = isLocalUser(user);
 
 			const policies = await this.roleUserService.getUserPolicies(user.id);
 			const driveCapacity = 1024 * 1024 * policies.driveCapacityMb;
@@ -521,7 +521,7 @@ export class DriveService {
 
 			// If usage limit exceeded
 			if (driveCapacity < usage + info.size) {
-				if (isLocalUser) {
+				if (localUser) {
 					throw new IdentifiableError('c6244ed2-a39a-4e1c-bf93-f0fbd7764fa6', 'No free space.');
 				}
 				await this.expireOldFile(await this.usersRepository.findOneByOrFail({ id: user.id }) as MiRemoteUser, driveCapacity - info.size);
@@ -576,7 +576,7 @@ export class DriveService {
 		file.maybeSensitive = info.sensitive;
 		file.maybePorn = info.porn;
 		file.isSensitive = user
-			? this.userEntityService.isLocalUser(user) && profile!.alwaysMarkNsfw
+			? isLocalUser(user) && profile!.alwaysMarkNsfw
 				? true
 				: sensitive ?? false
 			: false;

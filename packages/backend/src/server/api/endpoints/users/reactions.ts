@@ -9,9 +9,9 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import { QueryService } from '@/core/QueryService.js';
 import { NoteReactionEntityService } from '@/core/entities/NoteReactionEntityService.js';
 import { DI } from '@/di-symbols.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { ApiError } from '../../error.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 export const meta = {
 	tags: ['users', 'reactions'],
@@ -69,7 +69,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.noteReactionsRepository)
 		private readonly noteReactionsRepository: NoteReactionsRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly noteReactionEntityService: NoteReactionEntityService,
 		private readonly queryService: QueryService,
 		private readonly roleUserService: RoleUserService,
@@ -78,7 +77,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			const iAmModerator = me ? await this.roleUserService.isModerator(me) : false; // Moderators can see reactions of all users
 			if (!iAmModerator) {
 				const user = await this.usersRepository.findOneByOrFail({ id: ps.userId });
-				if (this.userEntityService.isRemoteUser(user)) {
+				if (isRemoteUser(user)) {
 					throw new ApiError(meta.errors.isRemoteUser);
 				}
 

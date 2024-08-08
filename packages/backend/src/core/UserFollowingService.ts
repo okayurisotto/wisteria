@@ -28,6 +28,8 @@ import { UtilityService } from '@/core/UtilityService.js';
 import { LoggerService } from './LoggerService.js';
 import { AlsoKnownAsValidateService } from './AlsoKnownAsValidateService.js';
 import { envOption } from '@/env.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
+import { isRemoteUser } from '@/misc/isRemoteUser.js';
 
 type Local = MiLocalUser | {
 	id: MiLocalUser['id'];
@@ -105,12 +107,12 @@ export class UserFollowingService {
 			this.userBlockingCheckService.checkBlocked(followee.id, follower.id),
 		]);
 
-		if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee) && blocked) {
+		if (isRemoteUser(follower) && isLocalUser(followee) && blocked) {
 			// リモートフォローを受けてブロックしていた場合は、エラーにするのではなくRejectを送り返しておしまい。
 			const content = this.apRendererService.addContext(this.apRendererService.renderReject(this.apRendererService.renderFollow(follower, followee, requestId), followee));
 			this.queueService.deliver(followee, content, follower.inbox, false);
 			return;
-		} else if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee) && blocking) {
+		} else if (isRemoteUser(follower) && isLocalUser(followee) && blocking) {
 			// リモートフォローを受けてブロックされているはずの場合だったら、ブロック解除しておく。
 			await this.userBlockingUnblockService.unblock(follower, followee);
 		} else {
@@ -128,8 +130,8 @@ export class UserFollowingService {
 		if (
 			followee.isLocked ||
 			(followeeProfile.carefulBot && follower.isBot) ||
-			(this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee) && !envOption.FORCE_FOLLOW_REMOTE_USER_FOR_TESTING) ||
-			(this.userEntityService.isLocalUser(followee) && this.userEntityService.isRemoteUser(follower) && this.utilityService.isSilencedHost((await this.metaService.fetch()).silencedHosts, follower.host))
+			(isLocalUser(follower) && isRemoteUser(followee) && !envOption.FORCE_FOLLOW_REMOTE_USER_FOR_TESTING) ||
+			(isLocalUser(followee) && isRemoteUser(follower) && this.utilityService.isSilencedHost((await this.metaService.fetch()).silencedHosts, follower.host))
 		) {
 			let autoAccept = false;
 
@@ -145,7 +147,7 @@ export class UserFollowingService {
 			}
 
 			// フォローしているユーザーは自動承認オプション
-			if (!autoAccept && (this.userEntityService.isLocalUser(followee) && followeeProfile.autoAcceptFollowed)) {
+			if (!autoAccept && (isLocalUser(followee) && followeeProfile.autoAcceptFollowed)) {
 				const isFollowed = await this.followingsRepository.exists({
 					where: {
 						followerId: followee.id,
@@ -178,7 +180,7 @@ export class UserFollowingService {
 
 		await this.insertFollowingDoc(followee, follower, silent, withReplies);
 
-		if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee)) {
+		if (isRemoteUser(follower) && isLocalUser(followee)) {
 			const content = this.apRendererService.addContext(this.apRendererService.renderAccept(this.apRendererService.renderFollow(follower, followee, requestId), followee));
 			this.queueService.deliver(followee, content, follower.inbox, false);
 		}
@@ -206,13 +208,13 @@ export class UserFollowingService {
 
 			// 非正規化
 			followerHost: follower.host,
-			followerInbox: this.userEntityService.isRemoteUser(follower) ? follower.inbox : null,
-			followerSharedInbox: this.userEntityService.isRemoteUser(follower) ? follower.sharedInbox : null,
+			followerInbox: isRemoteUser(follower) ? follower.inbox : null,
+			followerSharedInbox: isRemoteUser(follower) ? follower.sharedInbox : null,
 			followeeHost: followee.host,
-			followeeInbox: this.userEntityService.isRemoteUser(followee) ? followee.inbox : null,
-			followeeSharedInbox: this.userEntityService.isRemoteUser(followee) ? followee.sharedInbox : null,
+			followeeInbox: isRemoteUser(followee) ? followee.inbox : null,
+			followeeSharedInbox: isRemoteUser(followee) ? followee.sharedInbox : null,
 		}).catch((err: unknown) => {
-			if (isDuplicateKeyValueError(err) && this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee)) {
+			if (isDuplicateKeyValueError(err) && isRemoteUser(follower) && isLocalUser(followee)) {
 				this.logger.info(`Insert duplicated ignore. ${follower.id} => ${followee.id}`);
 				alreadyFollowed = true;
 			} else {
@@ -255,14 +257,14 @@ export class UserFollowingService {
 			// #endregion
 
 			// #region Update instance stats
-			if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee)) {
+			if (isRemoteUser(follower) && isLocalUser(followee)) {
 				this.federatedInstanceService.fetch(follower.host).then(async (i) => {
 					this.instancesRepository.increment({ id: i.id }, 'followingCount', 1);
 					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
 						this.instanceChart.updateFollowing(i.host, true);
 					}
 				});
-			} else if (this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee)) {
+			} else if (isLocalUser(follower) && isRemoteUser(followee)) {
 				this.federatedInstanceService.fetch(followee.host).then(async (i) => {
 					this.instancesRepository.increment({ id: i.id }, 'followersCount', 1);
 					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
@@ -275,7 +277,7 @@ export class UserFollowingService {
 			this.perUserFollowingChart.update(follower, followee, true);
 		}
 
-		if (this.userEntityService.isLocalUser(follower) && !silent) {
+		if (isLocalUser(follower) && !silent) {
 			// Publish follow event
 			this.userEntityService.pack(followee.id, follower, {
 				schema: 'UserDetailedNotMe',
@@ -292,7 +294,7 @@ export class UserFollowingService {
 		}
 
 		// Publish followed event
-		if (this.userEntityService.isLocalUser(followee)) {
+		if (isLocalUser(followee)) {
 			this.userEntityService.pack(follower.id, followee).then(async (packed) => {
 				this.globalEventService.publishMainStream(followee.id, 'followed', packed);
 
@@ -339,7 +341,7 @@ export class UserFollowingService {
 
 		this.decrementFollowing(following.follower, following.followee);
 
-		if (!silent && this.userEntityService.isLocalUser(follower)) {
+		if (!silent && isLocalUser(follower)) {
 			// Publish unfollow event
 			this.userEntityService.pack(followee.id, follower, {
 				schema: 'UserDetailedNotMe',
@@ -355,12 +357,12 @@ export class UserFollowingService {
 			});
 		}
 
-		if (this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee)) {
+		if (isLocalUser(follower) && isRemoteUser(followee)) {
 			const content = this.apRendererService.addContext(this.apRendererService.renderUndo(this.apRendererService.renderFollow(follower as MiPartialLocalUser, followee as MiPartialRemoteUser), follower));
 			this.queueService.deliver(follower, content, followee.inbox, false);
 		}
 
-		if (this.userEntityService.isLocalUser(followee) && this.userEntityService.isRemoteUser(follower)) {
+		if (isLocalUser(followee) && isRemoteUser(follower)) {
 			// local user has null host
 			const content = this.apRendererService.addContext(this.apRendererService.renderReject(this.apRendererService.renderFollow(follower as MiPartialRemoteUser, followee as MiPartialLocalUser), followee));
 			this.queueService.deliver(followee, content, follower.inbox, false);
@@ -381,14 +383,14 @@ export class UserFollowingService {
 			// #endregion
 
 			// #region Update instance stats
-			if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee)) {
+			if (isRemoteUser(follower) && isLocalUser(followee)) {
 				this.federatedInstanceService.fetch(follower.host).then(async (i) => {
 					this.instancesRepository.decrement({ id: i.id }, 'followingCount', 1);
 					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
 						this.instanceChart.updateFollowing(i.host, false);
 					}
 				});
-			} else if (this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee)) {
+			} else if (isLocalUser(follower) && isRemoteUser(followee)) {
 				this.federatedInstanceService.fetch(followee.host).then(async (i) => {
 					this.instancesRepository.decrement({ id: i.id }, 'followersCount', 1);
 					if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
@@ -466,15 +468,15 @@ export class UserFollowingService {
 
 			// 非正規化
 			followerHost: follower.host,
-			followerInbox: this.userEntityService.isRemoteUser(follower) ? follower.inbox : undefined,
-			followerSharedInbox: this.userEntityService.isRemoteUser(follower) ? follower.sharedInbox : undefined,
+			followerInbox: isRemoteUser(follower) ? follower.inbox : undefined,
+			followerSharedInbox: isRemoteUser(follower) ? follower.sharedInbox : undefined,
 			followeeHost: followee.host,
-			followeeInbox: this.userEntityService.isRemoteUser(followee) ? followee.inbox : undefined,
-			followeeSharedInbox: this.userEntityService.isRemoteUser(followee) ? followee.sharedInbox : undefined,
+			followeeInbox: isRemoteUser(followee) ? followee.inbox : undefined,
+			followeeSharedInbox: isRemoteUser(followee) ? followee.sharedInbox : undefined,
 		}).then(x => this.followRequestsRepository.findOneByOrFail(x.identifiers[0]));
 
 		// Publish receiveRequest event
-		if (this.userEntityService.isLocalUser(followee)) {
+		if (isLocalUser(followee)) {
 			this.userEntityService.pack(follower.id, followee).then((packed) => {
 				this.globalEventService.publishMainStream(followee.id, 'receiveFollowRequest', packed);
 			});
@@ -490,7 +492,7 @@ export class UserFollowingService {
 			}, follower.id);
 		}
 
-		if (this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee)) {
+		if (isLocalUser(follower) && isRemoteUser(followee)) {
 			const content = this.apRendererService.addContext(this.apRendererService.renderFollow(follower as MiPartialLocalUser, followee as MiPartialRemoteUser, requestId ?? `${this.config.url}/follows/${followRequest.id}`));
 			this.queueService.deliver(follower, content, followee.inbox, false);
 		}
@@ -504,10 +506,10 @@ export class UserFollowingService {
 			id: MiUser['id']; host: MiUser['host']; uri: MiUser['host'];
 		},
 	): Promise<void> {
-		if (this.userEntityService.isRemoteUser(followee)) {
+		if (isRemoteUser(followee)) {
 			const content = this.apRendererService.addContext(this.apRendererService.renderUndo(this.apRendererService.renderFollow(follower as MiPartialLocalUser | MiPartialRemoteUser, followee as MiPartialRemoteUser), follower));
 
-			if (this.userEntityService.isLocalUser(follower)) { // 本来このチェックは不要だけどTSに怒られるので
+			if (isLocalUser(follower)) { // 本来このチェックは不要だけどTSに怒られるので
 				this.queueService.deliver(follower, content, followee.inbox, false);
 			}
 		}
@@ -552,7 +554,7 @@ export class UserFollowingService {
 
 		await this.insertFollowingDoc(followee, follower, false, request.withReplies);
 
-		if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee)) {
+		if (isRemoteUser(follower) && isLocalUser(followee)) {
 			const content = this.apRendererService.addContext(this.apRendererService.renderAccept(this.apRendererService.renderFollow(follower, followee as MiPartialLocalUser, request.requestId!), followee));
 			this.queueService.deliver(followee, content, follower.inbox, false);
 		}
@@ -583,13 +585,13 @@ export class UserFollowingService {
 	 * API following/request/reject
 	 */
 	public async rejectFollowRequest(user: Local, follower: Both): Promise<void> {
-		if (this.userEntityService.isRemoteUser(follower)) {
+		if (isRemoteUser(follower)) {
 			this.deliverReject(user, follower);
 		}
 
 		await this.removeFollowRequest(user, follower);
 
-		if (this.userEntityService.isLocalUser(follower)) {
+		if (isLocalUser(follower)) {
 			this.publishUnfollow(user, follower);
 		}
 	}
@@ -598,13 +600,13 @@ export class UserFollowingService {
 	 * API following/reject
 	 */
 	public async rejectFollow(user: Local, follower: Both): Promise<void> {
-		if (this.userEntityService.isRemoteUser(follower)) {
+		if (isRemoteUser(follower)) {
 			this.deliverReject(user, follower);
 		}
 
 		await this.removeFollow(user, follower);
 
-		if (this.userEntityService.isLocalUser(follower)) {
+		if (isLocalUser(follower)) {
 			this.publishUnfollow(user, follower);
 		}
 	}
