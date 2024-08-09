@@ -4,28 +4,24 @@
  */
 
 import * as fs from 'node:fs';
-import Ajv from 'ajv';
-import type { Schema, SchemaType } from '@/misc/json-schema.js';
 import type { MiLocalUser } from '@/models/User.js';
 import type { MiAccessToken } from '@/models/AccessToken.js';
 import { ApiError } from './error.js';
 import type { IEndpointMeta } from './endpoints.js';
-
-const ajv = new Ajv({
-	useDefaults: true,
-});
-
-ajv.addFormat('misskey:id', /^[a-zA-Z0-9]+$/);
+import type { z } from 'zod';
 
 type File = {
 	name: string | null;
 	path: string;
 };
 
-// TODO: paramsの型をT['params']のスキーマ定義から推論する
-type Executor<T extends IEndpointMeta, Ps extends Schema> =
+type NewType = Omit<IEndpointMeta, 'res'> & {
+	res?: z.ZodType;
+};
+
+type Executor<T extends NewType, Ps extends z.ZodType> =
 	(
-		params: SchemaType<Ps>,
+		params: z.output<Ps>,
 		user: T['requireCredential'] extends true ? MiLocalUser : MiLocalUser | null,
 		token: MiAccessToken | null,
 		file?: File,
@@ -35,10 +31,10 @@ type Executor<T extends IEndpointMeta, Ps extends Schema> =
 	) => Promise<
 		T['res'] extends undefined
 			? Record<string, unknown> | undefined
-			: SchemaType<NonNullable<T['res']>>
+			: z.output<NonNullable<T['res']>>
 	>;
 
-export type ExecMethodType<T extends IEndpointMeta = IEndpointMeta> = (
+export type ExecMethodType<T extends NewType = NewType> = (
 	params: unknown,
 	user: T['requireCredential'] extends true ? MiLocalUser : MiLocalUser | null,
 	token: MiAccessToken | null,
@@ -47,12 +43,10 @@ export type ExecMethodType<T extends IEndpointMeta = IEndpointMeta> = (
 	headers?: Record<string, string> | null,
 ) => Promise<unknown>;
 
-export abstract class Endpoint<T extends IEndpointMeta, Ps extends Schema> {
+export abstract class AbstractEndpoint<T extends NewType, Ps extends z.ZodType> {
 	public exec: ExecMethodType<T>;
 
 	constructor(meta: T, paramDef: Ps, cb: Executor<T, Ps>) {
-		const validate = ajv.compile(paramDef);
-
 		this.exec = (
 			params: unknown,
 			user: T['requireCredential'] extends true ? MiLocalUser : MiLocalUser | null,
@@ -65,7 +59,9 @@ export abstract class Endpoint<T extends IEndpointMeta, Ps extends Schema> {
 
 			if (meta.requireFile === true) {
 				cleanup = () => {
-					if (file) fs.unlink(file.path, () => {});
+					if (file) {
+						fs.unlink(file.path, () => {});
+					}
 				};
 
 				if (file == null) {
@@ -77,23 +73,20 @@ export abstract class Endpoint<T extends IEndpointMeta, Ps extends Schema> {
 				}
 			}
 
-			const valid = validate(params);
-			if (!valid) {
+			const valid: z.SafeParseReturnType<z.output<Ps>, z.input<Ps>> = paramDef.safeParse(params);
+			if (!valid.success) {
 				if (file) cleanup?.();
 
-				const errors = validate.errors;
+				const errors = valid.error.issues;
 				const err = new ApiError({
 					message: 'Invalid param.',
 					code: 'INVALID_PARAM',
 					id: '3d81ceae-475f-4600-b2a8-2bc116157532',
-				}, {
-					param: errors?.[0]?.schemaPath,
-					reason: errors?.[0]?.message,
-				});
+				}, errors);
 				return Promise.reject(err);
 			}
 
-			return cb(params as SchemaType<Ps>, user, token, file, cleanup, ip, headers);
+			return cb(valid.data, user, token, file, cleanup, ip, headers);
 		};
 	}
 }
