@@ -1,0 +1,84 @@
+import type { z } from 'zod';
+import { AdSchema } from '@/models/zod/ad.js';
+import { AnnouncementSchema } from '@/models/zod/announcement.js';
+import { AntennaSchema } from '@/models/zod/antenna.js';
+import { AppSchema } from '@/models/zod/app.js';
+import { BirthdaySchema, DescriptionSchema, LocationSchema, MeDetailedSchema, NameSchema, NotificationRecieveConfig, LocalUsernameSchema, PasswordSchema } from '@/models/zod/user.js';
+import { BlockingSchema } from '@/models/zod/blocking.js';
+import { ChannelSchema } from '@/models/zod/channel.js';
+import { ClipSchema } from '@/models/zod/clip.js';
+import { DriveFileSchema } from '@/models/zod/drive-file.js';
+import { DriveFolderSchema } from '@/models/zod/drive-folder.js';
+import { EmojiDetailedSchema } from '@/models/zod/emoji.js';
+import { EmojiSimpleSchema } from '@/models/zod/emoji.js';
+import { FederationInstanceSchema } from '@/models/zod/federation-instance.js';
+import { FlashSchema } from '@/models/zod/flash.js';
+import { FollowingSchema } from '@/models/zod/following.js';
+import { GalleryPostSchema } from '@/models/zod/gallery-post.js';
+import { HashtagSchema } from '@/models/zod/hashtag.js';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { InviteCodeSchema } from '@/models/zod/invite-code.js';
+import { MutingSchema } from '@/models/zod/muting.js';
+import { NoteFavoriteSchema } from '@/models/zod/note-favorite.js';
+import { NoteReactionSchema } from '@/models/zod/note-reaction.js';
+import { NoteSchema } from '@/models/zod/note.js';
+import { NotificationSchema } from '@/models/zod/notification.js';
+import { PageSchema } from '@/models/zod/page.js';
+import { QueueCountSchema } from '@/models/zod/queue.js';
+import { RenoteMutingSchema } from '@/models/zod/renote-muting.js';
+import { ReversiGameDetailedSchema, ReversiGameLiteSchema } from '@/models/zod/reversi-game.js';
+import { RolePoliciesSchema, RoleSchema } from '@/models/zod/role.js';
+import { SigninSchema } from '@/models/zod/signin.js';
+import { UserDetailedNotMeSchema } from '@/models/zod/user.js';
+import { UserDetailedSchema } from '@/models/zod/user.js';
+import { UserListSchema } from '@/models/zod/user-list.js';
+import { UserLiteSchema } from '@/models/zod/user-lite.js';
+import { UserSchema } from '@/models/zod/user.js';
+
+export const models = [
+	{ key: 'Ad', schema: AdSchema },
+	{ key: 'Announcement', schema: AnnouncementSchema },
+	{ key: 'Antenna', schema: AntennaSchema },
+	{ key: 'App', schema: AppSchema },
+	{ key: 'Birthday', schema: BirthdaySchema },
+	{ key: 'Blocking', schema: BlockingSchema },
+	{ key: 'Channel', schema: ChannelSchema },
+	{ key: 'Clip', schema: ClipSchema },
+	{ key: 'Description', schema: DescriptionSchema },
+	{ key: 'DriveFile', schema: DriveFileSchema },
+	{ key: 'DriveFolder', schema: DriveFolderSchema },
+	{ key: 'EmojiDetailed', schema: EmojiDetailedSchema },
+	{ key: 'EmojiSimple', schema: EmojiSimpleSchema },
+	{ key: 'FederationInstance', schema: FederationInstanceSchema },
+	{ key: 'Flash', schema: FlashSchema },
+	{ key: 'Following', schema: FollowingSchema },
+	{ key: 'GalleryPost', schema: GalleryPostSchema },
+	{ key: 'Hashtag', schema: HashtagSchema },
+	{ key: 'Id', schema: IdSchema },
+	{ key: 'InviteCode', schema: InviteCodeSchema },
+	{ key: 'LocalUsername', schema: LocalUsernameSchema },
+	{ key: 'Location', schema: LocationSchema },
+	{ key: 'MeDetailed', schema: MeDetailedSchema },
+	{ key: 'MeDetailed', schema: MeDetailedSchema },
+	{ key: 'Muting', schema: MutingSchema },
+	{ key: 'Name', schema: NameSchema },
+	{ key: 'Note', schema: NoteSchema },
+	{ key: 'NoteFavorite', schema: NoteFavoriteSchema },
+	{ key: 'NoteReaction', schema: NoteReactionSchema },
+	{ key: 'Notification', schema: NotificationSchema },
+	{ key: 'NotificationRecieveConfig', schema: NotificationRecieveConfig },
+	{ key: 'Page', schema: PageSchema },
+	{ key: 'Password', schema: PasswordSchema },
+	{ key: 'QueueCount', schema: QueueCountSchema },
+	{ key: 'RenoteMuting', schema: RenoteMutingSchema },
+	{ key: 'ReversiGameDetailed', schema: ReversiGameDetailedSchema },
+	{ key: 'ReversiGameLite', schema: ReversiGameLiteSchema },
+	{ key: 'Role', schema: RoleSchema },
+	{ key: 'RolePolicies', schema: RolePoliciesSchema },
+	{ key: 'Signin', schema: SigninSchema },
+	{ key: 'User', schema: UserSchema },
+	{ key: 'UserDetailed', schema: UserDetailedSchema },
+	{ key: 'UserDetailedNotMe', schema: UserDetailedNotMeSchema },
+	{ key: 'UserList', schema: UserListSchema },
+	{ key: 'UserLite', schema: UserLiteSchema },
+] as { key: string; schema: z.ZodType }[];

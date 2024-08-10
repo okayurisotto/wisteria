@@ -56,6 +56,7 @@ COPY --link ./packages/misskey-js/package.json          ./packages/misskey-js/pa
 COPY --link ./packages/misskey-reversi/package.json     ./packages/misskey-reversi/package.json
 COPY --link ./packages/parcom/package.json              ./packages/parcom/package.json
 COPY --link ./packages/sw/package.json                  ./packages/sw/package.json
+COPY --link ./packages/zod2spec/package.json            ./packages/zod2spec/package.json
 COPY --link ./pnpm-workspace.yaml                       ./pnpm-workspace.yaml
 
 RUN pnpm install --prod --offline --frozen-lockfile
@@ -70,6 +71,7 @@ COPY --link --from=builder /misskey/packages/misskey-bubble-game/built ./package
 COPY --link --from=builder /misskey/packages/misskey-js/built          ./packages/misskey-js/built
 COPY --link --from=builder /misskey/packages/misskey-reversi/built     ./packages/misskey-reversi/built
 COPY --link --from=builder /misskey/packages/parcom/built              ./packages/parcom/built
+COPY --link --from=builder /misskey/packages/zod2spec/built            ./packages/zod2spec/built
 
 # ----------------------------------------------------------
 # Build a image

@@ -6,7 +6,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
-import { genOpenapiSpec } from './gen-spec.js';
+import { generateFullOpenApiSpec } from './gen-spec.js';
 import { STATIC_ASSETS_DIR } from '@/path.js';
 import path from 'node:path';
 import { Hono } from 'hono';
@@ -33,7 +33,7 @@ export class OpenApiServerService {
 
 		hono.get('/api.json', (c) => {
 			c.header('Cache-Control', 'public, max-age=600');
-			return c.json(genOpenapiSpec(this.config));
+			return c.json(generateFullOpenApiSpec(this.config));
 		});
 
 		return hono;

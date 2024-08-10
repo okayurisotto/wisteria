@@ -10,3 +10,4 @@ packages:
   - 'packages/http-signature'
   - 'packages/parcom'
   - 'packages/hono-serve-static'
+  - 'packages/zod2spec'

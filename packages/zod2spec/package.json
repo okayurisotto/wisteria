@@ -1,0 +1,21 @@
+{
+  "name": "zod2spec",
+  "license": "CC0-1.0",
+  "type": "module",
+  "exports": {
+    "import": "./built/index.js",
+    "type": "./built/index.d.ts"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "tsup": "^8.2.4",
+    "vitest": "^2.0.5"
+  },
+  "dependencies": {
+    "openapi3-ts": "^4.3.3",
+    "zod": "^3.23.8"
+  }
+}
