@@ -7,6 +7,7 @@ import { Injectable } from '@nestjs/common';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { endpoints } from '../endpoints.js';
 import { z } from 'zod';
+import { generateOpenApiSpec } from 'zod2spec';
 
 export const meta = {
 	requireCredential: false,
@@ -32,10 +33,12 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		super(meta, paramDef, async (ps) => {
 			const ep = endpoints.find(x => x.name === ps.endpoint);
 			if (ep == null) return null;
+
+			const spec = generateOpenApiSpec([])(ep.params);
 			return {
-				params: Object.entries(ep.params.properties ?? {}).map(([k, v]) => ({
+				params: Object.entries('properties' in spec ? spec.properties : {}).map(([k, v]) => ({
 					name: k,
-					type: v.type ? v.type.charAt(0).toUpperCase() + v.type.slice(1) : 'string',
+					type: 'type' in v ? v.type.charAt(0).toUpperCase() + v.type.slice(1) : 'string',
 				})),
 			};
 		});
