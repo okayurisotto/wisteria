@@ -4,7 +4,6 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import type { } from '@/models/Blocking.js';
 import type { MiHashtag } from '@/models/Hashtag.js';
 import type { z } from 'zod';
 import type { HashtagSchema } from '@/models/zod/hashtag';
