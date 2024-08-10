@@ -19,7 +19,7 @@ import type { IEndpointMeta, IEndpoint } from './endpoints.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { IpAddressLoggingService } from './IpAddressLoggingService.js';
 import { LiteResponse } from '@/misc/LiteResponse.js';
-import type { ExecMethodType } from './endpoint-base.js';
+import type { ExecMethodType } from './AbstractEndpoint.js';
 import { Stream } from 'node:stream';
 import type { Context } from 'hono';
 import { getConnInfo } from '@hono/node-server/conninfo';
