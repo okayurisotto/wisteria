@@ -5,13 +5,16 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { UserProfilesRepository, NoteReactionsRepository, UsersRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { QueryService } from '@/core/QueryService.js';
 import { NoteReactionEntityService } from '@/core/entities/NoteReactionEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { ApiError } from '../../error.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { NoteReactionSchema } from '@/models/zod/note-reaction.js';
 
 export const meta = {
 	tags: ['users', 'reactions'],
@@ -20,15 +23,7 @@ export const meta = {
 
 	description: 'Show all reactions this user made.',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'NoteReaction',
-		},
-	},
+	res: NoteReactionSchema.array(),
 
 	errors: {
 		reactionsNotPublic: {
@@ -44,21 +39,17 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		userId: { type: 'string', format: 'misskey:id' },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		sinceDate: { type: 'integer' },
-		untilDate: { type: 'integer' },
-	},
-	required: ['userId'],
-} as const;
+export const paramDef = z.object({
+	userId: IdSchema,
+	limit: z.number().int().min(1).max(100).default(10),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	sinceDate: z.number().int().optional(),
+	untilDate: z.number().int().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

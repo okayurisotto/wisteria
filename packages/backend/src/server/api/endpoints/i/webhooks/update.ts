@@ -4,12 +4,14 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { WebhooksRepository } from '@/models/_.js';
 import { webhookEventTypes } from '@/models/Webhook.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['webhooks'],
@@ -28,25 +30,19 @@ export const meta = {
 
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		webhookId: { type: 'string', format: 'misskey:id' },
-		name: { type: 'string', minLength: 1, maxLength: 100 },
-		url: { type: 'string', minLength: 1, maxLength: 1024 },
-		secret: { type: 'string', maxLength: 1024, default: '' },
-		on: { type: 'array', items: {
-			type: 'string', enum: webhookEventTypes,
-		} },
-		active: { type: 'boolean' },
-	},
-	required: ['webhookId', 'name', 'url', 'on', 'active'],
-} as const;
+export const paramDef = z.object({
+	webhookId: IdSchema,
+	name: z.string().min(1).max(100),
+	url: z.string().min(1).max(1024),
+	secret: z.string().max(1024).default(''),
+	on: z.enum(webhookEventTypes).array(),
+	active: z.boolean(),
+});
 
 // TODO: ロジックをサービスに切り出す
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.webhooksRepository)
 		private readonly webhooksRepository: WebhooksRepository,

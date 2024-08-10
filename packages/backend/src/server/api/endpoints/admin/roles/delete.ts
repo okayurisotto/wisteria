@@ -4,11 +4,13 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { RolesRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '@/server/api/error.js';
 import { RoleService } from '@/core/RoleService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin', 'role'],
@@ -26,18 +28,12 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		roleId: { type: 'string', format: 'misskey:id' },
-	},
-	required: [
-		'roleId',
-	],
-} as const;
+export const paramDef = z.object({
+	roleId: IdSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.rolesRepository)
 		private readonly rolesRepository: RolesRepository,

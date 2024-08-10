@@ -4,11 +4,13 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { MiClip } from '@/models/_.js';
 import { ClipEntityService } from '@/core/entities/ClipEntityService.js';
 import { ApiError } from '@/server/api/error.js';
 import { ClipService } from '@/core/ClipService.js';
+import { z } from 'zod';
+import { ClipSchema } from '@/models/zod/clip.js';
 
 export const meta = {
 	tags: ['clips'],
@@ -19,11 +21,7 @@ export const meta = {
 
 	kind: 'write:account',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'Clip',
-	},
+	res: ClipSchema,
 
 	errors: {
 		tooManyClips: {
@@ -34,18 +32,14 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		name: { type: 'string', minLength: 1, maxLength: 100 },
-		isPublic: { type: 'boolean', default: false },
-		description: { type: 'string', nullable: true, minLength: 1, maxLength: 2048 },
-	},
-	required: ['name'],
-} as const;
+export const paramDef = z.object({
+	name: z.string().min(1).max(100),
+	isPublic: z.boolean().default(false),
+	description: z.string().min(1).max(2048).nullable().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly clipEntityService: ClipEntityService,
 		private readonly clipService: ClipService,

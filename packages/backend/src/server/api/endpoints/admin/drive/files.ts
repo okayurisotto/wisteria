@@ -5,10 +5,13 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { DriveFilesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { QueryService } from '@/core/QueryService.js';
 import { DI } from '@/di-symbols.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
+import { z } from 'zod';
+import { DriveFileSchema } from '@/models/zod/drive-file.js';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -17,38 +20,21 @@ export const meta = {
 	requireModerator: true,
 	kind: 'read:admin:drive',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'DriveFile',
-		},
-	},
+	res: DriveFileSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		userId: { type: 'string', format: 'misskey:id', nullable: true },
-		type: { type: 'string', nullable: true, pattern: /^[a-zA-Z0-9/\-*]+$/.toString().slice(1, -1) },
-		origin: { type: 'string', enum: ['combined', 'local', 'remote'], default: 'local' },
-		hostname: {
-			type: 'string',
-			nullable: true,
-			default: null,
-			description: 'The local host is represented with `null`.',
-		},
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	limit: z.number().int().min(1).max(100).default(10),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	userId: IdSchema.nullable().optional(),
+	type: z.string().regex(/^[a-zA-Z0-9/\-*]+$/).nullable().optional(),
+	origin: z.enum(['combined', 'local', 'remote']).default('local'),
+	hostname: z.string().nullable().default(null).describe('The local host is represented with `null`.'),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFilesRepository)
 		private readonly driveFilesRepository: DriveFilesRepository,

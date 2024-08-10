@@ -5,7 +5,7 @@
 
 import { Injectable } from '@nestjs/common';
 import ms from 'ms';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { MiNote } from '@/models/Note.js';
 import type { MiLocalUser, MiUser } from '@/models/User.js';
 import { isActor, isPost, getApId } from '@/core/activitypub/type.js';
@@ -19,6 +19,9 @@ import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { UserDetailedNotMeSchema } from '@/models/zod/user.js';
+import { NoteSchema } from '@/models/zod/note.js';
 
 export const meta = {
 	tags: ['federation'],
@@ -39,53 +42,24 @@ export const meta = {
 		},
 	},
 
-	res: {
-		optional: false, nullable: false,
-		oneOf: [
-			{
-				type: 'object',
-				properties: {
-					type: {
-						type: 'string',
-						optional: false, nullable: false,
-						enum: ['User'],
-					},
-					object: {
-						type: 'object',
-						optional: false, nullable: false,
-						ref: 'UserDetailedNotMe',
-					},
-				},
-			},
-			{
-				type: 'object',
-				properties: {
-					type: {
-						type: 'string',
-						optional: false, nullable: false,
-						enum: ['Note'],
-					},
-					object: {
-						type: 'object',
-						optional: false, nullable: false,
-						ref: 'Note',
-					},
-				},
-			},
-		],
-	},
+	res: z.union([
+		z.object({
+			type: z.enum(['User']).optional(),
+			object: UserDetailedNotMeSchema.optional(),
+		}),
+		z.object({
+			type: z.enum(['Note']).optional(),
+			object: NoteSchema.optional(),
+		}),
+	]),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		uri: { type: 'string' },
-	},
-	required: ['uri'],
-} as const;
+export const paramDef = z.object({
+	uri: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly utilityService: UtilityService,
 		private readonly userEntityService: UserEntityService,

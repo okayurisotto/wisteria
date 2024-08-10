@@ -5,9 +5,11 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { UserProfilesRepository, UsersRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -17,17 +19,13 @@ export const meta = {
 	kind: 'write:admin:user-note',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		userId: { type: 'string', format: 'misskey:id' },
-		text: { type: 'string' },
-	},
-	required: ['userId', 'text'],
-} as const;
+export const paramDef = z.object({
+	userId: IdSchema,
+	text: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

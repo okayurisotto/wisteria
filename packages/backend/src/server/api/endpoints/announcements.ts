@@ -5,41 +5,32 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { Brackets } from 'typeorm';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { QueryService } from '@/core/QueryService.js';
 import { AnnouncementService } from '@/core/AnnouncementService.js';
 import { DI } from '@/di-symbols.js';
 import type { AnnouncementsRepository } from '@/models/_.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { AnnouncementSchema } from '@/models/zod/announcement.js';
 
 export const meta = {
 	tags: ['meta'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'Announcement',
-		},
-	},
+	res: AnnouncementSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		isActive: { type: 'boolean', default: true },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	limit: z.number().int().min(1).max(100).default(10),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	isActive: z.boolean().default(true),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.announcementsRepository)
 		private readonly announcementsRepository: AnnouncementsRepository,

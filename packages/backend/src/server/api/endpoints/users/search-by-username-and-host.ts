@@ -8,10 +8,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository, FollowingsRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
 import type { MiUser } from '@/models/User.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { sqlLikeEscape } from '@/misc/sql-like-escape.js';
+import { z } from 'zod';
+import { UserSchema } from '@/models/zod/user.js';
 
 export const meta = {
 	tags: ['users'],
@@ -20,34 +22,18 @@ export const meta = {
 
 	description: 'Search for a user by username and/or host.',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'User',
-		},
-	},
+	res: UserSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		detail: { type: 'boolean', default: true },
-
-		username: { type: 'string', nullable: true },
-		host: { type: 'string', nullable: true },
-	},
-	anyOf: [
-		{ required: ['username'] },
-		{ required: ['host'] },
-	],
-} as const;
+export const paramDef = z.object({
+	username: z.string().nullable().optional(),
+	host: z.string().nullable().optional(),
+	limit: z.number().int().min(1).max(100).default(10),
+	detail: z.boolean().default(true),
+}).refine(v => v.username != null || v.host != null);
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
 		private readonly config: Config,

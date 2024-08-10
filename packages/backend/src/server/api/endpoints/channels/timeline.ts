@@ -4,7 +4,7 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { ChannelsRepository, NotesRepository } from '@/models/_.js';
 import { QueryService } from '@/core/QueryService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
@@ -13,21 +13,16 @@ import { DI } from '@/di-symbols.js';
 import { IdService } from '@/core/IdService.js';
 import type { MiLocalUser } from '@/models/User.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { NoteSchema } from '@/models/zod/note.js';
 
 export const meta = {
 	tags: ['notes', 'channels'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'Note',
-		},
-	},
+	res: NoteSchema.array(),
 
 	errors: {
 		noSuchChannel: {
@@ -38,22 +33,18 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		channelId: { type: 'string', format: 'misskey:id' },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		sinceDate: { type: 'integer' },
-		untilDate: { type: 'integer' },
-		allowPartial: { type: 'boolean', default: false }, // true is recommended but for compatibility false by default
-	},
-	required: ['channelId'],
-} as const;
+export const paramDef = z.object({
+	channelId: IdSchema,
+	limit: z.number().int().min(1).max(100).default(10),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	sinceDate: z.number().int().optional(),
+	untilDate: z.number().int().optional(),
+	allowPartial: z.boolean().default(false),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
 		private readonly notesRepository: NotesRepository,

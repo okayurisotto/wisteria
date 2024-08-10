@@ -5,13 +5,16 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import ms from 'ms';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { ChannelsRepository, DriveFilesRepository } from '@/models/_.js';
 import type { MiChannel } from '@/models/Channel.js';
 import { IdService } from '@/core/IdService.js';
 import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { ChannelSchema } from '@/models/zod/channel.js';
 
 export const meta = {
 	tags: ['channels'],
@@ -27,11 +30,7 @@ export const meta = {
 		max: 10,
 	},
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'Channel',
-	},
+	res: ChannelSchema,
 
 	errors: {
 		noSuchFile: {
@@ -42,21 +41,17 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		name: { type: 'string', minLength: 1, maxLength: 128 },
-		description: { type: 'string', nullable: true, minLength: 1, maxLength: 2048 },
-		bannerId: { type: 'string', format: 'misskey:id', nullable: true },
-		color: { type: 'string', minLength: 1, maxLength: 16 },
-		isSensitive: { type: 'boolean', nullable: true },
-		allowRenoteToExternal: { type: 'boolean', nullable: true },
-	},
-	required: ['name'],
-} as const;
+export const paramDef = z.object({
+	name: z.string().min(1).max(128),
+	description: z.string().min(1).max(2048).nullable().optional(),
+	bannerId: IdSchema.nullable().optional(),
+	color: z.string().min(1).max(16).optional(),
+	isSensitive: z.boolean().nullable().optional(),
+	allowRenoteToExternal: z.boolean().nullable().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFilesRepository)
 		private readonly driveFilesRepository: DriveFilesRepository,

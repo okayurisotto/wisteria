@@ -4,10 +4,12 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { RegistrationTicketsRepository } from '@/models/_.js';
 import { InviteCodeEntityService } from '@/core/entities/InviteCodeEntityService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { InviteCodeSchema } from '@/models/zod/invite-code.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -16,30 +18,18 @@ export const meta = {
 	requireModerator: true,
 	kind: 'read:admin:invite-codes',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'InviteCode',
-		},
-	},
+	res: InviteCodeSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 30 },
-		offset: { type: 'integer', default: 0 },
-		type: { type: 'string', enum: ['unused', 'used', 'expired', 'all'], default: 'all' },
-		sort: { type: 'string', enum: ['+createdAt', '-createdAt', '+usedAt', '-usedAt'] },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	limit: z.number().int().min(1).max(100).default(30),
+	offset: z.number().int().default(0),
+	type: z.enum(['unused', 'used', 'expired', 'all']).default('all'),
+	sort: z.enum(['+createdAt', '-createdAt', '+usedAt', '-usedAt']).optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.registrationTicketsRepository)
 		private readonly registrationTicketsRepository: RegistrationTicketsRepository,

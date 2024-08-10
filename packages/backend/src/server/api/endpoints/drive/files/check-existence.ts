@@ -4,9 +4,10 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { DriveFilesRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['drive'],
@@ -17,22 +18,15 @@ export const meta = {
 
 	description: 'Check if a given file exists.',
 
-	res: {
-		type: 'boolean',
-		optional: false, nullable: false,
-	},
+	res: z.boolean(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		md5: { type: 'string' },
-	},
-	required: ['md5'],
-} as const;
+export const paramDef = z.object({
+	md5: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFilesRepository)
 		private readonly driveFilesRepository: DriveFilesRepository,

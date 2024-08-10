@@ -4,11 +4,14 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { ChannelsRepository } from '@/models/_.js';
 import { QueryService } from '@/core/QueryService.js';
 import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { ChannelSchema } from '@/models/zod/channel.js';
 
 export const meta = {
 	tags: ['channels', 'account'],
@@ -17,29 +20,17 @@ export const meta = {
 
 	kind: 'read:channels',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'Channel',
-		},
-	},
+	res: ChannelSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 5 },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	limit: z.number().int().min(1).max(100).default(5),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.channelsRepository)
 		private readonly channelsRepository: ChannelsRepository,

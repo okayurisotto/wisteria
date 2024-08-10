@@ -5,8 +5,9 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import ms from 'ms';
+import { z } from 'zod';
 
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { ApiError } from '@/server/api/error.js';
 
 import { AccountMoveService } from '@/core/AccountMoveService.js';
@@ -65,21 +66,15 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-	},
+	res: z.record(z.string(), z.unknown()),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		moveToAccount: { type: 'string' },
-	},
-	required: ['moveToAccount'],
-} as const;
+export const paramDef = z.object({
+	moveToAccount: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
 		private readonly config: Config,

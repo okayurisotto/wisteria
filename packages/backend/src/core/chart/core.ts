@@ -15,6 +15,7 @@ import { dateUTC, isTimeSame, isTimeBefore, subtractTime, addTime } from '@/misc
 import type { Logger } from '@/logger.js';
 import type { Repository, DataSource } from 'typeorm';
 import type { UnionToIntersection } from 'type-fest';
+import { z } from 'zod';
 
 const COLUMN_PREFIX = '___';
 const UNIQUE_TEMP_COLUMN_PREFIX = 'unique_temp___';
@@ -91,43 +92,8 @@ type ToJsonSchema<S> = {
 	required: (keyof S)[];
 };
 
-export function getJsonSchema<S extends Schema>(schema: S): ToJsonSchema<Unflatten<ChartResult<S>>> {
-	const unflatten = (str: string, parent: Record<string, any>) => {
-		const keys = str.split('.');
-		const key = keys.shift();
-		const nextKey = keys[0];
-
-		if (key == null) return;
-
-		if (parent.properties[key] == null) {
-			parent.properties[key] = nextKey
-				? {
-						type: 'object',
-						properties: {},
-						required: [],
-					}
-				: {
-						type: 'array',
-						items: {
-							type: 'number',
-						},
-					};
-		}
-
-		if (nextKey) unflatten(keys.join('.'), parent.properties[key] as Record<string, any>);
-	};
-
-	const jsonSchema = {
-		type: 'object',
-		properties: {} as Record<string, unknown>,
-		required: [],
-	};
-
-	for (const k in schema) {
-		unflatten(k, jsonSchema);
-	}
-
-	return jsonSchema as ToJsonSchema<Unflatten<ChartResult<S>>>;
+export function getJsonSchema<S extends Schema>(schema: S): z.ZodType {
+	return z.record(z.string(), z.unknown());
 }
 
 /**

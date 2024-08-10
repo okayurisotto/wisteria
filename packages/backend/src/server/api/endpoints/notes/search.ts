@@ -4,26 +4,21 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { SearchService } from '@/core/SearchService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { ApiError } from '../../error.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { NoteSchema } from '@/models/zod/note.js';
 
 export const meta = {
 	tags: ['notes'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'Note',
-		},
-	},
+	res: NoteSchema.array(),
 
 	errors: {
 		unavailable: {
@@ -34,28 +29,21 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		query: { type: 'string' },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		offset: { type: 'integer', default: 0 },
-		host: {
-			type: 'string',
-			description: 'The local host is represented with `.`.',
-		},
-		userId: { type: 'string', format: 'misskey:id', nullable: true, default: null },
-		channelId: { type: 'string', format: 'misskey:id', nullable: true, default: null },
-	},
-	required: ['query'],
-} as const;
+export const paramDef = z.object({
+	query: z.string(),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	limit: z.number().int().min(1).max(100).default(10),
+	offset: z.number().int().default(0),
+	host: z.string().describe('The local host is represented with `.`.').optional(),
+	userId: IdSchema.nullable().optional(),
+	channelId: IdSchema.nullable().optional(),
+});
 
 // TODO: ロジックをサービスに切り出す
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly noteEntityService: NoteEntityService,
 		private readonly searchService: SearchService,

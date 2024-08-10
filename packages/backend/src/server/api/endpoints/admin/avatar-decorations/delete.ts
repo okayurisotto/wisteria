@@ -4,8 +4,10 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -17,16 +19,12 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		id: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['id'],
-} as const;
+export const paramDef = z.object({
+	id: IdSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly avatarDecorationService: AvatarDecorationService,
 	) {

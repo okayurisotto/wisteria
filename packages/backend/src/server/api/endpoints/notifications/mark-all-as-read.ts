@@ -4,8 +4,9 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { NotificationService } from '@/core/NotificationService.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['notifications', 'account'],
@@ -15,14 +16,10 @@ export const meta = {
 	kind: 'write:notifications',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly notificationService: NotificationService,
 	) {

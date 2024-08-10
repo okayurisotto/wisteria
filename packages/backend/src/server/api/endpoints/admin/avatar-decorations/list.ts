@@ -4,9 +4,11 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { IdService } from '@/core/IdService.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -15,68 +17,26 @@ export const meta = {
 	requireRolePolicy: 'canManageAvatarDecorations',
 	kind: 'read:admin:avatar-decorations',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			properties: {
-				id: {
-					type: 'string',
-					optional: false, nullable: false,
-					format: 'id',
-					example: 'xxxxxxxxxx',
-				},
-				createdAt: {
-					type: 'string',
-					optional: false, nullable: false,
-					format: 'date-time',
-				},
-				updatedAt: {
-					type: 'string',
-					optional: false, nullable: true,
-					format: 'date-time',
-				},
-				name: {
-					type: 'string',
-					optional: false, nullable: false,
-				},
-				description: {
-					type: 'string',
-					optional: false, nullable: false,
-				},
-				url: {
-					type: 'string',
-					optional: false, nullable: false,
-				},
-				roleIdsThatCanBeUsedThisDecoration: {
-					type: 'array',
-					optional: false, nullable: false,
-					items: {
-						type: 'string',
-						optional: false, nullable: false,
-						format: 'id',
-					},
-				},
-			},
-		},
-	},
+	res: z.object({
+		id: IdSchema.optional(),
+		createdAt: z.string()/* format: date-time */.optional(),
+		updatedAt: z.string().nullable()/* format: date-time */.optional(),
+		name: z.string().optional(),
+		description: z.string().optional(),
+		url: z.string().optional(),
+		roleIdsThatCanBeUsedThisDecoration: IdSchema.array().optional(),
+	}).array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		userId: { type: 'string', format: 'misskey:id', nullable: true },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	limit: z.number().int().min(1).max(100).default(10),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	userId: IdSchema.nullable().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly avatarDecorationService: AvatarDecorationService,
 		private readonly idService: IdService,

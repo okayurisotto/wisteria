@@ -5,8 +5,9 @@
 
 import { URL } from 'node:url';
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { DeliverQueue } from '@/core/QueueModule.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['admin'],
@@ -15,38 +16,13 @@ export const meta = {
 	requireModerator: true,
 	kind: 'read:admin:queue',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'array',
-			optional: false, nullable: false,
-			items: {
-				anyOf: [
-					{
-						type: 'string',
-					},
-					{
-						type: 'number',
-					},
-				],
-			},
-		},
-		example: [[
-			'example.com',
-			12,
-		]],
-	},
+	res: z.union([z.string(), z.number()]).array().array()/* [['example.com', 12]] */,
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject('queue:deliver') public deliverQueue: DeliverQueue,
 	) {

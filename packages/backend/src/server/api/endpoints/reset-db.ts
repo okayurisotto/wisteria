@@ -6,10 +6,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import * as Redis from 'ioredis';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import { resetDb } from '@/misc/reset-db.js';
 import { envOption } from '@/env.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['non-productive'],
@@ -23,14 +24,10 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.db)
 		private readonly db: DataSource,

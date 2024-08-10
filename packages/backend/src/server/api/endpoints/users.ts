@@ -5,47 +5,32 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { QueryService } from '@/core/QueryService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { UserDetailedSchema } from '@/models/zod/user.js';
 
 export const meta = {
 	tags: ['users'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'UserDetailed',
-		},
-	},
+	res: UserDetailedSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		offset: { type: 'integer', default: 0 },
-		sort: { type: 'string', enum: ['+follower', '-follower', '+createdAt', '-createdAt', '+updatedAt', '-updatedAt'] },
-		state: { type: 'string', enum: ['all', 'alive'], default: 'all' },
-		origin: { type: 'string', enum: ['combined', 'local', 'remote'], default: 'local' },
-		hostname: {
-			type: 'string',
-			nullable: true,
-			default: null,
-			description: 'The local host is represented with `null`.',
-		},
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	limit: z.number().int().min(1).max(100).default(10),
+	offset: z.number().int().default(0),
+	sort: z.enum(['+follower', '-follower', '+createdAt', '-createdAt', '+updatedAt', '-updatedAt']).optional(),
+	state: z.enum(['all', 'alive']).default('all'),
+	origin: z.enum(['combined', 'local', 'remote']).default('local'),
+	hostname: z.string().nullable().default(null).describe('The local host is represented with `null`.'),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

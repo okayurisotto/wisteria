@@ -6,7 +6,7 @@
 import { Brackets } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { NotesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import ActiveUsersChart from '@/core/chart/charts/active-users.js';
 import { DI } from '@/di-symbols.js';
@@ -15,19 +15,14 @@ import { IdService } from '@/core/IdService.js';
 import { QueryService } from '@/core/QueryService.js';
 import type { MiLocalUser } from '@/models/User.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { NoteSchema } from '@/models/zod/note.js';
 
 export const meta = {
 	tags: ['notes'],
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'Note',
-		},
-	},
+	res: NoteSchema.array(),
 
 	errors: {
 		ltlDisabled: {
@@ -44,24 +39,20 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		withFiles: { type: 'boolean', default: false },
-		withRenotes: { type: 'boolean', default: true },
-		withReplies: { type: 'boolean', default: false },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		allowPartial: { type: 'boolean', default: false }, // true is recommended but for compatibility false by default
-		sinceDate: { type: 'integer' },
-		untilDate: { type: 'integer' },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	withFiles: z.boolean().default(false),
+	withRenotes: z.boolean().default(true),
+	withReplies: z.boolean().default(false),
+	limit: z.number().int().min(1).max(100).default(10),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	allowPartial: z.boolean().default(false),
+	sinceDate: z.number().int().optional(),
+	untilDate: z.number().int().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
 		private readonly notesRepository: NotesRepository,

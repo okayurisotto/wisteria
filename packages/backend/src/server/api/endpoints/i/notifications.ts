@@ -8,13 +8,16 @@ import * as Redis from 'ioredis';
 import { Inject, Injectable } from '@nestjs/common';
 import type { NotesRepository } from '@/models/_.js';
 import { obsoleteNotificationTypes, notificationTypes, type FilterUnionByProperty } from '@/types.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { NoteReadService } from '@/core/NoteReadService.js';
 import { NotificationEntityService } from '@/core/entities/NotificationEntityService.js';
 import { NotificationService } from '@/core/NotificationService.js';
 import { DI } from '@/di-symbols.js';
 import { IdService } from '@/core/IdService.js';
 import type { MiNotification } from '@/models/Notification.js';
+import { z } from 'zod';
+import { NotificationSchema } from '@/models/zod/notification.js';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['account', 'notifications'],
@@ -28,37 +31,21 @@ export const meta = {
 
 	kind: 'read:notifications',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'Notification',
-		},
-	},
+	res: NotificationSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		markAsRead: { type: 'boolean', default: true },
-		// 後方互換のため、廃止された通知タイプも受け付ける
-		includeTypes: { type: 'array', items: {
-			type: 'string', enum: [...notificationTypes, ...obsoleteNotificationTypes],
-		} },
-		excludeTypes: { type: 'array', items: {
-			type: 'string', enum: [...notificationTypes, ...obsoleteNotificationTypes],
-		} },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	limit: z.number().int().min(1).max(100).default(10),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	markAsRead: z.boolean().default(true),
+	// 後方互換のため、廃止された通知タイプも受け付ける
+	includeTypes: z.enum([...notificationTypes, ...obsoleteNotificationTypes]).array().optional(),
+	excludeTypes: z.enum([...notificationTypes, ...obsoleteNotificationTypes]).array().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.redis)
 		private readonly redisClient: Redis.Redis,
@@ -81,8 +68,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				return [];
 			}
 
-			const includeTypes = ps.includeTypes && ps.includeTypes.filter(type => !(obsoleteNotificationTypes).includes(type as any)) as typeof notificationTypes[number][];
-			const excludeTypes = ps.excludeTypes && ps.excludeTypes.filter(type => !(obsoleteNotificationTypes).includes(type as any)) as typeof notificationTypes[number][];
+			const includeTypes = ps.includeTypes && ps.includeTypes.filter(type => !(obsoleteNotificationTypes).includes(type)) as typeof notificationTypes[number][];
+			const excludeTypes = ps.excludeTypes && ps.excludeTypes.filter(type => !(obsoleteNotificationTypes).includes(type)) as typeof notificationTypes[number][];
 
 			const limit = ps.limit + (ps.untilId ? 1 : 0) + (ps.sinceId ? 1 : 0); // untilIdに指定したものも含まれるため+1
 			const notificationsRes = await this.redisClient.xrevrange(

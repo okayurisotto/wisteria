@@ -5,7 +5,7 @@
 
 import { MoreThan } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { RegistrationTicketsRepository } from '@/models/_.js';
 import { InviteCodeEntityService } from '@/core/entities/InviteCodeEntityService.js';
 import { IdService } from '@/core/IdService.js';
@@ -13,6 +13,8 @@ import { RoleUserService } from '@/core/RoleUserService.js';
 import { DI } from '@/di-symbols.js';
 import { generateInviteCode } from '@/misc/generate-invite-code.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { InviteCodeSchema } from '@/models/zod/invite-code.js';
 
 export const meta = {
 	tags: ['meta'],
@@ -29,21 +31,13 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'InviteCode',
-	},
+	res: InviteCodeSchema,
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.registrationTicketsRepository)
 		private readonly registrationTicketsRepository: RegistrationTicketsRepository,

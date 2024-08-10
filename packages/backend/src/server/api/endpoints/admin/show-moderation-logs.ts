@@ -4,11 +4,14 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { ModerationLogsRepository } from '@/models/_.js';
 import { QueryService } from '@/core/QueryService.js';
 import { DI } from '@/di-symbols.js';
 import { ModerationLogEntityService } from '@/core/entities/ModerationLogEntityService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { UserDetailedNotMeSchema } from '@/models/zod/user.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -17,60 +20,26 @@ export const meta = {
 	requireAdmin: true,
 	kind: 'read:admin:show-moderation-log',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			properties: {
-				id: {
-					type: 'string',
-					optional: false, nullable: false,
-					format: 'id',
-				},
-				createdAt: {
-					type: 'string',
-					optional: false, nullable: false,
-					format: 'date-time',
-				},
-				type: {
-					type: 'string',
-					optional: false, nullable: false,
-				},
-				info: {
-					type: 'object',
-					optional: false, nullable: false,
-				},
-				userId: {
-					type: 'string',
-					optional: false, nullable: false,
-					format: 'id',
-				},
-				user: {
-					type: 'object',
-					optional: false, nullable: false,
-					ref: 'UserDetailedNotMe',
-				},
-			},
-		},
-	},
+	res: z.object({
+		id: IdSchema.optional(),
+		createdAt: z.string()/* format: date-time */.optional(),
+		type: z.string().optional(),
+		info: z.record(z.string(), z.unknown()).optional(),
+		userId: IdSchema.optional(),
+		user: UserDetailedNotMeSchema.optional(),
+	}).array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		type: { type: 'string', nullable: true },
-		userId: { type: 'string', format: 'misskey:id', nullable: true },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	limit: z.number().int().min(1).max(100).default(10),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	type: z.string().nullable().optional(),
+	userId: IdSchema.nullable().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.moderationLogsRepository)
 		private readonly moderationLogsRepository: ModerationLogsRepository,

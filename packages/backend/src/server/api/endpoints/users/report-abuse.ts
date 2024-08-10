@@ -7,7 +7,7 @@ import sanitizeHtml from 'sanitize-html';
 import { Inject, Injectable } from '@nestjs/common';
 import type { AbuseUserReportsRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { EmailService } from '@/core/EmailService.js';
@@ -16,6 +16,8 @@ import { GetterService } from '@/server/api/GetterService.js';
 import { RoleService } from '@/core/RoleService.js';
 import { ApiError } from '../../error.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['users'],
@@ -46,17 +48,13 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		userId: { type: 'string', format: 'misskey:id' },
-		comment: { type: 'string', minLength: 1, maxLength: 2048 },
-	},
-	required: ['userId', 'comment'],
-} as const;
+export const paramDef = z.object({
+	userId: IdSchema,
+	comment: z.string().min(1).max(2048),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.abuseUserReportsRepository)
 		private readonly abuseUserReportsRepository: AbuseUserReportsRepository,

@@ -4,63 +4,33 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { AccessTokensRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { IdService } from '@/core/IdService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	requireCredential: true,
 
 	secure: true,
 
-	res: {
-		type: 'array',
-		items: {
-			type: 'object',
-			properties: {
-				id: {
-					type: 'string',
-					optional: false,
-					format: 'misskey:id',
-				},
-				name: {
-					type: 'string',
-					optional: true,
-				},
-				createdAt: {
-					type: 'string',
-					optional: false,
-					format: 'date-time',
-				},
-				lastUsedAt: {
-					type: 'string',
-					optional: true,
-					format: 'date-time',
-				},
-				permission: {
-					type: 'array',
-					optional: false,
-					uniqueItems: true,
-					items: {
-						type: 'string',
-					},
-				},
-			},
-		},
-	},
+	res: z.object({
+		id: IdSchema.optional(),
+		name: z.string().optional(),
+		createdAt: z.string()/* format: date-time */.optional(),
+		lastUsedAt: z.string()/* format: date-time */.optional(),
+		permission: z.string().array().refine(v => new Set(v).size === v.length).optional(),
+	}).array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		sort: { type: 'string', enum: ['+createdAt', '-createdAt', '+lastUsedAt', '-lastUsedAt'] },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	sort: z.enum(['+createdAt', '-createdAt', '+lastUsedAt', '-lastUsedAt']).optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.accessTokensRepository)
 		private readonly accessTokensRepository: AccessTokensRepository,

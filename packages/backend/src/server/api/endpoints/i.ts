@@ -5,10 +5,12 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { UserProfilesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../error.js';
+import { z } from 'zod';
+import { MeDetailedSchema } from '@/models/zod/user.js';
 
 export const meta = {
 	tags: ['account'],
@@ -16,11 +18,7 @@ export const meta = {
 	requireCredential: true,
 	kind: 'read:account',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'MeDetailed',
-	},
+	res: MeDetailedSchema,
 
 	errors: {
 		userIsDeleted: {
@@ -32,14 +30,10 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userProfilesRepository)
 		private readonly userProfilesRepository: UserProfilesRepository,

@@ -6,7 +6,7 @@
 import { notificationTypes } from '@/types.js';
 import { IdSchema } from './IdSchema.js';
 import { z } from 'zod';
-import { UserLiteSchema } from './user.js';
+import { UserLiteSchema } from './user-lite.js';
 import { NoteSchema } from './note.js';
 import { RoleSchema } from './role.js';
 

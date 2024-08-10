@@ -6,9 +6,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { ClipsRepository, ClipFavoritesRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['clip'],
@@ -34,16 +36,12 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		clipId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['clipId'],
-} as const;
+export const paramDef = z.object({
+	clipId: IdSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.clipsRepository)
 		private readonly clipsRepository: ClipsRepository,

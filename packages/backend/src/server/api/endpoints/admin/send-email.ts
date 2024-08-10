@@ -4,8 +4,9 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { EmailService } from '@/core/EmailService.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['admin'],
@@ -15,18 +16,14 @@ export const meta = {
 	kind: 'write:admin:send-email',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		to: { type: 'string' },
-		subject: { type: 'string' },
-		text: { type: 'string' },
-	},
-	required: ['to', 'subject', 'text'],
-} as const;
+export const paramDef = z.object({
+	to: z.string(),
+	subject: z.string(),
+	text: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly emailService: EmailService,
 	) {

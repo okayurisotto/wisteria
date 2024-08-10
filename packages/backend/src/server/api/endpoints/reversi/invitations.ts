@@ -4,27 +4,24 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ReversiService } from '@/core/ReversiService.js';
+import { z } from 'zod';
+import { UserLiteSchema } from '@/models/zod/user-lite.js';
 
 export const meta = {
 	requireCredential: true,
 
 	kind: 'read:account',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: { ref: 'UserLite' },
-	},
+	res: UserLiteSchema.array(),
 } as const;
 
-export const paramDef = {
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly userEntityService: UserEntityService,
 		private readonly reversiService: ReversiService,

@@ -4,8 +4,9 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['admin'],
@@ -15,21 +16,15 @@ export const meta = {
 	kind: 'write:admin:avatar-decorations',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		name: { type: 'string', minLength: 1 },
-		description: { type: 'string' },
-		url: { type: 'string', minLength: 1 },
-		roleIdsThatCanBeUsedThisDecoration: { type: 'array', items: {
-			type: 'string',
-		} },
-	},
-	required: ['name', 'description', 'url'],
-} as const;
+export const paramDef = z.object({
+	name: z.string().min(1),
+	description: z.string(),
+	url: z.string().min(1),
+	roleIdsThatCanBeUsedThisDecoration: z.string().array().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly avatarDecorationService: AvatarDecorationService,
 	) {

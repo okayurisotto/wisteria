@@ -4,12 +4,14 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { IdService } from '@/core/IdService.js';
 import type { UserMemoRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['account'],
@@ -27,21 +29,13 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		userId: { type: 'string', format: 'misskey:id' },
-		memo: {
-			type: 'string',
-			nullable: true,
-			description: 'A personal memo for the target user. If null or empty, delete the memo.',
-		},
-	},
-	required: ['userId', 'memo'],
-} as const;
+export const paramDef = z.object({
+	userId: IdSchema,
+	memo: z.string().nullable().describe('A personal memo for the target user. If null or empty, delete the memo.'),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userMemosRepository)
 		private readonly userMemosRepository: UserMemoRepository,

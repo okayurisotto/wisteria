@@ -4,11 +4,14 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { AbuseUserReportsRepository } from '@/models/_.js';
 import { QueryService } from '@/core/QueryService.js';
 import { DI } from '@/di-symbols.js';
 import { AbuseUserReportEntityService } from '@/core/entities/AbuseUserReportEntityService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { UserDetailedNotMeSchema } from '@/models/zod/user.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -17,84 +20,32 @@ export const meta = {
 	requireModerator: true,
 	kind: 'read:admin:abuse-user-reports',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			properties: {
-				id: {
-					type: 'string',
-					nullable: false, optional: false,
-					format: 'id',
-					example: 'xxxxxxxxxx',
-				},
-				createdAt: {
-					type: 'string',
-					nullable: false, optional: false,
-					format: 'date-time',
-				},
-				comment: {
-					type: 'string',
-					nullable: false, optional: false,
-				},
-				resolved: {
-					type: 'boolean',
-					nullable: false, optional: false,
-					example: false,
-				},
-				reporterId: {
-					type: 'string',
-					nullable: false, optional: false,
-					format: 'id',
-				},
-				targetUserId: {
-					type: 'string',
-					nullable: false, optional: false,
-					format: 'id',
-				},
-				assigneeId: {
-					type: 'string',
-					nullable: true, optional: false,
-					format: 'id',
-				},
-				reporter: {
-					type: 'object',
-					nullable: false, optional: false,
-					ref: 'UserDetailedNotMe',
-				},
-				targetUser: {
-					type: 'object',
-					nullable: false, optional: false,
-					ref: 'UserDetailedNotMe',
-				},
-				assignee: {
-					type: 'object',
-					nullable: true, optional: true,
-					ref: 'UserDetailedNotMe',
-				},
-			},
-		},
-	},
+	res: z.object({
+		id: IdSchema.optional(),
+		createdAt: z.string()/* format: date-time */.optional(),
+		comment: z.string().optional(),
+		resolved: z.boolean().optional(),
+		reporterId: IdSchema.optional(),
+		targetUserId: IdSchema.optional(),
+		assigneeId: IdSchema.nullable().optional(),
+		reporter: UserDetailedNotMeSchema.optional(),
+		targetUser: UserDetailedNotMeSchema.optional(),
+		assignee: UserDetailedNotMeSchema.nullable().optional(),
+	}).array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		state: { type: 'string', nullable: true, default: null },
-		reporterOrigin: { type: 'string', enum: ['combined', 'local', 'remote'], default: 'combined' },
-		targetUserOrigin: { type: 'string', enum: ['combined', 'local', 'remote'], default: 'combined' },
-		forwarded: { type: 'boolean', default: false },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	limit: z.number().int().min(1).max(100).default(10),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	state: z.string().nullable().default(null),
+	reporterOrigin: z.enum(['combined', 'local', 'remote']).default('combined'),
+	targetUserOrigin: z.enum(['combined', 'local', 'remote']).default('combined'),
+	forwarded: z.boolean().default(false),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.abuseUserReportsRepository)
 		private readonly abuseUserReportsRepository: AbuseUserReportsRepository,

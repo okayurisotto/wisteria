@@ -4,10 +4,13 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { AdsRepository } from '@/models/_.js';
 import { QueryService } from '@/core/QueryService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { AdSchema } from '@/models/zod/ad.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -15,32 +18,18 @@ export const meta = {
 	requireCredential: true,
 	requireModerator: true,
 	kind: 'read:admin:ad',
-	res: {
-		type: 'array',
-		optional: false,
-		nullable: false,
-		items: {
-			type: 'object',
-			optional: false,
-			nullable: false,
-			ref: 'Ad',
-		},
-	},
+	res: AdSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		publishing: { type: 'boolean', default: null, nullable: true },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	limit: z.number().int().min(1).max(100).default(10),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	publishing: z.boolean().nullable().default(null),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.adsRepository)
 		private readonly adsRepository: AdsRepository,

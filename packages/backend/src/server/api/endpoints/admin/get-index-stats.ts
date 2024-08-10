@@ -5,8 +5,9 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: true,
@@ -14,26 +15,16 @@ export const meta = {
 	kind: 'read:admin:index-stats',
 
 	tags: ['admin'],
-	res: {
-		type: 'array',
-		items: {
-			type: 'object',
-			properties: {
-				tablename: { type: 'string' },
-				indexname: { type: 'string' },
-			},
-		},
-	},
+	res: z.object({
+		tablename: z.string().optional(),
+		indexname: z.string().optional(),
+	}).array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.db)
 		private readonly db: DataSource,

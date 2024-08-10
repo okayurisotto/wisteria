@@ -5,13 +5,14 @@
 
 import bcrypt from 'bcryptjs';
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { UserProfilesRepository, UserSecurityKeysRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '@/server/api/error.js';
 import { UserAuthService } from '@/core/UserAuthService.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: true,
@@ -27,18 +28,14 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		password: { type: 'string' },
-		token: { type: 'string', nullable: true },
-		credentialId: { type: 'string' },
-	},
-	required: ['password', 'credentialId'],
-} as const;
+export const paramDef = z.object({
+	password: z.string(),
+	token: z.string().nullable().optional(),
+	credentialId: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userSecurityKeysRepository)
 		private readonly userSecurityKeysRepository: UserSecurityKeysRepository,

@@ -4,8 +4,10 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -15,18 +17,12 @@ export const meta = {
 	kind: 'write:admin:emoji',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		ids: { type: 'array', items: {
-			type: 'string', format: 'misskey:id',
-		} },
-	},
-	required: ['ids'],
-} as const;
+export const paramDef = z.object({
+	ids: IdSchema.array(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly customEmojiService: CustomEmojiService,
 	) {

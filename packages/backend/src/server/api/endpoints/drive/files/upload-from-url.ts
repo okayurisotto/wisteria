@@ -5,10 +5,12 @@
 
 import ms from 'ms';
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { DriveService } from '@/core/DriveService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['drive'],
@@ -27,21 +29,17 @@ export const meta = {
 	kind: 'write:drive',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		url: { type: 'string' },
-		folderId: { type: 'string', format: 'misskey:id', nullable: true, default: null },
-		isSensitive: { type: 'boolean', default: false },
-		comment: { type: 'string', nullable: true, maxLength: 512, default: null },
-		marker: { type: 'string', nullable: true, default: null },
-		force: { type: 'boolean', default: false },
-	},
-	required: ['url'],
-} as const;
+export const paramDef = z.object({
+	url: z.string(),
+	folderId: IdSchema.nullable().optional(),
+	isSensitive: z.boolean().default(false),
+	comment: z.string().max(512).nullable().default(null),
+	marker: z.string().nullable().default(null),
+	force: z.boolean().default(false),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly driveService: DriveService,

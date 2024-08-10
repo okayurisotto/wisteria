@@ -5,43 +5,34 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { Brackets } from 'typeorm';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { QueryService } from '@/core/QueryService.js';
 import type { ChannelsRepository } from '@/models/_.js';
 import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { sqlLikeEscape } from '@/misc/sql-like-escape.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { ChannelSchema } from '@/models/zod/channel.js';
 
 export const meta = {
 	tags: ['channels'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'Channel',
-		},
-	},
+	res: ChannelSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		query: { type: 'string' },
-		type: { type: 'string', enum: ['nameAndDescription', 'nameOnly'], default: 'nameAndDescription' },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 5 },
-	},
-	required: ['query'],
-} as const;
+export const paramDef = z.object({
+	query: z.string(),
+	type: z.enum(['nameAndDescription', 'nameOnly']).default('nameAndDescription'),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	limit: z.number().int().min(1).max(100).default(5),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.channelsRepository)
 		private readonly channelsRepository: ChannelsRepository,

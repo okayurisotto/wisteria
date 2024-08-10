@@ -6,11 +6,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { DriveFilesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { DriveFileSchema } from '@/models/zod/drive-file.js';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['drive'],
@@ -21,11 +24,7 @@ export const meta = {
 
 	description: 'Show the properties of a drive file.',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'DriveFile',
-	},
+	res: DriveFileSchema,
 
 	errors: {
 		noSuchFile: {
@@ -42,20 +41,19 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		fileId: { type: 'string', format: 'misskey:id' },
-		url: { type: 'string' },
-	},
-	anyOf: [
-		{ required: ['fileId'] },
-		{ required: ['url'] },
-	],
-} as const;
+export const paramDef = z.union([
+	z.object({
+		fileId: IdSchema,
+		url: z.never().optional(),
+	}),
+	z.object({
+		fileId: z.never().optional(),
+		url: z.string(),
+	}),
+]);
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFilesRepository)
 		private readonly driveFilesRepository: DriveFilesRepository,

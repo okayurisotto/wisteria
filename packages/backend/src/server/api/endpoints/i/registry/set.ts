@@ -4,29 +4,24 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { RegistryApiService } from '@/core/RegistryApiService.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: true,
 	kind: 'write:account',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		key: { type: 'string', minLength: 1 },
-		value: {},
-		scope: { type: 'array', default: [], items: {
-			type: 'string', pattern: /^[a-zA-Z0-9_]+$/.toString().slice(1, -1),
-		} },
-		domain: { type: 'string', nullable: true },
-	},
-	required: ['key', 'value', 'scope'],
-} as const;
+export const paramDef = z.object({
+	key: z.string().min(1),
+	value: z.unknown(),
+	scope: z.string().regex(/^[a-zA-Z0-9_]+$/).array().default([]),
+	domain: z.string().nullable().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly registryApiService: RegistryApiService,
 	) {

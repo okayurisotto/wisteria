@@ -6,12 +6,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Brackets } from 'typeorm';
 import type { RoleAssignmentsRepository, RolesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { QueryService } from '@/core/QueryService.js';
 import { DI } from '@/di-symbols.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { IdService } from '@/core/IdService.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { UserDetailedSchema } from '@/models/zod/user.js';
 
 export const meta = {
 	tags: ['admin', 'role', 'users'],
@@ -28,34 +31,23 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'array',
-		items: {
-			type: 'object',
-			properties: {
-				id: { type: 'string', format: 'misskey:id' },
-				createdAt: { type: 'string', format: 'date-time' },
-				user: { ref: 'UserDetailed' },
-				expiresAt: { type: 'string', format: 'date-time', nullable: true },
-			},
-			required: ['id', 'createdAt', 'user'],
-		},
-	},
+	res: z.object({
+		id: IdSchema,
+		createdAt: z.string()/* format: date-time */,
+		user: UserDetailedSchema,
+		expiresAt: z.string().nullable()/* format: date-time */.optional(),
+	}).array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		roleId: { type: 'string', format: 'misskey:id' },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-	},
-	required: ['roleId'],
-} as const;
+export const paramDef = z.object({
+	roleId: IdSchema,
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	limit: z.number().int().min(1).max(100).default(10),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.rolesRepository)
 		private readonly rolesRepository: RolesRepository,

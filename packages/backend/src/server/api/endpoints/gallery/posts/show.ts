@@ -4,11 +4,14 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { GalleryPostsRepository } from '@/models/_.js';
 import { GalleryPostEntityService } from '@/core/entities/GalleryPostEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { GalleryPostSchema } from '@/models/zod/gallery-post.js';
 
 export const meta = {
 	tags: ['gallery'],
@@ -23,23 +26,15 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'GalleryPost',
-	},
+	res: GalleryPostSchema,
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		postId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['postId'],
-} as const;
+export const paramDef = z.object({
+	postId: IdSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.galleryPostsRepository)
 		private readonly galleryPostsRepository: GalleryPostsRepository,

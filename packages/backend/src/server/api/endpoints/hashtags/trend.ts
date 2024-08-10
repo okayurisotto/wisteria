@@ -4,9 +4,10 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
 import { HashtagService } from '@/core/HashtagService.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['hashtags'],
@@ -15,42 +16,17 @@ export const meta = {
 	allowGet: true,
 	cacheSec: 60 * 1,
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			properties: {
-				tag: {
-					type: 'string',
-					optional: false, nullable: false,
-				},
-				chart: {
-					type: 'array',
-					optional: false, nullable: false,
-					items: {
-						type: 'number',
-						optional: false, nullable: false,
-					},
-				},
-				usersCount: {
-					type: 'number',
-					optional: false, nullable: false,
-				},
-			},
-		},
-	},
+	res: z.object({
+		tag: z.string().optional(),
+		chart: z.number().array().optional(),
+		usersCount: z.number().optional(),
+	}).array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly featuredService: FeaturedService,
 		private readonly hashtagService: HashtagService,

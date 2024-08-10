@@ -4,11 +4,12 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { AccessTokensRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
 import { secureRndstr } from '@/misc/secure-rndstr.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['auth'],
@@ -17,34 +18,21 @@ export const meta = {
 
 	secure: true,
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			token: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-		},
-	},
+	res: z.object({
+		token: z.string().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		session: { type: 'string', nullable: true },
-		name: { type: 'string', nullable: true },
-		description: { type: 'string', nullable: true },
-		iconUrl: { type: 'string', nullable: true },
-		permission: { type: 'array', uniqueItems: true, items: {
-			type: 'string',
-		} },
-	},
-	required: ['session', 'permission'],
-} as const;
+export const paramDef = z.object({
+	session: z.string().nullable(),
+	name: z.string().nullable().optional(),
+	description: z.string().nullable().optional(),
+	iconUrl: z.string().nullable().optional(),
+	permission: z.string().array().refine(v => new Set(v).size === v.length),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.accessTokensRepository)
 		private readonly accessTokensRepository: AccessTokensRepository,

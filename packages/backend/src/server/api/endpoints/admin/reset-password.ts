@@ -5,11 +5,13 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { UsersRepository, UserProfilesRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { secureRndstr } from '@/misc/secure-rndstr.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -18,30 +20,17 @@ export const meta = {
 	requireModerator: true,
 	kind: 'write:admin:reset-password',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			password: {
-				type: 'string',
-				optional: false, nullable: false,
-				minLength: 8,
-				maxLength: 8,
-			},
-		},
-	},
+	res: z.object({
+		password: z.string().min(8).max(8).optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		userId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['userId'],
-} as const;
+export const paramDef = z.object({
+	userId: IdSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

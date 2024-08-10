@@ -5,11 +5,14 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { DriveFilesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { DriveService } from '@/core/DriveService.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { DriveFileSchema } from '@/models/zod/drive-file.js';
 
 export const meta = {
 	tags: ['drive'],
@@ -51,27 +54,19 @@ export const meta = {
 			id: '7f59dccb-f465-75ab-5cf4-3ce44e3282f7',
 		},
 	},
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'DriveFile',
-	},
+	res: DriveFileSchema,
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		fileId: { type: 'string', format: 'misskey:id' },
-		folderId: { type: 'string', format: 'misskey:id', nullable: true },
-		name: { type: 'string' },
-		isSensitive: { type: 'boolean' },
-		comment: { type: 'string', nullable: true, maxLength: 512 },
-	},
-	required: ['fileId'],
-} as const;
+export const paramDef = z.object({
+	fileId: IdSchema,
+	folderId: IdSchema.nullable().optional(),
+	name: z.string().optional(),
+	isSensitive: z.boolean().optional(),
+	comment: z.string().max(512).nullable().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFilesRepository)
 		private readonly driveFilesRepository: DriveFilesRepository,

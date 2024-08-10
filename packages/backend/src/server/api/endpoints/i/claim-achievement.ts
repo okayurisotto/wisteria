@@ -4,8 +4,9 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { AchievementService, ACHIEVEMENT_TYPES } from '@/core/AchievementService.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: true,
@@ -13,16 +14,10 @@ export const meta = {
 	kind: 'write:account',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		name: { type: 'string', enum: ACHIEVEMENT_TYPES },
-	},
-	required: ['name'],
-} as const;
+export const paramDef = z.object({ name: z.enum(ACHIEVEMENT_TYPES) });
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly achievementService: AchievementService,
 	) {

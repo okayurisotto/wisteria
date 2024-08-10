@@ -4,11 +4,14 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { RenoteMutingsRepository } from '@/models/_.js';
 import { QueryService } from '@/core/QueryService.js';
 import { RenoteMutingEntityService } from '@/core/entities/RenoteMutingEntityService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { RenoteMutingSchema } from '@/models/zod/renote-muting.js';
 
 export const meta = {
 	tags: ['account'],
@@ -17,29 +20,17 @@ export const meta = {
 
 	kind: 'read:mutes',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'RenoteMuting',
-		},
-	},
+	res: RenoteMutingSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 30 },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	limit: z.number().int().min(1).max(100).default(30),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.renoteMutingsRepository)
 		private readonly renoteMutingsRepository: RenoteMutingsRepository,

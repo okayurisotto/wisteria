@@ -5,8 +5,9 @@
 
 import { Injectable } from '@nestjs/common';
 import ms from 'ms';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { ApResolverService } from '@/core/activitypub/ApResolverService.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['federation'],
@@ -22,22 +23,15 @@ export const meta = {
 	errors: {
 	},
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-	},
+	res: z.record(z.string(), z.unknown()),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		uri: { type: 'string' },
-	},
-	required: ['uri'],
-} as const;
+export const paramDef = z.object({
+	uri: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly apResolverService: ApResolverService,
 	) {

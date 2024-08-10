@@ -4,13 +4,15 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { UsersRepository, AbuseUserReportsRepository } from '@/models/_.js';
 import { InstanceActorService } from '@/core/InstanceActorService.js';
 import { QueueService } from '@/core/QueueService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { DI } from '@/di-symbols.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -20,19 +22,15 @@ export const meta = {
 	kind: 'write:admin:resolve-abuse-user-report',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		reportId: { type: 'string', format: 'misskey:id' },
-		forward: { type: 'boolean', default: false },
-	},
-	required: ['reportId'],
-} as const;
+export const paramDef = z.object({
+	reportId: IdSchema,
+	forward: z.boolean().default(false),
+});
 
 // TODO: ロジックをサービスに切り出す
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

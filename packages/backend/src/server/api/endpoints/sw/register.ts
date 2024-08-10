@@ -6,9 +6,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IdService } from '@/core/IdService.js';
 import type { SwSubscriptionsRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { MetaService } from '@/core/MetaService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['account'],
@@ -18,48 +19,24 @@ export const meta = {
 
 	description: 'Register to receive push notifications.',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			state: {
-				type: 'string',
-				optional: true, nullable: false,
-				enum: ['already-subscribed', 'subscribed'],
-			},
-			key: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			userId: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			endpoint: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			sendReadMessage: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-		},
-	},
+	res: z.object({
+		state: z.enum(['already-subscribed', 'subscribed']).optional(),
+		key: z.string().nullable().optional(),
+		userId: z.string().optional(),
+		endpoint: z.string().optional(),
+		sendReadMessage: z.boolean().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		endpoint: { type: 'string' },
-		auth: { type: 'string' },
-		publickey: { type: 'string' },
-		sendReadMessage: { type: 'boolean', default: false },
-	},
-	required: ['endpoint', 'auth', 'publickey'],
-} as const;
+export const paramDef = z.object({
+	endpoint: z.string(),
+	auth: z.string(),
+	publickey: z.string(),
+	sendReadMessage: z.boolean().default(false),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.swSubscriptionsRepository)
 		private readonly swSubscriptionsRepository: SwSubscriptionsRepository,

@@ -4,8 +4,10 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['users'],
@@ -15,119 +17,41 @@ export const meta = {
 
 	description: 'Show the different kinds of relations between the authenticated user and the specified user(s).',
 
-	res: {
-		optional: false, nullable: false,
-		oneOf: [
-			{
-				type: 'object',
-				properties: {
-					id: {
-						type: 'string',
-						optional: false, nullable: false,
-						format: 'id',
-					},
-					isFollowing: {
-						type: 'boolean',
-						optional: false, nullable: false,
-					},
-					hasPendingFollowRequestFromYou: {
-						type: 'boolean',
-						optional: false, nullable: false,
-					},
-					hasPendingFollowRequestToYou: {
-						type: 'boolean',
-						optional: false, nullable: false,
-					},
-					isFollowed: {
-						type: 'boolean',
-						optional: false, nullable: false,
-					},
-					isBlocking: {
-						type: 'boolean',
-						optional: false, nullable: false,
-					},
-					isBlocked: {
-						type: 'boolean',
-						optional: false, nullable: false,
-					},
-					isMuted: {
-						type: 'boolean',
-						optional: false, nullable: false,
-					},
-					isRenoteMuted: {
-						type: 'boolean',
-						optional: false, nullable: false,
-					},
-				},
-			},
-			{
-				type: 'array',
-				items: {
-					type: 'object',
-					optional: false, nullable: false,
-					properties: {
-						id: {
-							type: 'string',
-							optional: false, nullable: false,
-							format: 'id',
-						},
-						isFollowing: {
-							type: 'boolean',
-							optional: false, nullable: false,
-						},
-						hasPendingFollowRequestFromYou: {
-							type: 'boolean',
-							optional: false, nullable: false,
-						},
-						hasPendingFollowRequestToYou: {
-							type: 'boolean',
-							optional: false, nullable: false,
-						},
-						isFollowed: {
-							type: 'boolean',
-							optional: false, nullable: false,
-						},
-						isBlocking: {
-							type: 'boolean',
-							optional: false, nullable: false,
-						},
-						isBlocked: {
-							type: 'boolean',
-							optional: false, nullable: false,
-						},
-						isMuted: {
-							type: 'boolean',
-							optional: false, nullable: false,
-						},
-						isRenoteMuted: {
-							type: 'boolean',
-							optional: false, nullable: false,
-						},
-					},
-				},
-			},
-		],
-	},
+	res: z.union([
+		z.object({
+			id: IdSchema.optional(),
+			isFollowing: z.boolean().optional(),
+			hasPendingFollowRequestFromYou: z.boolean().optional(),
+			hasPendingFollowRequestToYou: z.boolean().optional(),
+			isFollowed: z.boolean().optional(),
+			isBlocking: z.boolean().optional(),
+			isBlocked: z.boolean().optional(),
+			isMuted: z.boolean().optional(),
+			isRenoteMuted: z.boolean().optional(),
+		}),
+		z.object({
+			id: IdSchema.optional(),
+			isFollowing: z.boolean().optional(),
+			hasPendingFollowRequestFromYou: z.boolean().optional(),
+			hasPendingFollowRequestToYou: z.boolean().optional(),
+			isFollowed: z.boolean().optional(),
+			isBlocking: z.boolean().optional(),
+			isBlocked: z.boolean().optional(),
+			isMuted: z.boolean().optional(),
+			isRenoteMuted: z.boolean().optional(),
+		}).array(),
+	]),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		userId: {
-			anyOf: [
-				{ type: 'string', format: 'misskey:id' },
-				{
-					type: 'array',
-					items: { type: 'string', format: 'misskey:id' },
-				},
-			],
-		},
-	},
-	required: ['userId'],
-} as const;
+export const paramDef = z.object({
+	userId: z.union([
+		IdSchema,
+		IdSchema.array(),
+	]),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly userEntityService: UserEntityService,
 	) {

@@ -4,9 +4,11 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { AccessTokensRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	requireCredential: true,
@@ -14,20 +16,19 @@ export const meta = {
 	secure: true,
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		tokenId: { type: 'string', format: 'misskey:id' },
-		token: { type: 'string', nullable: true },
-	},
-	anyOf: [
-		{ required: ['tokenId'] },
-		{ required: ['token'] },
-	],
-} as const;
+export const paramDef = z.union([
+	z.object({
+		tokenId: IdSchema,
+		token: z.never().optional(),
+	}),
+	z.object({
+		tokenId: z.never().optional(),
+		token: z.string().nullable(),
+	}),
+]);
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.accessTokensRepository)
 		private readonly accessTokensRepository: AccessTokensRepository,

@@ -4,12 +4,15 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { AntennasRepository, UserListsRepository } from '@/models/_.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { AntennaEntityService } from '@/core/entities/AntennaEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { AntennaSchema } from '@/models/zod/antenna.js';
 
 export const meta = {
 	tags: ['antennas'],
@@ -34,44 +37,26 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'Antenna',
-	},
+	res: AntennaSchema,
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		antennaId: { type: 'string', format: 'misskey:id' },
-		name: { type: 'string', minLength: 1, maxLength: 100 },
-		src: { type: 'string', enum: ['home', 'all', 'users', 'list', 'users_blacklist'] },
-		userListId: { type: 'string', format: 'misskey:id', nullable: true },
-		keywords: { type: 'array', items: {
-			type: 'array', items: {
-				type: 'string',
-			},
-		} },
-		excludeKeywords: { type: 'array', items: {
-			type: 'array', items: {
-				type: 'string',
-			},
-		} },
-		users: { type: 'array', items: {
-			type: 'string',
-		} },
-		caseSensitive: { type: 'boolean' },
-		localOnly: { type: 'boolean' },
-		withReplies: { type: 'boolean' },
-		withFile: { type: 'boolean' },
-		notify: { type: 'boolean' },
-	},
-	required: ['antennaId', 'name', 'src', 'keywords', 'excludeKeywords', 'users', 'caseSensitive', 'withReplies', 'withFile', 'notify'],
-} as const;
+export const paramDef = z.object({
+	antennaId: IdSchema,
+	name: z.string().min(1).max(100),
+	src: z.enum(['home', 'all', 'users', 'list', 'users_blacklist']),
+	userListId: IdSchema.nullable().optional(),
+	keywords: z.string().array().array(),
+	excludeKeywords: z.string().array().array(),
+	users: z.string().array(),
+	caseSensitive: z.boolean(),
+	localOnly: z.boolean().optional(),
+	withReplies: z.boolean(),
+	withFile: z.boolean(),
+	notify: z.boolean(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.antennasRepository)
 		private readonly antennasRepository: AntennasRepository,

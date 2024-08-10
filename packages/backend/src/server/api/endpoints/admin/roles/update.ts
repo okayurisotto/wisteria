@@ -4,11 +4,13 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { RolesRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '@/server/api/error.js';
 import { RoleService } from '@/core/RoleService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin', 'role'],
@@ -26,47 +28,26 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		roleId: { type: 'string', format: 'misskey:id' },
-		name: { type: 'string' },
-		description: { type: 'string' },
-		color: { type: 'string', nullable: true },
-		iconUrl: { type: 'string', nullable: true },
-		target: { type: 'string', enum: ['manual', 'conditional'] },
-		condFormula: { type: 'object' },
-		isPublic: { type: 'boolean' },
-		isModerator: { type: 'boolean' },
-		isAdministrator: { type: 'boolean' },
-		isExplorable: { type: 'boolean' },
-		asBadge: { type: 'boolean' },
-		canEditMembersByModerator: { type: 'boolean' },
-		displayOrder: { type: 'number' },
-		policies: {
-			type: 'object',
-		},
-	},
-	required: [
-		'roleId',
-		'name',
-		'description',
-		'color',
-		'iconUrl',
-		'target',
-		'condFormula',
-		'isPublic',
-		'isModerator',
-		'isAdministrator',
-		'asBadge',
-		'canEditMembersByModerator',
-		'displayOrder',
-		'policies',
-	],
-} as const;
+export const paramDef = z.object({
+	roleId: IdSchema,
+	name: z.string(),
+	description: z.string(),
+	color: z.string().nullable(),
+	iconUrl: z.string().nullable(),
+	target: z.enum(['manual', 'conditional']),
+	condFormula: z.record(z.string(), z.unknown()),
+	isPublic: z.boolean(),
+	isModerator: z.boolean(),
+	isAdministrator: z.boolean(),
+	isExplorable: z.boolean().optional(),
+	asBadge: z.boolean(),
+	canEditMembersByModerator: z.boolean(),
+	displayOrder: z.number(),
+	policies: z.record(z.string(), z.unknown()),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.rolesRepository)
 		private readonly rolesRepository: RolesRepository,

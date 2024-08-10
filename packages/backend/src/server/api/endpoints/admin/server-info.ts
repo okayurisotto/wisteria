@@ -8,8 +8,9 @@ import si from 'systeminformation';
 import { Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import * as Redis from 'ioredis';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: true,
@@ -18,91 +19,32 @@ export const meta = {
 
 	tags: ['admin', 'meta'],
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			machine: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			os: {
-				type: 'string',
-				optional: false, nullable: false,
-				example: 'linux',
-			},
-			node: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			psql: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			cpu: {
-				type: 'object',
-				optional: false, nullable: false,
-				properties: {
-					model: {
-						type: 'string',
-						optional: false, nullable: false,
-					},
-					cores: {
-						type: 'number',
-						optional: false, nullable: false,
-					},
-				},
-			},
-			mem: {
-				type: 'object',
-				optional: false, nullable: false,
-				properties: {
-					total: {
-						type: 'number',
-						optional: false, nullable: false,
-						format: 'bytes',
-					},
-				},
-			},
-			fs: {
-				type: 'object',
-				optional: false, nullable: false,
-				properties: {
-					total: {
-						type: 'number',
-						optional: false, nullable: false,
-						format: 'bytes',
-					},
-					used: {
-						type: 'number',
-						optional: false, nullable: false,
-						format: 'bytes',
-					},
-				},
-			},
-			net: {
-				type: 'object',
-				optional: false, nullable: false,
-				properties: {
-					interface: {
-						type: 'string',
-						optional: false, nullable: false,
-						example: 'eth0',
-					},
-				},
-			},
-		},
-	},
+	res: z.object({
+		machine: z.string().optional(),
+		os: z.string()/* example: "linux" */.optional(),
+		node: z.string().optional(),
+		psql: z.string().optional(),
+		cpu: z.object({
+			model: z.string().optional(),
+			cores: z.number().optional(),
+		}),
+		mem: z.object({
+			total: z.number()/* format: bytes */.optional(),
+		}),
+		fs: z.object({
+			total: z.number()/* format: bytes */.optional(),
+			used: z.number()/* format: bytes */.optional(),
+		}),
+		net: z.object({
+			interface: z.string()/* example: "eth0" */.optional(),
+		}),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.db)
 		private readonly db: DataSource,

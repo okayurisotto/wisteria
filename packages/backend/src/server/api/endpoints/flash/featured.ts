@@ -5,34 +5,24 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { FlashsRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { FlashEntityService } from '@/core/entities/FlashEntityService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { FlashSchema } from '@/models/zod/flash.js';
 
 export const meta = {
 	tags: ['flash'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'Flash',
-		},
-	},
+	res: FlashSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.flashsRepository)
 		private readonly flashsRepository: FlashsRepository,

@@ -4,40 +4,27 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { EmailService } from '@/core/EmailService.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['users'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			available: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			reason: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-		},
-	},
+	res: z.object({
+		available: z.boolean().optional(),
+		reason: z.string().nullable().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		emailAddress: { type: 'string' },
-	},
-	required: ['emailAddress'],
-} as const;
+export const paramDef = z.object({
+	emailAddress: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly emailService: EmailService,
 	) {

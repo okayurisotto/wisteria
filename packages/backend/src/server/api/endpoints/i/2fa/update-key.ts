@@ -4,12 +4,13 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { UserSecurityKeysRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: true,
@@ -31,17 +32,13 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		name: { type: 'string', minLength: 1, maxLength: 30 },
-		credentialId: { type: 'string' },
-	},
-	required: ['name', 'credentialId'],
-} as const;
+export const paramDef = z.object({
+	name: z.string().min(1).max(30),
+	credentialId: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userSecurityKeysRepository)
 		private readonly userSecurityKeysRepository: UserSecurityKeysRepository,

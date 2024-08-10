@@ -7,23 +7,22 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { UserListsRepository, UserListMembershipsRepository, BlockingsRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
 import type { MiUserList } from '@/models/UserList.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { UserListEntityService } from '@/core/entities/UserListEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '@/server/api/error.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { UserListService } from '@/core/UserListService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { UserListSchema } from '@/models/zod/user-list.js';
 
 export const meta = {
 	requireCredential: true,
 	prohibitMoved: true,
 	kind: 'write:account',
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'UserList',
-	},
+	res: UserListSchema,
 
 	errors: {
 		tooManyUserLists: {
@@ -62,17 +61,13 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		name: { type: 'string', minLength: 1, maxLength: 100 },
-		listId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['name', 'listId'],
-} as const;
+export const paramDef = z.object({
+	name: z.string().min(1).max(100),
+	listId: IdSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userListsRepository)
 		private readonly userListsRepository: UserListsRepository,

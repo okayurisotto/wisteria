@@ -6,7 +6,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Brackets } from 'typeorm';
 import type { MiUserList, NotesRepository, UserListMembershipsRepository, UserListsRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import ActiveUsersChart from '@/core/chart/charts/active-users.js';
 import { DI } from '@/di-symbols.js';
@@ -14,6 +14,9 @@ import { IdService } from '@/core/IdService.js';
 import { QueryService } from '@/core/QueryService.js';
 import type { MiLocalUser } from '@/models/User.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { NoteSchema } from '@/models/zod/note.js';
 
 export const meta = {
 	tags: ['notes', 'lists'],
@@ -21,15 +24,7 @@ export const meta = {
 	requireCredential: true,
 	kind: 'read:account',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'Note',
-		},
-	},
+	res: NoteSchema.array(),
 
 	errors: {
 		noSuchList: {
@@ -40,31 +35,23 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		listId: { type: 'string', format: 'misskey:id' },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		sinceDate: { type: 'integer' },
-		untilDate: { type: 'integer' },
-		allowPartial: { type: 'boolean', default: false }, // true is recommended but for compatibility false by default
-		includeMyRenotes: { type: 'boolean', default: true },
-		includeRenotedMyNotes: { type: 'boolean', default: true },
-		includeLocalRenotes: { type: 'boolean', default: true },
-		withRenotes: { type: 'boolean', default: true },
-		withFiles: {
-			type: 'boolean',
-			default: false,
-			description: 'Only show notes that have attached files.',
-		},
-	},
-	required: ['listId'],
-} as const;
+export const paramDef = z.object({
+	listId: IdSchema,
+	limit: z.number().int().min(1).max(100).default(10),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	sinceDate: z.number().int().optional(),
+	untilDate: z.number().int().optional(),
+	allowPartial: z.boolean().default(false),
+	includeMyRenotes: z.boolean().default(true),
+	includeRenotedMyNotes: z.boolean().default(true),
+	includeLocalRenotes: z.boolean().default(true),
+	withRenotes: z.boolean().default(true),
+	withFiles: z.boolean().default(false).describe('Only show notes that have attached files.'),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
 		private readonly notesRepository: NotesRepository,

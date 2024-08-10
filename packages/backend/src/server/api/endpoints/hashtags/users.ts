@@ -4,43 +4,33 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { UsersRepository } from '@/models/_.js';
 import { safeForSql } from '@/misc/safe-for-sql.js';
 import { normalizeForSearch } from '@/misc/normalize-for-search.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { UserDetailedSchema } from '@/models/zod/user.js';
 
 export const meta = {
 	requireCredential: false,
 
 	tags: ['hashtags', 'users'],
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'UserDetailed',
-		},
-	},
+	res: UserDetailedSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		tag: { type: 'string' },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		sort: { type: 'string', enum: ['+follower', '-follower', '+createdAt', '-createdAt', '+updatedAt', '-updatedAt'] },
-		state: { type: 'string', enum: ['all', 'alive'], default: 'all' },
-		origin: { type: 'string', enum: ['combined', 'local', 'remote'], default: 'local' },
-	},
-	required: ['tag', 'sort'],
-} as const;
+export const paramDef = z.object({
+	tag: z.string(),
+	limit: z.number().int().min(1).max(100).default(10),
+	sort: z.enum(['+follower', '-follower', '+createdAt', '-createdAt', '+updatedAt', '-updatedAt']),
+	state: z.enum(['all', 'alive']).default('all'),
+	origin: z.enum(['combined', 'local', 'remote']).default('local'),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

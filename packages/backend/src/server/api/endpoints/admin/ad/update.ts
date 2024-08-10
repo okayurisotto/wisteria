@@ -4,11 +4,13 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { AdsRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -26,25 +28,21 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		id: { type: 'string', format: 'misskey:id' },
-		memo: { type: 'string' },
-		url: { type: 'string', minLength: 1 },
-		imageUrl: { type: 'string', minLength: 1 },
-		place: { type: 'string' },
-		priority: { type: 'string' },
-		ratio: { type: 'integer' },
-		expiresAt: { type: 'integer' },
-		startsAt: { type: 'integer' },
-		dayOfWeek: { type: 'integer' },
-	},
-	required: ['id', 'memo', 'url', 'imageUrl', 'place', 'priority', 'ratio', 'expiresAt', 'startsAt', 'dayOfWeek'],
-} as const;
+export const paramDef = z.object({
+	id: IdSchema,
+	memo: z.string(),
+	url: z.string().min(1),
+	imageUrl: z.string().min(1),
+	place: z.string(),
+	priority: z.string(),
+	ratio: z.number().int(),
+	expiresAt: z.number().int(),
+	startsAt: z.number().int(),
+	dayOfWeek: z.number().int(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.adsRepository)
 		private readonly adsRepository: AdsRepository,

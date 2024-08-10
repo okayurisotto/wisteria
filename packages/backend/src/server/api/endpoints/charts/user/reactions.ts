@@ -5,9 +5,11 @@
 
 import { Injectable } from '@nestjs/common';
 import { getJsonSchema } from '@/core/chart/core.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import PerUserReactionsChart from '@/core/chart/charts/per-user-reactions.js';
 import { schema } from '@/core/chart/charts/entities/per-user-reactions.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['charts', 'users', 'reactions'],
@@ -18,19 +20,15 @@ export const meta = {
 	cacheSec: 60 * 60,
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		span: { type: 'string', enum: ['day', 'hour'] },
-		limit: { type: 'integer', minimum: 1, maximum: 500, default: 30 },
-		offset: { type: 'integer', nullable: true, default: null },
-		userId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['span', 'userId'],
-} as const;
+export const paramDef = z.object({
+	span: z.enum(['day', 'hour']),
+	limit: z.coerce.number().int().min(1).max(500).default(30),
+	offset: z.coerce.number().int().nullable().default(null),
+	userId: IdSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly perUserReactionsChart: PerUserReactionsChart,
 	) {

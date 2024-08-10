@@ -7,21 +7,20 @@ import { IsNull } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository, PagesRepository } from '@/models/_.js';
 import type { MiPage } from '@/models/Page.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { PageEntityService } from '@/core/entities/PageEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { PageSchema } from '@/models/zod/page.js';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['pages'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'Page',
-	},
+	res: PageSchema,
 
 	errors: {
 		noSuchPage: {
@@ -32,21 +31,21 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		pageId: { type: 'string', format: 'misskey:id' },
-		name: { type: 'string' },
-		username: { type: 'string' },
-	},
-	anyOf: [
-		{ required: ['pageId'] },
-		{ required: ['name', 'username'] },
-	],
-} as const;
+export const paramDef = z.union([
+	z.object({
+		pageId: IdSchema,
+		name: z.never().optional(),
+		username: z.never().optional(),
+	}),
+	z.object({
+		pageId: z.never().optional(),
+		name: z.string(),
+		username: z.string(),
+	}),
+]);
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

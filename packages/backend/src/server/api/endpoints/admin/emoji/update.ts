@@ -4,12 +4,14 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import type { DriveFilesRepository, EmojisRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../../error.js';
 import { IsNull } from 'typeorm';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -37,32 +39,20 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		id: { type: 'string', format: 'misskey:id' },
-		name: { type: 'string', pattern: '^[a-zA-Z0-9_]+$' },
-		fileId: { type: 'string', format: 'misskey:id' },
-		category: {
-			type: 'string',
-			nullable: true,
-			description: 'Use `null` to reset the category.',
-		},
-		aliases: { type: 'array', items: {
-			type: 'string',
-		} },
-		license: { type: 'string', nullable: true },
-		isSensitive: { type: 'boolean' },
-		localOnly: { type: 'boolean' },
-		roleIdsThatCanBeUsedThisEmojiAsReaction: { type: 'array', items: {
-			type: 'string',
-		} },
-	},
-	required: ['id', 'name', 'aliases'],
-} as const;
+export const paramDef = z.object({
+	id: IdSchema,
+	name: z.string(),
+	fileId: IdSchema.optional(),
+	category: z.string().nullable().describe('Use `null` to reset the category.').optional(),
+	aliases: z.string().array(),
+	license: z.string().nullable().optional(),
+	isSensitive: z.boolean().optional(),
+	localOnly: z.boolean().optional(),
+	roleIdsThatCanBeUsedThisEmojiAsReaction: z.string().array().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFilesRepository)
 		private readonly driveFilesRepository: DriveFilesRepository,

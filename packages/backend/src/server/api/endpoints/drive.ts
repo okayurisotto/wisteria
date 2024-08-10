@@ -4,9 +4,10 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['drive', 'account'],
@@ -15,30 +16,16 @@ export const meta = {
 
 	kind: 'read:drive',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			capacity: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-			usage: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-		},
-	},
+	res: z.object({
+		capacity: z.number().optional(),
+		usage: z.number().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly roleUserService: RoleUserService,

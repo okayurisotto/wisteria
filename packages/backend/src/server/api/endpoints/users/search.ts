@@ -7,10 +7,12 @@ import { Brackets } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository, UserProfilesRepository } from '@/models/_.js';
 import type { MiUser } from '@/models/User.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { sqlLikeEscape } from '@/misc/sql-like-escape.js';
+import { z } from 'zod';
+import { UserSchema } from '@/models/zod/user.js';
 
 export const meta = {
 	tags: ['users'],
@@ -19,31 +21,19 @@ export const meta = {
 
 	description: 'Search for users.',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'User',
-		},
-	},
+	res: UserSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		query: { type: 'string' },
-		offset: { type: 'integer', default: 0 },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		origin: { type: 'string', enum: ['local', 'remote', 'combined'], default: 'combined' },
-		detail: { type: 'boolean', default: true },
-	},
-	required: ['query'],
-} as const;
+export const paramDef = z.object({
+	query: z.string(),
+	offset: z.number().int().default(0),
+	limit: z.number().int().min(1).max(100).default(10),
+	origin: z.enum(['local', 'remote', 'combined']).default('combined'),
+	detail: z.boolean().default(true),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

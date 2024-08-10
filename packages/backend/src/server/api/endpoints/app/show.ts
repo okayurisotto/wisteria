@@ -4,11 +4,14 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { AppsRepository } from '@/models/_.js';
 import { AppEntityService } from '@/core/entities/AppEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { AppSchema } from '@/models/zod/app.js';
 
 export const meta = {
 	tags: ['app'],
@@ -21,23 +24,15 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'App',
-	},
+	res: AppSchema,
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		appId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['appId'],
-} as const;
+export const paramDef = z.object({
+	appId: IdSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.appsRepository)
 		private readonly appsRepository: AppsRepository,

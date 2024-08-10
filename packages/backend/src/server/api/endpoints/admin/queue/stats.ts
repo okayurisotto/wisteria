@@ -4,8 +4,10 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { DbQueue, DeliverQueue, EndedPollNotificationQueue, InboxQueue, ObjectStorageQueue, SystemQueue, WebhookDeliverQueue } from '@/core/QueueModule.js';
+import { z } from 'zod';
+import { QueueCountSchema } from '@/models/zod/queue.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -14,38 +16,18 @@ export const meta = {
 	requireModerator: true,
 	kind: 'read:admin:emoji',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			deliver: {
-				optional: false, nullable: false,
-				ref: 'QueueCount',
-			},
-			inbox: {
-				optional: false, nullable: false,
-				ref: 'QueueCount',
-			},
-			db: {
-				optional: false, nullable: false,
-				ref: 'QueueCount',
-			},
-			objectStorage: {
-				optional: false, nullable: false,
-				ref: 'QueueCount',
-			},
-		},
-	},
+	res: z.object({
+		deliver: QueueCountSchema.optional(),
+		inbox: QueueCountSchema.optional(),
+		db: QueueCountSchema.optional(),
+		objectStorage: QueueCountSchema.optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject('queue:system') public systemQueue: SystemQueue,
 		@Inject('queue:endedPollNotification') public endedPollNotificationQueue: EndedPollNotificationQueue,

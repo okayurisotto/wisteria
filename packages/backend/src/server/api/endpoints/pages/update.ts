@@ -7,9 +7,11 @@ import ms from 'ms';
 import { Not } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { PagesRepository, DriveFilesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['pages'],
@@ -51,30 +53,22 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		pageId: { type: 'string', format: 'misskey:id' },
-		title: { type: 'string' },
-		name: { type: 'string', minLength: 1 },
-		summary: { type: 'string', nullable: true },
-		content: { type: 'array', items: {
-			type: 'object', additionalProperties: true,
-		} },
-		variables: { type: 'array', items: {
-			type: 'object', additionalProperties: true,
-		} },
-		script: { type: 'string' },
-		eyeCatchingImageId: { type: 'string', format: 'misskey:id', nullable: true },
-		font: { type: 'string', enum: ['serif', 'sans-serif'] },
-		alignCenter: { type: 'boolean' },
-		hideTitleWhenPinned: { type: 'boolean' },
-	},
-	required: ['pageId', 'title', 'name', 'content', 'variables', 'script'],
-} as const;
+export const paramDef = z.object({
+	pageId: IdSchema,
+	title: z.string(),
+	name: z.string().min(1),
+	summary: z.string().nullable().optional(),
+	content: z.record(z.string(), z.unknown()).array(),
+	variables: z.record(z.string(), z.unknown()).array(),
+	script: z.string(),
+	eyeCatchingImageId: IdSchema.nullable().optional(),
+	font: z.enum(['serif', 'sans-serif']).optional(),
+	alignCenter: z.boolean().optional(),
+	hideTitleWhenPinned: z.boolean().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.pagesRepository)
 		private readonly pagesRepository: PagesRepository,

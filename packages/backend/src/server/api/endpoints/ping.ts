@@ -4,33 +4,23 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: false,
 
 	tags: ['meta'],
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			pong: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-		},
-	},
+	res: z.object({
+		pong: z.number().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 	) {
 		super(meta, paramDef, async () => {

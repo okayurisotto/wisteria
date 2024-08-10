@@ -4,8 +4,10 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { AnnouncementService } from '@/core/AnnouncementService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -14,60 +16,30 @@ export const meta = {
 	requireModerator: true,
 	kind: 'write:admin:announcements',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			id: {
-				type: 'string',
-				optional: false, nullable: false,
-				format: 'id',
-				example: 'xxxxxxxxxx',
-			},
-			createdAt: {
-				type: 'string',
-				optional: false, nullable: false,
-				format: 'date-time',
-			},
-			updatedAt: {
-				type: 'string',
-				optional: false, nullable: true,
-				format: 'date-time',
-			},
-			title: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			text: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			imageUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-		},
-	},
+	res: z.object({
+		id: IdSchema.optional(),
+		createdAt: z.string()/* format: date-time */.optional(),
+		updatedAt: z.string().nullable()/* format: date-time */.optional(),
+		title: z.string().optional(),
+		text: z.string().optional(),
+		imageUrl: z.string().nullable().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		title: { type: 'string', minLength: 1 },
-		text: { type: 'string', minLength: 1 },
-		imageUrl: { type: 'string', nullable: true, minLength: 1 },
-		icon: { type: 'string', enum: ['info', 'warning', 'error', 'success'], default: 'info' },
-		display: { type: 'string', enum: ['normal', 'banner', 'dialog'], default: 'normal' },
-		forExistingUsers: { type: 'boolean', default: false },
-		silence: { type: 'boolean', default: false },
-		needConfirmationToRead: { type: 'boolean', default: false },
-		userId: { type: 'string', format: 'misskey:id', nullable: true, default: null },
-	},
-	required: ['title', 'text', 'imageUrl'],
-} as const;
+export const paramDef = z.object({
+	title: z.string().min(1),
+	text: z.string().min(1),
+	imageUrl: z.string().min(1).nullable(),
+	icon: z.enum(['info', 'warning', 'error', 'success']).default('info'),
+	display: z.enum(['normal', 'banner', 'dialog']).default('normal'),
+	forExistingUsers: z.boolean().default(false),
+	silence: z.boolean().default(false),
+	needConfirmationToRead: z.boolean().default(false),
+	userId: IdSchema.nullable().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly announcementService: AnnouncementService,
 	) {

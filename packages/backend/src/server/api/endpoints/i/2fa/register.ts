@@ -8,11 +8,12 @@ import * as OTPAuth from 'otpauth';
 import * as QRCode from 'qrcode';
 import { Inject, Injectable } from '@nestjs/common';
 import type { UserProfilesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { ApiError } from '@/server/api/error.js';
 import { UserAuthService } from '@/core/UserAuthService.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: true,
@@ -27,31 +28,22 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		nullable: false,
-		optional: false,
-		properties: {
-			qr: { type: 'string' },
-			url: { type: 'string' },
-			secret: { type: 'string' },
-			label: { type: 'string' },
-			issuer: { type: 'string' },
-		},
-	},
+	res: z.object({
+		qr: z.string().optional(),
+		url: z.string().optional(),
+		secret: z.string().optional(),
+		label: z.string().optional(),
+		issuer: z.string().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		password: { type: 'string' },
-		token: { type: 'string', nullable: true },
-	},
-	required: ['password'],
-} as const;
+export const paramDef = z.object({
+	password: z.string(),
+	token: z.string().nullable().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
 		private readonly config: Config,

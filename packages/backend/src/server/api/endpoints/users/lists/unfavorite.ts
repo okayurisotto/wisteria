@@ -4,10 +4,12 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { UserListFavoritesRepository, UserListsRepository } from '@/models/_.js';
 import { ApiError } from '@/server/api/error.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	requireCredential: true,
@@ -27,15 +29,11 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		listId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['listId'],
-} as const;
+export const paramDef = z.object({
+	listId: IdSchema,
+});
 
-@Injectable() export default class extends Endpoint<typeof meta, typeof paramDef> {
+@Injectable() export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userListsRepository)
 		private readonly userListsRepository: UserListsRepository,

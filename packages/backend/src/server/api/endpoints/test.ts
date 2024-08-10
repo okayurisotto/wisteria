@@ -4,7 +4,9 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['non-productive'],
@@ -13,49 +15,25 @@ export const meta = {
 
 	requireCredential: false,
 
-	res: {
-		type: 'object',
-		properties: {
-			id: {
-				type: 'string',
-				format: 'misskey:id',
-				optional: true, nullable: false,
-			},
-			required: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			string: {
-				type: 'string',
-				optional: true, nullable: false,
-			},
-			default: {
-				type: 'string',
-				optional: true, nullable: false,
-			},
-			nullableDefault: {
-				type: 'string',
-				default: 'hello',
-				optional: true, nullable: true,
-			},
-		},
-	},
+	res: z.object({
+		id: IdSchema.optional(),
+		required: z.boolean().optional(),
+		string: z.string().optional(),
+		default: z.string().optional(),
+		nullableDefault: z.string().nullable().optional().default('hello'),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		required: { type: 'boolean' },
-		string: { type: 'string' },
-		default: { type: 'string', default: 'hello' },
-		nullableDefault: { type: 'string', nullable: true, default: 'hello' },
-		id: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['required'],
-} as const;
+export const paramDef = z.object({
+	required: z.boolean(),
+	string: z.string().optional(),
+	default: z.string().default('hello'),
+	nullableDefault: z.string().nullable().default('hello'),
+	id: IdSchema.optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 	) {
 		super(meta, paramDef, async (ps, me) => {

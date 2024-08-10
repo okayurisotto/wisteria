@@ -4,10 +4,12 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { ClipFavoritesRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { ClipEntityService } from '@/core/entities/ClipEntityService.js';
+import { z } from 'zod';
+import { ClipSchema } from '@/models/zod/clip.js';
 
 export const meta = {
 	tags: ['account', 'clip'],
@@ -16,26 +18,13 @@ export const meta = {
 
 	kind: 'read:clip-favorite',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'Clip',
-		},
-	},
+	res: ClipSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.clipFavoritesRepository)
 		private readonly clipFavoritesRepository: ClipFavoritesRepository,

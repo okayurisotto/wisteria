@@ -6,12 +6,15 @@
 import { IsNull } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository, FollowingsRepository, UserProfilesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { QueryService } from '@/core/QueryService.js';
 import { FollowingEntityService } from '@/core/entities/FollowingEntityService.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { FollowingSchema } from '@/models/zod/following.js';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['users'],
@@ -20,15 +23,7 @@ export const meta = {
 
 	description: 'Show everyone that follows this user.',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'Following',
-		},
-	},
+	res: FollowingSchema.array(),
 
 	errors: {
 		noSuchUser: {
@@ -45,29 +40,28 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-
-		userId: { type: 'string', format: 'misskey:id' },
-		username: { type: 'string' },
-		host: {
-			type: 'string',
-			nullable: true,
-			description: 'The local host is represented with `null`.',
-		},
-	},
-	anyOf: [
-		{ required: ['userId'] },
-		{ required: ['username', 'host'] },
-	],
-} as const;
+export const paramDef = z.intersection(
+	z.union([
+		z.object({
+			userId: IdSchema,
+			username: z.never().optional(),
+			host: z.never().optional(),
+		}),
+		z.object({
+			userId: z.never().optional(),
+			username: z.string(),
+			host: z.string().nullable().describe('The local host is represented with `null`.'),
+		}),
+	]),
+	z.object({
+		sinceId: IdSchema.optional(),
+		untilId: IdSchema.optional(),
+		limit: z.number().int().min(1).max(100).default(10),
+	}),
+);
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

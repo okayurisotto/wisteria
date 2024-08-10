@@ -4,11 +4,13 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { MetaService } from '@/core/MetaService.js';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
 import { DEFAULT_POLICIES } from '@/core/RoleService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['meta'],
@@ -17,429 +19,108 @@ export const meta = {
 	requireAdmin: true,
 	kind: 'read:admin:meta',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			cacheRemoteFiles: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			cacheRemoteSensitiveFiles: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			emailRequiredForSignup: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			enableHcaptcha: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			hcaptchaSiteKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			enableMcaptcha: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			mcaptchaSiteKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			mcaptchaInstanceUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			enableRecaptcha: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			recaptchaSiteKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			enableTurnstile: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			turnstileSiteKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			swPublickey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			mascotImageUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-				default: '/assets/ai.png',
-			},
-			bannerUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			serverErrorImageUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			infoImageUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			notFoundImageUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			iconUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			app192IconUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			app512IconUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			enableEmail: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			enableServiceWorker: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			translatorAvailable: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			silencedHosts: {
-				type: 'array',
-				optional: true,
-				nullable: false,
-				items: {
-					type: 'string',
-					optional: false,
-					nullable: false,
-				},
-			},
-			pinnedUsers: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					type: 'string',
-				},
-			},
-			hiddenTags: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					type: 'string',
-				},
-			},
-			blockedHosts: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					type: 'string',
-				},
-			},
-			sensitiveWords: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					type: 'string',
-				},
-			},
-			prohibitedWords: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					type: 'string',
-				},
-			},
-			bannedEmailDomains: {
-				type: 'array',
-				optional: true, nullable: false,
-				items: {
-					type: 'string',
-					optional: false, nullable: false,
-				},
-			},
-			preservedUsernames: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					type: 'string',
-				},
-			},
-			hcaptchaSecretKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			mcaptchaSecretKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			recaptchaSecretKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			turnstileSecretKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			sensitiveMediaDetection: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			sensitiveMediaDetectionSensitivity: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			setSensitiveFlagAutomatically: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			enableSensitiveMediaDetectionForVideos: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			proxyAccountId: {
-				type: 'string',
-				optional: false, nullable: true,
-				format: 'id',
-			},
-			email: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			smtpSecure: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			smtpHost: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			smtpPort: {
-				type: 'number',
-				optional: false, nullable: true,
-			},
-			smtpUser: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			smtpPass: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			swPrivateKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			useObjectStorage: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			objectStorageBaseUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			objectStorageBucket: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			objectStoragePrefix: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			objectStorageEndpoint: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			objectStorageRegion: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			objectStoragePort: {
-				type: 'number',
-				optional: false, nullable: true,
-			},
-			objectStorageAccessKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			objectStorageSecretKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			objectStorageUseSSL: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			objectStorageUseProxy: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			objectStorageSetPublicRead: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			enableIpLogging: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			enableActiveEmailValidation: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			enableVerifymailApi: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			verifymailAuthKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			enableTruemailApi: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			truemailInstance: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			truemailAuthKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			enableChartsForRemoteUser: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			enableChartsForFederatedInstances: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			enableServerMachineStats: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			enableIdenticonGeneration: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			manifestJsonOverride: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			policies: {
-				type: 'object',
-				optional: false, nullable: false,
-			},
-			notesPerOneAd: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-			backgroundImageUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			deeplAuthKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			deeplIsPro: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			defaultDarkTheme: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			defaultLightTheme: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			description: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			disableRegistration: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			impressumUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			maintainerEmail: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			maintainerName: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			name: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			shortName: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			objectStorageS3ForcePathStyle: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			privacyPolicyUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			repositoryUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			summalyProxy: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			themeColor: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			tosUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			uri: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			version: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-		},
-	},
+	res: z.object({
+		cacheRemoteFiles: z.boolean().optional(),
+		cacheRemoteSensitiveFiles: z.boolean().optional(),
+		emailRequiredForSignup: z.boolean().optional(),
+		enableHcaptcha: z.boolean().optional(),
+		hcaptchaSiteKey: z.string().nullable().optional(),
+		enableMcaptcha: z.boolean().optional(),
+		mcaptchaSiteKey: z.string().nullable().optional(),
+		mcaptchaInstanceUrl: z.string().nullable().optional(),
+		enableRecaptcha: z.boolean().optional(),
+		recaptchaSiteKey: z.string().nullable().optional(),
+		enableTurnstile: z.boolean().optional(),
+		turnstileSiteKey: z.string().nullable().optional(),
+		swPublickey: z.string().nullable().optional(),
+		mascotImageUrl: z.string().nullable().default('/assets/ai.png'),
+		bannerUrl: z.string().nullable().optional(),
+		serverErrorImageUrl: z.string().nullable().optional(),
+		infoImageUrl: z.string().nullable().optional(),
+		notFoundImageUrl: z.string().nullable().optional(),
+		iconUrl: z.string().nullable().optional(),
+		app192IconUrl: z.string().nullable().optional(),
+		app512IconUrl: z.string().nullable().optional(),
+		enableEmail: z.boolean().optional(),
+		enableServiceWorker: z.boolean().optional(),
+		translatorAvailable: z.boolean().optional(),
+		silencedHosts: z.string().array().optional(),
+		pinnedUsers: z.string().array().optional(),
+		hiddenTags: z.string().array().optional(),
+		blockedHosts: z.string().array().optional(),
+		sensitiveWords: z.string().array().optional(),
+		prohibitedWords: z.string().array().optional(),
+		bannedEmailDomains: z.string().array().optional(),
+		preservedUsernames: z.string().array().optional(),
+		hcaptchaSecretKey: z.string().nullable().optional(),
+		mcaptchaSecretKey: z.string().nullable().optional(),
+		recaptchaSecretKey: z.string().nullable().optional(),
+		turnstileSecretKey: z.string().nullable().optional(),
+		sensitiveMediaDetection: z.string().optional(),
+		sensitiveMediaDetectionSensitivity: z.string().optional(),
+		setSensitiveFlagAutomatically: z.boolean().optional(),
+		enableSensitiveMediaDetectionForVideos: z.boolean().optional(),
+		proxyAccountId: IdSchema.nullable().optional(),
+		email: z.string().nullable().optional(),
+		smtpSecure: z.boolean().optional(),
+		smtpHost: z.string().nullable().optional(),
+		smtpPort: z.number().nullable().optional(),
+		smtpUser: z.string().nullable().optional(),
+		smtpPass: z.string().nullable().optional(),
+		swPrivateKey: z.string().nullable().optional(),
+		useObjectStorage: z.boolean().optional(),
+		objectStorageBaseUrl: z.string().nullable().optional(),
+		objectStorageBucket: z.string().nullable().optional(),
+		objectStoragePrefix: z.string().nullable().optional(),
+		objectStorageEndpoint: z.string().nullable().optional(),
+		objectStorageRegion: z.string().nullable().optional(),
+		objectStoragePort: z.number().nullable().optional(),
+		objectStorageAccessKey: z.string().nullable().optional(),
+		objectStorageSecretKey: z.string().nullable().optional(),
+		objectStorageUseSSL: z.boolean().optional(),
+		objectStorageUseProxy: z.boolean().optional(),
+		objectStorageSetPublicRead: z.boolean().optional(),
+		enableIpLogging: z.boolean().optional(),
+		enableActiveEmailValidation: z.boolean().optional(),
+		enableVerifymailApi: z.boolean().optional(),
+		verifymailAuthKey: z.string().nullable().optional(),
+		enableTruemailApi: z.boolean().optional(),
+		truemailInstance: z.string().nullable().optional(),
+		truemailAuthKey: z.string().nullable().optional(),
+		enableChartsForRemoteUser: z.boolean().optional(),
+		enableChartsForFederatedInstances: z.boolean().optional(),
+		enableServerMachineStats: z.boolean().optional(),
+		enableIdenticonGeneration: z.boolean().optional(),
+		manifestJsonOverride: z.string().optional(),
+		policies: z.record(z.string(), z.unknown()).optional(),
+		notesPerOneAd: z.number().optional(),
+		backgroundImageUrl: z.string().nullable().optional(),
+		deeplAuthKey: z.string().nullable().optional(),
+		deeplIsPro: z.boolean().optional(),
+		defaultDarkTheme: z.string().nullable().optional(),
+		defaultLightTheme: z.string().nullable().optional(),
+		description: z.string().nullable().optional(),
+		disableRegistration: z.boolean().optional(),
+		impressumUrl: z.string().nullable().optional(),
+		maintainerEmail: z.string().nullable().optional(),
+		maintainerName: z.string().nullable().optional(),
+		name: z.string().nullable().optional(),
+		shortName: z.string().nullable().optional(),
+		objectStorageS3ForcePathStyle: z.boolean().optional(),
+		privacyPolicyUrl: z.string().nullable().optional(),
+		repositoryUrl: z.string().nullable().optional(),
+		summalyProxy: z.string().nullable().optional(),
+		themeColor: z.string().nullable().optional(),
+		tosUrl: z.string().nullable().optional(),
+		uri: z.string().optional(),
+		version: z.string().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
 		private readonly config: Config,

@@ -6,9 +6,10 @@
 import bcrypt from 'bcryptjs';
 import { Inject, Injectable } from '@nestjs/common';
 import type { UserProfilesRepository, PasswordResetRequestsRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import { IdService } from '@/core/IdService.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['reset password'],
@@ -22,17 +23,13 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		token: { type: 'string' },
-		password: { type: 'string' },
-	},
-	required: ['token', 'password'],
-} as const;
+export const paramDef = z.object({
+	token: z.string(),
+	password: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.passwordResetRequestsRepository)
 		private readonly passwordResetRequestsRepository: PasswordResetRequestsRepository,

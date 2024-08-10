@@ -5,9 +5,11 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { UserIpsRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import { IdService } from '@/core/IdService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -15,37 +17,18 @@ export const meta = {
 	requireCredential: true,
 	requireModerator: true,
 	kind: 'read:admin:user-ips',
-	res: {
-		type: 'array',
-		optional: false,
-		nullable: false,
-		items: {
-			type: 'object',
-			optional: false,
-			nullable: false,
-			properties: {
-				ip: { type: 'string' },
-				createdAt: {
-					type: 'string',
-					optional: false,
-					nullable: false,
-					format: 'date-time',
-				},
-			},
-		},
-	},
+	res: z.object({
+		ip: z.string().optional(),
+		createdAt: z.string()/* format: date-time */.optional(),
+	}).array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		userId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['userId'],
-} as const;
+export const paramDef = z.object({
+	userId: IdSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userIpsRepository)
 		private readonly userIpsRepository: UserIpsRepository,

@@ -5,10 +5,13 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { UserListsRepository, UserListFavoritesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { UserListEntityService } from '@/core/entities/UserListEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { UserListSchema } from '@/models/zod/user-list.js';
 
 export const meta = {
 	tags: ['lists', 'account'],
@@ -19,11 +22,7 @@ export const meta = {
 
 	description: 'Show the properties of a list.',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'UserList',
-	},
+	res: UserListSchema,
 
 	errors: {
 		noSuchList: {
@@ -34,16 +33,12 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		listId: { type: 'string', format: 'misskey:id' },
-		forPublic: { type: 'boolean', default: false },
-	},
-	required: ['listId'],
-} as const;
+export const paramDef = z.object({
+	listId: IdSchema,
+	forPublic: z.boolean().default(false),
+});
 
-@Injectable() export default class extends Endpoint<typeof meta, typeof paramDef> {
+@Injectable() export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userListsRepository)
 		private readonly userListsRepository: UserListsRepository,

@@ -4,11 +4,12 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { InstancesRepository } from '@/models/_.js';
 import { FetchInstanceMetadataService } from '@/core/FetchInstanceMetadataService.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['admin'],
@@ -18,16 +19,12 @@ export const meta = {
 	kind: 'write:admin:federation',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		host: { type: 'string' },
-	},
-	required: ['host'],
-} as const;
+export const paramDef = z.object({
+	host: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.instancesRepository)
 		private readonly instancesRepository: InstancesRepository,

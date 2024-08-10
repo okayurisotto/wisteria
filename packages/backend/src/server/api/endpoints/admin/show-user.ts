@@ -5,12 +5,16 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository, SigninsRepository, UserProfilesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { RoleEntityService } from '@/core/entities/RoleEntityService.js';
 import { IdService } from '@/core/IdService.js';
-import { notificationRecieveConfig } from '@/models/json-schema/user.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { NotificationRecieveConfig } from '@/models/zod/user';
+import { SigninSchema } from '@/models/zod/signin';
+import { RolePoliciesSchema, RoleSchema } from '@/models/zod/role';
 
 export const meta = {
 	tags: ['admin'],
@@ -19,173 +23,58 @@ export const meta = {
 	requireModerator: true,
 	kind: 'read:admin:show-user',
 
-	res: {
-		type: 'object',
-		nullable: false, optional: false,
-		properties: {
-			email: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			emailVerified: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			autoAcceptFollowed: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			noCrawle: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			preventAiLearning: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			alwaysMarkNsfw: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			autoSensitive: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			carefulBot: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			injectFeaturedNote: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			receiveAnnouncementEmail: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			mutedWords: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					anyOf: [
-						{
-							type: 'string',
-						},
-						{
-							type: 'array',
-							items: {
-								type: 'string',
-							},
-						},
-					],
-				},
-			},
-			mutedInstances: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					type: 'string',
-				},
-			},
-			notificationRecieveConfig: {
-				type: 'object',
-				optional: false, nullable: false,
-				properties: {
-					note: { optional: true, ...notificationRecieveConfig },
-					follow: { optional: true, ...notificationRecieveConfig },
-					mention: { optional: true, ...notificationRecieveConfig },
-					reply: { optional: true, ...notificationRecieveConfig },
-					renote: { optional: true, ...notificationRecieveConfig },
-					quote: { optional: true, ...notificationRecieveConfig },
-					reaction: { optional: true, ...notificationRecieveConfig },
-					pollEnded: { optional: true, ...notificationRecieveConfig },
-					receiveFollowRequest: { optional: true, ...notificationRecieveConfig },
-					followRequestAccepted: { optional: true, ...notificationRecieveConfig },
-					roleAssigned: { optional: true, ...notificationRecieveConfig },
-					achievementEarned: { optional: true, ...notificationRecieveConfig },
-					app: { optional: true, ...notificationRecieveConfig },
-					test: { optional: true, ...notificationRecieveConfig },
-				},
-			},
-			isModerator: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			isSilenced: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			isSuspended: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			isHibernated: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			lastActiveDate: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			moderationNote: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			signins: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					ref: 'Signin',
-				},
-			},
-			policies: {
-				type: 'object',
-				optional: false, nullable: false,
-				ref: 'RolePolicies',
-			},
-			roles: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					type: 'object',
-					ref: 'Role',
-				},
-			},
-			roleAssigns: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					type: 'object',
-					properties: {
-						createdAt: {
-							type: 'string',
-							optional: false, nullable: false,
-						},
-						expiresAt: {
-							type: 'string',
-							optional: false, nullable: true,
-						},
-						roleId: {
-							type: 'string',
-							optional: false, nullable: false,
-						},
-					},
-				},
-			},
-		},
-	},
+	res: z.object({
+		email: z.string().nullable(),
+		emailVerified: z.boolean(),
+		autoAcceptFollowed: z.boolean(),
+		noCrawle: z.boolean(),
+		preventAiLearning: z.boolean(),
+		alwaysMarkNsfw: z.boolean(),
+		autoSensitive: z.boolean(),
+		carefulBot: z.boolean(),
+		injectFeaturedNote: z.boolean(),
+		receiveAnnouncementEmail: z.boolean(),
+		mutedWords: z.union([z.string(), z.string().array()]).array(),
+		mutedInstances: z.string().array(),
+		notificationRecieveConfig: z.object({
+			note: NotificationRecieveConfig,
+			follow: NotificationRecieveConfig,
+			mention: NotificationRecieveConfig,
+			reply: NotificationRecieveConfig,
+			renote: NotificationRecieveConfig,
+			quote: NotificationRecieveConfig,
+			reaction: NotificationRecieveConfig,
+			pollEnded: NotificationRecieveConfig,
+			receiveFollowRequest: NotificationRecieveConfig,
+			followRequestAccepted: NotificationRecieveConfig,
+			roleAssigned: NotificationRecieveConfig,
+			achievementEarned: NotificationRecieveConfig,
+			app: NotificationRecieveConfig,
+			test: NotificationRecieveConfig,
+		}).partial(),
+		isModerator: z.boolean(),
+		isSilenced: z.boolean(),
+		isSuspended: z.boolean(),
+		isHibernated: z.boolean(),
+		lastActiveDate: z.string().nullable(),
+		moderationNote: z.string(),
+		signins: SigninSchema.array(),
+		policies: RolePoliciesSchema,
+		roles: RoleSchema.array(),
+		roleAssigns: z.object({
+			createdAt: z.string(),
+			expiresAt: z.string().nullable(),
+			roleId: z.string(),
+		}).array(),
+	}).partial(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		userId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['userId'],
-} as const;
+export const paramDef = z.object({
+	userId: IdSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

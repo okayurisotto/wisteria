@@ -5,60 +5,32 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { InstancesRepository, NoteReactionsRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import NotesChart from '@/core/chart/charts/notes.js';
 import UsersChart from '@/core/chart/charts/users.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: false,
 
 	tags: ['meta'],
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			notesCount: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-			originalNotesCount: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-			usersCount: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-			originalUsersCount: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-			instances: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-			driveUsageLocal: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-			driveUsageRemote: {
-				type: 'number',
-				optional: false, nullable: false,
-			},
-		},
-	},
+	res: z.object({
+		notesCount: z.number().optional(),
+		originalNotesCount: z.number().optional(),
+		usersCount: z.number().optional(),
+		originalUsersCount: z.number().optional(),
+		instances: z.number().optional(),
+		driveUsageLocal: z.number().optional(),
+		driveUsageRemote: z.number().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.instancesRepository)
 		private readonly instancesRepository: InstancesRepository,

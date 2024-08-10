@@ -5,13 +5,15 @@
 
 import { URLSearchParams } from 'node:url';
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['notes'],
@@ -19,14 +21,10 @@ export const meta = {
 	requireCredential: true,
 	kind: 'read:account',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			sourceLang: { type: 'string' },
-			text: { type: 'string' },
-		},
-	},
+	res: z.object({
+		sourceLang: z.string().optional(),
+		text: z.string().optional(),
+	}),
 
 	errors: {
 		unavailable: {
@@ -42,17 +40,13 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		noteId: { type: 'string', format: 'misskey:id' },
-		targetLang: { type: 'string' },
-	},
-	required: ['noteId', 'targetLang'],
-} as const;
+export const paramDef = z.object({
+	noteId: IdSchema,
+	targetLang: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly noteEntityService: NoteEntityService,
 		private readonly getterService: GetterService,

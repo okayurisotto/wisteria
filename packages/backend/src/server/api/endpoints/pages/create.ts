@@ -8,10 +8,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { DriveFilesRepository, PagesRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
 import { MiPage } from '@/models/Page.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { PageEntityService } from '@/core/entities/PageEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { PageSchema } from '@/models/zod/page.js';
 
 export const meta = {
 	tags: ['pages'],
@@ -27,11 +30,7 @@ export const meta = {
 		max: 10,
 	},
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'Page',
-	},
+	res: PageSchema,
 
 	errors: {
 		noSuchFile: {
@@ -47,29 +46,21 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		title: { type: 'string' },
-		name: { type: 'string', minLength: 1 },
-		summary: { type: 'string', nullable: true },
-		content: { type: 'array', items: {
-			type: 'object', additionalProperties: true,
-		} },
-		variables: { type: 'array', items: {
-			type: 'object', additionalProperties: true,
-		} },
-		script: { type: 'string' },
-		eyeCatchingImageId: { type: 'string', format: 'misskey:id', nullable: true },
-		font: { type: 'string', enum: ['serif', 'sans-serif'], default: 'sans-serif' },
-		alignCenter: { type: 'boolean', default: false },
-		hideTitleWhenPinned: { type: 'boolean', default: false },
-	},
-	required: ['title', 'name', 'content', 'variables', 'script'],
-} as const;
+export const paramDef = z.object({
+	title: z.string(),
+	name: z.string().min(1),
+	summary: z.string().nullable().optional(),
+	content: z.record(z.string(), z.unknown()).array(),
+	variables: z.record(z.string(), z.unknown()).array(),
+	script: z.string(),
+	eyeCatchingImageId: IdSchema.nullable().optional(),
+	font: z.enum(['serif', 'sans-serif']).default('sans-serif'),
+	alignCenter: z.boolean().default(false),
+	hideTitleWhenPinned: z.boolean().default(false),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.pagesRepository)
 		private readonly pagesRepository: PagesRepository,

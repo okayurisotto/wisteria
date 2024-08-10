@@ -7,11 +7,14 @@ import ms from 'ms';
 import { Injectable } from '@nestjs/common';
 import { DB_MAX_IMAGE_COMMENT_LENGTH } from '@/const.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { DriveService } from '@/core/DriveService.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { DriveFileSchema } from '@/models/zod/drive-file.js';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['drive'],
@@ -31,11 +34,7 @@ export const meta = {
 
 	description: 'Upload a new drive file.',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'DriveFile',
-	},
+	res: DriveFileSchema,
 
 	errors: {
 		invalidFileName: {
@@ -58,20 +57,16 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		folderId: { type: 'string', format: 'misskey:id', nullable: true, default: null },
-		name: { type: 'string', nullable: true, default: null },
-		comment: { type: 'string', nullable: true, maxLength: DB_MAX_IMAGE_COMMENT_LENGTH, default: null },
-		isSensitive: { type: 'boolean', default: false },
-		force: { type: 'boolean', default: false },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	folderId: IdSchema.nullable().default(null),
+	name: z.string().nullable().default(null),
+	comment: z.string().max(DB_MAX_IMAGE_COMMENT_LENGTH).nullable().default(null),
+	isSensitive: z.coerce.boolean().default(false),
+	force: z.coerce.boolean().default(false),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly metaService: MetaService,

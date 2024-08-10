@@ -6,38 +6,28 @@
 import { IsNull } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { UsedUsernamesRepository, UsersRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
-import { localUsernameSchema } from '@/models/User.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import { MetaService } from '@/core/MetaService.js';
+import { z } from 'zod';
+import { LocalUsernameSchema } from '@/models/zod/user.js';
 
 export const meta = {
 	tags: ['users'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			available: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-		},
-	},
+	res: z.object({
+		available: z.boolean().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		username: localUsernameSchema,
-	},
-	required: ['username'],
-} as const;
+export const paramDef = z.object({
+	username: LocalUsernameSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

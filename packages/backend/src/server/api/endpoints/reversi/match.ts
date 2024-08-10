@@ -4,11 +4,14 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { ReversiService } from '@/core/ReversiService.js';
 import { ReversiGameEntityService } from '@/core/entities/ReversiGameEntityService.js';
 import { ApiError } from '../../error.js';
 import { GetterService } from '../../GetterService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { ReversiGameDetailedSchema } from '@/models/zod/reversi-game.js';
 
 export const meta = {
 	requireCredential: true,
@@ -29,25 +32,17 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		optional: true,
-		ref: 'ReversiGameDetailed',
-	},
+	res: ReversiGameDetailedSchema,
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		userId: { type: 'string', format: 'misskey:id', nullable: true },
-		noIrregularRules: { type: 'boolean', default: false },
-		multiple: { type: 'boolean', default: false },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	userId: IdSchema.nullable().optional(),
+	noIrregularRules: z.boolean().default(false),
+	multiple: z.boolean().default(false),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly getterService: GetterService,
 		private readonly reversiService: ReversiService,

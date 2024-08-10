@@ -5,8 +5,9 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: true,
@@ -15,38 +16,16 @@ export const meta = {
 
 	tags: ['admin'],
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		additionalProperties: {
-			type: 'object',
-			properties: {
-				count: {
-					type: 'number',
-				},
-				size: {
-					type: 'number',
-				},
-			},
-			required: ['count', 'size'],
-		},
-		example: {
-			migrations: {
-				count: 66,
-				size: 32768,
-			},
-		},
-	},
+	res: z.record(z.string(), z.object({
+		count: z.number(),
+		size: z.number(),
+	}))/* example: {"migrations":{"count":66,"size":32768}} */,
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.db)
 		private readonly db: DataSource,

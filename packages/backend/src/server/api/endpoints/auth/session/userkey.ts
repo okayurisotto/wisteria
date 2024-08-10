@@ -4,33 +4,23 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { AppsRepository, AccessTokensRepository, AuthSessionsRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { UserDetailedNotMeSchema } from '@/models/zod/user.js';
 
 export const meta = {
 	tags: ['auth'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			accessToken: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-
-			user: {
-				type: 'object',
-				optional: false, nullable: false,
-				ref: 'UserDetailedNotMe',
-			},
-		},
-	},
+	res: z.object({
+		accessToken: z.string().optional(),
+		user: UserDetailedNotMeSchema.optional(),
+	}),
 
 	errors: {
 		noSuchApp: {
@@ -53,17 +43,13 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		appSecret: { type: 'string' },
-		token: { type: 'string' },
-	},
-	required: ['appSecret', 'token'],
-} as const;
+export const paramDef = z.object({
+	appSecret: z.string(),
+	token: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.appsRepository)
 		private readonly appsRepository: AppsRepository,

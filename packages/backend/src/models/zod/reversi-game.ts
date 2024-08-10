@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import { UserLiteSchema } from './user.js';
+import { UserLiteSchema } from './user-lite.js';
 import { IdSchema } from './IdSchema.js';
 
 export const ReversiGameLiteSchema = z

@@ -5,12 +5,13 @@
 
 import bcrypt from 'bcryptjs';
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { UserProfilesRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { WebAuthnService } from '@/core/WebAuthnService.js';
 import { ApiError } from '@/server/api/error.js';
 import { UserAuthService } from '@/core/UserAuthService.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: true,
@@ -37,153 +38,47 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		nullable: false,
-		optional: false,
-		properties: {
-			rp: {
-				type: 'object',
-				properties: {
-					id: {
-						type: 'string',
-						optional: true,
-					},
-				},
-			},
-			user: {
-				type: 'object',
-				properties: {
-					id: {
-						type: 'string',
-					},
-					name: {
-						type: 'string',
-					},
-					displayName: {
-						type: 'string',
-					},
-				},
-			},
-			challenge: {
-				type: 'string',
-			},
-			pubKeyCredParams: {
-				type: 'array',
-				items: {
-					type: 'object',
-					properties: {
-						type: {
-							type: 'string',
-						},
-						alg: {
-							type: 'number',
-						},
-					},
-				},
-			},
-			timeout: {
-				type: 'number',
-				nullable: true,
-			},
-			excludeCredentials: {
-				type: 'array',
-				nullable: true,
-				items: {
-					type: 'object',
-					properties: {
-						id: {
-							type: 'string',
-						},
-						type: {
-							type: 'string',
-						},
-						transports: {
-							type: 'array',
-							items: {
-								type: 'string',
-								enum: [
-									'ble',
-									'cable',
-									'hybrid',
-									'internal',
-									'nfc',
-									'smart-card',
-									'usb',
-								],
-							},
-						},
-					},
-				},
-			},
-			authenticatorSelection: {
-				type: 'object',
-				nullable: true,
-				properties: {
-					authenticatorAttachment: {
-						type: 'string',
-						enum: [
-							'cross-platform',
-							'platform',
-						],
-					},
-					requireResidentKey: {
-						type: 'boolean',
-					},
-					userVerification: {
-						type: 'string',
-						enum: [
-							'discouraged',
-							'preferred',
-							'required',
-						],
-					},
-				},
-			},
-			attestation: {
-				type: 'string',
-				nullable: true,
-				enum: [
-					'direct',
-					'enterprise',
-					'indirect',
-					'none',
-					null,
-				],
-			},
-			extensions: {
-				type: 'object',
-				nullable: true,
-				properties: {
-					appid: {
-						type: 'string',
-						nullable: true,
-					},
-					credProps: {
-						type: 'boolean',
-						nullable: true,
-					},
-					hmacCreateSecret: {
-						type: 'boolean',
-						nullable: true,
-					},
-				},
-			},
-		},
-	},
+	res: z.object({
+		rp: z.object({
+			id: z.string().optional(),
+		}),
+		user: z.object({
+			id: z.string().optional(),
+			name: z.string().optional(),
+			displayName: z.string().optional(),
+		}),
+		challenge: z.string().optional(),
+		pubKeyCredParams: z.object({
+			type: z.string().optional(),
+			alg: z.number().optional(),
+		}).array(),
+		timeout: z.number().nullable().optional(),
+		excludeCredentials: z.object({
+			id: z.string().optional(),
+			type: z.string().optional(),
+			transports: z.enum(['ble', 'cable', 'hybrid', 'internal', 'nfc', 'smart-card', 'usb']).array().optional(),
+		}).array().nullable(),
+		authenticatorSelection: z.object({
+			authenticatorAttachment: z.enum(['cross-platform', 'platform']).optional(),
+			requireResidentKey: z.boolean().optional(),
+			userVerification: z.enum(['discouraged', 'preferred', 'required']).optional(),
+		}).nullable(),
+		attestation: z.enum(['direct', 'enterprise', 'indirect', 'none']).nullable().optional(),
+		extensions: z.object({
+			appid: z.string().nullable().optional(),
+			credProps: z.boolean().nullable().optional(),
+			hmacCreateSecret: z.boolean().nullable().optional(),
+		}).nullable(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		password: { type: 'string' },
-		token: { type: 'string', nullable: true },
-	},
-	required: ['password'],
-} as const;
+export const paramDef = z.object({
+	password: z.string(),
+	token: z.string().nullable().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userProfilesRepository)
 		private readonly userProfilesRepository: UserProfilesRepository,

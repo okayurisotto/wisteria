@@ -4,7 +4,7 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { EmojisRepository } from '@/models/_.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import { DI } from '@/di-symbols.js';
@@ -13,6 +13,8 @@ import { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import { EmojiEntityService } from '@/core/entities/EmojiEntityService.js';
 import { ApiError } from '../../../error.js';
 import { IsNull } from 'typeorm';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -34,31 +36,19 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			id: {
-				type: 'string',
-				optional: false, nullable: false,
-				format: 'id',
-			},
-		},
-	},
+	res: z.object({
+		id: IdSchema.optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		emojiId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['emojiId'],
-} as const;
+export const paramDef = z.object({
+	emojiId: IdSchema,
+});
 
 // TODO: ロジックをサービスに切り出す
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.emojisRepository)
 		private readonly emojisRepository: EmojisRepository,

@@ -12,12 +12,15 @@ import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiNote } from '@/models/Note.js';
 import type { MiChannel } from '@/models/Channel.js';
 import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { NoteCreateService } from '@/core/NoteCreateService.js';
 import { DI } from '@/di-symbols.js';
 import { isPureRenote } from '@/misc/is-pure-renote.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { NoteSchema } from '@/models/zod/note.js';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['notes'],
@@ -33,17 +36,9 @@ export const meta = {
 
 	kind: 'write:notes',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			createdNote: {
-				type: 'object',
-				optional: false, nullable: false,
-				ref: 'Note',
-			},
-		},
-	},
+	res: z.object({
+		createdNote: NoteSchema.optional(),
+	}),
 
 	errors: {
 		noSuchRenoteTarget: {
@@ -120,95 +115,41 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		visibility: { type: 'string', enum: ['public', 'home', 'followers', 'specified'], default: 'public' },
-		visibleUserIds: { type: 'array', uniqueItems: true, items: {
-			type: 'string', format: 'misskey:id',
-		} },
-		cw: { type: 'string', nullable: true, minLength: 1, maxLength: 100 },
-		localOnly: { type: 'boolean', default: false },
-		reactionAcceptance: { type: 'string', nullable: true, enum: [null, 'likeOnly', 'likeOnlyForRemote', 'nonSensitiveOnly', 'nonSensitiveOnlyForLocalLikeOnlyForRemote'], default: null },
-		noExtractMentions: { type: 'boolean', default: false },
-		noExtractHashtags: { type: 'boolean', default: false },
-		noExtractEmojis: { type: 'boolean', default: false },
-		replyId: { type: 'string', format: 'misskey:id', nullable: true },
-		renoteId: { type: 'string', format: 'misskey:id', nullable: true },
-		channelId: { type: 'string', format: 'misskey:id', nullable: true },
-
-		// anyOf内にバリデーションを書いても最初の一つしかチェックされない
-		// See https://github.com/misskey-dev/misskey/pull/10082
-		text: {
-			type: 'string',
-			minLength: 1,
-			maxLength: MAX_NOTE_TEXT_LENGTH,
-			nullable: true,
-		},
-		fileIds: {
-			type: 'array',
-			uniqueItems: true,
-			minItems: 1,
-			maxItems: 16,
-			items: { type: 'string', format: 'misskey:id' },
-		},
-		mediaIds: {
-			type: 'array',
-			uniqueItems: true,
-			minItems: 1,
-			maxItems: 16,
-			items: { type: 'string', format: 'misskey:id' },
-		},
-		poll: {
-			type: 'object',
-			nullable: true,
-			properties: {
-				choices: {
-					type: 'array',
-					uniqueItems: true,
-					minItems: 2,
-					maxItems: 10,
-					items: { type: 'string', minLength: 1, maxLength: 50 },
-				},
-				multiple: { type: 'boolean' },
-				expiresAt: { type: 'integer', nullable: true },
-				expiredAfter: { type: 'integer', nullable: true, minimum: 1 },
-			},
-			required: ['choices'],
-		},
-	},
-	// (re)note with text, files and poll are optional
-	if: {
-		properties: {
-			renoteId: {
-				type: 'null',
-			},
-			fileIds: {
-				type: 'null',
-			},
-			mediaIds: {
-				type: 'null',
-			},
-			poll: {
-				type: 'null',
-			},
-		},
-	},
-	then: {
-		properties: {
-			text: {
-				type: 'string',
-				minLength: 1,
-				maxLength: MAX_NOTE_TEXT_LENGTH,
-				pattern: '[^\\s]+',
-			},
-		},
-		required: ['text'],
-	},
-} as const;
+export const paramDef = z.object({
+	visibility: z.enum(['public', 'home', 'followers', 'specified']).default('public'),
+	visibleUserIds: IdSchema.array().refine(v => new Set(v).size === v.length).optional(),
+	cw: z.string().min(1).max(100).nullable().optional(),
+	localOnly: z.boolean().default(false),
+	reactionAcceptance: z.enum(['likeOnly', 'likeOnlyForRemote', 'nonSensitiveOnly', 'nonSensitiveOnlyForLocalLikeOnlyForRemote']).nullable().default(null),
+	noExtractMentions: z.boolean().default(false),
+	noExtractHashtags: z.boolean().default(false),
+	noExtractEmojis: z.boolean().default(false),
+	replyId: IdSchema.nullable().optional(),
+	renoteId: IdSchema.nullable().optional(),
+	channelId: IdSchema.nullable().optional(),
+	text: z.string().min(1).max(MAX_NOTE_TEXT_LENGTH).nullable().optional(),
+	fileIds: IdSchema.array().min(1).max(16).refine(v => new Set(v).size === v.length).optional(),
+	mediaIds: IdSchema.array().min(1).max(16).refine(v => new Set(v).size === v.length).optional(),
+	poll: z.object({
+		choices: z.string().min(1).max(50).array().min(2).max(10),
+		multiple: z.boolean().optional(),
+		expiresAt: z.number().int().nullable().optional(),
+		expiredAfter: z.number().int().min(1).nullable().optional(),
+	}).nullable().optional(),
+}).refine((v) => {
+	if (v.renoteId == null && v.fileIds == null && v.mediaIds == null && v.poll == null) {
+		if (v.text == null || /^\s+$/.test(v.text)) {
+			return false;
+		} else {
+			return true;
+		}
+	} else {
+		return true;
+	}
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

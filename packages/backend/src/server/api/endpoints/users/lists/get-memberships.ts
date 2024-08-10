@@ -5,11 +5,14 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { UserListsRepository, UserListMembershipsRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { UserListEntityService } from '@/core/entities/UserListEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { QueryService } from '@/core/QueryService.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { UserLiteSchema } from '@/models/zod/user-lite.js';
 
 export const meta = {
 	tags: ['lists', 'account'],
@@ -26,49 +29,24 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'array',
-		items: {
-			type: 'object',
-			nullable: false,
-			properties: {
-				id: {
-					type: 'string',
-					format: 'misskey:id',
-				},
-				createdAt: {
-					type: 'string',
-					format: 'date-time',
-				},
-				userId: {
-					type: 'string',
-					format: 'misskey:id',
-				},
-				user: {
-					type: 'object',
-					ref: 'UserLite',
-				},
-				withReplies: {
-					type: 'boolean',
-				},
-			},
-		},
-	},
+	res: z.object({
+		id: IdSchema.optional(),
+		createdAt: z.string()/* format: date-time */.optional(),
+		userId: IdSchema.optional(),
+		user: UserLiteSchema.optional(),
+		withReplies: z.boolean().optional(),
+	}).array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		listId: { type: 'string', format: 'misskey:id' },
-		forPublic: { type: 'boolean', default: false },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 30 },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['listId'],
-} as const;
+export const paramDef = z.object({
+	listId: IdSchema,
+	forPublic: z.boolean().default(false),
+	limit: z.number().int().min(1).max(100).default(30),
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+});
 
-@Injectable() export default class extends Endpoint<typeof meta, typeof paramDef> {
+@Injectable() export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userListsRepository)
 		private readonly userListsRepository: UserListsRepository,

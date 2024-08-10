@@ -6,8 +6,9 @@
 import * as os from 'node:os';
 import si from 'systeminformation';
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { MetaService } from '@/core/MetaService.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: false,
@@ -15,63 +16,26 @@ export const meta = {
 	cacheSec: 60 * 1,
 
 	tags: ['meta'],
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			machine: {
-				type: 'string',
-				nullable: false,
-			},
-			cpu: {
-				type: 'object',
-				nullable: false,
-				properties: {
-					model: {
-						type: 'string',
-						nullable: false,
-					},
-					cores: {
-						type: 'number',
-						nullable: false,
-					},
-				},
-			},
-			mem: {
-				type: 'object',
-				properties: {
-					total: {
-						type: 'number',
-						nullable: false,
-					},
-				},
-			},
-			fs: {
-				type: 'object',
-				nullable: false,
-				properties: {
-					total: {
-						type: 'number',
-						nullable: false,
-					},
-					used: {
-						type: 'number',
-						nullable: false,
-					},
-				},
-			},
-		},
-	},
+	res: z.object({
+		machine: z.string().optional(),
+		cpu: z.object({
+			model: z.string().optional(),
+			cores: z.number().optional(),
+		}),
+		mem: z.object({
+			total: z.number().optional(),
+		}),
+		fs: z.object({
+			total: z.number().optional(),
+			used: z.number().optional(),
+		}),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly metaService: MetaService,
 	) {

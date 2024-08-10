@@ -5,33 +5,23 @@
 
 import { randomUUID } from 'node:crypto';
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { AppsRepository, AuthSessionsRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['auth'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			token: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			url: {
-				type: 'string',
-				optional: false, nullable: false,
-				format: 'url',
-			},
-		},
-	},
+	res: z.object({
+		token: z.string().optional(),
+		url: z.string()/* format: url */.optional(),
+	}),
 
 	errors: {
 		noSuchApp: {
@@ -42,16 +32,12 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		appSecret: { type: 'string' },
-	},
-	required: ['appSecret'],
-} as const;
+export const paramDef = z.object({
+	appSecret: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
 		private readonly config: Config,

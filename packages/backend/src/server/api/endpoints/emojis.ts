@@ -6,9 +6,11 @@
 import { IsNull } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { EmojisRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { EmojiEntityService } from '@/core/entities/EmojiEntityService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { EmojiSimpleSchema } from '@/models/zod/emoji.js';
 
 export const meta = {
 	tags: ['meta'],
@@ -17,32 +19,15 @@ export const meta = {
 	allowGet: true,
 	cacheSec: 3600,
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			emojis: {
-				type: 'array',
-				optional: false, nullable: false,
-				items: {
-					type: 'object',
-					optional: false, nullable: false,
-					ref: 'EmojiSimple',
-				},
-			},
-		},
-	},
+	res: z.object({
+		emojis: EmojiSimpleSchema.array().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.emojisRepository)
 		private readonly emojisRepository: EmojisRepository,

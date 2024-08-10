@@ -7,8 +7,9 @@ import { MoreThan } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import { USER_ONLINE_THRESHOLD } from '@/const.js';
 import type { UsersRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['meta'],
@@ -16,26 +17,15 @@ export const meta = {
 	requireCredential: false,
 	allowGet: true,
 	cacheSec: 60 * 1,
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			count: {
-				type: 'number',
-				nullable: false,
-			},
-		},
-	},
+	res: z.object({
+		count: z.number().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

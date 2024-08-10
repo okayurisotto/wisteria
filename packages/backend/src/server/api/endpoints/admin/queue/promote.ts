@@ -4,9 +4,10 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 import { QueueService } from '@/core/QueueService.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['admin'],
@@ -16,16 +17,12 @@ export const meta = {
 	kind: 'write:admin:queue',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		type: { type: 'string', enum: ['deliver', 'inbox'] },
-	},
-	required: ['type'],
-} as const;
+export const paramDef = z.object({
+	type: z.enum(['deliver', 'inbox']),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly moderationLogService: ModerationLogService,
 		private readonly queueService: QueueService,

@@ -5,7 +5,7 @@
 
 import bcrypt from 'bcryptjs';
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
@@ -13,6 +13,7 @@ import type { UserProfilesRepository, UserSecurityKeysRepository } from '@/model
 import { WebAuthnService } from '@/core/WebAuthnService.js';
 import { ApiError } from '@/server/api/error.js';
 import { UserAuthService } from '@/core/UserAuthService.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: true,
@@ -33,30 +34,21 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		nullable: false,
-		optional: false,
-		properties: {
-			id: { type: 'string' },
-			name: { type: 'string' },
-		},
-	},
+	res: z.object({
+		id: z.string().optional(),
+		name: z.string().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		password: { type: 'string' },
-		token: { type: 'string', nullable: true },
-		name: { type: 'string', minLength: 1, maxLength: 30 },
-		credential: { type: 'object' },
-	},
-	required: ['password', 'name', 'credential'],
-} as const;
+export const paramDef = z.object({
+	password: z.string(),
+	token: z.string().nullable().optional(),
+	name: z.string().min(1).max(30),
+	credential: z.record(z.string(), z.unknown()),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userProfilesRepository)
 		private readonly userProfilesRepository: UserProfilesRepository,

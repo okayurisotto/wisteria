@@ -5,11 +5,13 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { PagesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	requireCredential: true,
@@ -24,18 +26,14 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		pageId: { type: 'string', format: 'misskey:id' },
-		event: { type: 'string' },
-		var: {},
-	},
-	required: ['pageId', 'event'],
-} as const;
+export const paramDef = z.object({
+	pageId: IdSchema,
+	event: z.string(),
+	var: z.unknown().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.pagesRepository)
 		private readonly pagesRepository: PagesRepository,

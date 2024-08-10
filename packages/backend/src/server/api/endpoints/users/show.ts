@@ -7,7 +7,7 @@ import { In, IsNull } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository } from '@/models/_.js';
 import type { MiUser } from '@/models/User.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { DI } from '@/di-symbols.js';
@@ -18,6 +18,9 @@ import { ApiLoggerService } from '../../ApiLoggerService.js';
 import type { FindOptionsWhere } from 'typeorm';
 import type { Config } from '@/config.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
+import { z } from 'zod';
+import { UserDetailedSchema } from '@/models/zod/user.js';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['users'],
@@ -26,22 +29,7 @@ export const meta = {
 
 	description: 'Show the properties of a user.',
 
-	res: {
-		optional: false, nullable: false,
-		oneOf: [
-			{
-				type: 'object',
-				ref: 'UserDetailed',
-			},
-			{
-				type: 'array',
-				items: {
-					type: 'object',
-					ref: 'UserDetailed',
-				},
-			},
-		],
-	},
+	res: z.union([UserDetailedSchema, UserDetailedSchema.array()]),
 
 	errors: {
 		failedToResolveRemoteUser: {
@@ -60,29 +48,31 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		userId: { type: 'string', format: 'misskey:id' },
-		userIds: { type: 'array', uniqueItems: true, items: {
-			type: 'string', format: 'misskey:id',
-		} },
-		username: { type: 'string' },
-		host: {
-			type: 'string',
-			nullable: true,
-			description: 'The local host is represented with `null`.',
-		},
-	},
-	anyOf: [
-		{ required: ['userId'] },
-		{ required: ['userIds'] },
-		{ required: ['username'] },
-	],
-} as const;
+export const paramDef = z.intersection(
+	z.union([
+		z.object({
+			userId: IdSchema,
+			userIds: z.never().optional(),
+			username: z.never().optional(),
+		}),
+		z.object({
+			userId: z.never().optional(),
+			userIds: IdSchema.array().refine(v => new Set(v).size === v.length),
+			username: z.never().optional(),
+		}),
+		z.object({
+			userId: z.never().optional(),
+			userIds: z.never().optional(),
+			username: z.string(),
+		}),
+	]),
+	z.object({
+		host: z.string().nullable().describe('The local host is represented with `null`.').optional(),
+	}),
+);
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
 		private readonly config: Config,

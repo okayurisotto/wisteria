@@ -5,55 +5,29 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { RetentionAggregationsRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['users'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'array',
-		items: {
-			type: 'object',
-			properties: {
-				createdAt: {
-					type: 'string',
-					format: 'date-time',
-				},
-				users: {
-					type: 'number',
-				},
-				data: {
-					type: 'object',
-					additionalProperties: {
-						anyOf: [{
-							type: 'number',
-						}],
-					},
-				},
-			},
-			required: [
-				'createdAt',
-				'users',
-				'data',
-			],
-		},
-	},
+	res: z.object({
+		createdAt: z.string()/* format: date-time */,
+		users: z.number(),
+		data: z.record(z.string(), z.number()),
+	}).array(),
 
 	allowGet: true,
 	cacheSec: 60 * 60,
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.retentionAggregationsRepository)
 		private readonly retentionAggregationsRepository: RetentionAggregationsRepository,

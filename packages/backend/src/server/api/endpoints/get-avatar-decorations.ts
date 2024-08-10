@@ -4,62 +4,30 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 import { RoleService } from '@/core/RoleService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['users'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			properties: {
-				id: {
-					type: 'string',
-					optional: false, nullable: false,
-					format: 'id',
-					example: 'xxxxxxxxxx',
-				},
-				name: {
-					type: 'string',
-					optional: false, nullable: false,
-				},
-				description: {
-					type: 'string',
-					optional: false, nullable: false,
-				},
-				url: {
-					type: 'string',
-					optional: false, nullable: false,
-				},
-				roleIdsThatCanBeUsedThisDecoration: {
-					type: 'array',
-					optional: false, nullable: false,
-					items: {
-						type: 'string',
-						optional: false, nullable: false,
-						format: 'id',
-					},
-				},
-			},
-		},
-	},
+	res: z.object({
+		id: IdSchema.optional(),
+		name: z.string().optional(),
+		description: z.string().optional(),
+		url: z.string().optional(),
+		roleIdsThatCanBeUsedThisDecoration: IdSchema.array().optional(),
+	}).array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {},
-	required: [],
-} as const;
+export const paramDef = z.object({});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly avatarDecorationService: AvatarDecorationService,
 		private readonly roleService: RoleService,

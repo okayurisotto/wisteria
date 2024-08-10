@@ -5,11 +5,12 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import ms from 'ms';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { IdService } from '@/core/IdService.js';
 import type { BubbleGameRecordsRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
 
 export const meta = {
 	requireCredential: true,
@@ -31,28 +32,16 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		score: { type: 'integer', minimum: 0 },
-		seed: { type: 'string', minLength: 1, maxLength: 1024 },
-		logs: {
-			type: 'array',
-			items: {
-				type: 'array',
-				items: {
-					type: 'number',
-				},
-			},
-		},
-		gameMode: { type: 'string' },
-		gameVersion: { type: 'integer' },
-	},
-	required: ['score', 'seed', 'logs', 'gameMode', 'gameVersion'],
-} as const;
+export const paramDef = z.object({
+	score: z.number().int().min(0),
+	seed: z.string().min(1).max(1024),
+	logs: z.number().array().array(),
+	gameMode: z.string(),
+	gameVersion: z.number().int(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.bubbleGameRecordsRepository)
 		private readonly bubbleGameRecordsRepository: BubbleGameRecordsRepository,

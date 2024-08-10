@@ -5,11 +5,13 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { DriveFilesRepository, UsersRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { IdService } from '@/core/IdService.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -26,155 +28,51 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			id: {
-				type: 'string',
-				optional: false, nullable: false,
-				format: 'id',
-				example: 'xxxxxxxxxx',
-			},
-			createdAt: {
-				type: 'string',
-				optional: false, nullable: false,
-				format: 'date-time',
-			},
-			userId: {
-				type: 'string',
-				optional: false, nullable: true,
-				format: 'id',
-				example: 'xxxxxxxxxx',
-			},
-			userHost: {
-				type: 'string',
-				optional: false, nullable: true,
-				description: 'The local host is represented with `null`.',
-			},
-			md5: {
-				type: 'string',
-				optional: false, nullable: false,
-				format: 'md5',
-				example: '15eca7fba0480996e2245f5185bf39f2',
-			},
-			name: {
-				type: 'string',
-				optional: false, nullable: false,
-				example: 'lenna.jpg',
-			},
-			type: {
-				type: 'string',
-				optional: false, nullable: false,
-				example: 'image/jpeg',
-			},
-			size: {
-				type: 'number',
-				optional: false, nullable: false,
-				example: 51469,
-			},
-			comment: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			blurhash: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			properties: {
-				type: 'object',
-				optional: false, nullable: false,
-				properties: {
-					width: {
-						type: 'number',
-						optional: true, nullable: false,
-					},
-					height: {
-						type: 'number',
-						optional: true, nullable: false,
-					},
-					orientation: {
-						type: 'number',
-						optional: true, nullable: false,
-					},
-					avgColor: {
-						type: 'string',
-						optional: true, nullable: false,
-					},
-				},
-			},
-			storedInternal: {
-				type: 'boolean',
-				optional: false, nullable: true,
-				example: true,
-			},
-			url: {
-				type: 'string',
-				optional: false, nullable: true,
-				format: 'url',
-			},
-			thumbnailUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-				format: 'url',
-			},
-			webpublicUrl: {
-				type: 'string',
-				optional: false, nullable: true,
-				format: 'url',
-			},
-			accessKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			thumbnailAccessKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			webpublicAccessKey: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			uri: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			src: {
-				type: 'string',
-				optional: false, nullable: true,
-			},
-			folderId: {
-				type: 'string',
-				optional: false, nullable: true,
-				format: 'id',
-				example: 'xxxxxxxxxx',
-			},
-			isSensitive: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-			isLink: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-		},
-	},
+	res: z.object({
+		id: IdSchema.optional(),
+		createdAt: z.string()/* format: date-time */.optional(),
+		userId: IdSchema.nullable().optional(),
+		userHost: z.string().nullable().describe('The local host is represented with `null`.').optional(),
+		md5: z.string()/* example: "15eca7fba0480996e2245f5185bf39f2" *//* format: md5 */.optional(),
+		name: z.string()/* example: "lenna.jpg" */.optional(),
+		type: z.string()/* example: "image/jpeg" */.optional(),
+		size: z.number()/* example: 51469 */.optional(),
+		comment: z.string().nullable().optional(),
+		blurhash: z.string().nullable().optional(),
+		properties: z.object({
+			width: z.number().optional(),
+			height: z.number().optional(),
+			orientation: z.number().optional(),
+			avgColor: z.string().optional(),
+		}),
+		storedInternal: z.boolean().nullable()/* example: true */.optional(),
+		url: z.string().nullable()/* format: url */.optional(),
+		thumbnailUrl: z.string().nullable()/* format: url */.optional(),
+		webpublicUrl: z.string().nullable()/* format: url */.optional(),
+		accessKey: z.string().nullable().optional(),
+		thumbnailAccessKey: z.string().nullable().optional(),
+		webpublicAccessKey: z.string().nullable().optional(),
+		uri: z.string().nullable().optional(),
+		src: z.string().nullable().optional(),
+		folderId: IdSchema.nullable().optional(),
+		isSensitive: z.boolean().optional(),
+		isLink: z.boolean().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		fileId: { type: 'string', format: 'misskey:id' },
-		url: { type: 'string' },
-	},
-	anyOf: [
-		{ required: ['fileId'] },
-		{ required: ['url'] },
-	],
-} as const;
+export const paramDef = z.union([
+	z.object({
+		fileId: IdSchema,
+		url: z.never().optional(),
+	}),
+	z.object({
+		fileId: z.never().optional(),
+		url: z.string(),
+	}),
+]);
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFilesRepository)
 		private readonly driveFilesRepository: DriveFilesRepository,

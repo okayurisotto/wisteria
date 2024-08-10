@@ -4,23 +4,21 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { HashtagsRepository } from '@/models/_.js';
 import { normalizeForSearch } from '@/misc/normalize-for-search.js';
 import { HashtagEntityService } from '@/core/entities/HashtagEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { HashtagSchema } from '@/models/zod/hashtag.js';
 
 export const meta = {
 	tags: ['hashtags'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'Hashtag',
-	},
+	res: HashtagSchema,
 
 	errors: {
 		noSuchHashtag: {
@@ -31,16 +29,12 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		tag: { type: 'string' },
-	},
-	required: ['tag'],
-} as const;
+export const paramDef = z.object({
+	tag: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.hashtagsRepository)
 		private readonly hashtagsRepository: HashtagsRepository,

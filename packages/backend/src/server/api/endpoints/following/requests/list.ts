@@ -4,11 +4,14 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { QueryService } from '@/core/QueryService.js';
 import type { FollowRequestsRepository } from '@/models/_.js';
 import { FollowRequestEntityService } from '@/core/entities/FollowRequestEntityService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { UserLiteSchema } from '@/models/zod/user-lite.js';
 
 export const meta = {
 	tags: ['following', 'account'],
@@ -17,45 +20,21 @@ export const meta = {
 
 	kind: 'read:following',
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			properties: {
-				id: {
-					type: 'string',
-					optional: false, nullable: false,
-					format: 'id',
-				},
-				follower: {
-					type: 'object',
-					optional: false, nullable: false,
-					ref: 'UserLite',
-				},
-				followee: {
-					type: 'object',
-					optional: false, nullable: false,
-					ref: 'UserLite',
-				},
-			},
-		},
-	},
+	res: z.object({
+		id: IdSchema.optional(),
+		follower: UserLiteSchema.optional(),
+		followee: UserLiteSchema.optional(),
+	}).array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	sinceId: IdSchema.optional(),
+	untilId: IdSchema.optional(),
+	limit: z.number().int().min(1).max(100).default(10),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.followRequestsRepository)
 		private readonly followRequestsRepository: FollowRequestsRepository,

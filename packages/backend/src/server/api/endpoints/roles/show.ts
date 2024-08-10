@@ -5,10 +5,13 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { RolesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import { RoleEntityService } from '@/core/entities/RoleEntityService.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { RoleSchema } from '@/models/zod/role.js';
 
 export const meta = {
 	tags: ['role', 'users'],
@@ -23,23 +26,15 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'Role',
-	},
+	res: RoleSchema,
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		roleId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['roleId'],
-} as const;
+export const paramDef = z.object({
+	roleId: IdSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.rolesRepository)
 		private readonly rolesRepository: RolesRepository,

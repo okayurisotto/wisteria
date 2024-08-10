@@ -5,13 +5,16 @@
 
 import ms from 'ms';
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { DriveFilesRepository, GalleryPostsRepository } from '@/models/_.js';
 import { MiGalleryPost } from '@/models/GalleryPost.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import { IdService } from '@/core/IdService.js';
 import { GalleryPostEntityService } from '@/core/entities/GalleryPostEntityService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { GalleryPostSchema } from '@/models/zod/gallery-post.js';
 
 export const meta = {
 	tags: ['gallery'],
@@ -27,32 +30,22 @@ export const meta = {
 		max: 20,
 	},
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'GalleryPost',
-	},
+	res: GalleryPostSchema,
 
 	errors: {
 
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		title: { type: 'string', minLength: 1 },
-		description: { type: 'string', nullable: true },
-		fileIds: { type: 'array', uniqueItems: true, minItems: 1, maxItems: 32, items: {
-			type: 'string', format: 'misskey:id',
-		} },
-		isSensitive: { type: 'boolean', default: false },
-	},
-	required: ['title', 'fileIds'],
-} as const;
+export const paramDef = z.object({
+	title: z.string().min(1),
+	description: z.string().nullable().optional(),
+	fileIds: IdSchema.array().min(1).max(32).refine(v => new Set(v).size === v.length),
+	isSensitive: z.boolean().default(false),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.galleryPostsRepository)
 		private readonly galleryPostsRepository: GalleryPostsRepository,

@@ -4,9 +4,10 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { MetaService } from '@/core/MetaService.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['admin', 'role'],
@@ -16,20 +17,12 @@ export const meta = {
 	kind: 'write:admin:roles',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		policies: {
-			type: 'object',
-		},
-	},
-	required: [
-		'policies',
-	],
-} as const;
+export const paramDef = z.object({
+	policies: z.record(z.string(), z.unknown()),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly metaService: MetaService,
 		private readonly globalEventService: GlobalEventService,

@@ -7,9 +7,11 @@ import { IsNull, MoreThan, Not } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { FollowingsRepository, InstancesRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { InstanceEntityService } from '@/core/entities/InstanceEntityService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { FederationInstanceSchema } from '@/models/zod/federation-instance.js';
 
 export const meta = {
 	tags: ['federation'],
@@ -19,49 +21,20 @@ export const meta = {
 	allowGet: true,
 	cacheSec: 60 * 60,
 
-	res: {
-		type: 'object',
-		optional: false,
-		nullable: false,
-		properties: {
-			topSubInstances: {
-				type: 'array',
-				optional: false,
-				nullable: false,
-				items: {
-					type: 'object',
-					optional: false,
-					nullable: false,
-					ref: 'FederationInstance',
-				},
-			},
-			otherFollowersCount: { type: 'number' },
-			topPubInstances: {
-				type: 'array',
-				optional: false,
-				nullable: false,
-				items: {
-					type: 'object',
-					optional: false,
-					nullable: false,
-					ref: 'FederationInstance',
-				},
-			},
-			otherFollowingCount: { type: 'number' },
-		},
-	},
+	res: z.object({
+		topSubInstances: FederationInstanceSchema.array().optional(),
+		otherFollowersCount: z.number().optional(),
+		topPubInstances: FederationInstanceSchema.array().optional(),
+		otherFollowingCount: z.number().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	limit: z.coerce.number().int().min(1).max(100).default(10),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.instancesRepository)
 		private readonly instancesRepository: InstancesRepository,

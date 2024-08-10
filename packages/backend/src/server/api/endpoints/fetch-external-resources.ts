@@ -6,9 +6,10 @@
 import { createHash } from 'crypto';
 import ms from 'ms';
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { ApiError } from '../error.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['meta'],
@@ -34,30 +35,19 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		properties: {
-			type: {
-				type: 'string',
-			},
-			data: {
-				type: 'string',
-			},
-		},
-	},
+	res: z.object({
+		type: z.string().optional(),
+		data: z.string().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		url: { type: 'string' },
-		hash: { type: 'string' },
-	},
-	required: ['url', 'hash'],
-} as const;
+export const paramDef = z.object({
+	url: z.string(),
+	hash: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly httpRequestService: HttpRequestService,
 	) {

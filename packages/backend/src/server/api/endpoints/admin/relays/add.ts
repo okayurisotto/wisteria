@@ -5,9 +5,11 @@
 
 import { URL } from 'node:url';
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { RelayService } from '@/core/RelayService.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -24,44 +26,19 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			id: {
-				type: 'string',
-				optional: false, nullable: false,
-				format: 'id',
-			},
-			inbox: {
-				type: 'string',
-				optional: false, nullable: false,
-				format: 'url',
-			},
-			status: {
-				type: 'string',
-				optional: false, nullable: false,
-				default: 'requesting',
-				enum: [
-					'requesting',
-					'accepted',
-					'rejected',
-				],
-			},
-		},
-	},
+	res: z.object({
+		id: IdSchema.optional(),
+		inbox: z.string()/* format: url */.optional(),
+		status: z.enum(['requesting', 'accepted', 'rejected']).default('requesting'),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		inbox: { type: 'string' },
-	},
-	required: ['inbox'],
-} as const;
+export const paramDef = z.object({
+	inbox: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly relayService: RelayService,
 	) {

@@ -4,9 +4,12 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { ReversiService } from '@/core/ReversiService.js';
 import { ReversiGameEntityService } from '@/core/entities/ReversiGameEntityService.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { ReversiGameDetailedSchema } from '@/models/zod/reversi-game.js';
 
 export const meta = {
 	errors: {
@@ -17,31 +20,19 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			desynced: { type: 'boolean' },
-			game: {
-				type: 'object',
-				optional: true, nullable: true,
-				ref: 'ReversiGameDetailed',
-			},
-		},
-	},
+	res: z.object({
+		desynced: z.boolean().optional(),
+		game: ReversiGameDetailedSchema.nullable().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		gameId: { type: 'string', format: 'misskey:id' },
-		crc32: { type: 'string' },
-	},
-	required: ['gameId', 'crc32'],
-} as const;
+export const paramDef = z.object({
+	gameId: IdSchema,
+	crc32: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly reversiService: ReversiService,
 		private readonly reversiGameEntityService: ReversiGameEntityService,

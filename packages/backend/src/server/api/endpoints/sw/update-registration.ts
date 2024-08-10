@@ -5,9 +5,10 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { SwSubscriptionsRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['account'],
@@ -17,24 +18,11 @@ export const meta = {
 
 	description: 'Update push notification registration.',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		properties: {
-			userId: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			endpoint: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			sendReadMessage: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-		},
-	},
+	res: z.object({
+		userId: z.string().optional(),
+		endpoint: z.string().optional(),
+		sendReadMessage: z.boolean().optional(),
+	}),
 	errors: {
 		noSuchRegistration: {
 			message: 'No such registration.',
@@ -44,17 +32,13 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		endpoint: { type: 'string' },
-		sendReadMessage: { type: 'boolean' },
-	},
-	required: ['endpoint'],
-} as const;
+export const paramDef = z.object({
+	endpoint: z.string(),
+	sendReadMessage: z.boolean().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.swSubscriptionsRepository)
 		private readonly swSubscriptionsRepository: SwSubscriptionsRepository,

@@ -4,42 +4,29 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { UsersRepository } from '@/models/_.js';
 import { SignupService } from '@/core/SignupService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { InstanceActorService } from '@/core/InstanceActorService.js';
-import { localUsernameSchema, passwordSchema } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import type { Packed } from '@/misc/json-schema.js';
+import { z } from 'zod';
+import { LocalUsernameSchema, MeDetailedSchema, PasswordSchema } from '@/models/zod/user.js';
 
 export const meta = {
 	tags: ['admin'],
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'MeDetailed',
-		properties: {
-			token: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-		},
-	},
+	res: MeDetailedSchema.merge(z.object({ token: z.string() })),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		username: localUsernameSchema,
-		password: passwordSchema,
-	},
-	required: ['username', 'password'],
-} as const;
+export const paramDef = z.object({
+	username: LocalUsernameSchema,
+	password: PasswordSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

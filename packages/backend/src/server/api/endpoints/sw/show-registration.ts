@@ -5,8 +5,9 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { SwSubscriptionsRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['account'],
@@ -16,36 +17,19 @@ export const meta = {
 
 	description: 'Check push notification registration exists.',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: true,
-		properties: {
-			userId: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			endpoint: {
-				type: 'string',
-				optional: false, nullable: false,
-			},
-			sendReadMessage: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
-		},
-	},
+	res: z.object({
+		userId: z.string().optional(),
+		endpoint: z.string().optional(),
+		sendReadMessage: z.boolean().optional(),
+	}).nullable(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		endpoint: { type: 'string' },
-	},
-	required: ['endpoint'],
-} as const;
+export const paramDef = z.object({
+	endpoint: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.swSubscriptionsRepository)
 		private readonly swSubscriptionsRepository: SwSubscriptionsRepository,

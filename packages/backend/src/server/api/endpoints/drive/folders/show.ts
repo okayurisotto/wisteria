@@ -4,11 +4,14 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { DriveFoldersRepository } from '@/models/_.js';
 import { DriveFolderEntityService } from '@/core/entities/DriveFolderEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
+import { DriveFolderSchema } from '@/models/zod/drive-folder.js';
 
 export const meta = {
 	tags: ['drive'],
@@ -17,11 +20,7 @@ export const meta = {
 
 	kind: 'read:drive',
 
-	res: {
-		type: 'object',
-		optional: false, nullable: false,
-		ref: 'DriveFolder',
-	},
+	res: DriveFolderSchema,
 
 	errors: {
 		noSuchFolder: {
@@ -32,16 +31,12 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		folderId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['folderId'],
-} as const;
+export const paramDef = z.object({
+	folderId: IdSchema,
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.driveFoldersRepository)
 		private readonly driveFoldersRepository: DriveFoldersRepository,

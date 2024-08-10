@@ -5,8 +5,9 @@
 
 import Parser from 'rss-parser';
 import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
+import { z } from 'zod';
 
 const rssParser = new Parser();
 
@@ -17,29 +18,17 @@ export const meta = {
 	allowGet: true,
 	cacheSec: 60 * 3,
 
-	res: {
-		type: 'object',
-		properties: {
-			items: {
-				type: 'array',
-				items: {
-					type: 'object',
-				},
-			},
-		},
-	},
+	res: z.object({
+		items: z.record(z.string(), z.unknown()).array().optional(),
+	}),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		url: { type: 'string' },
-	},
-	required: ['url'],
-} as const;
+export const paramDef = z.object({
+	url: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly httpRequestService: HttpRequestService,
 	) {

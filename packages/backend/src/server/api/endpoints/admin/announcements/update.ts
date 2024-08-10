@@ -4,11 +4,13 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { AnnouncementsRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { AnnouncementService } from '@/core/AnnouncementService.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -26,25 +28,21 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		id: { type: 'string', format: 'misskey:id' },
-		title: { type: 'string', minLength: 1 },
-		text: { type: 'string', minLength: 1 },
-		imageUrl: { type: 'string', nullable: true, minLength: 0 },
-		icon: { type: 'string', enum: ['info', 'warning', 'error', 'success'] },
-		display: { type: 'string', enum: ['normal', 'banner', 'dialog'] },
-		forExistingUsers: { type: 'boolean' },
-		silence: { type: 'boolean' },
-		needConfirmationToRead: { type: 'boolean' },
-		isActive: { type: 'boolean' },
-	},
-	required: ['id'],
-} as const;
+export const paramDef = z.object({
+	id: IdSchema,
+	title: z.string().min(1).optional(),
+	text: z.string().min(1).optional(),
+	imageUrl: z.string().min(0).nullable().optional(),
+	icon: z.enum(['info', 'warning', 'error', 'success']).optional(),
+	display: z.enum(['normal', 'banner', 'dialog']).optional(),
+	forExistingUsers: z.boolean().optional(),
+	silence: z.boolean().optional(),
+	needConfirmationToRead: z.boolean().optional(),
+	isActive: z.boolean().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.announcementsRepository)
 		private readonly announcementsRepository: AnnouncementsRepository,

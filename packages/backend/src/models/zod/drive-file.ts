@@ -5,7 +5,7 @@
 
 import { z } from 'zod';
 import { DriveFolderSchema } from './drive-folder.js';
-import { UserLiteSchema } from './user.js';
+import { UserLiteSchema } from './user-lite.js';
 import { IdSchema } from './IdSchema.js';
 
 export const DriveFileSchema = z

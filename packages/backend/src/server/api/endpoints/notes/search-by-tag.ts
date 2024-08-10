@@ -8,63 +8,44 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { NotesRepository } from '@/models/_.js';
 import { safeForSql } from '@/misc/safe-for-sql.js';
 import { normalizeForSearch } from '@/misc/normalize-for-search.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { QueryService } from '@/core/QueryService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { NoteSchema } from '@/models/zod/note.js';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['notes', 'hashtags'],
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'Note',
-		},
-	},
+	res: NoteSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		reply: { type: 'boolean', nullable: true, default: null },
-		renote: { type: 'boolean', nullable: true, default: null },
-		withFiles: {
-			type: 'boolean',
-			default: false,
-			description: 'Only show notes that have attached files.',
-		},
-		poll: { type: 'boolean', nullable: true, default: null },
-		sinceId: { type: 'string', format: 'misskey:id' },
-		untilId: { type: 'string', format: 'misskey:id' },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-
-		tag: { type: 'string', minLength: 1 },
-		query: {
-			type: 'array',
-			description: 'The outer arrays are chained with OR, the inner arrays are chained with AND.',
-			items: {
-				type: 'array',
-				items: {
-					type: 'string',
-					minLength: 1,
-				},
-				minItems: 1,
-			},
-			minItems: 1,
-		},
-	},
-	anyOf: [
-		{ required: ['tag'] },
-		{ required: ['query'] },
-	],
-} as const;
+export const paramDef = z.intersection(
+	z.union([
+		z.object({
+			tag: z.string().min(1),
+			query: z.never().optional(),
+		}),
+		z.object({
+			tag: z.never().optional(),
+			query: z.string().min(1).array().min(1).array().min(1).describe('The outer arrays are chained with OR, the inner arrays are chained with AND.'),
+		}),
+	]),
+	z.object({
+		reply: z.boolean().nullable().default(null),
+		renote: z.boolean().nullable().default(null),
+		withFiles: z.boolean().default(false).describe('Only show notes that have attached files.'),
+		poll: z.boolean().nullable().default(null),
+		sinceId: IdSchema.optional(),
+		untilId: IdSchema.optional(),
+		limit: z.number().int().min(1).max(100).default(10),
+	}),
+);
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.notesRepository)
 		private readonly notesRepository: NotesRepository,

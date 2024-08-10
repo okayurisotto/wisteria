@@ -4,41 +4,31 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { HashtagsRepository } from '@/models/_.js';
 import { HashtagEntityService } from '@/core/entities/HashtagEntityService.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
+import { HashtagSchema } from '@/models/zod/hashtag.js';
 
 export const meta = {
 	tags: ['hashtags'],
 
 	requireCredential: false,
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'Hashtag',
-		},
-	},
+	res: HashtagSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
-		attachedToUserOnly: { type: 'boolean', default: false },
-		attachedToLocalUserOnly: { type: 'boolean', default: false },
-		attachedToRemoteUserOnly: { type: 'boolean', default: false },
-		sort: { type: 'string', enum: ['+mentionedUsers', '-mentionedUsers', '+mentionedLocalUsers', '-mentionedLocalUsers', '+mentionedRemoteUsers', '-mentionedRemoteUsers', '+attachedUsers', '-attachedUsers', '+attachedLocalUsers', '-attachedLocalUsers', '+attachedRemoteUsers', '-attachedRemoteUsers'] },
-	},
-	required: ['sort'],
-} as const;
+export const paramDef = z.object({
+	limit: z.number().int().min(1).max(100).default(10),
+	attachedToUserOnly: z.boolean().default(false),
+	attachedToLocalUserOnly: z.boolean().default(false),
+	attachedToRemoteUserOnly: z.boolean().default(false),
+	sort: z.enum(['+mentionedUsers', '-mentionedUsers', '+mentionedLocalUsers', '-mentionedLocalUsers', '+mentionedRemoteUsers', '-mentionedRemoteUsers', '+attachedUsers', '-attachedUsers', '+attachedLocalUsers', '-attachedLocalUsers', '+attachedRemoteUsers', '-attachedRemoteUsers']),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.hashtagsRepository)
 		private readonly hashtagsRepository: HashtagsRepository,

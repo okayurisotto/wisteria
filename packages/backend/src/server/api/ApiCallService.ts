@@ -325,39 +325,6 @@ export class ApiCallService {
 
 		// #endregion
 
-		// #region Cast non JSON input
-
-		if ((endpoint.meta.requireFile || method === 'GET') && endpoint.params.properties) {
-			for (const [key, param] of Object.entries(endpoint.params.properties)) {
-				const castableType = ['boolean', 'number', 'integer'].includes(param.type ?? '');
-				const castableValue = typeof data[key] === 'string';
-
-				if (castableType && castableValue) {
-					try {
-						const casted: unknown = JSON.parse(data[key]);
-						data[key] = casted;
-					} catch (e) {
-						return {
-							ok: false,
-							error: new ApiError(
-								{
-									message: 'Invalid param.',
-									code: 'INVALID_PARAM',
-									id: '0b5f1631-7c1a-41a6-b399-cce335f34d85',
-								},
-								{
-									param: key,
-									reason: param.type !== undefined ? `cannot cast to ${param.type}` : 'cannot cast',
-								},
-							),
-						};
-					}
-				}
-			}
-		}
-
-		// #endregion
-
 		// API invoking
 		try {
 			const value: unknown = await endpoint.exec(data, user, token, file ?? undefined, ip, headers);

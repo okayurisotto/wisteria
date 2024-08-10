@@ -4,10 +4,11 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { FollowingsRepository, UsersRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { QueueService } from '@/core/QueueService.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['admin'],
@@ -17,16 +18,12 @@ export const meta = {
 	kind: 'write:admin:federation',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		host: { type: 'string' },
-	},
-	required: ['host'],
-} as const;
+export const paramDef = z.object({
+	host: z.string(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

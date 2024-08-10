@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository, PollsRepository, PollVotesRepository } from '@/models/_.js';
 import type { MiRemoteUser } from '@/models/User.js';
 import { IdService } from '@/core/IdService.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { QueueService } from '@/core/QueueService.js';
 import { PollService } from '@/core/PollService.js';
@@ -16,6 +16,8 @@ import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
 import { UserBlockingCheckService } from '@/core/UserBlockingCheckService.js';
 import { ApiError } from '../../../error.js';
+import { z } from 'zod';
+import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
 	tags: ['notes'],
@@ -65,19 +67,15 @@ export const meta = {
 	},
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		noteId: { type: 'string', format: 'misskey:id' },
-		choice: { type: 'integer' },
-	},
-	required: ['noteId', 'choice'],
-} as const;
+export const paramDef = z.object({
+	noteId: IdSchema,
+	choice: z.number().int(),
+});
 
 // TODO: ロジックをサービスに切り出す
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,

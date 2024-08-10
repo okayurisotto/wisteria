@@ -6,7 +6,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import ms from 'ms';
 import bcrypt from 'bcryptjs';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { UserProfilesRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { EmailService } from '@/core/EmailService.js';
@@ -16,6 +16,8 @@ import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { L_CHARS, secureRndstr } from '@/misc/secure-rndstr.js';
 import { UserAuthService } from '@/core/UserAuthService.js';
 import { ApiError } from '../../error.js';
+import { z } from 'zod';
+import { MeDetailedSchema } from '@/models/zod/user.js';
 
 export const meta = {
 	requireCredential: true,
@@ -41,24 +43,17 @@ export const meta = {
 		},
 	},
 
-	res: {
-		type: 'object',
-		ref: 'MeDetailed',
-	},
+	res: MeDetailedSchema,
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		password: { type: 'string' },
-		email: { type: 'string', nullable: true },
-		token: { type: 'string', nullable: true },
-	},
-	required: ['password'],
-} as const;
+export const paramDef = z.object({
+	password: z.string(),
+	email: z.string().nullable().optional(),
+	token: z.string().nullable().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.config)
 		private readonly config: Config,

@@ -5,9 +5,10 @@
 
 import ms from 'ms';
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { FollowingsRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
+import { z } from 'zod';
 
 export const meta = {
 	tags: ['following', 'users'],
@@ -22,16 +23,13 @@ export const meta = {
 	kind: 'write:following',
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		notify: { type: 'string', enum: ['normal', 'none'] },
-		withReplies: { type: 'boolean' },
-	},
-} as const;
+export const paramDef = z.object({
+	notify: z.enum(['normal', 'none']).optional(),
+	withReplies: z.boolean().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.followingsRepository)
 		private readonly followingsRepository: FollowingsRepository,

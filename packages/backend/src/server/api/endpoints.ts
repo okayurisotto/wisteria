@@ -4,7 +4,7 @@
  */
 
 import type { permissions } from 'misskey-js';
-import type { KeyOf, Schema } from '@/misc/json-schema.js';
+import type { KeyOf } from '@/misc/json-schema.js';
 
 import * as ep___admin_meta from './endpoints/admin/meta.js';
 import * as ep___admin_abuseUserReports from './endpoints/admin/abuse-user-reports.js';
@@ -373,6 +373,7 @@ import * as ep___reversi_invitations from './endpoints/reversi/invitations.js';
 import * as ep___reversi_showGame from './endpoints/reversi/show-game.js';
 import * as ep___reversi_surrender from './endpoints/reversi/surrender.js';
 import * as ep___reversi_verify from './endpoints/reversi/verify.js';
+import type { z } from 'zod';
 
 const eps = [
 	['admin/meta', ep___admin_meta],
@@ -742,7 +743,7 @@ const eps = [
 	['reversi/show-game', ep___reversi_showGame],
 	['reversi/surrender', ep___reversi_surrender],
 	['reversi/verify', ep___reversi_verify],
-];
+] as const;
 
 interface IEndpointMetaBase {
 	readonly stability?: 'deprecated' | 'experimental' | 'stable';
@@ -757,7 +758,7 @@ interface IEndpointMetaBase {
 		};
 	};
 
-	readonly res?: Schema;
+	readonly res?: z.ZodType;
 
 	/**
 	 * このエンドポイントにリクエストするのにユーザー情報が必須か否か
@@ -843,34 +844,37 @@ interface IEndpointMetaBase {
 	readonly cacheSec?: number;
 }
 
-export type IEndpointMeta = (Omit<IEndpointMetaBase, 'requireCrential' | 'requireModerator' | 'requireAdmin'> & {
-	requireCredential?: false;
-	requireAdmin?: false;
-	requireModerator?: false;
-}) | (Omit<IEndpointMetaBase, 'secure'> & {
-	secure: true;
-}) | (Omit<IEndpointMetaBase, 'requireCredential' | 'kind'> & {
-	requireCredential: true;
-	kind: (typeof permissions)[number];
-}) | (Omit<IEndpointMetaBase, 'requireModerator' | 'kind'> & {
-	requireModerator: true;
-	kind: (typeof permissions)[number];
-}) | (Omit<IEndpointMetaBase, 'requireAdmin' | 'kind'> & {
-	requireAdmin: true;
-	kind: (typeof permissions)[number];
-});
+export type IEndpointMeta = (
+	| Omit<IEndpointMetaBase, 'requireCrential' | 'requireModerator' | 'requireAdmin'> & {
+		requireCredential?: false;
+		requireAdmin?: false;
+		requireModerator?: false;
+	})
+	| (Omit<IEndpointMetaBase, 'secure'> & { secure: true })
+	| (Omit<IEndpointMetaBase, 'requireCredential' | 'kind'> & {
+		requireCredential: true;
+		kind: (typeof permissions)[number];
+	})
+	| (Omit<IEndpointMetaBase, 'requireModerator' | 'kind'> & {
+		requireModerator: true;
+		kind: (typeof permissions)[number];
+	})
+	| (Omit<IEndpointMetaBase, 'requireAdmin' | 'kind'> & {
+		requireAdmin: true;
+		kind: (typeof permissions)[number];
+	});
 
 export interface IEndpoint {
 	name: string;
 	meta: IEndpointMeta;
-	params: Schema;
+	params: z.ZodType;
 }
 
-export const endpoints: IEndpoint[] = (eps as [string, any]).map(([name, ep]) => {
+export const endpoints: IEndpoint[] = eps.map(([name, ep]) => {
 	return {
 		name: name,
 		get meta() {
-			return ep.meta ?? {};
+			return ep.meta;
 		},
 		get params() {
 			return ep.paramDef;

@@ -4,12 +4,14 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
+import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { InstancesRepository } from '@/models/_.js';
 import { InstanceEntityService } from '@/core/entities/InstanceEntityService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { DI } from '@/di-symbols.js';
 import { sqlLikeEscape } from '@/misc/sql-like-escape.js';
+import { z } from 'zod';
+import { FederationInstanceSchema } from '@/models/zod/federation-instance.js';
 
 export const meta = {
 	tags: ['federation'],
@@ -18,57 +20,25 @@ export const meta = {
 	allowGet: true,
 	cacheSec: 3600,
 
-	res: {
-		type: 'array',
-		optional: false, nullable: false,
-		items: {
-			type: 'object',
-			optional: false, nullable: false,
-			ref: 'FederationInstance',
-		},
-	},
+	res: FederationInstanceSchema.array(),
 } as const;
 
-export const paramDef = {
-	type: 'object',
-	properties: {
-		host: { type: 'string', nullable: true, description: 'Omit or use `null` to not filter by host.' },
-		blocked: { type: 'boolean', nullable: true },
-		notResponding: { type: 'boolean', nullable: true },
-		suspended: { type: 'boolean', nullable: true },
-		silenced: { type: 'boolean', nullable: true },
-		federating: { type: 'boolean', nullable: true },
-		subscribing: { type: 'boolean', nullable: true },
-		publishing: { type: 'boolean', nullable: true },
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 30 },
-		offset: { type: 'integer', default: 0 },
-		sort: {
-			type: 'string',
-			nullable: true,
-			enum: [
-				'+pubSub',
-				'-pubSub',
-				'+notes',
-				'-notes',
-				'+users',
-				'-users',
-				'+following',
-				'-following',
-				'+followers',
-				'-followers',
-				'+firstRetrievedAt',
-				'-firstRetrievedAt',
-				'+latestRequestReceivedAt',
-				'-latestRequestReceivedAt',
-				null,
-			],
-		},
-	},
-	required: [],
-} as const;
+export const paramDef = z.object({
+	host: z.string().nullable().describe('Omit or use `null` to not filter by host.').optional(),
+	blocked: z.coerce.boolean().nullable().optional(),
+	notResponding: z.coerce.boolean().nullable().optional(),
+	suspended: z.coerce.boolean().nullable().optional(),
+	silenced: z.coerce.boolean().nullable().optional(),
+	federating: z.coerce.boolean().nullable().optional(),
+	subscribing: z.coerce.boolean().nullable().optional(),
+	publishing: z.coerce.boolean().nullable().optional(),
+	limit: z.coerce.number().int().min(1).max(100).default(30),
+	offset: z.coerce.number().int().default(0),
+	sort: z.enum(['+pubSub', '-pubSub', '+notes', '-notes', '+users', '-users', '+following', '-following', '+followers', '-followers', '+firstRetrievedAt', '-firstRetrievedAt', '+latestRequestReceivedAt', '-latestRequestReceivedAt']).nullable().optional(),
+});
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.instancesRepository)
 		private readonly instancesRepository: InstancesRepository,
