@@ -10,13 +10,14 @@ import type { MiNote } from '@/models/Note.js';
 import type { MiUser } from '@/models/User.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
-import type { Packed } from '@/misc/json-schema.js';
 import { DI } from '@/di-symbols.js';
 import type { AntennasRepository, UserListMembershipsRepository } from '@/models/_.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import type { OnApplicationShutdown } from '@nestjs/common';
 import type { Config } from '@/config.js';
+import type { z } from 'zod';
+import type { NoteSchema } from '@/models/zod/note';
 
 @Injectable()
 export class AntennaService implements OnApplicationShutdown {
@@ -108,7 +109,7 @@ export class AntennaService implements OnApplicationShutdown {
 
 	// NOTE: フォローしているユーザーのノート、リストのユーザーのノート、グループのユーザーのノート指定はパフォーマンス上の理由で無効になっている
 
-	public async checkHitAntenna(antenna: MiAntenna, note: (MiNote | Packed<'Note'>), noteUser: { id: MiUser['id']; username: string; host: string | null }): Promise<boolean> {
+	public async checkHitAntenna(antenna: MiAntenna, note: (MiNote | z.infer<typeof NoteSchema>), noteUser: { id: MiUser['id']; username: string; host: string | null }): Promise<boolean> {
 		if (note.visibility === 'specified') return false;
 		if (note.visibility === 'followers') return false;
 

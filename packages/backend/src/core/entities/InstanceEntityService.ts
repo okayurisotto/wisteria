@@ -4,10 +4,11 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import type { Packed } from '@/misc/json-schema.js';
 import type { MiInstance } from '@/models/Instance.js';
 import { MetaService } from '@/core/MetaService.js';
 import { UtilityService } from '../UtilityService.js';
+import type { z } from 'zod';
+import type { FederationInstanceSchema } from '@/models/zod/federation-instance.js';
 
 @Injectable()
 export class InstanceEntityService {
@@ -19,7 +20,7 @@ export class InstanceEntityService {
 
 	public async pack(
 		instance: MiInstance,
-	): Promise<Packed<'FederationInstance'>> {
+	): Promise<z.infer<typeof FederationInstanceSchema>> {
 		const meta = await this.metaService.fetch();
 		return {
 			id: instance.id,

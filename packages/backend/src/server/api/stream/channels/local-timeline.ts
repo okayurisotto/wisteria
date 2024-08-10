@@ -5,10 +5,11 @@
 
 import { Injectable } from '@nestjs/common';
 import { isUserRelated } from '@/misc/is-user-related.js';
-import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { type MiChannelService, Channel } from '../channel.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
+import type { z } from 'zod';
+import type { NoteSchema } from '@/models/zod/note.js';
 
 class LocalTimelineChannel extends Channel {
 	public readonly chName = 'localTimeline';
@@ -41,7 +42,7 @@ class LocalTimelineChannel extends Channel {
 		this.subscriber.on('notesStream', this.onNote);
 	}
 
-	private readonly onNote = async (note: Packed<'Note'>) => {
+	private readonly onNote = async (note: z.infer<typeof NoteSchema>) => {
 		if (this.withFiles && (note.fileIds == null || note.fileIds.length === 0)) return;
 
 		if (note.user.host !== null) return;

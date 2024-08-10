@@ -7,11 +7,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { RegistrationTicketsRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { Packed } from '@/misc/json-schema.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiRegistrationTicket } from '@/models/RegistrationTicket.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
+import type { z } from 'zod';
+import type { InviteCodeSchema } from '@/models/zod/invite-code.js';
 
 @Injectable()
 export class InviteCodeEntityService {
@@ -26,7 +27,7 @@ export class InviteCodeEntityService {
 	public async pack(
 		src: MiRegistrationTicket['id'] | MiRegistrationTicket,
 		me?: { id: MiUser['id'] } | null | undefined,
-	): Promise<Packed<'InviteCode'>> {
+	): Promise<z.infer<typeof InviteCodeSchema>> {
 		const target = typeof src === 'object'
 			? src
 			: await this.registrationTicketsRepository.findOneOrFail({

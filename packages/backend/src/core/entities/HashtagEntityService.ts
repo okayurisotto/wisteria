@@ -4,15 +4,16 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import type { Packed } from '@/misc/json-schema.js';
 import type { } from '@/models/Blocking.js';
 import type { MiHashtag } from '@/models/Hashtag.js';
+import type { z } from 'zod';
+import type { HashtagSchema } from '@/models/zod/hashtag';
 
 @Injectable()
 export class HashtagEntityService {
 	public async pack(
 		src: MiHashtag,
-	): Promise<Packed<'Hashtag'>> {
+	): Promise<z.infer<typeof HashtagSchema>> {
 		return {
 			tag: src.name,
 			mentionedUsersCount: src.mentionedUsersCount,

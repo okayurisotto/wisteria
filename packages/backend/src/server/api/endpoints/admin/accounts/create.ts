@@ -10,7 +10,6 @@ import { SignupService } from '@/core/SignupService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { InstanceActorService } from '@/core/InstanceActorService.js';
 import { DI } from '@/di-symbols.js';
-import type { Packed } from '@/misc/json-schema.js';
 import { z } from 'zod';
 import { LocalUsernameSchema, MeDetailedSchema, PasswordSchema } from '@/models/zod/user.js';
 
@@ -49,7 +48,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			const res = await this.userEntityService.pack(account, account, {
 				schema: 'MeDetailed',
 				includeSecrets: true,
-			}) as Packed<'MeDetailed'> & { token: string };
+			}) as z.infer<typeof MeDetailedSchema> & { token: string };
 
 			res.token = secret;
 

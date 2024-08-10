@@ -9,7 +9,6 @@ import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { MiNote } from '@/models/Note.js';
 import type { MiLocalUser, MiUser } from '@/models/User.js';
 import { isActor, isPost, getApId } from '@/core/activitypub/type.js';
-import type { SchemaType } from '@/misc/json-schema.js';
 import { ApResolverService } from '@/core/activitypub/ApResolverService.js';
 import { ApDbResolverService } from '@/core/activitypub/ApDbResolverService.js';
 import { MetaService } from '@/core/MetaService.js';
@@ -83,7 +82,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	/***
 	 * URIからUserかNoteを解決する
 	 */
-	private async fetchAny(uri: string, me: MiLocalUser | null | undefined): Promise<SchemaType<typeof meta['res']> | null> {
+	private async fetchAny(uri: string, me: MiLocalUser | null | undefined): Promise<z.infer<typeof meta['res']> | null> {
 	// ブロックしてたら中断
 		const fetchedMeta = await this.metaService.fetch();
 		if (this.utilityService.isBlockedHost(fetchedMeta.blockedHosts, this.utilityService.extractDbHost(uri))) return null;
@@ -96,7 +95,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		// リモートから一旦オブジェクトフェッチ
 		const resolver = this.apResolverService.createResolver();
-		const object = await resolver.resolve(uri) as any;
+		const object = await resolver.resolve(uri);
 
 		// /@user のような正規id以外で取得できるURIが指定されていた場合、ここで初めて正規URIが確定する
 		// これはDBに存在する可能性があるため再度DB検索
@@ -115,7 +114,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		);
 	}
 
-	private async mergePack(me: MiLocalUser | null | undefined, user: MiUser | null | undefined, note: MiNote | null | undefined): Promise<SchemaType<typeof meta.res> | null> {
+	private async mergePack(me: MiLocalUser | null | undefined, user: MiUser | null | undefined, note: MiNote | null | undefined): Promise<z.infer<typeof meta.res> | null> {
 		if (user != null) {
 			return {
 				type: 'User',

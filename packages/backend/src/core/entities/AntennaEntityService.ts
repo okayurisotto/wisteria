@@ -6,9 +6,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { AntennasRepository } from '@/models/_.js';
-import type { Packed } from '@/misc/json-schema.js';
 import type { MiAntenna } from '@/models/Antenna.js';
 import { IdService } from '@/core/IdService.js';
+import type { AntennaSchema } from '@/models/zod/antenna';
+import type { z } from 'zod';
 
 @Injectable()
 export class AntennaEntityService {
@@ -21,7 +22,7 @@ export class AntennaEntityService {
 
 	public async pack(
 		src: MiAntenna['id'] | MiAntenna,
-	): Promise<Packed<'Antenna'>> {
+	): Promise<z.infer<typeof AntennaSchema>> {
 		const antenna = typeof src === 'object' ? src : await this.antennasRepository.findOneByOrFail({ id: src });
 
 		return {

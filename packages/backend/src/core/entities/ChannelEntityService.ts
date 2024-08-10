@@ -6,14 +6,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { ChannelFavoritesRepository, ChannelFollowingsRepository, ChannelsRepository, DriveFilesRepository, NotesRepository } from '@/models/_.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiChannel } from '@/models/Channel.js';
 import { IdService } from '@/core/IdService.js';
 import { DriveFileEntityService } from './DriveFileEntityService.js';
 import { NoteEntityService } from './NoteEntityService.js';
 import { In } from 'typeorm';
+import type { z } from 'zod';
+import type { ChannelSchema } from '@/models/zod/channel.js';
 
 @Injectable()
 export class ChannelEntityService {
@@ -42,7 +42,7 @@ export class ChannelEntityService {
 		src: MiChannel['id'] | MiChannel,
 		me?: { id: MiUser['id'] } | null | undefined,
 		detailed?: boolean,
-	): Promise<Packed<'Channel'>> {
+	): Promise<z.infer<typeof ChannelSchema>> {
 		const channel = typeof src === 'object' ? src : await this.channelsRepository.findOneByOrFail({ id: src });
 		const meId = me ? me.id : null;
 

@@ -8,7 +8,6 @@ import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { DriveFilesRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
-import type { Packed } from '@/misc/json-schema.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
@@ -21,6 +20,8 @@ import { UtilityService } from '../UtilityService.js';
 import { VideoProcessingService } from '../VideoProcessingService.js';
 import { UserEntityService } from './UserEntityService.js';
 import { DriveFolderEntityService } from './DriveFolderEntityService.js';
+import type { z } from 'zod';
+import type { DriveFileSchema } from '@/models/zod/drive-file.js';
 
 type PackOptions = {
 	detail?: boolean;
@@ -173,7 +174,7 @@ export class DriveFileEntityService {
 	public async pack(
 		src: MiDriveFile['id'] | MiDriveFile,
 		options?: PackOptions,
-	): Promise<Packed<'DriveFile'>> {
+	): Promise<z.infer<typeof DriveFileSchema>> {
 		const opts = Object.assign({
 			detail: false,
 			self: false,
@@ -181,7 +182,7 @@ export class DriveFileEntityService {
 
 		const file = typeof src === 'object' ? src : await this.driveFilesRepository.findOneByOrFail({ id: src });
 
-		return await awaitAll<Packed<'DriveFile'>>({
+		return await awaitAll<z.infer<typeof DriveFileSchema>>({
 			id: file.id,
 			createdAt: this.idService.parse(file.id).date.toISOString(),
 			name: file.name,
@@ -208,7 +209,7 @@ export class DriveFileEntityService {
 	public async packNullable(
 		src: MiDriveFile['id'] | MiDriveFile,
 		options?: PackOptions,
-	): Promise<Packed<'DriveFile'> | null> {
+	): Promise<z.infer<typeof DriveFileSchema> | null> {
 		const opts = Object.assign({
 			detail: false,
 			self: false,
@@ -217,7 +218,7 @@ export class DriveFileEntityService {
 		const file = typeof src === 'object' ? src : await this.driveFilesRepository.findOneBy({ id: src });
 		if (file == null) return null;
 
-		return await awaitAll<Packed<'DriveFile'>>({
+		return await awaitAll<z.infer<typeof DriveFileSchema>>({
 			id: file.id,
 			createdAt: this.idService.parse(file.id).date.toISOString(),
 			name: file.name,
@@ -244,19 +245,19 @@ export class DriveFileEntityService {
 	public async packMany(
 		files: MiDriveFile[],
 		options?: PackOptions,
-	): Promise<Packed<'DriveFile'>[]> {
+	): Promise<z.infer<typeof DriveFileSchema>[]> {
 		const items = await Promise.all(files.map(f => this.packNullable(f, options)));
-		return items.filter((x): x is Packed<'DriveFile'> => x != null);
+		return items.filter((x): x is z.infer<typeof DriveFileSchema> => x != null);
 	}
 
 	public async packManyByIdsMap(
 		fileIds: MiDriveFile['id'][],
 		options?: PackOptions,
-	): Promise<Map<Packed<'DriveFile'>['id'], Packed<'DriveFile'> | null>> {
+	): Promise<Map<z.infer<typeof DriveFileSchema>['id'], z.infer<typeof DriveFileSchema> | null>> {
 		if (fileIds.length === 0) return new Map();
 		const files = await this.driveFilesRepository.findBy({ id: In(fileIds) });
 		const packedFiles = await this.packMany(files, options);
-		const map = new Map<Packed<'DriveFile'>['id'], Packed<'DriveFile'> | null>(packedFiles.map(f => [f.id, f]));
+		const map = new Map<z.infer<typeof DriveFileSchema>['id'], z.infer<typeof DriveFileSchema> | null>(packedFiles.map(f => [f.id, f]));
 		for (const id of fileIds) {
 			if (!map.has(id)) map.set(id, null);
 		}
@@ -266,7 +267,7 @@ export class DriveFileEntityService {
 	public async packManyByIds(
 		fileIds: MiDriveFile['id'][],
 		options?: PackOptions,
-	): Promise<Packed<'DriveFile'>[]> {
+	): Promise<z.infer<typeof DriveFileSchema>[]> {
 		if (fileIds.length === 0) return [];
 		const filesMap = await this.packManyByIdsMap(fileIds, options);
 		return fileIds.map(id => filesMap.get(id)).filter(isNotNull);

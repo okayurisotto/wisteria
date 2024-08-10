@@ -6,9 +6,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { EmojisRepository } from '@/models/_.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/Blocking.js';
 import type { MiEmoji } from '@/models/Emoji.js';
+import type { z } from 'zod';
+import type { EmojiSimpleSchema } from '@/models/zod/emoji';
 
 @Injectable()
 export class EmojiEntityService {
@@ -19,7 +19,7 @@ export class EmojiEntityService {
 
 	public async packSimple(
 		src: MiEmoji['id'] | MiEmoji,
-	): Promise<Packed<'EmojiSimple'>> {
+	): Promise<z.infer<typeof EmojiSimpleSchema>> {
 		const emoji = typeof src === 'object' ? src : await this.emojisRepository.findOneByOrFail({ id: src });
 
 		return {
@@ -42,7 +42,7 @@ export class EmojiEntityService {
 
 	public async packDetailed(
 		src: MiEmoji['id'] | MiEmoji,
-	): Promise<Packed<'EmojiDetailed'>> {
+	): Promise<z.infer<typeof EmojiDetailedSchema>> {
 		const emoji = typeof src === 'object' ? src : await this.emojisRepository.findOneByOrFail({ id: src });
 
 		return {

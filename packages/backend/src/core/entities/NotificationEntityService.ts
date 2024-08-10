@@ -10,12 +10,15 @@ import type { FollowRequestsRepository, NotesRepository, MiUser, UsersRepository
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiGroupedNotification, MiNotification } from '@/models/Notification.js';
 import type { MiNote } from '@/models/Note.js';
-import type { Packed } from '@/misc/json-schema.js';
 import { isNotNull } from '@/misc/is-not-null.js';
 import { type FilterUnionByProperty, notificationTypes } from '@/types.js';
 import { RoleEntityService } from './RoleEntityService.js';
 import { UserEntityService } from './UserEntityService.js';
 import { NoteEntityService } from './NoteEntityService.js';
+import type { z } from 'zod';
+import type { NoteSchema } from '@/models/zod/note.js';
+import type { UserLiteSchema } from '@/models/zod/user-lite.js';
+import type { NotificationSchema } from '@/models/zod/notification.js';
 
 const NOTE_REQUIRED_NOTIFICATION_TYPES = new Set(['note', 'mention', 'reply', 'renote', 'quote', 'reaction', 'pollEnded'] as (typeof notificationTypes[number])[]);
 const NOTE_REQUIRED_GROUPED_NOTIFICATION_TYPES = new Set(['note', 'mention', 'reply', 'renote', 'renote:grouped', 'quote', 'reaction', 'reaction:grouped', 'pollEnded']);
@@ -44,10 +47,10 @@ export class NotificationEntityService {
 
 		},
 		hint?: {
-			packedNotes: Map<MiNote['id'], Packed<'Note'>>;
-			packedUsers: Map<MiUser['id'], Packed<'UserLite'>>;
+			packedNotes: Map<MiNote['id'], z.infer<typeof NoteSchema>>;
+			packedUsers: Map<MiUser['id'], z.infer<typeof UserLiteSchema>>;
 		},
-	): Promise<Packed<'Notification'>> {
+	): Promise<z.infer<typeof NotificationSchema>> {
 		const notification = src;
 		const noteIfNeed = NOTE_REQUIRED_NOTIFICATION_TYPES.has(notification.type) && 'noteId' in notification
 			? (
@@ -152,10 +155,10 @@ export class NotificationEntityService {
 
 		},
 		hint?: {
-			packedNotes: Map<MiNote['id'], Packed<'Note'>>;
-			packedUsers: Map<MiUser['id'], Packed<'UserLite'>>;
+			packedNotes: Map<MiNote['id'], z.infer<typeof NoteSchema>>;
+			packedUsers: Map<MiUser['id'], z.infer<typeof UserLiteSchema>>;
 		},
-	): Promise<Packed<'Notification'>> {
+	): Promise<z.infer<typeof NotificationSchema>> {
 		const notification = src;
 		const noteIfNeed = NOTE_REQUIRED_GROUPED_NOTIFICATION_TYPES.has(notification.type) && 'noteId' in notification
 			? (

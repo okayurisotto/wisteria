@@ -7,12 +7,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { RenoteMutingsRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiRenoteMuting } from '@/models/RenoteMuting.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
+import type { z } from 'zod';
+import type { RenoteMutingSchema } from '@/models/zod/renote-muting.js';
 
 @Injectable()
 export class RenoteMutingEntityService {
@@ -27,7 +27,7 @@ export class RenoteMutingEntityService {
 	public async pack(
 		src: MiRenoteMuting['id'] | MiRenoteMuting,
 		me?: { id: MiUser['id'] } | null | undefined,
-	): Promise<Packed<'RenoteMuting'>> {
+	): Promise<z.infer<typeof RenoteMutingSchema>> {
 		const muting = typeof src === 'object' ? src : await this.renoteMutingsRepository.findOneByOrFail({ id: src });
 
 		return await awaitAll({

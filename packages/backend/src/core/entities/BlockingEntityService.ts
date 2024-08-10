@@ -7,11 +7,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { BlockingsRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { Packed } from '@/misc/json-schema.js';
 import type { MiBlocking } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
+import type { z } from 'zod';
+import type { BlockingSchema } from '@/models/zod/blocking.js';
 
 @Injectable()
 export class BlockingEntityService {
@@ -26,7 +27,7 @@ export class BlockingEntityService {
 	public async pack(
 		src: MiBlocking['id'] | MiBlocking,
 		me?: { id: MiUser['id'] } | null | undefined,
-	): Promise<Packed<'Blocking'>> {
+	): Promise<z.infer<typeof BlockingSchema>> {
 		const blocking = typeof src === 'object' ? src : await this.blockingsRepository.findOneByOrFail({ id: src });
 
 		return await awaitAll({

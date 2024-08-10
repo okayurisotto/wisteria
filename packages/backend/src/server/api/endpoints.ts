@@ -4,7 +4,6 @@
  */
 
 import type { permissions } from 'misskey-js';
-import type { KeyOf } from '@/misc/json-schema.js';
 
 import * as ep___admin_meta from './endpoints/admin/meta.js';
 import * as ep___admin_abuseUserReports from './endpoints/admin/abuse-user-reports.js';
@@ -374,6 +373,7 @@ import * as ep___reversi_showGame from './endpoints/reversi/show-game.js';
 import * as ep___reversi_surrender from './endpoints/reversi/surrender.js';
 import * as ep___reversi_verify from './endpoints/reversi/verify.js';
 import type { z } from 'zod';
+import type { RolePoliciesSchema } from '@/models/zod/role.js';
 
 const eps = [
 	['admin/meta', ep___admin_meta],
@@ -776,7 +776,7 @@ interface IEndpointMetaBase {
 	 */
 	readonly requireAdmin?: boolean;
 
-	readonly requireRolePolicy?: KeyOf<'RolePolicies'>;
+	readonly requireRolePolicy?: keyof z.infer<typeof RolePoliciesSchema>;
 
 	/**
 	 * 引っ越し済みのユーザーによるリクエストを禁止するか

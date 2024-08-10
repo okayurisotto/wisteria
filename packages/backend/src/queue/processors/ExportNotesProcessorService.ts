@@ -15,11 +15,12 @@ import { createTemp } from '@/misc/create-temp.js';
 import type { MiPoll } from '@/models/Poll.js';
 import type { MiNote } from '@/models/Note.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
-import type { Packed } from '@/misc/json-schema.js';
 import { IdService } from '@/core/IdService.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbJobDataWithUser } from '../types.js';
+import type { z } from 'zod';
+import type { DriveFileSchema } from '@/models/zod/drive-file.js';
 
 @Injectable()
 export class ExportNotesProcessorService {
@@ -129,7 +130,7 @@ export class ExportNotesProcessorService {
 		}
 	}
 
-	private serialize(note: MiNote, poll: MiPoll | null = null, files: Packed<'DriveFile'>[]): Record<string, unknown> {
+	private serialize(note: MiNote, poll: MiPoll | null = null, files: z.infer<typeof DriveFileSchema>[]): Record<string, unknown> {
 		return {
 			id: note.id,
 			text: note.text,

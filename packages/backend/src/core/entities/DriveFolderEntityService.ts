@@ -7,10 +7,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { DriveFilesRepository, DriveFoldersRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/Blocking.js';
 import type { MiDriveFolder } from '@/models/DriveFolder.js';
 import { IdService } from '@/core/IdService.js';
+import type { z } from 'zod';
+import type { DriveFolderSchema } from '@/models/zod/drive-folder';
 
 @Injectable()
 export class DriveFolderEntityService {
@@ -29,7 +29,7 @@ export class DriveFolderEntityService {
 		options?: {
 			detail: boolean;
 		},
-	): Promise<Packed<'DriveFolder'>> {
+	): Promise<z.infer<typeof DriveFolderSchema>> {
 		const opts = Object.assign({
 			detail: false,
 		}, options);

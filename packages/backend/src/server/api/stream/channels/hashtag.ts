@@ -6,9 +6,10 @@
 import { Injectable } from '@nestjs/common';
 import { normalizeForSearch } from '@/misc/normalize-for-search.js';
 import { isUserRelated } from '@/misc/is-user-related.js';
-import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { type MiChannelService, Channel } from '../channel.js';
+import type { z } from 'zod';
+import type { NoteSchema } from '@/models/zod/note.js';
 
 class HashtagChannel extends Channel {
 	public readonly chName = 'hashtag';
@@ -35,7 +36,7 @@ class HashtagChannel extends Channel {
 		this.subscriber.on('notesStream', this.onNote);
 	}
 
-	private readonly onNote = async (note: Packed<'Note'>) => {
+	private readonly onNote = async (note: z.infer<typeof NoteSchema>) => {
 		const noteTags = note.tags ? note.tags.map((t: string) => t.toLowerCase()) : [];
 		const matched = this.q.some(tags => tags.every(tag => noteTags.includes(normalizeForSearch(tag))));
 		if (!matched) return;

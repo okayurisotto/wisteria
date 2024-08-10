@@ -6,7 +6,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { NoteReactionsRepository } from '@/models/_.js';
-import type { Packed } from '@/misc/json-schema.js';
 import { IdService } from '@/core/IdService.js';
 import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
@@ -14,6 +13,8 @@ import type { MiNoteReaction } from '@/models/NoteReaction.js';
 import { UserEntityService } from './UserEntityService.js';
 import { NoteEntityService } from './NoteEntityService.js';
 import { LegacyReactionConvertService } from '../LegacyReactionConvertService copy.js';
+import type { z } from 'zod';
+import type { NoteReactionSchema } from '@/models/zod/note-reaction.js';
 
 @Injectable()
 export class NoteReactionEntityService {
@@ -33,7 +34,7 @@ export class NoteReactionEntityService {
 		options?: {
 			withNote: boolean;
 		},
-	): Promise<Packed<'NoteReaction'>> {
+	): Promise<z.infer<typeof NoteReactionSchema>> {
 		const opts = Object.assign({
 			withNote: false,
 		}, options);

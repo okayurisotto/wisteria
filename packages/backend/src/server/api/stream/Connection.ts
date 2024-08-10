@@ -6,7 +6,6 @@
 import type * as WebSocket from 'ws';
 import type { MiUser } from '@/models/User.js';
 import type { MiAccessToken } from '@/models/AccessToken.js';
-import type { Packed } from '@/misc/json-schema.js';
 import type { NoteReadService } from '@/core/NoteReadService.js';
 import type { NotificationService } from '@/core/NotificationService.js';
 import type { BlockingsRepository, ChannelFollowingsRepository, FollowingsRepository, MiFollowing, MiUserProfile, MutingsRepository, RenoteMutingsRepository, UserProfilesRepository } from '@/models/_.js';
@@ -14,6 +13,8 @@ import type { StreamEventEmitter, GlobalEvents } from '@/core/GlobalEventService
 import type { ChannelsService } from './ChannelsService.js';
 import type { EventEmitter } from 'events';
 import type { Channel } from './channel.js';
+import type { z } from 'zod';
+import type { NoteSchema } from '@/models/zod/note.js';
 
 /**
  * Main stream connection
@@ -25,7 +26,7 @@ export class Connection {
 	public subscriber: StreamEventEmitter;
 	private channels: Channel[] = [];
 	private subscribingNotes: any = {};
-	private cachedNotes: Packed<'Note'>[] = [];
+	private cachedNotes: z.infer<typeof NoteSchema>[] = [];
 	public userProfile: MiUserProfile | null = null;
 	public following: Record<string, Pick<MiFollowing, 'withReplies'> | undefined> = {};
 	public followingChannels: Set<string> = new Set();
@@ -144,8 +145,8 @@ export class Connection {
 		this.sendMessageToWs(data.type, data.body);
 	}
 
-	public cacheNote(note: Packed<'Note'>) {
-		const add = (note: Packed<'Note'>) => {
+	public cacheNote(note: z.infer<typeof NoteSchema>) {
+		const add = (note: z.infer<typeof NoteSchema>) => {
 			const existIndex = this.cachedNotes.findIndex(n => n.id === note.id);
 			if (existIndex > -1) {
 				this.cachedNotes[existIndex] = note;

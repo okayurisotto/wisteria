@@ -3,13 +3,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { Packed } from './json-schema.js';
+import type { z } from 'zod';
+import type { NoteSchema } from '@/models/zod/note.js';
 
 /**
  * 投稿を表す文字列を取得します。
  * @param {*} note (packされた)投稿
  */
-export const getNoteSummary = (note: Packed<'Note'>): string => {
+export const getNoteSummary = (note: z.infer<typeof NoteSchema>): string => {
 	if (note.deletedAt) {
 		return '(❌⛔)';
 	}

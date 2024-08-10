@@ -6,10 +6,11 @@
 import { Injectable } from '@nestjs/common';
 import { isUserRelated } from '@/misc/is-user-related.js';
 import { isInstanceMuted } from '@/misc/is-instance-muted.js';
-import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { type MiChannelService, Channel } from '../channel.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
+import type { z } from 'zod';
+import type { NoteSchema } from '@/models/zod/note.js';
 
 class HybridTimelineChannel extends Channel {
 	public readonly chName = 'hybridTimeline';
@@ -43,7 +44,7 @@ class HybridTimelineChannel extends Channel {
 		this.subscriber.on('notesStream', this.onNote);
 	}
 
-	private readonly onNote = async (note: Packed<'Note'>) => {
+	private readonly onNote = async (note: z.infer<typeof NoteSchema>) => {
 		const isMe = this.user!.id === note.userId;
 
 		if (this.withFiles && (note.fileIds == null || note.fileIds.length === 0)) return;

@@ -7,12 +7,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { FlashsRepository, FlashLikesRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiFlash } from '@/models/Flash.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
+import type { z } from 'zod';
+import type { FlashSchema } from '@/models/zod/flash.js';
 
 @Injectable()
 export class FlashEntityService {
@@ -30,7 +30,7 @@ export class FlashEntityService {
 	public async pack(
 		src: MiFlash['id'] | MiFlash,
 		me?: { id: MiUser['id'] } | null | undefined,
-	): Promise<Packed<'Flash'>> {
+	): Promise<z.infer<typeof FlashSchema>> {
 		const meId = me ? me.id : null;
 		const flash = typeof src === 'object' ? src : await this.flashsRepository.findOneByOrFail({ id: src });
 

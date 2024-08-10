@@ -8,10 +8,11 @@ import { Brackets } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { MiUser } from '@/models/User.js';
 import type { AnnouncementReadsRepository, AnnouncementsRepository, MiAnnouncement, MiAnnouncementRead, UsersRepository } from '@/models/_.js';
-import type { Packed } from '@/misc/json-schema.js';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
+import type { z } from 'zod';
+import type { AnnouncementSchema } from '@/models/zod/announcement';
 
 @Injectable()
 export class AnnouncementService {
@@ -59,7 +60,7 @@ export class AnnouncementService {
 		return q.getMany();
 	}
 
-	public async create(values: Partial<MiAnnouncement>, moderator?: MiUser): Promise<{ raw: MiAnnouncement; packed: Packed<'Announcement'> }> {
+	public async create(values: Partial<MiAnnouncement>, moderator?: MiUser): Promise<{ raw: MiAnnouncement; packed: z.infer<typeof AnnouncementSchema> }> {
 		const announcement = await this.announcementsRepository.insert({
 			id: this.idService.gen(),
 			updatedAt: null,
@@ -191,7 +192,7 @@ export class AnnouncementService {
 		options?: {
 			reads?: MiAnnouncementRead[];
 		},
-	): Promise<Packed<'Announcement'>[]> {
+	): Promise<z.infer<typeof AnnouncementSchema>[]> {
 		const reads = me ? (options?.reads ?? await this.getReads(me.id)) : [];
 		return announcements.map(announcement => ({
 			id: announcement.id,

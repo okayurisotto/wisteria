@@ -6,11 +6,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { MiUserListMembership, UserListMembershipsRepository, UserListsRepository } from '@/models/_.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/Blocking.js';
 import type { MiUserList } from '@/models/UserList.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
+import type { z } from 'zod';
+import type { UserListSchema } from '@/models/zod/user-list.js';
 
 @Injectable()
 export class UserListEntityService {
@@ -27,7 +27,7 @@ export class UserListEntityService {
 
 	public async pack(
 		src: MiUserList['id'] | MiUserList,
-	): Promise<Packed<'UserList'>> {
+	): Promise<z.infer<typeof UserListSchema>> {
 		const userList = typeof src === 'object' ? src : await this.userListsRepository.findOneByOrFail({ id: src });
 
 		const users = await this.userListMembershipsRepository.findBy({

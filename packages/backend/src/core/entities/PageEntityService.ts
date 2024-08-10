@@ -7,14 +7,14 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { DriveFilesRepository, PagesRepository, PageLikesRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiPage } from '@/models/Page.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 import { DriveFileEntityService } from './DriveFileEntityService.js';
+import type { z } from 'zod';
+import type { PageSchema } from '@/models/zod/page.js';
 
 @Injectable()
 export class PageEntityService {
@@ -36,7 +36,7 @@ export class PageEntityService {
 	public async pack(
 		src: MiPage['id'] | MiPage,
 		me?: { id: MiUser['id'] } | null | undefined,
-	): Promise<Packed<'Page'>> {
+	): Promise<z.infer<typeof PageSchema>> {
 		const meId = me ? me.id : null;
 		const page = typeof src === 'object' ? src : await this.pagesRepository.findOneByOrFail({ id: src });
 

@@ -7,12 +7,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { FollowingsRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiFollowing } from '@/models/Following.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
+import type { z } from 'zod';
+import type { FollowingSchema } from '@/models/zod/following.js';
 
 type LocalFollowerFollowing = MiFollowing & {
 	followerHost: null;
@@ -71,7 +71,7 @@ export class FollowingEntityService {
 			populateFollowee?: boolean;
 			populateFollower?: boolean;
 		},
-	): Promise<Packed<'Following'>> {
+	): Promise<z.infer<typeof FollowingSchema>> {
 		const following = typeof src === 'object' ? src : await this.followingsRepository.findOneByOrFail({ id: src });
 
 		if (opts == null) opts = {};

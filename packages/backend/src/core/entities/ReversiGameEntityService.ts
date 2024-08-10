@@ -7,11 +7,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { ReversiGamesRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/Blocking.js';
 import type { MiReversiGame } from '@/models/ReversiGame.js';
 import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
+import type { z } from 'zod';
+import type { ReversiGameDetailedSchema, ReversiGameLiteSchema } from '@/models/zod/reversi-game.js';
 
 @Injectable()
 export class ReversiGameEntityService {
@@ -25,7 +25,7 @@ export class ReversiGameEntityService {
 
 	public async packDetail(
 		src: MiReversiGame['id'] | MiReversiGame,
-	): Promise<Packed<'ReversiGameDetailed'>> {
+	): Promise<z.infer<typeof ReversiGameDetailedSchema>> {
 		const game = typeof src === 'object' ? src : await this.reversiGamesRepository.findOneByOrFail({ id: src });
 
 		const users = await Promise.all([
@@ -72,7 +72,7 @@ export class ReversiGameEntityService {
 
 	public async packLite(
 		src: MiReversiGame['id'] | MiReversiGame,
-	): Promise<Packed<'ReversiGameLite'>> {
+	): Promise<z.infer<typeof ReversiGameLiteSchema>> {
 		const game = typeof src === 'object' ? src : await this.reversiGamesRepository.findOneByOrFail({ id: src });
 
 		const users = await Promise.all([

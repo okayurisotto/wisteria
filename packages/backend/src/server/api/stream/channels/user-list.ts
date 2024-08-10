@@ -6,11 +6,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { MiUserListMembership, UserListMembershipsRepository, UserListsRepository } from '@/models/_.js';
 import { isUserRelated } from '@/misc/is-user-related.js';
-import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { isInstanceMuted } from '@/misc/is-instance-muted.js';
 import { type MiChannelService, Channel } from '../channel.js';
+import type { z } from 'zod';
+import type { NoteSchema } from '@/models/zod/note.js';
 
 class UserListChannel extends Channel {
 	public readonly chName = 'userList';
@@ -75,7 +76,7 @@ class UserListChannel extends Channel {
 		this.membershipsMap = membershipsMap;
 	};
 
-	private readonly onNote = async (note: Packed<'Note'>) => {
+	private readonly onNote = async (note: z.infer<typeof NoteSchema>) => {
 		const isMe = this.user!.id === note.userId;
 
 		// チャンネル投稿は無視する

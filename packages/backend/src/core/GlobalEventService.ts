@@ -17,21 +17,30 @@ import type { MiSignin } from '@/models/Signin.js';
 import type { MiPage } from '@/models/Page.js';
 import type { MiWebhook } from '@/models/Webhook.js';
 import { MiReversiGame, MiRole } from '@/models/_.js';
-import type { Packed } from '@/misc/json-schema.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import type { Serialized } from '@/types.js';
 import type Emitter from 'strict-event-emitter-types';
 import type { EventEmitter } from 'events';
 import type { UnionToIntersection, ValueOf } from 'type-fest';
+import type { z } from 'zod';
+import type { AnnouncementSchema } from '@/models/zod/announcement';
+import type { DriveFileSchema } from '@/models/zod/drive-file';
+import type { DriveFolderSchema } from '@/models/zod/drive-folder';
+import type { EmojiDetailedSchema } from '@/models/zod/emoji';
+import type { NoteSchema } from '@/models/zod/note';
+import type { NotificationSchema } from '@/models/zod/notification';
+import type { ReversiGameDetailedSchema } from '@/models/zod/reversi-game';
+import type { UserDetailedNotMeSchema, MeDetailedSchema, UserDetailedSchema, UserSchema } from '@/models/zod/user';
+import type { UserLiteSchema } from '@/models/zod/user-lite';
 
 // #region Stream type-body definitions
 export interface BroadcastTypes {
 	emojiAdded: {
-		emoji: Packed<'EmojiDetailed'>;
+		emoji: z.infer<typeof EmojiDetailedSchema>;
 	};
 	emojiUpdated: {
-		emojis: Packed<'EmojiDetailed'>[];
+		emojis: z.infer<typeof EmojiDetailedSchema>[];
 	};
 	emojiDeleted: {
 		emojis: {
@@ -41,32 +50,32 @@ export interface BroadcastTypes {
 		}[];
 	};
 	announcementCreated: {
-		announcement: Packed<'Announcement'>;
+		announcement: z.infer<typeof AnnouncementSchema>;
 	};
 }
 
 export interface MainEventTypes {
-	notification: Packed<'Notification'>;
-	mention: Packed<'Note'>;
-	reply: Packed<'Note'>;
-	renote: Packed<'Note'>;
-	follow: Packed<'UserDetailedNotMe'>;
-	followed: Packed<'UserLite'>;
-	unfollow: Packed<'UserDetailedNotMe'>;
-	meUpdated: Packed<'MeDetailed'>;
+	notification: z.infer<typeof NotificationSchema>;
+	mention: z.infer<typeof NoteSchema>;
+	reply: z.infer<typeof NoteSchema>;
+	renote: z.infer<typeof NoteSchema>;
+	follow: z.infer<typeof UserDetailedNotMeSchema>;
+	followed: z.infer<typeof UserLiteSchema>;
+	unfollow: z.infer<typeof UserDetailedNotMeSchema>;
+	meUpdated: z.infer<typeof MeDetailedSchema>;
 	pageEvent: {
 		pageId: MiPage['id'];
 		event: string;
 		var: any;
 		userId: MiUser['id'];
-		user: Packed<'UserDetailed'>;
+		user: z.infer<typeof UserDetailedSchema>;
 	};
 	urlUploadFinished: {
 		marker?: string | null;
-		file: Packed<'DriveFile'>;
+		file: z.infer<typeof DriveFileSchema>;
 	};
 	readAllNotifications: undefined;
-	unreadNotification: Packed<'Notification'>;
+	unreadNotification: z.infer<typeof NotificationSchema>;
 	unreadMention: MiNote['id'];
 	readAllUnreadMentions: undefined;
 	unreadSpecifiedNote: MiNote['id'];
@@ -87,21 +96,21 @@ export interface MainEventTypes {
 		key: string;
 		value: any | null;
 	};
-	driveFileCreated: Packed<'DriveFile'>;
+	driveFileCreated: z.infer<typeof DriveFileSchema>;
 	readAntenna: MiAntenna;
-	receiveFollowRequest: Packed<'UserLite'>;
+	receiveFollowRequest: z.infer<typeof UserLiteSchema>;
 	announcementCreated: {
-		announcement: Packed<'Announcement'>;
+		announcement: z.infer<typeof AnnouncementSchema>;
 	};
 }
 
 export interface DriveEventTypes {
-	fileCreated: Packed<'DriveFile'>;
+	fileCreated: z.infer<typeof DriveFileSchema>;
 	fileDeleted: MiDriveFile['id'];
-	fileUpdated: Packed<'DriveFile'>;
-	folderCreated: Packed<'DriveFolder'>;
+	fileUpdated: z.infer<typeof DriveFileSchema>;
+	folderCreated: z.infer<typeof DriveFolderSchema>;
 	folderDeleted: MiDriveFolder['id'];
-	folderUpdated: Packed<'DriveFolder'>;
+	folderUpdated: z.infer<typeof DriveFolderSchema>;
 }
 
 export interface NoteEventTypes {
@@ -137,8 +146,8 @@ type NoteStreamEventTypes = {
 };
 
 export interface UserListEventTypes {
-	userAdded: Packed<'UserLite'>;
-	userRemoved: Packed<'UserLite'>;
+	userAdded: z.infer<typeof UserLiteSchema>;
+	userRemoved: z.infer<typeof UserLiteSchema>;
 }
 
 export interface AntennaEventTypes {
@@ -146,7 +155,7 @@ export interface AntennaEventTypes {
 }
 
 export interface RoleTimelineEventTypes {
-	note: Packed<'Note'>;
+	note: z.infer<typeof NoteSchema>;
 }
 
 export interface AdminEventTypes {
@@ -160,10 +169,10 @@ export interface AdminEventTypes {
 
 export interface ReversiEventTypes {
 	matched: {
-		game: Packed<'ReversiGameDetailed'>;
+		game: z.infer<typeof ReversiGameDetailedSchema>;
 	};
 	invited: {
-		user: Packed<'User'>;
+		user: z.infer<typeof UserSchema>;
 	};
 }
 
@@ -179,11 +188,11 @@ export interface ReversiGameEventTypes {
 	};
 	log: Reversi.Serializer.Log & { id: string | null };
 	started: {
-		game: Packed<'ReversiGameDetailed'>;
+		game: z.infer<typeof ReversiGameDetailedSchema>;
 	};
 	ended: {
 		winnerId: MiUser['id'] | null;
-		game: Packed<'ReversiGameDetailed'>;
+		game: z.infer<typeof ReversiGameDetailedSchema>;
 	};
 	canceled: {
 		userId: MiUser['id'];
@@ -253,7 +262,7 @@ export type GlobalEvents = {
 	};
 	notes: {
 		name: 'notesStream';
-		payload: Serialized<Packed<'Note'>>;
+		payload: Serialized<z.infer<typeof NoteSchema>>;
 	};
 	reversi: {
 		name: `reversiStream:${MiUser['id']}`;
@@ -333,7 +342,7 @@ export class GlobalEventService {
 		this.publish(`roleTimelineStream:${roleId}`, type, typeof value === 'undefined' ? null : value);
 	}
 
-	public publishNotesStream(note: Packed<'Note'>): void {
+	public publishNotesStream(note: z.infer<typeof NoteSchema>): void {
 		this.publish('notesStream', null, note);
 	}
 

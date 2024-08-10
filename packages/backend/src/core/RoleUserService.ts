@@ -12,10 +12,11 @@ import { MetaService } from '@/core/MetaService.js';
 import type { MiRole, RoleCondFormulaValue } from '@/models/Role.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { IdService } from '@/core/IdService.js';
-import type { Packed } from '@/misc/json-schema.js';
 import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
+import type { z } from 'zod';
+import type { NoteSchema } from '@/models/zod/note';
 
 export type RolePolicies = {
 	gtlAvailable: boolean;
@@ -298,7 +299,7 @@ export class RoleUserService {
 		return roles.some(r => r.isAdministrator);
 	}
 
-	public async addNoteToRoleTimeline(note: Packed<'Note'>): Promise<void> {
+	public async addNoteToRoleTimeline(note: z.infer<typeof NoteSchema>): Promise<void> {
 		const roles = await this.getUserRoles(note.userId);
 
 		const redisPipeline = this.redisForTimelines.pipeline();

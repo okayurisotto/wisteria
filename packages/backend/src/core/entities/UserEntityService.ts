@@ -9,7 +9,6 @@ import Ajv from 'ajv';
 import { ModuleRef } from '@nestjs/core';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
-import type { Packed } from '@/misc/json-schema.js';
 import type { Promiseable } from '@/misc/prelude/await-all.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import { USER_ACTIVE_THRESHOLD, USER_ONLINE_THRESHOLD } from '@/const.js';
@@ -27,8 +26,18 @@ import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
 import { RoleUserService } from '../RoleUserService.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
+import type { MeDetailedSchema, UserDetailedNotMeSchema, UserDetailedSchema } from '@/models/zod/user.js';
+import type { UserLiteSchema } from '@/models/zod/user-lite.js';
+import type { z } from 'zod';
 
 const ajv = new Ajv();
+
+type Refs = {
+	MeDetailed: typeof MeDetailedSchema;
+	UserDetailedNotMe: typeof UserDetailedNotMeSchema;
+	UserDetailed: typeof UserDetailedSchema;
+	UserLite: typeof UserLiteSchema;
+};
 
 @Injectable()
 export class UserEntityService implements OnModuleInit {
@@ -262,7 +271,7 @@ export class UserEntityService implements OnModuleInit {
 			includeSecrets?: boolean;
 			userProfile?: MiUserProfile;
 		},
-	): Promise<Packed<S>> {
+	): Promise<z.infer<Refs[S]>> {
 		const opts = Object.assign({
 			schema: 'UserLite',
 			includeSecrets: false,
@@ -490,7 +499,7 @@ export class UserEntityService implements OnModuleInit {
 						withReplies: relation.following?.withReplies ?? false,
 					}
 				: {}),
-		} as Promiseable<Packed<S>>;
+		} as Promiseable<z.infer<Refs[S]>>;
 
 		return await awaitAll(packed);
 	}
@@ -502,7 +511,7 @@ export class UserEntityService implements OnModuleInit {
 			schema?: S;
 			includeSecrets?: boolean;
 		},
-	): Promise<Packed<S>[]> {
+	): Promise<z.infer<Refs[S]>[]> {
 		return Promise.all(users.map(u => this.pack(u, me, options)));
 	}
 }
