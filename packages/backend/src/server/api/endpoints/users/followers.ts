@@ -79,7 +79,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		super(meta, paramDef, async (ps, me) => {
 			const user = await this.usersRepository.findOneBy(ps.userId != null
 				? { id: ps.userId }
-				: { usernameLower: ps.username!.toLowerCase(), host: this.utilityService.toPunyNullable(ps.host) ?? IsNull() });
+				: { usernameLower: ps.username.toLowerCase(), host: this.utilityService.toPunyNullable(ps.host) ?? IsNull() });
 
 			if (user == null) {
 				throw new ApiError(meta.errors.noSuchUser);

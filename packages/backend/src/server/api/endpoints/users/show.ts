@@ -127,7 +127,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				} else {
 					const q: FindOptionsWhere<MiUser> = ps.userId != null
 						? { id: ps.userId }
-						: { usernameLower: ps.username!.toLowerCase(), host: IsNull() };
+						: { usernameLower: ps.username.toLowerCase(), host: IsNull() };
 
 					user = await this.usersRepository.findOneBy(q);
 				}
