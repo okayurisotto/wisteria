@@ -8,12 +8,12 @@ import { Not, IsNull, DataSource } from 'typeorm';
 import type { MiUser } from '@/models/User.js';
 import { AppLockService } from '@/core/AppLockService.js';
 import { DI } from '@/di-symbols.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import type { FollowingsRepository } from '@/models/_.js';
 import Chart from '../core.js';
 import { ChartLoggerService } from '../ChartLoggerService.js';
 import { name, schema } from './entities/per-user-following.js';
 import type { KVs } from '../core.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
 
 /**
  * ユーザーごとのフォローに関するチャート
@@ -28,7 +28,6 @@ export default class PerUserFollowingChart extends Chart<typeof schema> {
 		private readonly followingsRepository: FollowingsRepository,
 
 		appLockService: AppLockService,
-		private readonly userEntityService: UserEntityService,
 		chartLoggerService: ChartLoggerService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema, true);
@@ -60,8 +59,8 @@ export default class PerUserFollowingChart extends Chart<typeof schema> {
 	}
 
 	public async update(follower: { id: MiUser['id']; host: MiUser['host'] }, followee: { id: MiUser['id']; host: MiUser['host'] }, isFollow: boolean): Promise<void> {
-		const prefixFollower = this.userEntityService.isLocalUser(follower) ? 'local' : 'remote';
-		const prefixFollowee = this.userEntityService.isLocalUser(followee) ? 'local' : 'remote';
+		const prefixFollower = isLocalUser(follower) ? 'local' : 'remote';
+		const prefixFollowee = isLocalUser(followee) ? 'local' : 'remote';
 
 		this.commit({
 			[`${prefixFollower}.followings.total`]: isFollow ? 1 : -1,

@@ -8,12 +8,12 @@ import { Not, IsNull, DataSource } from 'typeorm';
 import type { MiUser } from '@/models/User.js';
 import { AppLockService } from '@/core/AppLockService.js';
 import { DI } from '@/di-symbols.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import type { UsersRepository } from '@/models/_.js';
 import Chart from '../core.js';
 import { ChartLoggerService } from '../ChartLoggerService.js';
 import { name, schema } from './entities/users.js';
 import type { KVs } from '../core.js';
+import { isLocalUser } from '@/misc/isLocalUser.js';
 
 /**
  * ユーザー数に関するチャート
@@ -28,7 +28,6 @@ export default class UsersChart extends Chart<typeof schema> {
 		private readonly usersRepository: UsersRepository,
 
 		appLockService: AppLockService,
-		private readonly userEntityService: UserEntityService,
 		chartLoggerService: ChartLoggerService,
 	) {
 		super(db, k => appLockService.getChartInsertLock(k), chartLoggerService.logger, name, schema);
@@ -51,7 +50,7 @@ export default class UsersChart extends Chart<typeof schema> {
 	}
 
 	public async update(user: { id: MiUser['id']; host: MiUser['host'] }, isAdditional: boolean): Promise<void> {
-		const prefix = this.userEntityService.isLocalUser(user) ? 'local' : 'remote';
+		const prefix = isLocalUser(user) ? 'local' : 'remote';
 
 		await this.commit({
 			[`${prefix}.total`]: isAdditional ? 1 : -1,
