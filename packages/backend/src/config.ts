@@ -17,6 +17,7 @@ const metaSchema = z.object({
 const frontendManifestSchema = z.object({
 	'src/_boot_.ts': z.object({
 		file: z.string(),
+		css: z.string().array().optional(),
 	}),
 });
 
