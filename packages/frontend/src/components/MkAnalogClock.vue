@@ -7,86 +7,78 @@ SPDX-License-Identifier: AGPL-3.0-only
 <svg :class="$style.root" viewBox="0 0 10 10" preserveAspectRatio="none">
 	<template v-if="props.graduations === 'dots'">
 		<circle
-			v-for="(angle, i) in graduationsMajor"
-			:cx="5 + (Math.sin(angle) * (5 - graduationsPadding))"
-			:cy="5 - (Math.cos(angle) * (5 - graduationsPadding))"
+			v-for="(turn, i) in graduationsMajor"
+			:cx="5 + (Math.sin(2 * Math.PI * turn) * (5 - graduationsPadding))"
+			:cy="5 - (Math.cos(2 * Math.PI * turn) * (5 - graduationsPadding))"
 			:r="0.125"
 			:fill="(props.twentyfour ? h : h % 12) === i ? nowColor : majorGraduationColor"
-			:opacity="!props.fadeGraduations || (props.twentyfour ? h : h % 12) === i ? 1 : Math.max(0, 1 - (angleDiff(hAngle, angle) / Math.PI) - numbersOpacityFactor)"
+			:opacity="!props.fadeGraduations || (props.twentyfour ? h : h % 12) === i ? 1 : Math.max(0, 1 - 2 * turnDiff(hTurn, turn) - numbersOpacityFactor)"
 		/>
 	</template>
 	<template v-else-if="props.graduations === 'numbers'">
 		<text
-			v-for="(angle, i) in texts"
-			:x="5 + (Math.sin(angle) * (5 - textsPadding))"
-			:y="5 - (Math.cos(angle) * (5 - textsPadding))"
+			v-for="(turn, i) in texts"
+			:x="5 + (Math.sin(2 * Math.PI * turn) * (5 - textsPadding))"
+			:y="5 - (Math.cos(2 * Math.PI * turn) * (5 - textsPadding))"
 			text-anchor="middle"
 			dominant-baseline="middle"
 			:font-size="(props.twentyfour ? h : h % 12) === i ? 1 : 0.7"
 			:font-weight="(props.twentyfour ? h : h % 12) === i ? 'bold' : 'normal'"
 			:fill="(props.twentyfour ? h : h % 12) === i ? nowColor : 'currentColor'"
-			:opacity="!props.fadeGraduations || (props.twentyfour ? h : h % 12) === i ? 1 : Math.max(0, 1 - (angleDiff(hAngle, angle) / Math.PI) - numbersOpacityFactor)"
+			:opacity="!props.fadeGraduations || (props.twentyfour ? h : h % 12) === i ? 1 : Math.max(0, 1 - 2 * turnDiff(hTurn, turn) - numbersOpacityFactor)"
 		>
 			{{ i === 0 ? (props.twentyfour ? '24' : '12') : i }}
 		</text>
 	</template>
 
-	<!--
-	<line
-		:x1="5 - (Math.sin(sAngle) * (sHandLengthRatio * handsTailLength))"
-		:y1="5 + (Math.cos(sAngle) * (sHandLengthRatio * handsTailLength))"
-		:x2="5 + (Math.sin(sAngle) * ((sHandLengthRatio * 5) - handsPadding))"
-		:y2="5 - (Math.cos(sAngle) * ((sHandLengthRatio * 5) - handsPadding))"
-		:stroke="sHandColor"
-		:stroke-width="thickness / 2"
-		stroke-linecap="round"
-	/>
-	-->
-
 	<line
 		ref="sLine"
-		:class="[$style.s, { [$style.animate]: !disableSAnimate && sAnimation !== 'none', [$style.elastic]: sAnimation === 'elastic', [$style.easeOut]: sAnimation === 'easeOut' }]"
-		:x1="5 - (0 * (sHandLengthRatio * handsTailLength))"
-		:y1="5 + (1 * (sHandLengthRatio * handsTailLength))"
-		:x2="5 + (0 * ((sHandLengthRatio * 5) - handsPadding))"
-		:y2="5 - (1 * ((sHandLengthRatio * 5) - handsPadding))"
+		:class="[$style.line, { [$style.animate]: !disableSAnimate && sAnimation !== 'none', [$style.elastic]: sAnimation === 'elastic', [$style.easeOut]: sAnimation === 'easeOut' }]"
+		:x1="5"
+		:y1="5 + (sHandLengthRatio * handsTailLength)"
+		:x2="5"
+		:y2="5 - ((sHandLengthRatio * 5) - handsPadding)"
 		:stroke="sHandColor"
 		:stroke-width="thickness / 2"
-		:style="`transform: rotateZ(${sAngle}rad)`"
+		:style="`rotate: z ${sTurn}turn`"
 		stroke-linecap="round"
 	/>
 
 	<line
-		:x1="5 - (Math.sin(mAngle) * (mHandLengthRatio * handsTailLength))"
-		:y1="5 + (Math.cos(mAngle) * (mHandLengthRatio * handsTailLength))"
-		:x2="5 + (Math.sin(mAngle) * ((mHandLengthRatio * 5) - handsPadding))"
-		:y2="5 - (Math.cos(mAngle) * ((mHandLengthRatio * 5) - handsPadding))"
+		:class="[$style.line]"
+		:x1="5"
+		:y1="5 + (mHandLengthRatio * handsTailLength)"
+		:x2="5"
+		:y2="5 - ((mHandLengthRatio * 5) - handsPadding)"
 		:stroke="mHandColor"
 		:stroke-width="thickness"
+		:style="`rotate: z ${mTurn}turn`"
 		stroke-linecap="round"
 	/>
 
 	<line
-		:x1="5 - (Math.sin(hAngle) * (hHandLengthRatio * handsTailLength))"
-		:y1="5 + (Math.cos(hAngle) * (hHandLengthRatio * handsTailLength))"
-		:x2="5 + (Math.sin(hAngle) * ((hHandLengthRatio * 5) - handsPadding))"
-		:y2="5 - (Math.cos(hAngle) * ((hHandLengthRatio * 5) - handsPadding))"
+		:class="[$style.line]"
+		:x1="5"
+		:y1="5 + (hHandLengthRatio * handsTailLength)"
+		:x2="5"
+		:y2="5 - ((hHandLengthRatio * 5) - handsPadding)"
 		:stroke="hHandColor"
 		:stroke-width="thickness"
+		:style="`rotate: z ${hTurn}turn`"
 		stroke-linecap="round"
 	/>
 </svg>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
+import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
 import tinycolor from 'tinycolor2';
 import { globalEvents } from '@/events.js';
 
 // https://stackoverflow.com/questions/1878907/how-can-i-find-the-difference-between-two-angles
-const angleDiff = (a: number, b: number) => {
+const turnDiff = (a: number, b: number) => {
 	const x = Math.abs(a - b);
-	return Math.abs((x + Math.PI) % (Math.PI * 2) - Math.PI);
+	return Math.abs((x + 0.5) % 1 - 0.5);
 };
 
 const graduationsPadding = 0.5;
@@ -118,22 +110,16 @@ const props = withDefaults(defineProps<{
 });
 
 const graduationsMajor = computed(() => {
-	const angles: number[] = [];
 	const times = props.twentyfour ? 24 : 12;
-	for (let i = 0; i < times; i++) {
-		const angle = Math.PI * i / (times / 2);
-		angles.push(angle);
-	}
-	return angles;
+	return [...new Array<number>(times)].map((_, i) => {
+		return i / times;
+	});
 });
 const texts = computed(() => {
-	const angles: number[] = [];
 	const times = props.twentyfour ? 24 : 12;
-	for (let i = 0; i < times; i++) {
-		const angle = Math.PI * i / (times / 2);
-		angles.push(angle);
-	}
-	return angles;
+	return [...new Array<number>(times)].map((_, i) => {
+		return i / times;
+	});
 });
 
 const majorGraduationColor = ref<string>();
@@ -143,39 +129,44 @@ const mHandColor = ref<string>();
 const hHandColor = ref<string>();
 const nowColor = ref<string>();
 const h = ref<number>(0);
-const m = ref<number>(0);
-const s = ref<number>(0);
-const hAngle = ref<number>(0);
-const mAngle = ref<number>(0);
-const sAngle = ref<number>(0);
+const hTurn = ref<number>(0);
+const mTurn = ref<number>(0);
+const sTurn = ref<number>(0);
 const disableSAnimate = ref(false);
-let sOneRound = false;
 const sLine = ref<SVGPathElement>();
 let timer: ReturnType<typeof setInterval> | null = null;
+
+/**
+ * このアナログ時計では、「基準日時から現在日時が何秒進んでいるか」をもとに時計の針の角度を求める。
+ * そして針は求められた角度だけ、CSSによってz軸を基準に回転される。
+ * このとき、針が進むときのCSSアニメーションをうまく動かすため、角度の最大値は設けていない。
+ * （例えばもし最大値を1turnとして角度を正規化していたら、59秒から0秒へ進むときに針が逆回転してしまう。）
+ * しかし角度をある範囲に正規化しないとなると、あまりにも大きすぎる角度が使われることが起きかねない。
+ * そしてそのような極端な角度はWebブラウザでの描画処理で問題を起こすことがある。
+ * よって、角度が極端な値にならないように、そもそもの基準日時を現在日時に近づけておく必要がある。
+ * （愚直にUnixエポックを使うことはできない。）
+ * よってここでは基準日時として「このコンポーネントがマウントされた日時」を使っている。
+ * （もしこのコンポーネントがマウントされてから1ヶ月以上経過したら、環境によってはアニメーションがバグるまでに角度が大きくなるが、流石にそれは仕方ない。）
+ */
+let base = new Date();
+base.setMinutes(base.getMinutes() + base.getTimezoneOffset() + props.offset);
+
+watch(() => props.offset, () => {
+	base = new Date();
+	base.setMinutes(base.getMinutes() + base.getTimezoneOffset() + props.offset);
+});
 
 function tick() {
 	const now = props.now();
 	now.setMinutes(now.getMinutes() + now.getTimezoneOffset() + props.offset);
-	s.value = now.getSeconds();
-	m.value = now.getMinutes();
+
+	const elapsedSeconds = (now.getTime() - base.getTime()) / 1000;
+
 	h.value = now.getHours();
-	hAngle.value = Math.PI * (h.value % (props.twentyfour ? 24 : 12) + (m.value + s.value / 60) / 60) / (props.twentyfour ? 12 : 6);
-	mAngle.value = Math.PI * (m.value + s.value / 60) / 30;
-	if (sOneRound && sLine.value) { // 秒針が一周した際のアニメーションをよしなに処理する(これが無いと秒が59->0になったときに期待したアニメーションにならない)
-		sAngle.value = Math.PI * 60 / 30;
-		sLine.value.addEventListener('transitionend', () => {
-			disableSAnimate.value = true;
-			requestAnimationFrame(() => {
-				sAngle.value = 0;
-				requestAnimationFrame(() => {
-					disableSAnimate.value = false;
-				});
-			});
-		}, { once: true });
-	} else {
-		sAngle.value = Math.PI * s.value / 30;
-	}
-	sOneRound = s.value === 59;
+
+	sTurn.value = (base.getSeconds() + elapsedSeconds) / 60;
+	mTurn.value = (base.getMinutes() + sTurn.value) / 60;
+	hTurn.value = (base.getHours() + mTurn.value) / (props.twentyfour ? 24 : 12);
 }
 
 tick();
@@ -210,16 +201,16 @@ onBeforeUnmount(() => {
 	display: block;
 }
 
-.s {
-	will-change: transform;
+.line {
+	will-change: rotate;
 	transform-origin: 50% 50%;
 
 	&.animate.elastic {
-		transition: transform .2s cubic-bezier(.4,2.08,.55,.44);
+		transition: rotate .2s cubic-bezier(.4,2.08,.55,.44);
 	}
 
 	&.animate.easeOut {
-		transition: transform .7s cubic-bezier(0,.7,.3,1);
+		transition: rotate .7s cubic-bezier(0,.7,.3,1);
 	}
 }
 </style>
