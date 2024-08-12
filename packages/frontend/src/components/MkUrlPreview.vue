@@ -45,8 +45,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 <div v-else>
 	<component :is="self ? 'MkA' : 'a'" :class="[$style.link, { [$style.compact]: compact }]" :[attr]="self ? url.substring(local.length) : url" rel="nofollow noopener" :target="target" :title="url">
-		<div v-if="thumbnail && !sensitive" :class="$style.thumbnail" :style="defaultStore.state.dataSaver.urlPreview ? '' : `background-image: url('${thumbnail}')`">
-		</div>
 		<article :class="$style.body">
 			<header :class="$style.header">
 				<h1 v-if="unknownUrl" :class="$style.title">{{ url }}</h1>
@@ -63,6 +61,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<p v-else :class="$style.siteName" :title="sitename ?? requestUrl.host">{{ sitename ?? requestUrl.host }}</p>
 			</footer>
 		</article>
+		<img
+			v-if="thumbnail && !sensitive && !defaultStore.state.dataSaver.urlPreview"
+			:class="$style.thumbnail"
+			:src="thumbnail"
+		/>
 	</component>
 	<template v-if="showActions">
 		<div v-if="tweetId" :class="$style.action">
@@ -233,12 +236,13 @@ onUnmounted(() => {
 }
 
 .link {
-	position: relative;
-	display: block;
 	font-size: 14px;
 	box-shadow: 0 0 0 1px var(--divider);
 	border-radius: 8px;
-	overflow: clip;
+	align-items: center;
+	box-sizing: border-box;
+	display: flex;
+	height: 100px;
 
 	&:hover {
 		text-decoration: none;
@@ -261,30 +265,19 @@ onUnmounted(() => {
 }
 
 .thumbnail {
-	position: absolute;
-	width: 100px;
 	height: 100%;
-	background-position: center;
-	background-size: cover;
-	background-color: var(--bg);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-
-	& + .body {
-		left: 100px;
-		width: calc(100% - 100px);
-	}
+	border-radius: 0 8px 8px 0;
+	max-width: 191px; // 1.91 : 1
+	object-fit: cover;
 }
 
 .body {
-	position: relative;
-	box-sizing: border-box;
-	padding: 16px;
-}
-
-.header {
-	margin-bottom: 8px;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	gap: 8px;
+	overflow-x: hidden;
+	padding-inline: 16px;
 }
 
 .title {
@@ -298,25 +291,19 @@ onUnmounted(() => {
 }
 
 .footer {
-	margin-top: 8px;
-	height: 16px;
+	display: flex;
+	gap: 4px;
 }
 
 .siteIcon {
-	display: inline-block;
-	width: 16px;
 	height: 16px;
-	margin-right: 4px;
-	vertical-align: top;
+	aspect-ratio: 1 / 1;
 }
 
 .siteName {
-	display: inline-block;
 	margin: 0;
 	color: var(--urlPreviewInfo);
 	font-size: 0.8em;
-	line-height: 16px;
-	vertical-align: top;
 }
 
 .action {
@@ -326,61 +313,26 @@ onUnmounted(() => {
 	margin-top: 6px;
 }
 
-@container (max-width: 400px) {
-	.link {
-		font-size: 12px;
-	}
-
-	.thumbnail {
-		height: 80px;
-	}
-
-	.body {
-		padding: 12px;
-	}
-}
-
-@container (max-width: 350px) {
+@container (max-width: 360px) {
 	.link {
 		font-size: 10px;
+		height: 75px;
 
 		&.compact {
-			> .thumbnail {
-				position: absolute;
-				width: 56px;
-				height: 100%;
-			}
-
 			> .body {
-				left: 56px;
-				width: calc(100% - 56px);
 				padding: 4px;
-
-				> .header {
-					margin-bottom: 2px;
-				}
-
-				> .footer {
-					margin-top: 2px;
-				}
+				gap: 2px;
 			}
 		}
 	}
 
 	.thumbnail {
-		height: 70px;
+		min-width: 75px;
 	}
 
 	.body {
 		padding: 8px;
-	}
-
-	.header {
-		margin-bottom: 4px;
-	}
-
-	.footer {
-		margin-top: 4px;
+		gap: 4px;
 	}
 
 	.siteIcon {
