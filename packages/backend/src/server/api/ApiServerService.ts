@@ -16,6 +16,7 @@ import { SigninApiService } from './SigninApiService.js';
 import { Hono, type MiddlewareHandler } from 'hono';
 import { cors } from 'hono/cors';
 import { bodyLimit } from 'hono/body-limit';
+import { ApiServerMetricsService } from '@/core/metrics/ApiServerMetricsService.js';
 
 @Injectable()
 export class ApiServerService {
@@ -35,6 +36,7 @@ export class ApiServerService {
 		private readonly apiCallService: ApiCallService,
 		private readonly signupApiService: SignupApiService,
 		private readonly signinApiService: SigninApiService,
+		private readonly apiServerMetricsService: ApiServerMetricsService,
 	) {}
 
 	public createServer(): Hono {
@@ -46,6 +48,21 @@ export class ApiServerService {
 		};
 
 		hono.use(cors({ origin: '*' }), disableCache);
+
+		if (this.config.prometheus !== undefined) {
+			hono.use(async (c, next) => {
+				const start = performance.now();
+				await next();
+				const end = performance.now();
+
+				this.apiServerMetricsService.onCalled(
+					c.req.method,
+					c.req.routePath,
+					c.res.status,
+					end - start,
+				);
+			});
+		}
 
 		for (const endpoint of endpoints) {
 			const ep = {

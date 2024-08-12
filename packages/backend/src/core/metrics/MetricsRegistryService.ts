@@ -2,6 +2,7 @@ import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
 import { Registry, collectDefaultMetrics } from 'prom-client';
 import type { Config } from '@/config';
 import { DI } from '@/di-symbols';
+import { ApiServerMetricsService } from './ApiServerMetricsService';
 
 @Injectable()
 export class MetricsRegistryService implements OnModuleInit {
@@ -10,6 +11,8 @@ export class MetricsRegistryService implements OnModuleInit {
 	public constructor(
 		@Inject(DI.config)
 		private readonly config: Config,
+
+		private readonly apiServerMetricsService: ApiServerMetricsService,
 	) {
 		this.registry = new Registry();
 	}
@@ -17,6 +20,7 @@ export class MetricsRegistryService implements OnModuleInit {
 	public onModuleInit(): void {
 		if (this.config.prometheus !== undefined) {
 			collectDefaultMetrics({ register: this.registry });
+			this.apiServerMetricsService.register(this.registry);
 		}
 	}
 
