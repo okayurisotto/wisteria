@@ -82,7 +82,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import tinycolor from 'tinycolor2';
 import { globalEvents } from '@/events.js';
-import { defaultIdlingRenderScheduler } from '@/scripts/idle-render.js';
 
 // https://stackoverflow.com/questions/1878907/how-can-i-find-the-difference-between-two-angles
 const angleDiff = (a: number, b: number) => {
@@ -137,7 +136,6 @@ const texts = computed(() => {
 	return angles;
 });
 
-let enabled = true;
 const majorGraduationColor = ref<string>();
 //let minorGraduationColor = $ref<string>();
 const sHandColor = ref<string>();
@@ -153,33 +151,24 @@ const sAngle = ref<number>(0);
 const disableSAnimate = ref(false);
 let sOneRound = false;
 const sLine = ref<SVGPathElement>();
+let timer: ReturnType<typeof setInterval> | null = null;
 
 function tick() {
 	const now = props.now();
 	now.setMinutes(now.getMinutes() + now.getTimezoneOffset() + props.offset);
-	const previousS = s.value;
-	const previousM = m.value;
-	const previousH = h.value;
 	s.value = now.getSeconds();
 	m.value = now.getMinutes();
 	h.value = now.getHours();
-	if (previousS === s.value && previousM === m.value && previousH === h.value) {
-		return;
-	}
 	hAngle.value = Math.PI * (h.value % (props.twentyfour ? 24 : 12) + (m.value + s.value / 60) / 60) / (props.twentyfour ? 12 : 6);
 	mAngle.value = Math.PI * (m.value + s.value / 60) / 30;
 	if (sOneRound && sLine.value) { // 秒針が一周した際のアニメーションをよしなに処理する(これが無いと秒が59->0になったときに期待したアニメーションにならない)
 		sAngle.value = Math.PI * 60 / 30;
-		defaultIdlingRenderScheduler.delete(tick);
 		sLine.value.addEventListener('transitionend', () => {
 			disableSAnimate.value = true;
 			requestAnimationFrame(() => {
 				sAngle.value = 0;
 				requestAnimationFrame(() => {
 					disableSAnimate.value = false;
-					if (enabled) {
-						defaultIdlingRenderScheduler.add(tick);
-					}
 				});
 			});
 		}, { once: true });
@@ -206,13 +195,12 @@ function calcColors() {
 calcColors();
 
 onMounted(() => {
-	defaultIdlingRenderScheduler.add(tick);
+	timer = setInterval(tick, 1000);
 	globalEvents.on('themeChanged', calcColors);
 });
 
 onBeforeUnmount(() => {
-	enabled = false;
-	defaultIdlingRenderScheduler.delete(tick);
+	if (timer !== null) clearInterval(timer);
 	globalEvents.off('themeChanged', calcColors);
 });
 </script>
