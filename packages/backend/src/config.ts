@@ -29,7 +29,7 @@ const redisConfigSchema = z.object({
 	db: z.number().optional(),
 	prefix: z.string().optional(),
 	extra: z.record(z.string(), z.unknown()).optional(),
-});
+}).strict();
 
 const configSchema = z.object({
 	url: z.string().url(),
@@ -43,7 +43,7 @@ const configSchema = z.object({
 		pass: z.string(),
 		disableCache: z.boolean().optional(),
 		extra: z.record(z.string(), z.string()).optional(),
-	}),
+	}).strict(),
 	dbReplications: z.boolean().default(false),
 	dbSlaves: z.object({
 		host: z.string(),
@@ -51,7 +51,7 @@ const configSchema = z.object({
 		db: z.string(),
 		user: z.string(),
 		pass: z.string(),
-	}).array().default([]),
+	}).strict().array().default([]),
 	redis: redisConfigSchema,
 	redisForPubsub: redisConfigSchema.optional(),
 	redisForJobQueue: redisConfigSchema.optional(),
@@ -63,7 +63,7 @@ const configSchema = z.object({
 		ssl: z.boolean().optional(),
 		index: z.string(),
 		scope: z.enum(['local', 'global']).or(z.string().array()).optional(),
-	}).optional(),
+	}).strict().optional(),
 
 	publishTarballInsteadOfProvideRepositoryUrl: z.boolean().default(false),
 
