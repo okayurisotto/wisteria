@@ -16,8 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, watch } from 'vue';
-import { defaultIdlingRenderScheduler } from '@/scripts/idle-render.js';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = withDefaults(defineProps<{
 	showS?: boolean;
@@ -36,6 +35,7 @@ const mm = ref('');
 const ss = ref('');
 const ms = ref('');
 const showColon = ref(false);
+const interval = computed(() => props.showMs ? 10 : 1000);
 let prevSec: number | null = null;
 
 watch(showColon, (v) => {
@@ -59,13 +59,24 @@ const tick = (): void => {
 
 tick();
 
+// #region timer
+
+let timer: ReturnType<typeof setInterval> | null = null;
+
+watch(interval, () => {
+	if (timer !== null) clearInterval(timer);
+	timer = setInterval(tick, interval.value);
+});
+
 onMounted(() => {
-	defaultIdlingRenderScheduler.add(tick);
+	timer = setInterval(tick, interval.value);
 });
 
 onUnmounted(() => {
-	defaultIdlingRenderScheduler.delete(tick);
+	if (timer !== null) clearInterval(timer);
 });
+
+// #endregion
 </script>
 
 <style lang="scss" module>
