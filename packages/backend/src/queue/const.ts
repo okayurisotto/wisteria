@@ -23,6 +23,6 @@ export function baseQueueOptions(config: Config, queueName: ValueOf<typeof QUEUE
 
 	return {
 		connection,
-		prefix: `${keyPrefix}:queue:${queueName}`,
+		prefix: `${keyPrefix}queue:${queueName}`,
 	};
 }
