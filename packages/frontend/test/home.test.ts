@@ -11,12 +11,13 @@ import { directives } from '@/directives/index.js';
 import { components } from '@/components/index.js';
 import XHome from '@/pages/user/home.vue';
 import 'intersection-observer';
+import { ref } from 'vue';
 
 describe('XHome', () => {
 	const renderHome = (user: Partial<Misskey.entities.UserDetailed>): RenderResult => {
 		return render(XHome, {
 			props: { user, disableNotes: true },
-			global: { directives, components },
+			global: { directives, components, provide: { now: ref(new Date()) } },
 		});
 	};
 

@@ -14,7 +14,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import isChromatic from 'chromatic/isChromatic';
-import { onMounted, onUnmounted, ref, computed } from 'vue';
+import { computed, inject, Ref } from 'vue';
 import { i18n } from '@/i18n.js';
 import { dateTimeFormat } from '@/scripts/intl-const.js';
 
@@ -46,9 +46,13 @@ const _time = props.time == null ? NaN : getDateSafe(props.time).getTime();
 const invalid = Number.isNaN(_time);
 const absolute = !invalid ? dateTimeFormat.format(_time) : i18n.ts._ago.invalid;
 
-// eslint-disable-next-line vue/no-setup-props-destructure
-const now = ref((props.origin ?? new Date()).getTime());
-const ago = computed(() => (now.value - _time) / 1000/*ms*/);
+const now = inject<Ref<Date>>('now');
+if (now === undefined) {
+	throw new Error('[Internal Error]: Dependency on `now` was not resolved. Is `now` correctly provided in this context?');
+}
+const ago = computed(() => {
+	return (now.value.getTime() - _time) / 1000;
+});
 
 const relative = computed<string>(() => {
 	if (props.mode === 'absolute') return ''; // absoluteではrelativeを使わないので計算しない
@@ -72,29 +76,6 @@ const relative = computed<string>(() => {
 		i18n.tsx._timeIn.seconds({ n: (~~(-ago.value % 60)).toString() })
 	);
 });
-
-let tickId: number;
-let currentInterval: number;
-
-function tick() {
-	now.value = (new Date()).getTime();
-	const nextInterval = ago.value < 60 ? 10000 : ago.value < 3600 ? 60000 : 180000;
-
-	if (currentInterval !== nextInterval) {
-		if (tickId) window.clearInterval(tickId);
-		currentInterval = nextInterval;
-		tickId = window.setInterval(tick, nextInterval);
-	}
-}
-
-if (!invalid && props.origin === null && (props.mode === 'relative' || props.mode === 'detail')) {
-	onMounted(() => {
-		tick();
-	});
-	onUnmounted(() => {
-		if (tickId) window.clearInterval(tickId);
-	});
-}
 </script>
 
 <style lang="scss" module>

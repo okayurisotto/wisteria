@@ -46,7 +46,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, onMounted, provide, ref, computed, shallowRef } from 'vue';
+import { defineAsyncComponent, onMounted, provide, ref, computed, shallowRef, onBeforeUnmount, Ref } from 'vue';
 import XSidebar from './classic.sidebar.vue';
 import XCommon from './_common_/common.vue';
 import { instanceName } from '@/config.js';
@@ -187,6 +187,24 @@ onMounted(() => {
 		}, { passive: true });
 	}
 });
+
+//#region clock
+
+const now = ref(new Date());
+provide<Ref<Date>>('now', now);
+let timer: ReturnType<typeof setInterval> | null = null;
+
+onMounted(() => {
+	timer = setInterval(() => {
+		now.value = new Date();
+	}, 1000);
+});
+
+onBeforeUnmount(() => {
+	if (timer !== null) clearInterval(timer);
+});
+
+//#endregion
 </script>
 
 <style lang="scss" scoped>

@@ -95,7 +95,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, provide, onMounted, computed, ref, watch, shallowRef, Ref } from 'vue';
+import { defineAsyncComponent, provide, onMounted, computed, ref, watch, shallowRef, Ref, onBeforeUnmount } from 'vue';
 import XCommon from './_common_/common.vue';
 import type MkStickyContainer from '@/components/global/MkStickyContainer.vue';
 import { instanceName } from '@/config.js';
@@ -242,6 +242,24 @@ watch(navFooter, () => {
 });
 
 useScrollPositionManager(() => contents.value.rootEl, mainRouter);
+
+//#region clock
+
+const now = ref(new Date());
+provide<Ref<Date>>('now', now);
+let timer: ReturnType<typeof setInterval> | null = null;
+
+onMounted(() => {
+	timer = setInterval(() => {
+		now.value = new Date();
+	}, 1000);
+});
+
+onBeforeUnmount(() => {
+	if (timer !== null) clearInterval(timer);
+});
+
+//#endregion
 </script>
 
 <style>

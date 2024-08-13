@@ -69,7 +69,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, provide, ref, computed } from 'vue';
+import { onMounted, provide, ref, computed, onBeforeUnmount, Ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import XCommon from './_common_/common.vue';
 import { instanceName } from '@/config.js';
@@ -155,6 +155,24 @@ onMounted(() => {
 defineExpose({
 	showMenu: showMenu,
 });
+
+//#region clock
+
+const now = ref(new Date());
+provide<Ref<Date>>('now', now);
+let timer: ReturnType<typeof setInterval> | null = null;
+
+onMounted(() => {
+	timer = setInterval(() => {
+		now.value = new Date();
+	}, 1000);
+});
+
+onBeforeUnmount(() => {
+	if (timer !== null) clearInterval(timer);
+});
+
+//#endregion
 </script>
 
 <style>
