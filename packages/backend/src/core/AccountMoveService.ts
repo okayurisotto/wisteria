@@ -69,10 +69,15 @@ export class AccountMoveService {
 		const dstUri = this.userEntityService.getUserUri(dst);
 
 		// add movedToUri to indicate that the user has moved
-		const update = {} as Partial<MiLocalUser>;
-		update.alsoKnownAs = src.alsoKnownAs?.includes(dstUri) ? src.alsoKnownAs : src.alsoKnownAs?.concat([dstUri]) ?? [dstUri];
-		update.movedToUri = dstUri;
-		update.movedAt = new Date();
+		const update: Partial<MiLocalUser> = {
+			alsoKnownAs: src.alsoKnownAs === null
+				? [dstUri]
+				: src.alsoKnownAs.includes(dstUri)
+					? src.alsoKnownAs
+					: [...src.alsoKnownAs, dstUri],
+			movedToUri: dstUri,
+			movedAt: new Date(),
+		};
 		await this.usersRepository.update(src.id, update);
 		Object.assign(src, update);
 
@@ -120,7 +125,7 @@ export class AccountMoveService {
 		const followings = await this.followingsRepository.findBy({
 			followeeId: src.id,
 			followerHost: IsNull(), // follower is local
-			followerId: proxy ? Not(proxy.id) : undefined,
+			...(proxy ? { followerId: Not(proxy.id) } : {}),
 		});
 		const followJobs = followings.map(following => ({
 			from: { id: following.followerId },

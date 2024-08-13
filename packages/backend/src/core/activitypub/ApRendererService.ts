@@ -439,8 +439,8 @@ export class ApRendererService {
 		const isSystem = user.username.includes('.');
 
 		const [avatar, banner, profile] = await Promise.all([
-			user.avatarId ? this.driveFilesRepository.findOneBy({ id: user.avatarId }) : undefined,
-			user.bannerId ? this.driveFilesRepository.findOneBy({ id: user.bannerId }) : undefined,
+			user.avatarId !== null ? this.driveFilesRepository.findOneBy({ id: user.avatarId }) : undefined,
+			user.bannerId !== null ? this.driveFilesRepository.findOneBy({ id: user.bannerId }) : undefined,
 			this.userProfilesRepository.findOneByOrFail({ userId: user.id }),
 		]);
 
@@ -464,7 +464,7 @@ export class ApRendererService {
 
 		const keypair = await this.userKeypairService.getUserKeypair(user.id);
 
-		const person: any = {
+		return {
 			type: isSystem ? 'Application' : user.isBot ? 'Service' : 'Person',
 			id,
 			inbox: `${id}/inbox`,
@@ -477,7 +477,7 @@ export class ApRendererService {
 			url: `${this.config.url}/@${user.username}`,
 			preferredUsername: user.username,
 			name: user.name,
-			summary: profile.description ? this.mfmService.toHtml(mfm.parse(profile.description)) : null,
+			summary: profile.description !== null ? this.mfmService.toHtml(mfm.parse(profile.description)) : null,
 			_misskey_summary: profile.description,
 			icon: avatar ? this.renderImage(avatar) : null,
 			image: banner ? this.renderImage(banner) : null,
@@ -487,25 +487,11 @@ export class ApRendererService {
 			publicKey: this.renderKey(user, keypair, '#main-key'),
 			isCat: user.isCat,
 			attachment: attachment.length ? attachment : undefined,
+			...(user.movedToUri !== null ? { movedTo: user.movedToUri } : {}),
+			...(user.alsoKnownAs !== null ? { alsoKnownAs: user.alsoKnownAs } : {}),
+			...(profile.birthday !== null ? { 'vcard:bday': profile.birthday } : {}),
+			...(profile.location !== null ? { 'vcard:Address': profile.location } : {}),
 		};
-
-		if (user.movedToUri) {
-			person.movedTo = user.movedToUri;
-		}
-
-		if (user.alsoKnownAs) {
-			person.alsoKnownAs = user.alsoKnownAs;
-		}
-
-		if (profile.birthday) {
-			person['vcard:bday'] = profile.birthday;
-		}
-
-		if (profile.location) {
-			person['vcard:Address'] = profile.location;
-		}
-
-		return person;
 	}
 
 	public renderQuestion(user: { id: MiUser['id'] }, note: MiNote, poll: MiPoll): IQuestion {
