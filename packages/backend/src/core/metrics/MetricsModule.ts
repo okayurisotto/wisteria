@@ -1,9 +1,25 @@
 import { Module } from '@nestjs/common';
 import { MetricsRegistryService } from './MetricsRegistryService.js';
 import { ApiServerMetricsService } from './ApiServerMetricsService.js';
+import { QueueEventMetricsService } from './QueueEventMetricsService.js';
+import { QueueCountMetricsService } from './QueueCountMetricsService.js';
+import { QueueModule } from '../QueueModule.js';
+import { QueueService } from '../QueueService.js';
 
 @Module({
-	providers: [MetricsRegistryService, ApiServerMetricsService],
-	exports: [MetricsRegistryService, ApiServerMetricsService],
+	imports: [QueueModule],
+	providers: [
+		MetricsRegistryService,
+		ApiServerMetricsService,
+		QueueEventMetricsService,
+		QueueCountMetricsService,
+		QueueService,
+	],
+	exports: [
+		MetricsRegistryService,
+		ApiServerMetricsService,
+		QueueEventMetricsService,
+		QueueCountMetricsService,
+	],
 })
 export class MetricsModule {}
