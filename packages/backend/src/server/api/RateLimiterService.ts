@@ -9,7 +9,7 @@ import * as Redis from 'ioredis';
 import { DI } from '@/di-symbols.js';
 import type { Logger } from '@/logger.js';
 import { LoggerService } from '@/core/LoggerService.js';
-import type { IEndpointMeta } from './endpoints.js';
+import type { EndpointMeta } from './endpoints.js';
 import { envOption } from '@/env.js';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class RateLimiterService {
 		}
 	}
 
-	public limit(limitation: IEndpointMeta['limit'] & { key: NonNullable<string> }, actor: string, factor = 1) {
+	public limit(limitation: EndpointMeta['limit'] & { key: NonNullable<string> }, actor: string, factor = 1) {
 		return new Promise<void>((ok, reject) => {
 			if (this.disabled) ok();
 

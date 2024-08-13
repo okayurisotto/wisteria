@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import type { ReadonlyDeep } from 'type-fest';
 import type { permissions } from 'misskey-js';
 
 import * as ep___admin_meta from './endpoints/admin/meta.js';
@@ -745,136 +746,167 @@ const eps = [
 	['reversi/verify', ep___reversi_verify],
 ] as const;
 
-interface IEndpointMetaBase {
-	readonly stability?: 'deprecated' | 'experimental' | 'stable';
+type EndpointMetaBase = {
+	stability: 'deprecated' | 'experimental' | 'stable';
 
-	readonly tags?: ReadonlyArray<string>;
+	tags: ReadonlyArray<string>;
 
-	readonly errors?: {
-		readonly [key: string]: {
-			readonly message: string;
-			readonly code: string;
-			readonly id: string;
+	errors: {
+		[key: string]: {
+			message: string;
+			code: string;
+			id: string;
 		};
 	};
 
-	readonly res?: z.ZodType;
+	res: z.ZodType;
 
 	/**
 	 * このエンドポイントにリクエストするのにユーザー情報が必須か否か
 	 * 省略した場合は false として解釈されます。
 	 */
-	readonly requireCredential?: boolean;
+	requireCredential: boolean;
 
 	/**
 	 * isModeratorなロールを必要とするか
 	 */
-	readonly requireModerator?: boolean;
+	requireModerator: boolean;
 
 	/**
 	 * isAdministratorなロールを必要とするか
 	 */
-	readonly requireAdmin?: boolean;
+	requireAdmin: boolean;
 
-	readonly requireRolePolicy?: keyof z.infer<typeof RolePoliciesSchema>;
+	requireRolePolicy: keyof z.infer<typeof RolePoliciesSchema>;
 
 	/**
 	 * 引っ越し済みのユーザーによるリクエストを禁止するか
 	 * 省略した場合は false として解釈されます。
 	 */
-	readonly prohibitMoved?: boolean;
+	prohibitMoved: boolean;
 
 	/**
 	 * エンドポイントのリミテーションに関するやつ
 	 * 省略した場合はリミテーションは無いものとして解釈されます。
 	 */
-	readonly limit?: {
-
+	limit: {
 		/**
 		 * 複数のエンドポイントでリミットを共有したい場合に指定するキー
 		 */
-		readonly key?: string;
+		key?: string;
 
 		/**
 		 * リミットを適用する期間(ms)
 		 * このプロパティを設定する場合、max プロパティも設定する必要があります。
 		 */
-		readonly duration?: number;
+		duration?: number;
 
 		/**
 		 * durationで指定した期間内にいくつまでリクエストできるのか
 		 * このプロパティを設定する場合、duration プロパティも設定する必要があります。
 		 */
-		readonly max?: number;
+		max?: number;
 
 		/**
 		 * 最低でもどれくらいの間隔を開けてリクエストしなければならないか(ms)
 		 */
-		readonly minInterval?: number;
+		minInterval?: number;
 	};
 
 	/**
 	 * ファイルの添付を必要とするか否か
 	 * 省略した場合は false として解釈されます。
 	 */
-	readonly requireFile?: boolean;
+	requireFile: boolean;
 
 	/**
 	 * サードパーティアプリからはリクエストすることができないか否か
 	 * 省略した場合は false として解釈されます。
 	 */
-	readonly secure?: boolean;
+	secure: boolean;
 
 	/**
 	 * エンドポイントの種類
 	 * パーミッションの実現に利用されます。
 	 */
-	readonly kind?: string;
+	kind: string;
 
-	readonly description?: string;
+	description: string;
 
 	/**
 	 * GETでのリクエストを許容するか否か
 	 */
-	readonly allowGet?: boolean;
+	allowGet: boolean;
 
 	/**
 	 * 正常応答をキャッシュ (Cache-Control: public) する秒数
 	 */
-	readonly cacheSec?: number;
-}
+	cacheSec: number;
+};
 
-export type IEndpointMeta = (
-	| Omit<IEndpointMetaBase, 'requireCrential' | 'requireModerator' | 'requireAdmin'> & {
-		requireCredential?: false;
-		requireAdmin?: false;
-		requireModerator?: false;
+type EndpointMetaBasePartial = ReadonlyDeep<Partial<EndpointMetaBase>>;
+
+export type EndpointMeta = (
+	| Omit<EndpointMetaBasePartial, 'requireCrential' | 'requireModerator' | 'requireAdmin'> & {
+		readonly requireCredential?: false;
+		readonly requireAdmin?: false;
+		readonly requireModerator?: false;
 	})
-	| (Omit<IEndpointMetaBase, 'secure'> & { secure: true })
-	| (Omit<IEndpointMetaBase, 'requireCredential' | 'kind'> & {
-		requireCredential: true;
-		kind: (typeof permissions)[number];
+	| (Omit<EndpointMetaBasePartial, 'secure'> & {
+		readonly secure: true;
 	})
-	| (Omit<IEndpointMetaBase, 'requireModerator' | 'kind'> & {
-		requireModerator: true;
-		kind: (typeof permissions)[number];
+	| (Omit<EndpointMetaBasePartial, 'requireCredential' | 'kind'> & {
+		readonly requireCredential: true;
+		readonly kind: (typeof permissions)[number];
 	})
-	| (Omit<IEndpointMetaBase, 'requireAdmin' | 'kind'> & {
-		requireAdmin: true;
-		kind: (typeof permissions)[number];
+	| (Omit<EndpointMetaBasePartial, 'requireModerator' | 'kind'> & {
+		readonly requireModerator: true;
+		readonly kind: (typeof permissions)[number];
+	})
+	| (Omit<EndpointMetaBasePartial, 'requireAdmin' | 'kind'> & {
+		readonly requireAdmin: true;
+		readonly kind: (typeof permissions)[number];
 	});
 
-export interface IEndpoint {
+type PartiallyRequired<T extends Record<PropertyKey, unknown>, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
+
+export interface Endpoint {
 	name: string;
-	meta: IEndpointMeta;
+	meta: PartiallyRequired<
+		EndpointMeta,
+		| 'allowGet'
+		| 'errors'
+		| 'prohibitMoved'
+		| 'requireAdmin'
+		| 'requireCredential'
+		| 'requireFile'
+		| 'requireModerator'
+		| 'secure'
+		| 'stability'
+		| 'tags'
+	>;
 	params: z.ZodType;
 }
 
-export const endpoints: IEndpoint[] = eps.map(([name, ep]) => {
+export const endpoints: Endpoint[] = eps.map(([name, ep]) => {
 	return {
 		name: name,
 		get meta() {
-			return ep.meta;
+			return {
+				...{
+					allowGet: false,
+					errors: {},
+					prohibitMoved: false,
+					requireAdmin: false,
+					requireCredential: false,
+					requireFile: false,
+					requireModerator: false,
+					secure: false,
+					stability: 'stable',
+					tags: [],
+				} as const,
+				...ep.meta,
+			};
 		},
 		get params() {
 			return ep.paramDef;

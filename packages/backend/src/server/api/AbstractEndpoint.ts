@@ -7,7 +7,7 @@ import * as fs from 'node:fs';
 import type { MiLocalUser } from '@/models/User.js';
 import type { MiAccessToken } from '@/models/AccessToken.js';
 import { ApiError } from './error.js';
-import type { IEndpointMeta } from './endpoints.js';
+import type { EndpointMeta } from './endpoints.js';
 import type { z } from 'zod';
 
 type File = {
@@ -15,11 +15,7 @@ type File = {
 	path: string;
 };
 
-type NewType = Omit<IEndpointMeta, 'res'> & {
-	res?: z.ZodType;
-};
-
-type Executor<T extends NewType, Ps extends z.ZodType> =
+type Executor<T extends EndpointMeta, Ps extends z.ZodType> =
 	(
 		params: z.output<Ps>,
 		user: T['requireCredential'] extends true ? MiLocalUser : MiLocalUser | null,
@@ -34,7 +30,7 @@ type Executor<T extends NewType, Ps extends z.ZodType> =
 			: z.output<NonNullable<T['res']>>
 	>;
 
-export type ExecMethodType<T extends NewType = NewType> = (
+export type ExecMethodType<T extends EndpointMeta = EndpointMeta> = (
 	params: unknown,
 	user: T['requireCredential'] extends true ? MiLocalUser : MiLocalUser | null,
 	token: MiAccessToken | null,
@@ -43,7 +39,7 @@ export type ExecMethodType<T extends NewType = NewType> = (
 	headers?: Record<string, string> | null,
 ) => Promise<unknown>;
 
-export abstract class AbstractEndpoint<T extends NewType, Ps extends z.ZodType> {
+export abstract class AbstractEndpoint<T extends EndpointMeta, Ps extends z.ZodType> {
 	public exec: ExecMethodType<T>;
 
 	constructor(meta: T, paramDef: Ps, cb: Executor<T, Ps>) {

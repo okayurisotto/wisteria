@@ -40,7 +40,6 @@ type OpenApiSpec = {
 				required: string[];
 			};
 		};
-		securitySchemes: { ApiKeyAuth: { type: string; in: string; name: string } };
 	};
 };
 
@@ -114,14 +113,12 @@ export function generateFullOpenApiSpec(config: Config): OpenApiSpec {
 	for (const endpoint of endpoints.filter(ep => !ep.meta.secure)) {
 		const errors = {} as Record<string, { value: unknown }>;
 
-		if (endpoint.meta.errors) {
-			for (const e of Object.values(endpoint.meta.errors)) {
-				errors[e.code] = {
-					value: {
-						error: e,
-					},
-				};
-			}
+		for (const e of Object.values(endpoint.meta.errors)) {
+			errors[e.code] = {
+				value: {
+					error: e,
+				},
+			};
 		}
 
 		const resSchema = endpoint.meta.res !== undefined ? generateOpenApiSpec(endpoint.meta.res) : {};
@@ -129,7 +126,7 @@ export function generateFullOpenApiSpec(config: Config): OpenApiSpec {
 		let desc = (endpoint.meta.description ?? 'No description provided.') + '\n\n';
 
 		desc += `**Credential required**: *${endpoint.meta.requireCredential ? 'Yes' : 'No'}*`;
-		if (endpoint.meta.kind) {
+		if (endpoint.meta.kind !== undefined) {
 			const kind = endpoint.meta.kind;
 			desc += ` / **Permission**: *${kind}*`;
 		}
@@ -163,10 +160,8 @@ export function generateFullOpenApiSpec(config: Config): OpenApiSpec {
 				description: 'Source code',
 				url: `https://github.com/misskey-dev/misskey/blob/develop/packages/backend/src/server/api/endpoints/${endpoint.name}.ts`,
 			},
-			...(endpoint.meta.tags
-				? {
-						tags: [endpoint.meta.tags[0]],
-					}
+			...(endpoint.meta.tags[0] !== undefined
+				? { tags: [endpoint.meta.tags[0]] }
 				: {}),
 			...(endpoint.meta.requireCredential
 				? {

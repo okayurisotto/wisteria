@@ -15,7 +15,7 @@ import { RateLimiterService } from './RateLimiterService.js';
 import { ApiLoggerService } from './ApiLoggerService.js';
 import { AuthenticateService } from './AuthenticateService.js';
 import { AuthenticationError } from '@/misc/AuthenticationError.js';
-import type { IEndpointMeta, IEndpoint } from './endpoints.js';
+import type { Endpoint } from './endpoints.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { IpAddressLoggingService } from './IpAddressLoggingService.js';
 import { LiteResponse } from '@/misc/LiteResponse.js';
@@ -34,7 +34,7 @@ const accessDenied = new ApiError({
 type Result<T, U> = { ok: true; value: T } | { ok: false; error: U };
 
 type CallInfo = {
-	endpoint: IEndpoint & { exec: ExecMethodType };
+	endpoint: Endpoint & { exec: ExecMethodType };
 	user: MiLocalUser | null;
 	token: MiAccessToken | null;
 	data: unknown;
@@ -55,7 +55,7 @@ export class ApiCallService {
 	) {}
 
 	public async handleRequest(
-		endpoint: IEndpoint & { exec: ExecMethodType },
+		endpoint: Endpoint & { exec: ExecMethodType },
 		c: Context,
 	): Promise<LiteResponse> {
 		let body: Record<string, unknown>;
@@ -195,7 +195,7 @@ export class ApiCallService {
 			if (factor > 0) {
 				// Rate limit
 				try {
-					await this.rateLimiterService.limit(limit as IEndpointMeta['limit'] & { key: NonNullable<string> }, limitActor, factor);
+					await this.rateLimiterService.limit(limit, limitActor, factor);
 				} catch {
 					return {
 						ok: false,
