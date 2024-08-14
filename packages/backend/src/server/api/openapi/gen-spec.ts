@@ -110,8 +110,8 @@ export function generateFullOpenApiSpec(config: Config): OpenApiSpec {
 		},
 	};
 
-	for (const endpoint of endpoints.filter(ep => !ep.meta.secure)) {
-		const errors = {} as Record<string, { value: unknown }>;
+	for (const endpoint of endpoints) {
+		const errors: Record<string, { value: unknown }> = {};
 
 		for (const e of Object.values(endpoint.meta.errors)) {
 			errors[e.code] = {
@@ -124,6 +124,10 @@ export function generateFullOpenApiSpec(config: Config): OpenApiSpec {
 		const resSchema = endpoint.meta.res !== undefined ? generateOpenApiSpec(endpoint.meta.res) : {};
 
 		let desc = (endpoint.meta.description ?? 'No description provided.') + '\n\n';
+
+		if (endpoint.meta.secure) {
+			desc += '**Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.\n';
+		}
 
 		desc += `**Credential required**: *${endpoint.meta.requireCredential ? 'Yes' : 'No'}*`;
 		if (endpoint.meta.kind !== undefined) {
