@@ -14,7 +14,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		:enterToClass="defaultStore.state.animation && props.transition?.enterToClass || undefined"
 		:leaveFromClass="defaultStore.state.animation && props.transition?.leaveFromClass || undefined"
 	>
-		<canvas v-show="hide" key="canvas" ref="canvas" :class="$style.canvas" :width="canvasWidth" :height="canvasHeight" :title="title ?? undefined"/>
+		<img v-show="hide" key="blurimg" ref="blurimg" :class="$style.img" :width="imgWidth" :height="imgHeight" :title="title ?? undefined"/>
 		<img v-show="!hide" key="img" ref="img" :height="imgHeight" :width="imgWidth" :class="$style.img" :src="src ?? undefined" :title="title ?? undefined" :alt="alt ?? undefined" loading="eager" decoding="async"/>
 	</TransitionGroup>
 </div>
@@ -26,7 +26,7 @@ import TestWebGL2 from '@/workers/test-webgl2?worker';
 import { WorkerMultiDispatch } from '@/scripts/worker-multi-dispatch.js';
 import { extractAvgColorFromBlurhash } from '@/scripts/extract-avg-color-from-blurhash.js';
 
-const canvasPromise = new Promise<WorkerMultiDispatch | HTMLCanvasElement>(resolve => {
+const canvasPromise = new Promise<WorkerMultiDispatch | OffscreenCanvas | HTMLCanvasElement>(resolve => {
 	// テスト環境で Web Worker インスタンスは作成できない
 	if (import.meta.env.MODE === 'test') {
 		const canvas = document.createElement('canvas');
@@ -45,10 +45,7 @@ const canvasPromise = new Promise<WorkerMultiDispatch | HTMLCanvasElement>(resol
 			resolve(workers);
 			if (_DEV_) console.log('WebGL2 in worker is supported!');
 		} else {
-			const canvas = document.createElement('canvas');
-			canvas.width = 64;
-			canvas.height = 64;
-			resolve(canvas);
+			resolve(new OffscreenCanvas(64, 64));
 			if (_DEV_) console.log('WebGL2 in worker is not supported...');
 		}
 		testWorker.terminate();
@@ -94,7 +91,7 @@ const props = withDefaults(defineProps<{
 });
 
 const viewId = uuid();
-const canvas = shallowRef<HTMLCanvasElement>();
+const blurimg = shallowRef<HTMLImageElement>();
 const root = shallowRef<HTMLDivElement>();
 const img = shallowRef<HTMLImageElement>();
 const loaded = ref(false);
@@ -102,7 +99,8 @@ const canvasWidth = ref(64);
 const canvasHeight = ref(64);
 const imgWidth = ref(props.width);
 const imgHeight = ref(props.height);
-const bitmapTmp = ref<CanvasImageSource | undefined>();
+const blobTmp = ref<Blob>();
+const blobUrl = ref<string>();
 const hide = computed(() => !loaded.value || props.forceBlurhash);
 
 function waitForDecode() {
@@ -136,30 +134,28 @@ watch([() => props.width, () => props.height, root], () => {
 	immediate: true,
 });
 
-function drawImage(bitmap: CanvasImageSource) {
-	// canvasがない（mountedされていない）場合はTmpに保存しておく
-	if (!canvas.value) {
-		bitmapTmp.value = bitmap;
+async function drawImage(blob: Blob): Promise<void> {
+	// blurimgがない（mountedされていない）場合はblobTmpに保存しておく
+	if (blurimg.value === undefined) {
+		blobTmp.value = blob;
 		return;
 	}
 
-	// canvasがあれば描画する
-	bitmapTmp.value = undefined;
-	const ctx = canvas.value.getContext('2d');
-	if (!ctx) return;
-	ctx.drawImage(bitmap, 0, 0, canvasWidth.value, canvasHeight.value);
+	// blurimgがあれば描画する
+	const url = URL.createObjectURL(blob);
+	blurimg.value.src = url;
+
+	if (blobUrl.value !== undefined) {
+		URL.revokeObjectURL(blobUrl.value);
+	}
+	blobUrl.value = url;
 }
 
 function drawAvg() {
-	if (!canvas.value || !props.hash) return;
+	if (blurimg.value === undefined || props.hash == null) return;
 
-	const ctx = canvas.value.getContext('2d');
-	if (!ctx) return;
-
-	// avgColorでお茶をにごす
-	ctx.beginPath();
-	ctx.fillStyle = extractAvgColorFromBlurhash(props.hash) ?? '#888';
-	ctx.fillRect(0, 0, canvasWidth.value, canvasHeight.value);
+	const avgColor = extractAvgColorFromBlurhash(props.hash) ?? '#888';
+	blurimg.value.style.backgroundColor = avgColor;
 }
 
 async function draw() {
@@ -181,7 +177,7 @@ async function draw() {
 	} else {
 		try {
 			render(props.hash, work);
-			drawImage(work);
+			drawImage(await work.convertToBlob());
 		} catch (error) {
 			console.error('Error occurred during drawing blurhash', error);
 		}
@@ -190,7 +186,7 @@ async function draw() {
 
 function workerOnMessage(event: MessageEvent) {
 	if (event.data.id !== viewId) return;
-	drawImage(event.data.bitmap as ImageBitmap);
+	drawImage(event.data.blob as Blob);
 }
 
 canvasPromise.then(work => {
@@ -211,13 +207,17 @@ watch(() => props.hash, () => {
 
 onMounted(() => {
 	// drawImageがmountedより先に呼ばれている場合はここで描画する
-	if (bitmapTmp.value) {
-		drawImage(bitmapTmp.value);
+	if (blobTmp.value) {
+		drawImage(blobTmp.value);
 	}
 	waitForDecode();
 });
 
 onUnmounted(() => {
+	if (blobUrl.value) {
+		URL.revokeObjectURL(blobUrl.value)
+	}
+
 	canvasPromise.then(work => {
 		if (work instanceof WorkerMultiDispatch) {
 			work.removeListener(workerOnMessage);
@@ -238,25 +238,16 @@ onUnmounted(() => {
 	height: 100%;
 
 	&.cover {
-		> .canvas,
 		> .img {
 			object-fit: cover;
 		}
 	}
 }
 
-.canvas,
 .img {
 	display: block;
 	width: 100%;
 	height: 100%;
-}
-
-.canvas {
-	object-fit: contain;
-}
-
-.img {
 	object-fit: contain;
 }
 </style>

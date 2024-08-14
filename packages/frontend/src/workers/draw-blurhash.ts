@@ -7,8 +7,7 @@ import { render } from 'buraha';
 
 const canvas = new OffscreenCanvas(64, 64);
 
-onmessage = (event) => {
-	// console.log(event.data);
+onmessage = async (event) => {
 	if (!('id' in event.data && typeof event.data.id === 'string')) {
 		return;
 	}
@@ -17,6 +16,6 @@ onmessage = (event) => {
 	}
 
 	render(event.data.hash, canvas);
-	const bitmap = canvas.transferToImageBitmap();
-	postMessage({ id: event.data.id, bitmap });
+	const blob = await canvas.convertToBlob();
+	postMessage({ id: event.data.id, blob });
 };
