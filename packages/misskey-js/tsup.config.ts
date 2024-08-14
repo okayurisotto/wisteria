@@ -6,5 +6,5 @@ export default defineConfig({
 	format: 'esm',
 	minify: true,
 	outDir: 'built',
-	platform: 'browser',
+	platform: 'neutral',
 });

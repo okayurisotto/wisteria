@@ -9,7 +9,7 @@ import {
 	UserDetailed,
 	UserDetailedNotMe,
 	UserLite,
-} from './autogen/models.js';
+} from './entities.js';
 import {
 	AnnouncementCreated,
 	EmojiAdded, EmojiDeleted,

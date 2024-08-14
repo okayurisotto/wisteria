@@ -1,8 +1,6 @@
 import { EventEmitter } from 'eventemitter3';
-import _ReconnectingWebsocket from 'reconnecting-websocket';
+import ReconnectingWebsocket from 'reconnecting-websocket';
 import type { BroadcastEvents, Channels } from './streaming.types.js';
-
-const ReconnectingWebsocket = _ReconnectingWebsocket as unknown as typeof _ReconnectingWebsocket['default'];
 
 export function urlQuery(obj: Record<string, string | number | boolean | undefined>): string {
 	const params = Object.entries(obj)
@@ -26,7 +24,7 @@ type StreamEvents = {
  * Misskey stream connection
  */
 export default class Stream extends EventEmitter<StreamEvents> {
-	private stream: _ReconnectingWebsocket.default;
+	private stream: ReconnectingWebsocket;
 	public state: 'initializing' | 'reconnecting' | 'connected' = 'initializing';
 	private sharedConnectionPools: Pool[] = [];
 	private sharedConnections: SharedConnection[] = [];
@@ -291,7 +289,7 @@ export abstract class Connection<Channel extends AnyOf<Channels> = any> extends 
 
 		this.stream = stream;
 		this.channel = channel;
-		this.name = name;
+		if (name) this.name = name;
 	}
 
 	public send<T extends keyof Channel['receives']>(type: T, body: Channel['receives'][T]): void {

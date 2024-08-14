@@ -1,11 +1,18 @@
-import './autogen/apiClientJSDoc.js';
+import type * as API from './autogen.js';
 
-import { SwitchCaseResponseType } from './api.types.js';
-import type { Endpoints } from './api.types.js';
+type ValueOf<T> = T[keyof T];
+type OmitLeadingSlash<T> = T extends `/${infer U}` ? U : T;
 
-export {
-	SwitchCaseResponseType,
-} from './api.types.js';
+export type Endpoints = {
+	[K in keyof API.paths as OmitLeadingSlash<K>]: {
+		request: ValueOf<API.paths[K]['post']['requestBody']['content']>;
+		response: 204 extends keyof API.paths[K]['post']['responses']
+			? null
+			: {
+				[L in keyof API.paths[K]['post']['responses']]: ValueOf<ValueOf<API.paths[K]['post']['responses'][L]>>;
+			}[keyof API.paths[K]['post']['responses'] & 200];
+	};
+};
 
 const MK_API_ERROR = Symbol();
 
@@ -49,12 +56,16 @@ export class APIClient {
 		this.fetch = opts.fetch ?? ((...args) => fetch(...args));
 	}
 
-	public request<E extends keyof Endpoints, P extends Endpoints[E]['req']>(
-		endpoint: E,
-		params: P = {} as P,
+	public request<
+		Endpoint extends keyof Endpoints,
+		Params extends Endpoints[Endpoint]['request'],
+		Response extends Endpoints[Endpoint]['response']
+	>(
+		endpoint: Endpoint,
+		params: Params = {} as Params,
 		credential?: string | null,
-	): Promise<SwitchCaseResponseType<E, P>> {
-		return new Promise((resolve, reject) => {
+	) {
+		return new Promise<Response>((resolve, reject) => {
 			this.fetch(`${this.origin}/api/${endpoint}`, {
 				method: 'POST',
 				body: JSON.stringify({

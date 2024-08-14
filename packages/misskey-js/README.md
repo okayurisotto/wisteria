@@ -1,10 +1,6 @@
 # misskey.js
+
 **Strongly-typed official Misskey SDK for browsers/Node.js.**
-
-[![Test](https://github.com/misskey-dev/misskey.js/actions/workflows/test.yml/badge.svg)](https://github.com/misskey-dev/misskey.js/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/misskey-dev/misskey.js/branch/develop/graph/badge.svg?token=PbrTtk3nVD)](https://codecov.io/gh/misskey-dev/misskey.js)
-
-[![NPM](https://nodei.co/npm/misskey-js.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/misskey-js)
 
 JavaScript(TypeScript)用の公式MisskeySDKです。ブラウザ/Node.js上で動作します。
 
@@ -150,9 +146,3 @@ stream.on('_disconnected_', () => {
 - `initializing`: 接続確立前
 - `connected`: 接続完了
 - `reconnecting`: 再接続中
-
----
-
-<div align="center">
-	<a href="https://github.com/misskey-dev/misskey/blob/develop/CONTRIBUTING.md"><img src="https://raw.githubusercontent.com/misskey-dev/assets/main/i-want-you.png" width="300"></a>
-</div>

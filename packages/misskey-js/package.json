@@ -1,46 +1,24 @@
 {
-	"type": "module",
 	"name": "misskey-js",
-	"version": "2024.2.0",
 	"description": "Misskey SDK for JavaScript",
+	"type": "module",
 	"exports": {
-		".": {
-			"import": "./built/index.js",
-			"types": "./built/index.d.ts"
-		}
+		"import": "./built/index.js",
+		"types": "./built/index.d.ts"
 	},
 	"scripts": {
 		"build": "tsup",
 		"watch": "tsup --watch",
-		"tsd": "tsd",
-		"api": "pnpm api-extractor run --local --verbose",
-		"api-prod": "pnpm api-extractor run --verbose",
-		"eslint": "eslint . --ext .js,.jsx,.ts,.tsx",
-		"typecheck": "tsc",
-		"lint": "pnpm typecheck && pnpm eslint",
-		"jest": "jest --coverage --detectOpenHandles",
-		"test": "pnpm jest && pnpm tsd",
-		"update-autogen-code": "pnpm --filter misskey-js-type-generator generate && ncp generator/built/autogen src/autogen"
+		"generate": "openapi-typescript ../backend/built/api.json -o ./src/autogen.ts"
 	},
 	"devDependencies": {
-		"@microsoft/api-extractor": "7.39.1",
-		"@swc/core": "^1.7.6",
-		"@swc/jest": "0.2.36",
-		"@types/jest": "29.5.11",
 		"@types/node": "^20.14.14",
-		"jest": "29.7.0",
-		"jest-fetch-mock": "3.0.3",
-		"jest-websocket-mock": "2.5.0",
-		"ncp": "2.0.0",
-		"nodemon": "3.0.3",
-		"tsd": "0.30.4",
+		"openapi-typescript": "^6",
 		"tsup": "^8.2.4",
 		"typescript": "5.5.4"
 	},
 	"files": [
-		"built",
-		"built/esm",
-		"built/dts"
+		"built"
 	],
 	"dependencies": {
 		"eventemitter3": "5.0.1",
