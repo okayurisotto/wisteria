@@ -123,7 +123,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly moderationLogService: ModerationLogService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const set = {} as Partial<MiMeta>;
+			const set: Partial<MiMeta> = {};
 
 			if (typeof ps.disableRegistration === 'boolean') {
 				set.disableRegistration = ps.disableRegistration;

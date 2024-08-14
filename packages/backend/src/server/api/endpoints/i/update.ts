@@ -213,8 +213,8 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			const user = await this.usersRepository.findOneByOrFail({ id: _user.id }) as MiLocalUser;
 			const isSecure = token == null;
 
-			const updates = {} as Partial<MiUser>;
-			const profileUpdates = {} as Partial<MiUserProfile>;
+			const updates: Partial<MiUser> = {};
+			const profileUpdates: Partial<MiUserProfile> = {};
 
 			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
 
