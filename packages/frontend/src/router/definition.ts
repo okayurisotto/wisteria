@@ -527,10 +527,6 @@ const routes: RouteDef[] = [{
 	component: page(() => import('@/pages/antenna-timeline.vue')),
 	loginRequired: true,
 }, {
-	path: '/clicker',
-	component: page(() => import('@/pages/clicker.vue')),
-	loginRequired: true,
-}, {
 	path: '/timeline',
 	component: page(() => import('@/pages/timeline.vue')),
 }, {
