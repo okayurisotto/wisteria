@@ -10,28 +10,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<span class="host">{{ instance.name ?? instance.host }}</span>
 		<span class="sub _monospace"><b>{{ instance.host }}</b> / {{ instance.softwareName || '?' }} {{ instance.softwareVersion }}</span>
 	</div>
-	<MkMiniChart v-if="chartValues" class="chart" :src="chartValues"/>
 </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
 import * as Misskey from 'misskey-js';
-import MkMiniChart from '@/components/MkMiniChart.vue';
-import { misskeyApiGet } from '@/scripts/misskey-api.js';
 import { getProxiedImageUrlNullable } from '@/scripts/media-proxy.js';
 
-const props = defineProps<{
+defineProps<{
 	instance: Misskey.entities.FederationInstance;
 }>();
-
-const chartValues = ref<number[] | null>(null);
-
-misskeyApiGet('charts/instance', { host: props.instance.host, limit: 16 + 1, span: 'day' }).then(res => {
-	// 今日のぶんの値はまだ途中の値であり、それも含めると大抵の場合前日よりも下降しているようなグラフになってしまうため今日は弾く
-	res['requests.received'].splice(0, 1);
-	chartValues.value = res['requests.received'];
-});
 
 function getInstanceIcon(instance): string {
 	return getProxiedImageUrlNullable(instance.iconUrl, 'preview') ?? getProxiedImageUrlNullable(instance.faviconUrl, 'preview') ?? '/client-assets/dummy.png';

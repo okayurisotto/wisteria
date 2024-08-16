@@ -131,9 +131,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<MkLazy>
 						<XFiles :key="user.id" :user="user"/>
 					</MkLazy>
-					<MkLazy>
-						<XActivity :key="user.id" :user="user"/>
-					</MkLazy>
 				</template>
 				<div v-if="!disableNotes">
 					<MkLazy>
@@ -144,7 +141,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</div>
 		<div v-if="!narrow" class="sub _gaps" style="container-type: inline-size;">
 			<XFiles :key="user.id" :user="user"/>
-			<XActivity :key="user.id" :user="user"/>
 		</div>
 	</div>
 </MkSpacer>
@@ -190,7 +186,6 @@ function calcAge(birthdate: string): number {
 }
 
 const XFiles = defineAsyncComponent(() => import('./index.files.vue'));
-const XActivity = defineAsyncComponent(() => import('./index.activity.vue'));
 const XTimeline = defineAsyncComponent(() => import('./index.timeline.vue'));
 
 const props = withDefaults(defineProps<{

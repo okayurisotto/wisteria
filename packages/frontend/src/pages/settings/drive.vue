@@ -26,11 +26,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</FormSection>
 
 	<FormSection>
-		<template #label>{{ i18n.ts.statistics }}</template>
-		<MkChart src="per-user-drive" :args="{ user: $i }" span="day" :limit="7 * 5" :bar="true" :stacked="true" :detailed="false" :aspectRatio="6"/>
-	</FormSection>
-
-	<FormSection>
 		<div class="_gaps_m">
 			<FormLink @click="chooseUploadFolder()">
 				{{ i18n.ts.uploadFolder }}
@@ -69,7 +64,6 @@ import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import bytes from '@/filters/bytes.js';
 import { defaultStore } from '@/store.js';
-import MkChart from '@/components/MkChart.vue';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { signinRequired } from '@/account.js';

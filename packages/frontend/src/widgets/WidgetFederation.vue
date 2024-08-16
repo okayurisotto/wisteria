@@ -11,13 +11,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<div class="wbrkwalb">
 		<MkLoading v-if="fetching"/>
 		<TransitionGroup v-else tag="div" :name="defaultStore.state.animation ? 'chart' : ''" class="instances">
-			<div v-for="(instance, i) in instances" :key="instance.id" class="instance">
+			<div v-for="instance in instances" :key="instance.id" class="instance">
 				<img :src="getInstanceIcon(instance)" alt=""/>
 				<div class="body">
 					<MkA class="a" :to="`/instance-info/${instance.host}`" behavior="window" :title="instance.host">{{ instance.host }}</MkA>
 					<p>{{ instance.softwareName || '?' }} {{ instance.softwareVersion }}</p>
 				</div>
-				<MkMiniChart class="chart" :src="charts[i].requests.received"/>
 			</div>
 		</TransitionGroup>
 	</div>
@@ -30,8 +29,7 @@ import * as Misskey from 'misskey-js';
 import { useWidgetPropsManager, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
 import { GetFormResultType } from '@/scripts/form.js';
 import MkContainer from '@/components/MkContainer.vue';
-import MkMiniChart from '@/components/MkMiniChart.vue';
-import { misskeyApi, misskeyApiGet } from '@/scripts/misskey-api.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { useInterval } from '@/scripts/use-interval.js';
 import { i18n } from '@/i18n.js';
 import { getProxiedImageUrlNullable } from '@/scripts/media-proxy.js';
@@ -58,7 +56,6 @@ const { widgetProps, configure } = useWidgetPropsManager(name,
 );
 
 const instances = ref<Misskey.entities.FederationInstance[]>([]);
-const charts = ref<Misskey.entities.ChartsInstanceResponse[]>([]);
 const fetching = ref(true);
 
 const fetch = async () => {
@@ -66,9 +63,7 @@ const fetch = async () => {
 		sort: '+latestRequestReceivedAt',
 		limit: 5,
 	});
-	const fetchedCharts = await Promise.all(fetchedInstances.map(i => misskeyApiGet('charts/instance', { host: i.host, limit: 16, span: 'hour' })));
 	instances.value = fetchedInstances;
-	charts.value = fetchedCharts;
 	fetching.value = false;
 };
 
@@ -97,10 +92,6 @@ defineExpose<WidgetComponentExpose>({
 	overflow: hidden;
 
 	> .instances {
-		.chart-move {
-			transition: transform 1s ease;
-		}
-
 		> .instance {
 			display: flex;
 			align-items: center;
@@ -141,10 +132,6 @@ defineExpose<WidgetComponentExpose>({
 					overflow: hidden;
 					text-overflow: ellipsis;
 				}
-			}
-
-			> .chart {
-				height: 30px;
 			}
 		}
 	}

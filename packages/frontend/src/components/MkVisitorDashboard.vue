@@ -44,9 +44,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkTimeline src="local"/>
 		</div>
 	</div>
-	<div :class="$style.panel">
-		<XActiveUsersChart/>
-	</div>
 </div>
 </template>
 
@@ -64,7 +61,6 @@ import { misskeyApi } from '@/scripts/misskey-api.js';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
 import MkNumber from '@/components/MkNumber.vue';
-import XActiveUsersChart from '@/components/MkVisitorDashboard.ActiveUsersChart.vue';
 
 const meta = ref<Misskey.entities.MetaResponse | null>(null);
 const stats = ref<Misskey.entities.StatsResponse | null>(null);

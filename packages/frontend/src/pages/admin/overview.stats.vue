@@ -13,7 +13,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div class="body">
 					<div class="value">
 						<MkNumber :value="stats.originalUsersCount" style="margin-right: 0.5em;"/>
-						<MkNumberDiff v-tooltip="i18n.ts.dayOverDayChanges" class="diff" :value="usersComparedToThePrevDay"></MkNumberDiff>
 					</div>
 					<div class="label">Users</div>
 				</div>
@@ -23,7 +22,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div class="body">
 					<div class="value">
 						<MkNumber :value="stats.originalNotesCount" style="margin-right: 0.5em;"/>
-						<MkNumberDiff v-tooltip="i18n.ts.dayOverDayChanges" class="diff" :value="notesComparedToThePrevDay"></MkNumberDiff>
 					</div>
 					<div class="label">Notes</div>
 				</div>
@@ -64,15 +62,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { onMounted, ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import { misskeyApi, misskeyApiGet } from '@/scripts/misskey-api.js';
-import MkNumberDiff from '@/components/MkNumberDiff.vue';
 import MkNumber from '@/components/MkNumber.vue';
-import { i18n } from '@/i18n.js';
 import { customEmojis } from '@/custom-emojis.js';
 import { defaultStore } from '@/store.js';
 
 const stats = ref<Misskey.entities.StatsResponse | null>(null);
-const usersComparedToThePrevDay = ref<number>();
-const notesComparedToThePrevDay = ref<number>();
 const onlineUsersCount = ref(0);
 const fetching = ref(true);
 
@@ -83,14 +77,6 @@ onMounted(async () => {
 	]);
 	stats.value = _stats;
 	onlineUsersCount.value = _onlineUsersCount;
-
-	misskeyApiGet('charts/users', { limit: 2, span: 'day' }).then(chart => {
-		usersComparedToThePrevDay.value = stats.value.originalUsersCount - chart.local.total[1];
-	});
-
-	misskeyApiGet('charts/notes', { limit: 2, span: 'day' }).then(chart => {
-		notesComparedToThePrevDay.value = stats.value.originalNotesCount - chart.local.total[1];
-	});
 
 	fetching.value = false;
 });
@@ -160,11 +146,6 @@ onMounted(async () => {
 				> .value {
 					font-size: 1.2em;
 					font-weight: bold;
-
-					> .diff {
-						font-size: 0.65em;
-						font-weight: normal;
-					}
 				}
 
 				> .label {

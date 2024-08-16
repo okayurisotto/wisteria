@@ -22,20 +22,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #caption>{{ i18n.ts.turnOffToImprovePerformance }}</template>
 					</MkSwitch>
 				</div>
-
-				<div class="_panel" style="padding: 16px;">
-					<MkSwitch v-model="enableChartsForRemoteUser">
-						<template #label>{{ i18n.ts.enableChartsForRemoteUser }}</template>
-						<template #caption>{{ i18n.ts.turnOffToImprovePerformance }}</template>
-					</MkSwitch>
-				</div>
-
-				<div class="_panel" style="padding: 16px;">
-					<MkSwitch v-model="enableChartsForFederatedInstances">
-						<template #label>{{ i18n.ts.enableChartsForFederatedInstances }}</template>
-						<template #caption>{{ i18n.ts.turnOffToImprovePerformance }}</template>
-					</MkSwitch>
-				</div>
 			</div>
 		</FormSuspense>
 	</MkSpacer>

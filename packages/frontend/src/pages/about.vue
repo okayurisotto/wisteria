@@ -122,15 +122,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<MkSpacer v-else-if="tab === 'federation'" :contentMax="1000" :marginMin="20">
 			<XFederation/>
 		</MkSpacer>
-		<MkSpacer v-else-if="tab === 'charts'" :contentMax="1000" :marginMin="20">
-			<MkInstanceStats/>
-		</MkSpacer>
 	</MkHorizontalSwipe>
 </MkStickyContainer>
 </template>
 
 <script lang="ts" setup>
-import { computed, watch, ref } from 'vue';
+import { computed, ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import XEmojis from './about.emojis.vue';
 import XFederation from './about.federation.vue';
@@ -142,7 +139,6 @@ import FormSplit from '@/components/form/split.vue';
 import MkFolder from '@/components/MkFolder.vue';
 import MkKeyValue from '@/components/MkKeyValue.vue';
 import MkInfo from '@/components/MkInfo.vue';
-import MkInstanceStats from '@/components/MkInstanceStats.vue';
 import MkHorizontalSwipe from '@/components/MkHorizontalSwipe.vue';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import number from '@/filters/number.js';
@@ -177,10 +173,6 @@ const headerTabs = computed(() => [{
 	key: 'federation',
 	title: i18n.ts.federation,
 	icon: 'ti ti-whirl',
-}, {
-	key: 'charts',
-	title: i18n.ts.charts,
-	icon: 'ti ti-chart-line',
 }]);
 
 definePageMetadata(() => ({

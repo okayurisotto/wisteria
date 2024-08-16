@@ -31,12 +31,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #key>ID</template>
 						<template #value><span class="_monospace">{{ user.id }}</span></template>
 					</MkKeyValue>
-					<!-- 要る？
-					<MkKeyValue v-if="ips.length > 0" :copy="user.id" oneline>
-						<template #key>IP (recent)</template>
-						<template #value><span class="_monospace">{{ ips[0].ip }}</span></template>
-					</MkKeyValue>
-					-->
 					<MkKeyValue oneline>
 						<template #key>{{ i18n.ts.createdAt }}</template>
 						<template #value><span class="_monospace"><MkTime :time="user.createdAt" :mode="'detail'"/></span></template>
@@ -54,42 +48,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkTextarea v-model="moderationNote" manualSave>
 					<template #label>{{ i18n.ts.moderationNote }}</template>
 				</MkTextarea>
-
-				<!--
-				<FormSection>
-					<template #label>ActivityPub</template>
-
-					<div class="_gaps_m">
-						<div style="display: flex; flex-direction: column; gap: 1em;">
-							<MkKeyValue v-if="user.host" oneline>
-								<template #key>{{ i18n.ts.instanceInfo }}</template>
-								<template #value><MkA :to="`/instance-info/${user.host}`" class="_link">{{ user.host }} <i class="ti ti-chevron-right"></i></MkA></template>
-							</MkKeyValue>
-							<MkKeyValue v-else oneline>
-								<template #key>{{ i18n.ts.instanceInfo }}</template>
-								<template #value>(Local user)</template>
-							</MkKeyValue>
-							<MkKeyValue oneline>
-								<template #key>{{ i18n.ts.updatedAt }}</template>
-								<template #value><MkTime v-if="user.lastFetchedAt" mode="detail" :time="user.lastFetchedAt"/><span v-else>N/A</span></template>
-							</MkKeyValue>
-							<MkKeyValue v-if="ap" oneline>
-								<template #key>Type</template>
-								<template #value><span class="_monospace">{{ ap.type }}</span></template>
-							</MkKeyValue>
-						</div>
-
-						<MkButton v-if="user.host != null" @click="updateRemoteUser"><i class="ti ti-refresh"></i> {{ i18n.ts.updateRemoteUser }}</MkButton>
-
-						<MkFolder>
-							<template #label>Raw</template>
-
-							<MkObjectView v-if="ap" tall :value="ap">
-							</MkObjectView>
-						</MkFolder>
-					</div>
-				</FormSection>
-			-->
 
 				<FormSection>
 					<div class="_gaps">
@@ -174,22 +132,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkFileListForAdmin :pagination="filesPagination" viewMode="grid"/>
 			</div>
 
-			<div v-else-if="tab === 'chart'" class="_gaps_m">
-				<div class="cmhjzshm">
-					<div class="selects">
-						<MkSelect v-model="chartSrc" style="margin: 0 10px 0 0; flex: 1;">
-							<option value="per-user-notes">{{ i18n.ts.notes }}</option>
-						</MkSelect>
-					</div>
-					<div class="charts">
-						<div class="label">{{ i18n.tsx.recentNHours({ n: 90 }) }}</div>
-						<MkChart class="chart" :src="chartSrc" span="hour" :limit="90" :args="{ user, withoutAll: true }" :detailed="true"></MkChart>
-						<div class="label">{{ i18n.tsx.recentNDays({ n: 90 }) }}</div>
-						<MkChart class="chart" :src="chartSrc" span="day" :limit="90" :args="{ user, withoutAll: true }" :detailed="true"></MkChart>
-					</div>
-				</div>
-			</div>
-
 			<div v-else-if="tab === 'raw'" class="_gaps_m">
 				<MkObjectView v-if="info && $i.isAdmin" tall :value="info">
 				</MkObjectView>
@@ -205,7 +147,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, watch, ref } from 'vue';
 import * as Misskey from 'misskey-js';
-import MkChart from '@/components/MkChart.vue';
 import MkObjectView from '@/components/MkObjectView.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
@@ -214,7 +155,6 @@ import FormSection from '@/components/form/section.vue';
 import MkButton from '@/components/MkButton.vue';
 import MkFolder from '@/components/MkFolder.vue';
 import MkKeyValue from '@/components/MkKeyValue.vue';
-import MkSelect from '@/components/MkSelect.vue';
 import FormSuspense from '@/components/form/suspense.vue';
 import MkFileListForAdmin from '@/components/MkFileListForAdmin.vue';
 import MkInfo from '@/components/MkInfo.vue';
@@ -236,7 +176,6 @@ const props = withDefaults(defineProps<{
 });
 
 const tab = ref(props.initialTab);
-const chartSrc = ref('per-user-notes');
 const user = ref<null | Misskey.entities.UserDetailed>();
 const init = ref<ReturnType<typeof createFetcher>>();
 const info = ref<any>();
@@ -509,10 +448,6 @@ const headerTabs = computed(() => [{
 	title: i18n.ts.drive,
 	icon: 'ti ti-cloud',
 }, {
-	key: 'chart',
-	title: i18n.ts.charts,
-	icon: 'ti ti-chart-line',
-}, {
 	key: 'raw',
 	title: 'Raw',
 	icon: 'ti ti-code',
@@ -590,20 +525,6 @@ definePageMetadata(() => ({
 				color: var(--success);
 				border-color: var(--success);
 			}
-		}
-	}
-}
-
-.cmhjzshm {
-	> .selects {
-		display: flex;
-		margin: 0 0 16px 0;
-	}
-
-	> .charts {
-		> .label {
-			margin-bottom: 12px;
-			font-weight: bold;
 		}
 	}
 }

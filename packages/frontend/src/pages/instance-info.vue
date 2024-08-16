@@ -77,31 +77,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<FormLink :to="`https://${host}/manifest.json`" external style="margin-bottom: 8px;">manifest.json</FormLink>
 				</FormSection>
 			</div>
-			<div v-else-if="tab === 'chart'" key="chart" class="_gaps_m">
-				<div class="cmhjzshl">
-					<div class="selects">
-						<MkSelect v-model="chartSrc" style="margin: 0 10px 0 0; flex: 1;">
-							<option value="instance-requests">{{ i18n.ts._instanceCharts.requests }}</option>
-							<option value="instance-users">{{ i18n.ts._instanceCharts.users }}</option>
-							<option value="instance-users-total">{{ i18n.ts._instanceCharts.usersTotal }}</option>
-							<option value="instance-notes">{{ i18n.ts._instanceCharts.notes }}</option>
-							<option value="instance-notes-total">{{ i18n.ts._instanceCharts.notesTotal }}</option>
-							<option value="instance-ff">{{ i18n.ts._instanceCharts.ff }}</option>
-							<option value="instance-ff-total">{{ i18n.ts._instanceCharts.ffTotal }}</option>
-							<option value="instance-drive-usage">{{ i18n.ts._instanceCharts.cacheSize }}</option>
-							<option value="instance-drive-usage-total">{{ i18n.ts._instanceCharts.cacheSizeTotal }}</option>
-							<option value="instance-drive-files">{{ i18n.ts._instanceCharts.files }}</option>
-							<option value="instance-drive-files-total">{{ i18n.ts._instanceCharts.filesTotal }}</option>
-						</MkSelect>
-					</div>
-					<div class="charts">
-						<div class="label">{{ i18n.tsx.recentNHours({ n: 90 }) }}</div>
-						<MkChart class="chart" :src="chartSrc" span="hour" :limit="90" :args="{ host: host }" :detailed="true"></MkChart>
-						<div class="label">{{ i18n.tsx.recentNDays({ n: 90 }) }}</div>
-						<MkChart class="chart" :src="chartSrc" span="day" :limit="90" :args="{ host: host }" :detailed="true"></MkChart>
-					</div>
-				</div>
-			</div>
 			<div v-else-if="tab === 'users'" key="users" class="_gaps_m">
 				<MkPagination v-slot="{items}" :pagination="usersPagination" style="display: grid; grid-template-columns: repeat(auto-fill,minmax(270px,1fr)); grid-gap: 12px;">
 					<MkA v-for="user in items" :key="user.id" v-tooltip.mfm="`Last posted: ${dateString(user.updatedAt)}`" class="user" :to="`/admin/user/${user.id}`">
@@ -121,14 +96,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
 import * as Misskey from 'misskey-js';
-import MkChart from '@/components/MkChart.vue';
 import MkObjectView from '@/components/MkObjectView.vue';
 import FormLink from '@/components/form/link.vue';
 import MkLink from '@/components/MkLink.vue';
 import MkButton from '@/components/MkButton.vue';
 import FormSection from '@/components/form/section.vue';
 import MkKeyValue from '@/components/MkKeyValue.vue';
-import MkSelect from '@/components/MkSelect.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
@@ -148,7 +121,6 @@ const props = defineProps<{
 
 const tab = ref('overview');
 
-const chartSrc = ref('instance-requests');
 const meta = ref<Misskey.entities.AdminMetaResponse | null>(null);
 const instance = ref<Misskey.entities.FederationInstance | null>(null);
 const suspended = ref(false);
@@ -232,10 +204,6 @@ const headerTabs = computed(() => [{
 	title: i18n.ts.overview,
 	icon: 'ti ti-info-circle',
 }, {
-	key: 'chart',
-	title: i18n.ts.charts,
-	icon: 'ti ti-chart-line',
-}, {
 	key: 'users',
 	title: i18n.ts.users,
 	icon: 'ti ti-users',
@@ -265,20 +233,6 @@ definePageMetadata(() => ({
 
 	> .name {
 		word-break: break-all;
-	}
-}
-
-.cmhjzshl {
-	> .selects {
-		display: flex;
-		margin: 0 0 16px 0;
-	}
-
-	> .charts {
-		> .label {
-			margin-bottom: 12px;
-			font-weight: bold;
-		}
 	}
 }
 </style>

@@ -24,8 +24,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div class="icon"><i class="ti ti-world-download"></i></div>
 				<div class="body">
 					<div class="value">
-						{{ number(federationSubActive) }}
-						<MkNumberDiff v-tooltip="i18n.ts.dayOverDayChanges" class="diff" :value="federationSubActiveDiff"></MkNumberDiff>
+						<!-- TODO -->
+						{{ number(null) }}
 					</div>
 					<div class="label">Sub</div>
 				</div>
@@ -34,8 +34,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div class="icon"><i class="ti ti-world-upload"></i></div>
 				<div class="body">
 					<div class="value">
-						{{ number(federationPubActive) }}
-						<MkNumberDiff v-tooltip="i18n.ts.dayOverDayChanges" class="diff" :value="federationPubActiveDiff"></MkNumberDiff>
+						<!-- TODO -->
+						{{ number(null) }}
 					</div>
 					<div class="label">Pub</div>
 				</div>
@@ -51,27 +51,15 @@ import XPie, { type InstanceForPie } from './overview.pie.vue';
 import * as os from '@/os.js';
 import { misskeyApiGet } from '@/scripts/misskey-api.js';
 import number from '@/filters/number.js';
-import MkNumberDiff from '@/components/MkNumberDiff.vue';
-import { i18n } from '@/i18n.js';
 import { useChartTooltip } from '@/scripts/use-chart-tooltip.js';
 
 const topSubInstancesForPie = ref<InstanceForPie[] | null>(null);
 const topPubInstancesForPie = ref<InstanceForPie[] | null>(null);
-const federationPubActive = ref<number | null>(null);
-const federationPubActiveDiff = ref<number | null>(null);
-const federationSubActive = ref<number | null>(null);
-const federationSubActiveDiff = ref<number | null>(null);
 const fetching = ref(true);
 
 const { handler: externalTooltipHandler } = useChartTooltip();
 
 onMounted(async () => {
-	const chart = await misskeyApiGet('charts/federation', { limit: 2, span: 'day' });
-	federationPubActive.value = chart.pubActive[0];
-	federationPubActiveDiff.value = chart.pubActive[0] - chart.pubActive[1];
-	federationSubActive.value = chart.subActive[0];
-	federationSubActiveDiff.value = chart.subActive[0] - chart.subActive[1];
-
 	misskeyApiGet('federation/stats', { limit: 10 }).then(res => {
 		topSubInstancesForPie.value = [
 			...res.topSubInstances.map(x => ({
@@ -176,11 +164,6 @@ onMounted(async () => {
 					> .value {
 						font-size: 1.2em;
 						font-weight: bold;
-
-						> .diff {
-							font-size: 0.65em;
-							font-weight: normal;
-						}
 					}
 
 					> .label {
@@ -193,4 +176,3 @@ onMounted(async () => {
 	}
 }
 </style>
-
