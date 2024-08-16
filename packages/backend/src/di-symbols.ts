@@ -78,7 +78,6 @@ export const DI = {
 	flashsRepository: Symbol('flashsRepository'),
 	flashLikesRepository: Symbol('flashLikesRepository'),
 	userMemosRepository: Symbol('userMemosRepository'),
-	bubbleGameRecordsRepository: Symbol('bubbleGameRecordsRepository'),
 	reversiGamesRepository: Symbol('reversiGamesRepository'),
 	// #endregion
 };

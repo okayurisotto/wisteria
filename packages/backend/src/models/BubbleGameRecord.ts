@@ -7,6 +7,7 @@ import { PrimaryColumn, Entity, Index, JoinColumn, Column, ManyToOne } from 'typ
 import { id } from './util/id.js';
 import { MiUser } from './User.js';
 
+/** @deprecated */
 @Entity('bubble_game_record')
 export class MiBubbleGameRecord {
 	@PrimaryColumn(id())

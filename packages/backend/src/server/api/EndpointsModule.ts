@@ -364,8 +364,6 @@ import * as ep___users_updateMemo from './endpoints/users/update-memo.js';
 import * as ep___fetchRss from './endpoints/fetch-rss.js';
 import * as ep___fetchExternalResources from './endpoints/fetch-external-resources.js';
 import * as ep___retention from './endpoints/retention.js';
-import * as ep___bubbleGame_register from './endpoints/bubble-game/register.js';
-import * as ep___bubbleGame_ranking from './endpoints/bubble-game/ranking.js';
 import * as ep___reversi_cancelMatch from './endpoints/reversi/cancel-match.js';
 import * as ep___reversi_games from './endpoints/reversi/games.js';
 import * as ep___reversi_match from './endpoints/reversi/match.js';
@@ -735,8 +733,6 @@ const $users_updateMemo: Provider = { provide: 'ep:users/update-memo', useClass:
 const $fetchRss: Provider = { provide: 'ep:fetch-rss', useClass: ep___fetchRss.default };
 const $fetchExternalResources: Provider = { provide: 'ep:fetch-external-resources', useClass: ep___fetchExternalResources.default };
 const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention.default };
-const $bubbleGame_register: Provider = { provide: 'ep:bubble-game/register', useClass: ep___bubbleGame_register.default };
-const $bubbleGame_ranking: Provider = { provide: 'ep:bubble-game/ranking', useClass: ep___bubbleGame_ranking.default };
 const $reversi_cancelMatch: Provider = { provide: 'ep:reversi/cancel-match', useClass: ep___reversi_cancelMatch.default };
 const $reversi_games: Provider = { provide: 'ep:reversi/games', useClass: ep___reversi_games.default };
 const $reversi_match: Provider = { provide: 'ep:reversi/match', useClass: ep___reversi_match.default };
@@ -1110,8 +1106,6 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$fetchRss,
 		$fetchExternalResources,
 		$retention,
-		$bubbleGame_register,
-		$bubbleGame_ranking,
 		$reversi_cancelMatch,
 		$reversi_games,
 		$reversi_match,
@@ -1476,8 +1470,6 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$fetchRss,
 		$fetchExternalResources,
 		$retention,
-		$bubbleGame_register,
-		$bubbleGame_ranking,
 		$reversi_cancelMatch,
 		$reversi_games,
 		$reversi_match,

@@ -364,8 +364,6 @@ import * as ep___users_updateMemo from './endpoints/users/update-memo.js';
 import * as ep___fetchRss from './endpoints/fetch-rss.js';
 import * as ep___fetchExternalResources from './endpoints/fetch-external-resources.js';
 import * as ep___retention from './endpoints/retention.js';
-import * as ep___bubbleGame_register from './endpoints/bubble-game/register.js';
-import * as ep___bubbleGame_ranking from './endpoints/bubble-game/ranking.js';
 import * as ep___reversi_cancelMatch from './endpoints/reversi/cancel-match.js';
 import * as ep___reversi_games from './endpoints/reversi/games.js';
 import * as ep___reversi_match from './endpoints/reversi/match.js';
@@ -735,8 +733,6 @@ const eps = [
 	['fetch-rss', ep___fetchRss],
 	['fetch-external-resources', ep___fetchExternalResources],
 	['retention', ep___retention],
-	['bubble-game/register', ep___bubbleGame_register],
-	['bubble-game/ranking', ep___bubbleGame_ranking],
 	['reversi/cancel-match', ep___reversi_cancelMatch],
 	['reversi/games', ep___reversi_games],
 	['reversi/match', ep___reversi_match],

@@ -12,7 +12,6 @@ void Promise.all([
 	rm(join(import.meta.dirname, '/../packages/hono-serve-static/built'), { recursive: true, force: true }),
 	rm(join(import.meta.dirname, '/../packages/http-signature/built'), { recursive: true, force: true }),
 	rm(join(import.meta.dirname, '/../packages/identicon-generator/built'), { recursive: true, force: true }),
-	rm(join(import.meta.dirname, '/../packages/misskey-bubble-game/built'), { recursive: true, force: true }),
 	rm(join(import.meta.dirname, '/../packages/misskey-js/built'), { recursive: true, force: true }),
 	rm(join(import.meta.dirname, '/../packages/misskey-reversi/built'), { recursive: true, force: true }),
 	rm(join(import.meta.dirname, '/../packages/parcom/built'), { recursive: true, force: true }),

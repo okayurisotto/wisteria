@@ -593,9 +593,6 @@ importers:
       mfm-js:
         specifier: 0.24.0
         version: 0.24.0
-      misskey-bubble-game:
-        specifier: workspace:*
-        version: link:../misskey-bubble-game
       misskey-js:
         specifier: workspace:*
         version: link:../misskey-js
@@ -874,31 +871,6 @@ importers:
         version: 8.2.4(@microsoft/api-extractor@7.47.3(@types/node@20.14.14))(@swc/core@1.7.6)(postcss@8.4.41)(typescript@5.5.4)(yaml@2.5.0)
       typescript:
         specifier: ^5.5.4
-        version: 5.5.4
-
-  packages/misskey-bubble-game:
-    dependencies:
-      eventemitter3:
-        specifier: 5.0.1
-        version: 5.0.1
-      matter-js:
-        specifier: 0.19.0
-        version: 0.19.0
-      seedrandom:
-        specifier: 3.0.5
-        version: 3.0.5
-    devDependencies:
-      '@types/matter-js':
-        specifier: 0.19.6
-        version: 0.19.6
-      '@types/seedrandom':
-        specifier: 3.0.8
-        version: 3.0.8
-      tsup:
-        specifier: ^8.2.4
-        version: 8.2.4(@microsoft/api-extractor@7.47.3(@types/node@22.2.0))(@swc/core@1.7.6)(postcss@8.4.41)(typescript@5.5.4)(yaml@2.5.0)
-      typescript:
-        specifier: 5.5.4
         version: 5.5.4
 
   packages/misskey-js:
@@ -3883,9 +3855,6 @@ packages:
 
   '@types/seedrandom@2.4.34':
     resolution: {integrity: sha512-ytDiArvrn/3Xk6/vtylys5tlY6eo7Ane0hvcx++TKo6RxQXuVfW0AF/oeWqAj9dN29SyhtawuXstgmPlwNcv/A==}
-
-  '@types/seedrandom@3.0.8':
-    resolution: {integrity: sha512-TY1eezMU2zH2ozQoAFAQFOPpvP15g+ZgSfTZt31AUUH/Rxtnz3H+A/Sv1Snw2/amp//omibc+AEkTaA8KUeOLQ==}
 
   '@types/semver@7.5.8':
     resolution: {integrity: sha512-I8EUhyrgfLrcTkzV3TSsGyl1tSuPrEDzr0yd5m90UgNxQkyDXULk3b6MlQqTCpZpNtWe1K0hzclnZkTcLBe2UQ==}
@@ -13621,8 +13590,6 @@ snapshots:
       htmlparser2: 8.0.2
 
   '@types/seedrandom@2.4.34': {}
-
-  '@types/seedrandom@3.0.8': {}
 
   '@types/semver@7.5.8': {}
 
