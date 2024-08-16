@@ -10,8 +10,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<MkSpacer :contentMax="600" :marginMin="20">
 			<div class="_gaps_m znqjceqz">
 				<div v-panel class="about">
-					<div ref="containerEl" class="container" :class="{ playing: easterEggEngine != null }">
-						<img src="/client-assets/about-icon.png" alt="" class="icon" draggable="false" @load="iconLoaded" @click="gravity"/>
+					<div ref="containerEl" class="container">
+						<img src="/client-assets/about-icon.png" alt="" class="icon" draggable="false" @load="iconLoaded"/>
 						<div class="misskey">Misskey</div>
 						<div class="version">v{{ version }}</div>
 						<span v-for="emoji in easterEggEmojis" :key="emoji.id" class="emoji" :data-physics-x="emoji.left" :data-physics-y="emoji.top" :class="{ _physics_circle_: !emoji.emoji.startsWith(':') }">
@@ -131,13 +131,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onBeforeUnmount, ref, shallowRef, computed } from 'vue';
+import { ref, shallowRef, computed } from 'vue';
 import { version } from '@/config.js';
 import FormLink from '@/components/form/link.vue';
 import FormSection from '@/components/form/section.vue';
 import MkButton from '@/components/MkButton.vue';
 import MkInfo from '@/components/MkInfo.vue';
-import { physics } from '@/scripts/physics.js';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
 import { defaultStore } from '@/store.js';
@@ -324,14 +323,12 @@ const patrons = [
 	'SHO SEKIGUCHI',
 ];
 
-let easterEggReady = false;
 const easterEggEmojis = ref<{
-	id: string,
-	top: number,
-	left: number,
-	emoji: string
+	id: string;
+	top: number;
+	left: number;
+	emoji: string;
 }[]>([]);
-const easterEggEngine = ref<{ stop: () => void } | null>(null);
 const containerEl = shallowRef<HTMLElement>();
 
 function iconLoaded() {
@@ -345,16 +342,6 @@ function iconLoaded() {
 			emoji: emojis[Math.floor(Math.random() * emojis.length)],
 		});
 	}
-
-	nextTick(() => {
-		easterEggReady = true;
-	});
-}
-
-function gravity() {
-	if (!easterEggReady) return;
-	easterEggReady = false;
-	easterEggEngine.value = physics(containerEl.value);
 }
 
 function iLoveMisskey() {
@@ -363,12 +350,6 @@ function iLoveMisskey() {
 		instant: true,
 	});
 }
-
-onBeforeUnmount(() => {
-	if (easterEggEngine.value) {
-		easterEggEngine.value.stop();
-	}
-});
 
 const headerActions = computed(() => []);
 
@@ -404,20 +385,6 @@ definePageMetadata(() => ({
 			position: relative;
 			text-align: center;
 			padding: 16px;
-
-			&.playing {
-				&, * {
-					user-select: none;
-				}
-
-				* {
-					will-change: transform;
-				}
-
-				> .emoji {
-					visibility: visible;
-				}
-			}
 
 			> .icon {
 				display: block;

@@ -584,9 +584,6 @@ importers:
       json5:
         specifier: 2.2.3
         version: 2.2.3
-      matter-js:
-        specifier: 0.19.0
-        version: 0.19.0
       mfm-js:
         specifier: 0.24.0
         version: 0.24.0
@@ -699,9 +696,6 @@ importers:
       '@types/estree':
         specifier: 1.0.5
         version: 1.0.5
-      '@types/matter-js':
-        specifier: 0.19.6
-        version: 0.19.6
       '@types/micromatch':
         specifier: 4.0.6
         version: 4.0.6
@@ -3737,9 +3731,6 @@ packages:
   '@types/long@4.0.2':
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
 
-  '@types/matter-js@0.19.6':
-    resolution: {integrity: sha512-ffk6tqJM5scla+ThXmnox+mdfCo3qYk6yMjQsNcrbo6eQ5DqorVdtnaL+1agCoYzxUjmHeiNB7poBMAmhuLY7w==}
-
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
 
@@ -6736,9 +6727,6 @@ packages:
     engines: {node: '>= 10'}
     peerDependencies:
       react: '>= 0.14.0'
-
-  matter-js@0.19.0:
-    resolution: {integrity: sha512-v2huwvQGOHTGOkMqtHd2hercCG3f6QAObTisPPHg8TZqq2lz7eIY/5i/5YUV8Ibf3mEioFEmwibcPUF2/fnKKQ==}
 
   mdast-util-find-and-replace@3.0.1:
     resolution: {integrity: sha512-SG21kZHGC3XRTSUhtofZkBzZTJNM5ecCi0SK2IMKmSXR8vO3peL+kb1O0z7Zl83jKtutG4k5Wv/W7V3/YHvzPA==}
@@ -10203,7 +10191,7 @@ snapshots:
       '@babel/traverse': 7.25.3
       '@babel/types': 7.25.2
       convert-source-map: 2.0.0
-      debug: 4.3.6(supports-color@8.1.1)
+      debug: 4.3.6(supports-color@5.5.0)
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.1
@@ -10261,7 +10249,7 @@ snapshots:
       '@babel/core': 7.25.2
       '@babel/helper-compilation-targets': 7.25.2
       '@babel/helper-plugin-utils': 7.24.8
-      debug: 4.3.6(supports-color@8.1.1)
+      debug: 4.3.6(supports-color@5.5.0)
       lodash.debounce: 4.0.8
       resolve: 1.22.8
     transitivePeerDependencies:
@@ -10996,7 +10984,7 @@ snapshots:
       '@babel/parser': 7.25.3
       '@babel/template': 7.25.0
       '@babel/types': 7.25.2
-      debug: 4.3.6(supports-color@8.1.1)
+      debug: 4.3.6(supports-color@5.5.0)
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -13475,8 +13463,6 @@ snapshots:
 
   '@types/long@4.0.2': {}
 
-  '@types/matter-js@0.19.6': {}
-
   '@types/mdast@4.0.4':
     dependencies:
       '@types/unist': 3.0.2
@@ -14070,7 +14056,7 @@ snapshots:
 
   agent-base@7.1.1:
     dependencies:
-      debug: 4.3.6(supports-color@8.1.1)
+      debug: 4.3.6(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -15246,7 +15232,7 @@ snapshots:
   detect-port@1.6.1:
     dependencies:
       address: 1.2.2
-      debug: 4.3.6(supports-color@8.1.1)
+      debug: 4.3.6(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -15403,7 +15389,7 @@ snapshots:
 
   esbuild-register@3.6.0(esbuild@0.18.20):
     dependencies:
-      debug: 4.3.6(supports-color@8.1.1)
+      debug: 4.3.6(supports-color@5.5.0)
       esbuild: 0.18.20
     transitivePeerDependencies:
       - supports-color
@@ -16277,7 +16263,7 @@ snapshots:
   http-proxy-agent@7.0.2:
     dependencies:
       agent-base: 7.1.1
-      debug: 4.3.6(supports-color@8.1.1)
+      debug: 4.3.6(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -16313,7 +16299,7 @@ snapshots:
   https-proxy-agent@7.0.5:
     dependencies:
       agent-base: 7.1.1
-      debug: 4.3.6(supports-color@8.1.1)
+      debug: 4.3.6(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -16619,7 +16605,7 @@ snapshots:
 
   istanbul-lib-source-maps@4.0.1:
     dependencies:
-      debug: 4.3.6(supports-color@8.1.1)
+      debug: 4.3.6(supports-color@5.5.0)
       istanbul-lib-coverage: 3.2.2
       source-map: 0.6.1
     transitivePeerDependencies:
@@ -17001,8 +16987,6 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  matter-js@0.19.0: {}
-
   mdast-util-find-and-replace@3.0.1:
     dependencies:
       '@types/mdast': 4.0.4
@@ -17304,7 +17288,7 @@ snapshots:
   micromark@4.0.0:
     dependencies:
       '@types/debug': 4.1.12
-      debug: 4.3.6(supports-color@8.1.1)
+      debug: 4.3.6(supports-color@5.5.0)
       decode-named-character-reference: 1.0.2
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.1
@@ -19814,7 +19798,7 @@ snapshots:
   vite-node@0.34.6(@types/node@20.14.14)(sass@1.70.0)(terser@5.27.0):
     dependencies:
       cac: 6.7.14
-      debug: 4.3.6(supports-color@8.1.1)
+      debug: 4.3.6(supports-color@5.5.0)
       mlly: 1.7.1
       pathe: 1.1.2
       picocolors: 1.0.1
@@ -19908,7 +19892,7 @@ snapshots:
       acorn-walk: 8.3.3
       cac: 6.7.14
       chai: 4.5.0
-      debug: 4.3.6(supports-color@8.1.1)
+      debug: 4.3.6(supports-color@5.5.0)
       local-pkg: 0.4.3
       magic-string: 0.30.11
       pathe: 1.1.2
