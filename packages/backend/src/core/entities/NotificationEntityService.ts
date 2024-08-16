@@ -87,11 +87,6 @@ export class NotificationEntityService {
 						role: role,
 					}
 				: {}),
-			...(notification.type === 'achievementEarned'
-				? {
-						achievement: notification.achievement,
-					}
-				: {}),
 			...(notification.type === 'app'
 				? {
 						body: notification.customBody,
@@ -229,11 +224,6 @@ export class NotificationEntityService {
 			...(notification.type === 'roleAssigned'
 				? {
 						role: role,
-					}
-				: {}),
-			...(notification.type === 'achievementEarned'
-				? {
-						achievement: notification.achievement,
 					}
 				: {}),
 			...(notification.type === 'app'

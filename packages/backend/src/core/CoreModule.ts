@@ -10,7 +10,6 @@ import { AiService } from './AiService.js';
 import { AnnouncementService } from './AnnouncementService.js';
 import { AntennaService } from './AntennaService.js';
 import { AppLockService } from './AppLockService.js';
-import { AchievementService } from './AchievementService.js';
 import { AvatarDecorationService } from './AvatarDecorationService.js';
 import { CaptchaService } from './CaptchaService.js';
 import { CreateSystemUserService } from './CreateSystemUserService.js';
@@ -170,7 +169,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		AnnouncementService,
 		AntennaService,
 		AppLockService,
-		AchievementService,
 		AvatarDecorationService,
 		CaptchaService,
 		CreateSystemUserService,
@@ -324,7 +322,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		AnnouncementService,
 		AntennaService,
 		AppLockService,
-		AchievementService,
 		AvatarDecorationService,
 		CaptchaService,
 		CreateSystemUserService,

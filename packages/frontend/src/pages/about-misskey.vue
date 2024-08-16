@@ -19,7 +19,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<MkEmoji v-else class="emoji" :emoji="emoji.emoji" :normal="true" :noStyle="true"/>
 						</span>
 					</div>
-					<button v-if="thereIsTreasure" class="_button treasure" @click="getTreasure"><img src="/fluent-emoji/1f3c6.png" class="treasureImg"></button>
 				</div>
 				<div style="text-align: center;">
 					{{ i18n.ts._aboutMisskey.about }}<br><a href="https://misskey-hub.net/docs/about-misskey/" target="_blank" class="_link">{{ i18n.ts.learnMore }}</a>
@@ -144,7 +143,6 @@ import { instance } from '@/instance.js';
 import { defaultStore } from '@/store.js';
 import * as os from '@/os.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
-import { claimAchievement, claimedAchievements } from '@/scripts/achievements.js';
 import { $i } from '@/account.js';
 
 const patronsWithIcon = [{
@@ -326,8 +324,6 @@ const patrons = [
 	'SHO SEKIGUCHI',
 ];
 
-const thereIsTreasure = ref($i && !claimedAchievements.includes('foundTreasure'));
-
 let easterEggReady = false;
 const easterEggEmojis = ref<{
 	id: string,
@@ -366,11 +362,6 @@ function iLoveMisskey() {
 		initialText: 'I $[jelly ❤] #Misskey',
 		instant: true,
 	});
-}
-
-function getTreasure() {
-	thereIsTreasure.value = false;
-	claimAchievement('foundTreasure');
 }
 
 onBeforeUnmount(() => {

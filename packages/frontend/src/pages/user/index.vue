@@ -14,7 +14,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<XTimeline :user="user"/>
 				</MkSpacer>
 				<XActivity v-else-if="tab === 'activity'" key="activity" :user="user"/>
-				<XAchievements v-else-if="tab === 'achievements'" key="achievements" :user="user"/>
 				<XReactions v-else-if="tab === 'reactions'" key="reactions" :user="user"/>
 				<XClips v-else-if="tab === 'clips'" key="clips" :user="user"/>
 				<XLists v-else-if="tab === 'lists'" key="lists" :user="user"/>
@@ -43,7 +42,6 @@ import MkHorizontalSwipe from '@/components/MkHorizontalSwipe.vue';
 const XHome = defineAsyncComponent(() => import('./home.vue'));
 const XTimeline = defineAsyncComponent(() => import('./index.timeline.vue'));
 const XActivity = defineAsyncComponent(() => import('./activity.vue'));
-const XAchievements = defineAsyncComponent(() => import('./achievements.vue'));
 const XReactions = defineAsyncComponent(() => import('./reactions.vue'));
 const XClips = defineAsyncComponent(() => import('./clips.vue'));
 const XLists = defineAsyncComponent(() => import('./lists.vue'));
@@ -92,11 +90,7 @@ const headerTabs = computed(() => user.value ? [{
 	key: 'activity',
 	title: i18n.ts.activity,
 	icon: 'ti ti-chart-line',
-}, ...(user.value.host == null ? [{
-	key: 'achievements',
-	title: i18n.ts.achievements,
-	icon: 'ti ti-medal',
-}] : []), ...($i && ($i.id === user.value.id || $i.isAdmin || $i.isModerator)) || user.value.publicReactions ? [{
+}, ...($i && ($i.id === user.value.id || $i.isAdmin || $i.isModerator)) || user.value.publicReactions ? [{
 	key: 'reactions',
 	title: i18n.ts.reaction,
 	icon: 'ti ti-mood-happy',

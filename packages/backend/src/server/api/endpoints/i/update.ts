@@ -170,7 +170,6 @@ export const paramDef = z.object({
 		receiveFollowRequest: NotificationRecieveConfig,
 		followRequestAccepted: NotificationRecieveConfig,
 		roleAssigned: NotificationRecieveConfig,
-		achievementEarned: NotificationRecieveConfig,
 		app: NotificationRecieveConfig,
 		test: NotificationRecieveConfig,
 	}).partial().optional(),

@@ -159,7 +159,6 @@ import MkAnimBg from '@/components/MkAnimBg.vue';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
 import { host } from '@/config.js';
-import { claimAchievement } from '@/scripts/achievements.js';
 import * as os from '@/os.js';
 
 const props = defineProps<{
@@ -174,13 +173,6 @@ const dialog = shallowRef<InstanceType<typeof MkModalWindow>>();
 
 // eslint-disable-next-line vue/no-setup-props-destructure
 const page = ref(props.initialPage ?? 0);
-
-watch(page, (to) => {
-	// チュートリアルの枚数を増やしたら必ず変更すること！！
-	if (to === 6) {
-		claimAchievement('tutorialCompleted');
-	}
-});
 
 const isReactionTutorialPushed = ref<boolean>(false);
 const isSensitiveTutorialSucceeded = ref<boolean>(false);

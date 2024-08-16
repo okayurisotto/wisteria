@@ -121,13 +121,6 @@ export const MeDetailedOnlySchema = z
 		hardMutedWords: z.string().array().array(),
 		mutedInstances: z.string().array().nullable(),
 		emailNotificationTypes: z.string().array(),
-		achievements: z
-			.object({
-				name: z.string(),
-				unlockedAt: z.number(),
-			})
-			.strict()
-			.array(),
 		loggedInDays: z.number(),
 		policies: RolePoliciesSchema,
 		email: z.string().nullable().optional(),
@@ -153,7 +146,6 @@ export const MeDetailedOnlySchema = z
 			receiveFollowRequest: NotificationRecieveConfig.optional(),
 			followRequestAccepted: NotificationRecieveConfig.optional(),
 			roleAssigned: NotificationRecieveConfig.optional(),
-			achievementEarned: NotificationRecieveConfig.optional(),
 			app: NotificationRecieveConfig.optional(),
 			test: NotificationRecieveConfig.optional(),
 		}),

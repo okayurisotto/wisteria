@@ -148,7 +148,6 @@ import { misskeyApi } from '@/scripts/misskey-api.js';
 import number from '@/filters/number.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
-import { claimAchievement } from '@/scripts/achievements.js';
 import { instance } from '@/instance.js';
 
 const props = withDefaults(defineProps<{
@@ -159,12 +158,6 @@ const props = withDefaults(defineProps<{
 
 const stats = ref<Misskey.entities.StatsResponse | null>(null);
 const tab = ref(props.initialTab);
-
-watch(tab, () => {
-	if (tab.value === 'charts') {
-		claimAchievement('viewInstanceChart');
-	}
-});
 
 const initStats = () => misskeyApi('stats', {
 }).then((res) => {

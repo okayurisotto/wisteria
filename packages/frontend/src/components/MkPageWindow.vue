@@ -39,7 +39,6 @@ import { useScrollPositionManager } from '@/nirax.js';
 import { i18n } from '@/i18n.js';
 import { PageMetadata, provideMetadataReceiver, provideReactiveMetadata } from '@/scripts/page-metadata.js';
 import { openingWindowsCount } from '@/os.js';
-import { claimAchievement } from '@/scripts/achievements.js';
 import { getScrollContainer } from '@/scripts/scroll.js';
 import { useRouterFactory } from '@/router/supplier.js';
 import { mainRouter } from '@/router/main.js';
@@ -160,9 +159,6 @@ useScrollPositionManager(() => getScrollContainer(contents.value), windowRouter)
 
 onMounted(() => {
 	openingWindowsCount.value++;
-	if (openingWindowsCount.value >= 3) {
-		claimAchievement('open3windows');
-	}
 });
 
 onUnmounted(() => {

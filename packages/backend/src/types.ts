@@ -15,7 +15,6 @@
  * receiveFollowRequest - フォローリクエストされた
  * followRequestAccepted - 自分の送ったフォローリクエストが承認された
  * roleAssigned - ロールが付与された
- * achievementEarned - 実績を獲得
  * app - アプリ通知
  * test - テスト通知（サーバー側）
  */
@@ -31,7 +30,6 @@ export const notificationTypes = [
 	'receiveFollowRequest',
 	'followRequestAccepted',
 	'roleAssigned',
-	'achievementEarned',
 	'app',
 	'test'] as const;
 export const obsoleteNotificationTypes = ['pollVote', 'groupInvited'] as const;

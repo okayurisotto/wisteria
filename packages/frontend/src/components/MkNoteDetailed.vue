@@ -221,7 +221,6 @@ import { getNoteClipMenu, getNoteMenu, getRenoteMenu } from '@/scripts/get-note-
 import { useNoteCapture } from '@/scripts/use-note-capture.js';
 import { deepClone } from '@/scripts/clone.js';
 import { useTooltip } from '@/scripts/use-tooltip.js';
-import { claimAchievement } from '@/scripts/achievements.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { showMovedDialog } from '@/scripts/show-moved-dialog.js';
 import MkUserCardMini from '@/components/MkUserCardMini.vue';
@@ -392,9 +391,6 @@ function react(viaKeyboard = false): void {
 				noteId: appearNote.value.id,
 				reaction: reaction,
 			});
-			if (appearNote.value.text && appearNote.value.text.length > 100 && (Date.now() - new Date(appearNote.value.createdAt).getTime() < 1000 * 3)) {
-				claimAchievement('reactWithoutRead');
-			}
 		}, () => {
 			focus();
 		});

@@ -38,7 +38,6 @@ import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { i18n } from '@/i18n.js';
 import { defaultStore } from '@/store.js';
-import { claimAchievement } from '@/scripts/achievements.js';
 import copyToClipboard from '@/scripts/copy-to-clipboard.js';
 import { MenuItem } from '@/types/menu.js';
 
@@ -169,12 +168,6 @@ function onDrop(ev: DragEvent) {
 		}).catch(err => {
 			switch (err.code) {
 				case 'RECURSIVE_NESTING':
-					claimAchievement('driveFolderCircularReference');
-					os.alert({
-						type: 'error',
-						title: i18n.ts.unableToProcess,
-						text: i18n.ts.circularReferenceFolder,
-					});
 					break;
 				default:
 					os.alert({

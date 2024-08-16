@@ -71,7 +71,7 @@ import { notificationTypes } from '@/const.js';
 
 const $i = signinRequired();
 
-const nonConfigurableNotificationTypes = ['note', 'roleAssigned', 'followRequestAccepted', 'achievementEarned'];
+const nonConfigurableNotificationTypes = ['note', 'roleAssigned', 'followRequestAccepted'];
 
 const allowButton = shallowRef<InstanceType<typeof MkPushNotificationAllowButton>>();
 const pushRegistrationInServer = computed(() => allowButton.value?.pushRegistrationInServer);

@@ -80,10 +80,6 @@ export const NotificationSchema = z.discriminatedUnion('type', [
 		role: RoleSchema, // RoleLiteSchema?
 	}),
 	NotificationBaseSchema.extend({
-		type: z.literal('achievementEarned'),
-		achievement: z.string(),
-	}),
-	NotificationBaseSchema.extend({
 		type: z.literal('app'),
 		body: z.string(),
 		header: z.string(),

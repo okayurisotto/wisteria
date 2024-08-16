@@ -10,7 +10,6 @@ import { IdService } from '@/core/IdService.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { DI } from '@/di-symbols.js';
-import { AchievementService } from '@/core/AchievementService.js';
 import { ApiError } from '../../../error.js';
 import { z } from 'zod';
 import { IdSchema } from '@/models/zod/IdSchema.js';
@@ -55,7 +54,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly idService: IdService,
 		private readonly getterService: GetterService,
-		private readonly achievementService: AchievementService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Get favoritee
@@ -82,10 +80,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				noteId: note.id,
 				userId: me.id,
 			});
-
-			if (note.userHost == null && note.userId !== me.id) {
-				this.achievementService.create(note.userId, 'myNoteFavorited1');
-			}
 		});
 	}
 }

@@ -73,11 +73,6 @@ export type MiNotification = {
 	createdAt: string;
 	roleId: MiRole['id'];
 } | {
-	type: 'achievementEarned';
-	id: string;
-	createdAt: string;
-	achievement: string;
-} | {
 	type: 'app';
 	id: string;
 	createdAt: string;

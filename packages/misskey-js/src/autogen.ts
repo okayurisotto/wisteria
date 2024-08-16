@@ -1885,15 +1885,6 @@ export interface paths {
      */
     post: operations["i/authorized-apps"];
   };
-  "/i/claim-achievement": {
-    /**
-     * i/claim-achievement
-     * @description No description provided.
-     *
-     * **Credential required**: *Yes* / **Permission**: *write:account*
-     */
-    post: operations["i/claim-achievement"];
-  };
   "/i/change-password": {
     /**
      * i/change-password
@@ -3375,15 +3366,6 @@ export interface paths {
      */
     post: operations["users/show"];
   };
-  "/users/achievements": {
-    /**
-     * users/achievements
-     * @description No description provided.
-     *
-     * **Credential required**: *No*
-     */
-    post: operations["users/achievements"];
-  };
   "/users/update-memo": {
     /**
      * users/update-memo
@@ -3814,10 +3796,6 @@ export interface components {
       hardMutedWords: string[][];
       mutedInstances: string[] | null;
       emailNotificationTypes: string[];
-      achievements: {
-          name: string;
-          unlockedAt: number;
-        }[];
       loggedInDays: number;
       policies: components["schemas"]["RolePolicies"];
       email?: string | null;
@@ -3839,7 +3817,6 @@ export interface components {
         receiveFollowRequest?: components["schemas"]["NotificationRecieveConfig"];
         followRequestAccepted?: components["schemas"]["NotificationRecieveConfig"];
         roleAssigned?: components["schemas"]["NotificationRecieveConfig"];
-        achievementEarned?: components["schemas"]["NotificationRecieveConfig"];
         app?: components["schemas"]["NotificationRecieveConfig"];
         test?: components["schemas"]["NotificationRecieveConfig"];
         [key: string]: unknown;
@@ -4016,13 +3993,6 @@ export interface components {
       /** @enum {unknown} */
       type: "roleAssigned";
       role: components["schemas"]["Role"];
-      [key: string]: unknown;
-    } | {
-      id: components["schemas"]["Id"];
-      createdAt: string;
-      /** @enum {unknown} */
-      type: "achievementEarned";
-      achievement: string;
       [key: string]: unknown;
     } | {
       id: components["schemas"]["Id"];
@@ -4753,10 +4723,6 @@ export interface operations {
             hardMutedWords: string[][];
             mutedInstances: string[] | null;
             emailNotificationTypes: string[];
-            achievements: {
-                name: string;
-                unlockedAt: number;
-              }[];
             loggedInDays: number;
             policies: components["schemas"]["RolePolicies"];
             email?: string | null;
@@ -4778,7 +4744,6 @@ export interface operations {
               receiveFollowRequest?: components["schemas"]["NotificationRecieveConfig"];
               followRequestAccepted?: components["schemas"]["NotificationRecieveConfig"];
               roleAssigned?: components["schemas"]["NotificationRecieveConfig"];
-              achievementEarned?: components["schemas"]["NotificationRecieveConfig"];
               app?: components["schemas"]["NotificationRecieveConfig"];
               test?: components["schemas"]["NotificationRecieveConfig"];
               [key: string]: unknown;
@@ -8158,7 +8123,6 @@ export interface operations {
               receiveFollowRequest?: components["schemas"]["NotificationRecieveConfig"];
               followRequestAccepted?: components["schemas"]["NotificationRecieveConfig"];
               roleAssigned?: components["schemas"]["NotificationRecieveConfig"];
-              achievementEarned?: components["schemas"]["NotificationRecieveConfig"];
               app?: components["schemas"]["NotificationRecieveConfig"];
               test?: components["schemas"]["NotificationRecieveConfig"];
               [key: string]: unknown;
@@ -16114,59 +16078,6 @@ export interface operations {
     };
   };
   /**
-   * i/claim-achievement
-   * @description No description provided.
-   *
-   * **Credential required**: *Yes* / **Permission**: *write:account*
-   */
-  "i/claim-achievement": {
-    requestBody: {
-      content: {
-        "application/json": {
-          /** @enum {string} */
-          name: "notes1" | "notes10" | "notes100" | "notes500" | "notes1000" | "notes5000" | "notes10000" | "notes20000" | "notes30000" | "notes40000" | "notes50000" | "notes60000" | "notes70000" | "notes80000" | "notes90000" | "notes100000" | "login3" | "login7" | "login15" | "login30" | "login60" | "login100" | "login200" | "login300" | "login400" | "login500" | "login600" | "login700" | "login800" | "login900" | "login1000" | "passedSinceAccountCreated1" | "passedSinceAccountCreated2" | "passedSinceAccountCreated3" | "loggedInOnBirthday" | "loggedInOnNewYearsDay" | "noteClipped1" | "noteFavorited1" | "myNoteFavorited1" | "profileFilled" | "markedAsCat" | "following1" | "following10" | "following50" | "following100" | "following300" | "followers1" | "followers10" | "followers50" | "followers100" | "followers300" | "followers500" | "followers1000" | "collectAchievements30" | "viewAchievements3min" | "iLoveMisskey" | "foundTreasure" | "client30min" | "client60min" | "noteDeletedWithin1min" | "postedAtLateNight" | "postedAt0min0sec" | "selfQuote" | "htl20npm" | "viewInstanceChart" | "outputHelloWorldOnScratchpad" | "open3windows" | "driveFolderCircularReference" | "reactWithoutRead" | "clickedClickHere" | "justPlainLucky" | "setNameToSyuilo" | "cookieClicked" | "brainDiver" | "smashTestNotificationButton" | "tutorialCompleted";
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (without any results) */
-      204: {
-        content: never;
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
    * i/change-password
    * @description No description provided.
    *
@@ -17230,8 +17141,8 @@ export interface operations {
           untilId?: components["schemas"]["Id"];
           /** @default true */
           markAsRead?: boolean;
-          includeTypes?: ("note" | "follow" | "mention" | "reply" | "renote" | "quote" | "reaction" | "pollEnded" | "receiveFollowRequest" | "followRequestAccepted" | "roleAssigned" | "achievementEarned" | "app" | "test" | "pollVote" | "groupInvited")[];
-          excludeTypes?: ("note" | "follow" | "mention" | "reply" | "renote" | "quote" | "reaction" | "pollEnded" | "receiveFollowRequest" | "followRequestAccepted" | "roleAssigned" | "achievementEarned" | "app" | "test" | "pollVote" | "groupInvited")[];
+          includeTypes?: ("note" | "follow" | "mention" | "reply" | "renote" | "quote" | "reaction" | "pollEnded" | "receiveFollowRequest" | "followRequestAccepted" | "roleAssigned" | "app" | "test" | "pollVote" | "groupInvited")[];
+          excludeTypes?: ("note" | "follow" | "mention" | "reply" | "renote" | "quote" | "reaction" | "pollEnded" | "receiveFollowRequest" | "followRequestAccepted" | "roleAssigned" | "app" | "test" | "pollVote" | "groupInvited")[];
           [key: string]: unknown;
         };
       };
@@ -17297,8 +17208,8 @@ export interface operations {
           untilId?: components["schemas"]["Id"];
           /** @default true */
           markAsRead?: boolean;
-          includeTypes?: ("note" | "follow" | "mention" | "reply" | "renote" | "quote" | "reaction" | "pollEnded" | "receiveFollowRequest" | "followRequestAccepted" | "roleAssigned" | "achievementEarned" | "app" | "test" | "pollVote" | "groupInvited")[];
-          excludeTypes?: ("note" | "follow" | "mention" | "reply" | "renote" | "quote" | "reaction" | "pollEnded" | "receiveFollowRequest" | "followRequestAccepted" | "roleAssigned" | "achievementEarned" | "app" | "test" | "pollVote" | "groupInvited")[];
+          includeTypes?: ("note" | "follow" | "mention" | "reply" | "renote" | "quote" | "reaction" | "pollEnded" | "receiveFollowRequest" | "followRequestAccepted" | "roleAssigned" | "app" | "test" | "pollVote" | "groupInvited")[];
+          excludeTypes?: ("note" | "follow" | "mention" | "reply" | "renote" | "quote" | "reaction" | "pollEnded" | "receiveFollowRequest" | "followRequestAccepted" | "roleAssigned" | "app" | "test" | "pollVote" | "groupInvited")[];
           [key: string]: unknown;
         };
       };
@@ -18435,7 +18346,6 @@ export interface operations {
             receiveFollowRequest?: components["schemas"]["NotificationRecieveConfig"];
             followRequestAccepted?: components["schemas"]["NotificationRecieveConfig"];
             roleAssigned?: components["schemas"]["NotificationRecieveConfig"];
-            achievementEarned?: components["schemas"]["NotificationRecieveConfig"];
             app?: components["schemas"]["NotificationRecieveConfig"];
             test?: components["schemas"]["NotificationRecieveConfig"];
             [key: string]: unknown;
@@ -25504,64 +25414,6 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["UserDetailed"] | components["schemas"]["UserDetailed"][];
-        };
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
-   * users/achievements
-   * @description No description provided.
-   *
-   * **Credential required**: *No*
-   */
-  "users/achievements": {
-    requestBody: {
-      content: {
-        "application/json": {
-          userId: components["schemas"]["Id"];
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (with results) */
-      200: {
-        content: {
-          "application/json": {
-              name?: string;
-              unlockedAt?: number;
-              [key: string]: unknown;
-            }[];
         };
       };
       /** @description Client error */
