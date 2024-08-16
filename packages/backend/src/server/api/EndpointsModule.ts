@@ -113,18 +113,6 @@ import * as ep___channels_favorite from './endpoints/channels/favorite.js';
 import * as ep___channels_unfavorite from './endpoints/channels/unfavorite.js';
 import * as ep___channels_myFavorites from './endpoints/channels/my-favorites.js';
 import * as ep___channels_search from './endpoints/channels/search.js';
-import * as ep___charts_activeUsers from './endpoints/charts/active-users.js';
-import * as ep___charts_apRequest from './endpoints/charts/ap-request.js';
-import * as ep___charts_drive from './endpoints/charts/drive.js';
-import * as ep___charts_federation from './endpoints/charts/federation.js';
-import * as ep___charts_instance from './endpoints/charts/instance.js';
-import * as ep___charts_notes from './endpoints/charts/notes.js';
-import * as ep___charts_user_drive from './endpoints/charts/user/drive.js';
-import * as ep___charts_user_following from './endpoints/charts/user/following.js';
-import * as ep___charts_user_notes from './endpoints/charts/user/notes.js';
-import * as ep___charts_user_pv from './endpoints/charts/user/pv.js';
-import * as ep___charts_user_reactions from './endpoints/charts/user/reactions.js';
-import * as ep___charts_users from './endpoints/charts/users.js';
 import * as ep___clips_addNote from './endpoints/clips/add-note.js';
 import * as ep___clips_removeNote from './endpoints/clips/remove-note.js';
 import * as ep___clips_create from './endpoints/clips/create.js';
@@ -473,18 +461,6 @@ const $channels_favorite: Provider = { provide: 'ep:channels/favorite', useClass
 const $channels_unfavorite: Provider = { provide: 'ep:channels/unfavorite', useClass: ep___channels_unfavorite.default };
 const $channels_myFavorites: Provider = { provide: 'ep:channels/my-favorites', useClass: ep___channels_myFavorites.default };
 const $channels_search: Provider = { provide: 'ep:channels/search', useClass: ep___channels_search.default };
-const $charts_activeUsers: Provider = { provide: 'ep:charts/active-users', useClass: ep___charts_activeUsers.default };
-const $charts_apRequest: Provider = { provide: 'ep:charts/ap-request', useClass: ep___charts_apRequest.default };
-const $charts_drive: Provider = { provide: 'ep:charts/drive', useClass: ep___charts_drive.default };
-const $charts_federation: Provider = { provide: 'ep:charts/federation', useClass: ep___charts_federation.default };
-const $charts_instance: Provider = { provide: 'ep:charts/instance', useClass: ep___charts_instance.default };
-const $charts_notes: Provider = { provide: 'ep:charts/notes', useClass: ep___charts_notes.default };
-const $charts_user_drive: Provider = { provide: 'ep:charts/user/drive', useClass: ep___charts_user_drive.default };
-const $charts_user_following: Provider = { provide: 'ep:charts/user/following', useClass: ep___charts_user_following.default };
-const $charts_user_notes: Provider = { provide: 'ep:charts/user/notes', useClass: ep___charts_user_notes.default };
-const $charts_user_pv: Provider = { provide: 'ep:charts/user/pv', useClass: ep___charts_user_pv.default };
-const $charts_user_reactions: Provider = { provide: 'ep:charts/user/reactions', useClass: ep___charts_user_reactions.default };
-const $charts_users: Provider = { provide: 'ep:charts/users', useClass: ep___charts_users.default };
 const $clips_addNote: Provider = { provide: 'ep:clips/add-note', useClass: ep___clips_addNote.default };
 const $clips_removeNote: Provider = { provide: 'ep:clips/remove-note', useClass: ep___clips_removeNote.default };
 const $clips_create: Provider = { provide: 'ep:clips/create', useClass: ep___clips_create.default };
@@ -837,18 +813,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$channels_unfavorite,
 		$channels_myFavorites,
 		$channels_search,
-		$charts_activeUsers,
-		$charts_apRequest,
-		$charts_drive,
-		$charts_federation,
-		$charts_instance,
-		$charts_notes,
-		$charts_user_drive,
-		$charts_user_following,
-		$charts_user_notes,
-		$charts_user_pv,
-		$charts_user_reactions,
-		$charts_users,
 		$clips_addNote,
 		$clips_removeNote,
 		$clips_create,
@@ -1195,18 +1159,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$channels_unfavorite,
 		$channels_myFavorites,
 		$channels_search,
-		$charts_activeUsers,
-		$charts_apRequest,
-		$charts_drive,
-		$charts_federation,
-		$charts_instance,
-		$charts_notes,
-		$charts_user_drive,
-		$charts_user_following,
-		$charts_user_notes,
-		$charts_user_pv,
-		$charts_user_reactions,
-		$charts_users,
 		$clips_addNote,
 		$clips_removeNote,
 		$clips_create,

@@ -8,8 +8,6 @@
  */
 
 import { EntitySchema } from 'typeorm';
-import type { UnionToIntersection } from 'type-fest';
-import { z } from 'zod';
 
 const COLUMN_PREFIX = '___';
 const UNIQUE_TEMP_COLUMN_PREFIX = 'unique_temp___';
@@ -29,32 +27,6 @@ type Schema = Record<string, {
 const camelToSnake = (str: string): string => {
 	return str.replace(/([A-Z])/g, s => '_' + s.charAt(0).toLowerCase());
 };
-
-type ChartResult<T extends Schema> = {
-	[P in keyof T]: number[];
-};
-
-type UnflattenSingleton<K extends string, V> = K extends `${infer A}.${infer B}`
-	? { [_ in A]: UnflattenSingleton<B, V>; }
-	: { [_ in K]: V; };
-
-type Unflatten<T extends Record<string, any>> = UnionToIntersection<
-	{
-		[K in Extract<keyof T, string>]: UnflattenSingleton<K, T[K]>;
-	}[Extract<keyof T, string>]
->;
-
-type ToJsonSchema<S> = {
-	type: 'object';
-	properties: {
-		[K in keyof S]: S[K] extends number[] ? { type: 'array'; items: { type: 'number' } } : ToJsonSchema<S[K]>;
-	};
-	required: (keyof S)[];
-};
-
-export function getJsonSchema<S extends Schema>(schema: S): z.ZodType {
-	return z.record(z.string(), z.unknown());
-}
 
 /**
  * 様々なチャートの管理を司るクラス
