@@ -2,6 +2,7 @@ import { PrimaryColumn, Entity, JoinColumn, Column, ManyToOne } from 'typeorm';
 import { id } from './util/id.js';
 import { MiUser } from './User.js';
 
+/** @deprecated */
 @Entity('reversi_game')
 export class MiReversiGame {
 	@PrimaryColumn(id())

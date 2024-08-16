@@ -5,7 +5,6 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
-import * as Reversi from 'misskey-reversi';
 import type { MiUser } from '@/models/User.js';
 import type { MiNote } from '@/models/Note.js';
 import type { MiAntenna } from '@/models/Antenna.js';
@@ -16,7 +15,7 @@ import type { MiAbuseUserReport } from '@/models/AbuseUserReport.js';
 import type { MiSignin } from '@/models/Signin.js';
 import type { MiPage } from '@/models/Page.js';
 import type { MiWebhook } from '@/models/Webhook.js';
-import { MiReversiGame, MiRole } from '@/models/_.js';
+import { MiRole } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import type { Serialized } from '@/types.js';
@@ -30,8 +29,7 @@ import type { DriveFolderSchema } from '@/models/zod/drive-folder';
 import type { EmojiDetailedSchema } from '@/models/zod/emoji';
 import type { NoteSchema } from '@/models/zod/note';
 import type { NotificationSchema } from '@/models/zod/notification';
-import type { ReversiGameDetailedSchema } from '@/models/zod/reversi-game';
-import type { UserDetailedNotMeSchema, MeDetailedSchema, UserDetailedSchema, UserSchema } from '@/models/zod/user';
+import type { UserDetailedNotMeSchema, MeDetailedSchema, UserDetailedSchema } from '@/models/zod/user';
 import type { UserLiteSchema } from '@/models/zod/user-lite';
 
 // #region Stream type-body definitions
@@ -167,37 +165,6 @@ export interface AdminEventTypes {
 	};
 }
 
-export interface ReversiEventTypes {
-	matched: {
-		game: z.infer<typeof ReversiGameDetailedSchema>;
-	};
-	invited: {
-		user: z.infer<typeof UserSchema>;
-	};
-}
-
-export interface ReversiGameEventTypes {
-	changeReadyStates: {
-		user1: boolean;
-		user2: boolean;
-	};
-	updateSettings: {
-		userId: MiUser['id'];
-		key: string;
-		value: any;
-	};
-	log: Reversi.Serializer.Log & { id: string | null };
-	started: {
-		game: z.infer<typeof ReversiGameDetailedSchema>;
-	};
-	ended: {
-		winnerId: MiUser['id'] | null;
-		game: z.infer<typeof ReversiGameDetailedSchema>;
-	};
-	canceled: {
-		userId: MiUser['id'];
-	};
-}
 // #endregion
 
 // 辞書(interface or type)から{ type, body }ユニオンを定義
@@ -263,14 +230,6 @@ export type GlobalEvents = {
 	notes: {
 		name: 'notesStream';
 		payload: Serialized<z.infer<typeof NoteSchema>>;
-	};
-	reversi: {
-		name: `reversiStream:${MiUser['id']}`;
-		payload: EventUnionFromDictionary<SerializedAll<ReversiEventTypes>>;
-	};
-	reversiGame: {
-		name: `reversiGameStream:${MiReversiGame['id']}`;
-		payload: EventUnionFromDictionary<SerializedAll<ReversiGameEventTypes>>;
 	};
 };
 
@@ -348,13 +307,5 @@ export class GlobalEventService {
 
 	public publishAdminStream<K extends keyof AdminEventTypes>(userId: MiUser['id'], type: K, value?: AdminEventTypes[K]): void {
 		this.publish(`adminStream:${userId}`, type, typeof value === 'undefined' ? null : value);
-	}
-
-	public publishReversiStream<K extends keyof ReversiEventTypes>(userId: MiUser['id'], type: K, value?: ReversiEventTypes[K]): void {
-		this.publish(`reversiStream:${userId}`, type, typeof value === 'undefined' ? null : value);
-	}
-
-	public publishReversiGameStream<K extends keyof ReversiGameEventTypes>(gameId: MiReversiGame['id'], type: K, value?: ReversiGameEventTypes[K]): void {
-		this.publish(`reversiGameStream:${gameId}`, type, typeof value === 'undefined' ? null : value);
 	}
 }

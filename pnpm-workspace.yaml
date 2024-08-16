@@ -3,7 +3,6 @@ packages:
   - 'packages/frontend'
   - 'packages/sw'
   - 'packages/misskey-js'
-  - 'packages/misskey-reversi'
   - 'packages/identicon-generator'
   - 'packages/http-signature'
   - 'packages/parcom'

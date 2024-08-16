@@ -67,7 +67,6 @@ import { FeaturedService } from './FeaturedService.js';
 import { FanoutTimelineService } from './FanoutTimelineService.js';
 import { ChannelFollowingService } from './ChannelFollowingService.js';
 import { RegistryApiService } from './RegistryApiService.js';
-import { ReversiService } from './ReversiService.js';
 
 import { ChartLoggerService } from './chart/ChartLoggerService.js';
 import FederationChart from './chart/charts/federation.js';
@@ -116,7 +115,6 @@ import { UserListEntityService } from './entities/UserListEntityService.js';
 import { FlashEntityService } from './entities/FlashEntityService.js';
 import { FlashLikeEntityService } from './entities/FlashLikeEntityService.js';
 import { RoleEntityService } from './entities/RoleEntityService.js';
-import { ReversiGameEntityService } from './entities/ReversiGameEntityService.js';
 
 import { ApAudienceService } from './activitypub/ApAudienceService.js';
 import { ApDbResolverService } from './activitypub/ApDbResolverService.js';
@@ -235,7 +233,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		FanoutTimelineService,
 		ChannelFollowingService,
 		RegistryApiService,
-		ReversiService,
 		AlsoKnownAsValidateService,
 		FeedService,
 		FileGetService,
@@ -287,7 +284,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		FlashEntityService,
 		FlashLikeEntityService,
 		RoleEntityService,
-		ReversiGameEntityService,
 
 		ApAudienceService,
 		ApDbResolverService,
@@ -391,7 +387,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		FanoutTimelineService,
 		ChannelFollowingService,
 		RegistryApiService,
-		ReversiService,
 		AlsoKnownAsValidateService,
 		FeedService,
 		FileGetService,
@@ -442,7 +437,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		FlashEntityService,
 		FlashLikeEntityService,
 		RoleEntityService,
-		ReversiGameEntityService,
 
 		ApAudienceService,
 		ApDbResolverService,

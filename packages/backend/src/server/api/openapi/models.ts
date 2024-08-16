@@ -26,7 +26,6 @@ import { NotificationSchema } from '@/models/zod/notification.js';
 import { PageSchema } from '@/models/zod/page.js';
 import { QueueCountSchema } from '@/models/zod/queue.js';
 import { RenoteMutingSchema } from '@/models/zod/renote-muting.js';
-import { ReversiGameDetailedSchema, ReversiGameLiteSchema } from '@/models/zod/reversi-game.js';
 import { RolePoliciesSchema, RoleSchema } from '@/models/zod/role.js';
 import { SigninSchema } from '@/models/zod/signin.js';
 import { UserDetailedNotMeSchema } from '@/models/zod/user.js';
@@ -71,8 +70,6 @@ export const models = [
 	{ key: 'Password', schema: PasswordSchema },
 	{ key: 'QueueCount', schema: QueueCountSchema },
 	{ key: 'RenoteMuting', schema: RenoteMutingSchema },
-	{ key: 'ReversiGameDetailed', schema: ReversiGameDetailedSchema },
-	{ key: 'ReversiGameLite', schema: ReversiGameLiteSchema },
 	{ key: 'Role', schema: RoleSchema },
 	{ key: 'RolePolicies', schema: RolePoliciesSchema },
 	{ key: 'Signin', schema: SigninSchema },

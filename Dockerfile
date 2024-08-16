@@ -52,7 +52,6 @@ COPY --link ./packages/hono-serve-static/package.json   ./packages/hono-serve-st
 COPY --link ./packages/http-signature/package.json      ./packages/http-signature/package.json
 COPY --link ./packages/identicon-generator/package.json ./packages/identicon-generator/package.json
 COPY --link ./packages/misskey-js/package.json          ./packages/misskey-js/package.json
-COPY --link ./packages/misskey-reversi/package.json     ./packages/misskey-reversi/package.json
 COPY --link ./packages/parcom/package.json              ./packages/parcom/package.json
 COPY --link ./packages/sw/package.json                  ./packages/sw/package.json
 COPY --link ./packages/zod2spec/package.json            ./packages/zod2spec/package.json
@@ -67,7 +66,6 @@ COPY --link --from=builder /misskey/packages/hono-serve-static/built   ./package
 COPY --link --from=builder /misskey/packages/http-signature/built      ./packages/http-signature/built
 COPY --link --from=builder /misskey/packages/identicon-generator/built ./packages/identicon-generator/built
 COPY --link --from=builder /misskey/packages/misskey-js/built          ./packages/misskey-js/built
-COPY --link --from=builder /misskey/packages/misskey-reversi/built     ./packages/misskey-reversi/built
 COPY --link --from=builder /misskey/packages/parcom/built              ./packages/parcom/built
 COPY --link --from=builder /misskey/packages/zod2spec/built            ./packages/zod2spec/built
 

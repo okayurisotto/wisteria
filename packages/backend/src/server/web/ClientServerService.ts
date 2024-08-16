@@ -19,9 +19,8 @@ import { PageEntityService } from '@/core/entities/PageEntityService.js';
 import { GalleryPostEntityService } from '@/core/entities/GalleryPostEntityService.js';
 import { ClipEntityService } from '@/core/entities/ClipEntityService.js';
 import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
-import type { ChannelsRepository, ClipsRepository, FlashsRepository, GalleryPostsRepository, MiMeta, NotesRepository, PagesRepository, ReversiGamesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import type { ChannelsRepository, ClipsRepository, FlashsRepository, GalleryPostsRepository, MiMeta, NotesRepository, PagesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { FlashEntityService } from '@/core/entities/FlashEntityService.js';
-import { ReversiGameEntityService } from '@/core/entities/ReversiGameEntityService.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
 import { ClientLoggerService } from './ClientLoggerService.js';
 import { PUG_DIR } from '@/path.js';
@@ -31,7 +30,7 @@ import path from 'node:path';
 declare module 'hono' {
 	interface ContextRenderer {
 		(
-			name: 'base' | 'bios' | 'channel' | 'cli' | 'clip' | 'error' | 'flash' | 'flush' | 'gallery-post' | 'note' | 'page' | 'reversi-game' | 'user',
+			name: 'base' | 'bios' | 'channel' | 'cli' | 'clip' | 'error' | 'flash' | 'flush' | 'gallery-post' | 'note' | 'page' | 'user',
 			locals: Record<string, unknown>
 		): Response | Promise<Response>;
 	}
@@ -67,9 +66,6 @@ export class ClientServerService {
 		@Inject(DI.flashsRepository)
 		private readonly flashsRepository: FlashsRepository,
 
-		@Inject(DI.reversiGamesRepository)
-		private readonly reversiGamesRepository: ReversiGamesRepository,
-
 		private readonly flashEntityService: FlashEntityService,
 		private readonly userEntityService: UserEntityService,
 		private readonly noteEntityService: NoteEntityService,
@@ -77,7 +73,6 @@ export class ClientServerService {
 		private readonly galleryPostEntityService: GalleryPostEntityService,
 		private readonly clipEntityService: ClipEntityService,
 		private readonly channelEntityService: ChannelEntityService,
-		private readonly reversiGameEntityService: ReversiGameEntityService,
 		private readonly metaService: MetaService,
 		private readonly urlPreviewService: UrlPreviewService,
 		private readonly clientLoggerService: ClientLoggerService,
@@ -410,29 +405,6 @@ export class ClientServerService {
 				version: this.config.version,
 				config: this.config,
 				channel: packedChannel,
-			});
-		});
-
-		// Reversi game
-		hono.get('/reversi/g/:game', noIframe, usePug, async (c, next) => {
-			const game = await this.reversiGamesRepository.findOneBy({
-				id: c.req.param('game'),
-			});
-
-			if (game === null) {
-				await next();
-				return;
-			}
-
-			c.header('Cache-Control', 'public, max-age=3600');
-
-			const packedGame = await this.reversiGameEntityService.packDetail(game);
-			const meta = await this.metaService.fetch();
-			return await c.render('reversi-game', {
-				...this.generateCommonPugData(meta),
-				version: this.config.version,
-				config: this.config,
-				game: packedGame,
 			});
 		});
 

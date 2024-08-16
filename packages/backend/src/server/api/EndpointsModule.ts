@@ -364,13 +364,6 @@ import * as ep___users_updateMemo from './endpoints/users/update-memo.js';
 import * as ep___fetchRss from './endpoints/fetch-rss.js';
 import * as ep___fetchExternalResources from './endpoints/fetch-external-resources.js';
 import * as ep___retention from './endpoints/retention.js';
-import * as ep___reversi_cancelMatch from './endpoints/reversi/cancel-match.js';
-import * as ep___reversi_games from './endpoints/reversi/games.js';
-import * as ep___reversi_match from './endpoints/reversi/match.js';
-import * as ep___reversi_invitations from './endpoints/reversi/invitations.js';
-import * as ep___reversi_showGame from './endpoints/reversi/show-game.js';
-import * as ep___reversi_surrender from './endpoints/reversi/surrender.js';
-import * as ep___reversi_verify from './endpoints/reversi/verify.js';
 import { GetterService } from './GetterService.js';
 import { ApiLoggerService } from './ApiLoggerService.js';
 import type { Provider } from '@nestjs/common';
@@ -733,13 +726,6 @@ const $users_updateMemo: Provider = { provide: 'ep:users/update-memo', useClass:
 const $fetchRss: Provider = { provide: 'ep:fetch-rss', useClass: ep___fetchRss.default };
 const $fetchExternalResources: Provider = { provide: 'ep:fetch-external-resources', useClass: ep___fetchExternalResources.default };
 const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention.default };
-const $reversi_cancelMatch: Provider = { provide: 'ep:reversi/cancel-match', useClass: ep___reversi_cancelMatch.default };
-const $reversi_games: Provider = { provide: 'ep:reversi/games', useClass: ep___reversi_games.default };
-const $reversi_match: Provider = { provide: 'ep:reversi/match', useClass: ep___reversi_match.default };
-const $reversi_invitations: Provider = { provide: 'ep:reversi/invitations', useClass: ep___reversi_invitations.default };
-const $reversi_showGame: Provider = { provide: 'ep:reversi/show-game', useClass: ep___reversi_showGame.default };
-const $reversi_surrender: Provider = { provide: 'ep:reversi/surrender', useClass: ep___reversi_surrender.default };
-const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep___reversi_verify.default };
 
 @Module({
 	imports: [
@@ -1106,13 +1092,6 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$fetchRss,
 		$fetchExternalResources,
 		$retention,
-		$reversi_cancelMatch,
-		$reversi_games,
-		$reversi_match,
-		$reversi_invitations,
-		$reversi_showGame,
-		$reversi_surrender,
-		$reversi_verify,
 	],
 	exports: [
 		$admin_meta,
@@ -1470,13 +1449,6 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$fetchRss,
 		$fetchExternalResources,
 		$retention,
-		$reversi_cancelMatch,
-		$reversi_games,
-		$reversi_match,
-		$reversi_invitations,
-		$reversi_showGame,
-		$reversi_surrender,
-		$reversi_verify,
 	],
 })
 export class EndpointsModule {}

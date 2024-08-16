@@ -9,7 +9,6 @@ import { DI } from '@/di-symbols.js';
 import type { AntennasRepository, RoleAssignmentsRepository, UserIpsRepository } from '@/models/_.js';
 import type { Logger } from '@/logger.js';
 import type { Config } from '@/config.js';
-import { ReversiService } from '@/core/ReversiService.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 
 @Injectable()
@@ -30,7 +29,6 @@ export class CleanProcessorService {
 		private readonly roleAssignmentsRepository: RoleAssignmentsRepository,
 
 		private readonly queueLoggerService: QueueLoggerService,
-		private readonly reversiService: ReversiService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('clean');
 	}
@@ -61,8 +59,6 @@ export class CleanProcessorService {
 				id: In(expiredRoleAssignments.map(x => x.id)),
 			});
 		}
-
-		this.reversiService.cleanOutdatedGames();
 
 		this.logger.succ('Cleaned.');
 	}
