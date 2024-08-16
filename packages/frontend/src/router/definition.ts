@@ -531,10 +531,6 @@ const routes: RouteDef[] = [{
 	component: page(() => import('@/pages/clicker.vue')),
 	loginRequired: true,
 }, {
-	path: '/games',
-	component: page(() => import('@/pages/games.vue')),
-	loginRequired: false,
-}, {
 	path: '/timeline',
 	component: page(() => import('@/pages/timeline.vue')),
 }, {
