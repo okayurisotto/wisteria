@@ -148,7 +148,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, shallowRef, watch } from 'vue';
+import { ref, shallowRef } from 'vue';
 import MkModalWindow from '@/components/MkModalWindow.vue';
 import MkButton from '@/components/MkButton.vue';
 import XNote from '@/components/MkTutorialDialog.Note.vue';

@@ -121,7 +121,7 @@ import { defaultStore, notePostInterruptors, postFormActions } from '@/store.js'
 import MkInfo from '@/components/MkInfo.vue';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
-import { signinRequired, notesCount, incNotesCount, getAccounts, openAccountMenu as openAccountMenu_ } from '@/account.js';
+import { signinRequired, incNotesCount, getAccounts, openAccountMenu as openAccountMenu_ } from '@/account.js';
 import { uploadFile } from '@/scripts/upload.js';
 import { deepClone } from '@/scripts/clone.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
