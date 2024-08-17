@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Ref, ref, watch, onUnmounted } from 'vue';
+import { type Ref, ref, watch, onUnmounted } from 'vue';
 
 export function useTooltip(
 	elRef: Ref<HTMLElement | { $el: HTMLElement } | null | undefined>,

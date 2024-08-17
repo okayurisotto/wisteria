@@ -4,7 +4,7 @@
  */
 
 import * as Misskey from 'misskey-js';
-import { ComputedRef, Ref } from 'vue';
+import type { ComputedRef, Ref } from 'vue';
 
 export type MenuAction = (ev: MouseEvent) => void;
 

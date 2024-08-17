@@ -105,10 +105,10 @@ import XSection from '@/components/MkEmojiPicker.section.vue';
 import {
 	emojilist,
 	emojiCharByCategory,
-	UnicodeEmojiDef,
+	type UnicodeEmojiDef,
 	unicodeEmojiCategories as categories,
 	getEmojiName,
-	CustomEmojiFolderTree,
+	type CustomEmojiFolderTree,
 } from '@/scripts/emojilist.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import * as os from '@/os.js';

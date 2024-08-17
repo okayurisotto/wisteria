@@ -4,7 +4,7 @@
  */
 
 import * as Misskey from 'misskey-js';
-import { MaybeRefOrGetter, Ref, inject, isRef, onActivated, onBeforeUnmount, provide, ref, toValue, watch } from 'vue';
+import { type MaybeRefOrGetter, type Ref, inject, isRef, onActivated, onBeforeUnmount, provide, ref, toValue, watch } from 'vue';
 
 export type PageMetadata = {
 	title: string;

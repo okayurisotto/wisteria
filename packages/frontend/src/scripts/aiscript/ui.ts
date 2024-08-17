@@ -5,7 +5,7 @@
 
 import { utils, values } from '@syuilo/aiscript';
 import { v4 as uuid } from 'uuid';
-import { ref, Ref } from 'vue';
+import { ref, type Ref } from 'vue';
 
 export type AsUiComponentBase = {
 	id: string;

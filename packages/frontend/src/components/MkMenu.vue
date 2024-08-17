@@ -74,10 +74,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts">
-import { ComputedRef, computed, defineAsyncComponent, isRef, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
+import { type ComputedRef, computed, defineAsyncComponent, isRef, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
 import { focusPrev, focusNext } from '@/scripts/focus.js';
 import MkSwitchButton from '@/components/MkSwitch.button.vue';
-import { MenuItem, InnerMenuItem, MenuPending, MenuAction, MenuSwitch, MenuParent } from '@/types/menu.js';
+import type { MenuItem, InnerMenuItem, MenuPending, MenuAction, MenuSwitch, MenuParent } from '@/types/menu.js';
 import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
 import { isTouchUsing } from '@/scripts/touch.js';

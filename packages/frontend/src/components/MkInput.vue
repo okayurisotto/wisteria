@@ -48,7 +48,7 @@ import { debounce } from 'throttle-debounce';
 import MkButton from '@/components/MkButton.vue';
 import { useInterval } from '@/scripts/use-interval.js';
 import { i18n } from '@/i18n.js';
-import { Autocomplete, SuggestionType } from '@/scripts/autocomplete.js';
+import { Autocomplete, type SuggestionType } from '@/scripts/autocomplete.js';
 
 const props = defineProps<{
 	modelValue: string | number | null;

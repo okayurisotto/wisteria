@@ -4,7 +4,7 @@
  */
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { StoryObj } from '@storybook/vue3';
+import type { StoryObj } from '@storybook/vue3';
 import MkAnnouncementDialog from './MkAnnouncementDialog.vue';
 export const Default = {
 	render(args) {

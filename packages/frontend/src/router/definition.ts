@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { App, AsyncComponentLoader, defineAsyncComponent, provide } from 'vue';
+import { type App, type AsyncComponentLoader, defineAsyncComponent, provide } from 'vue';
 import type { RouteDef } from '@/nirax.js';
-import { IRouter, Router } from '@/nirax.js';
+import { type IRouter, Router } from '@/nirax.js';
 import { $i, iAmModerator } from '@/account.js';
 import MkLoading from '@/pages/_loading_.vue';
 import MkError from '@/pages/_error_.vue';

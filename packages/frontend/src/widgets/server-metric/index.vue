@@ -22,14 +22,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { onUnmounted, ref } from 'vue';
 import * as Misskey from 'misskey-js';
-import { useWidgetPropsManager, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from '../widget.js';
+import { useWidgetPropsManager, type WidgetComponentEmits, type WidgetComponentExpose, type WidgetComponentProps } from '../widget.js';
 import XCpuMemory from './cpu-mem.vue';
 import XNet from './net.vue';
 import XCpu from './cpu.vue';
 import XMemory from './mem.vue';
 import XDisk from './disk.vue';
 import MkContainer from '@/components/MkContainer.vue';
-import { GetFormResultType } from '@/scripts/form.js';
+import type { GetFormResultType } from '@/scripts/form.js';
 import { misskeyApiGet } from '@/scripts/misskey-api.js';
 import { useStream } from '@/stream.js';
 import { i18n } from '@/i18n.js';

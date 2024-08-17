@@ -69,7 +69,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, provide, ref, computed, onBeforeUnmount, Ref } from 'vue';
+import { onMounted, provide, ref, computed, onBeforeUnmount, type Ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import XCommon from './_common_/common.vue';
 import { instanceName } from '@/config.js';
@@ -79,7 +79,7 @@ import { instance } from '@/instance.js';
 import XSigninDialog from '@/components/MkSigninDialog.vue';
 import XSignupDialog from '@/components/MkSignupDialog.vue';
 import { ColdDeviceStorage, defaultStore } from '@/store.js';
-import { PageMetadata, provideMetadataReceiver, provideReactiveMetadata } from '@/scripts/page-metadata.js';
+import { type PageMetadata, provideMetadataReceiver, provideReactiveMetadata } from '@/scripts/page-metadata.js';
 import { i18n } from '@/i18n.js';
 import MkVisitorDashboard from '@/components/MkVisitorDashboard.vue';
 import { mainRouter } from '@/router/main.js';

@@ -59,8 +59,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, Ref } from 'vue';
-import { CustomEmojiFolderTree, getEmojiName } from '@/scripts/emojilist.js';
+import { ref, computed, type Ref } from 'vue';
+import { type CustomEmojiFolderTree, getEmojiName } from '@/scripts/emojilist.js';
 import { i18n } from '@/i18n.js';
 import { customEmojis } from '@/custom-emojis.js';
 import MkEmojiPickerSection from '@/components/MkEmojiPicker.section.vue';

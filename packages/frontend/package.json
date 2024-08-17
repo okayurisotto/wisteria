@@ -110,6 +110,6 @@
 		"vitest": "0.34.6",
 		"vitest-fetch-mock": "0.2.2",
 		"vue-component-type-helpers": "1.8.27",
-		"vue-tsc": "1.8.27"
+		"vue-tsc": "2.0.29"
 	}
 }

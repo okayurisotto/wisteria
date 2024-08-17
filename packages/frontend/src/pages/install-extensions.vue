@@ -106,7 +106,7 @@ import MkFolder from '@/components/MkFolder.vue';
 import MkKeyValue from '@/components/MkKeyValue.vue';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
-import { AiScriptPluginMeta, parsePluginMeta, installPlugin } from '@/scripts/install-plugin.js';
+import { type AiScriptPluginMeta, parsePluginMeta, installPlugin } from '@/scripts/install-plugin.js';
 import { parseThemeCode, installTheme } from '@/scripts/install-theme.js';
 import { unisonReload } from '@/scripts/unison-reload.js';
 import { i18n } from '@/i18n.js';

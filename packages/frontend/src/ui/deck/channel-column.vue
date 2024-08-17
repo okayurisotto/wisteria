@@ -22,7 +22,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { shallowRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import XColumn from './column.vue';
-import { updateColumn, Column } from './deck-store.js';
+import { updateColumn, type Column } from './deck-store.js';
 import MkTimeline from '@/components/MkTimeline.vue';
 import MkButton from '@/components/MkButton.vue';
 import * as os from '@/os.js';

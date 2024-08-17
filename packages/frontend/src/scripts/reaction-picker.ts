@@ -4,7 +4,7 @@
  */
 
 import * as Misskey from 'misskey-js';
-import { defineAsyncComponent, Ref, ref } from 'vue';
+import { defineAsyncComponent, type Ref, ref } from 'vue';
 import { popup } from '@/os.js';
 import { defaultStore } from '@/store.js';
 

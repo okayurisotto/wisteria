@@ -4,7 +4,7 @@
  */
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { StoryObj } from '@storybook/vue3';
+import type { StoryObj } from '@storybook/vue3';
 import MkAd from './MkAd.vue';
 
 let lock: Promise<undefined> | undefined;

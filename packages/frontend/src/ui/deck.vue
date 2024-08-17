@@ -92,7 +92,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, ref, watch, shallowRef, onMounted, provide, Ref, onBeforeUnmount } from 'vue';
+import { computed, defineAsyncComponent, ref, watch, shallowRef, onMounted, provide, type Ref, onBeforeUnmount } from 'vue';
 import { v4 as uuid } from 'uuid';
 import XCommon from './_common_/common.vue';
 import { deckStore, addColumn as addColumnToStore, loadDeck, getProfiles, deleteProfile as deleteProfile_ } from './deck/deck-store.js';

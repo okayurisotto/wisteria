@@ -22,9 +22,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, provide, Ref, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, provide, type Ref, ref } from 'vue';
 import XCommon from './_common_/common.vue';
-import { PageMetadata, provideMetadataReceiver, provideReactiveMetadata } from '@/scripts/page-metadata.js';
+import { type PageMetadata, provideMetadataReceiver, provideReactiveMetadata } from '@/scripts/page-metadata.js';
 import { instanceName, ui } from '@/config.js';
 import { i18n } from '@/i18n.js';
 import { mainRouter } from '@/router/main.js';

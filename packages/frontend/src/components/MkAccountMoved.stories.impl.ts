@@ -4,7 +4,7 @@
  */
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { StoryObj } from '@storybook/vue3';
+import type { StoryObj } from '@storybook/vue3';
 import { userDetailed } from '../../.storybook/fakes.js';
 import MkAccountMoved from './MkAccountMoved.vue';
 export const Default = {

@@ -57,7 +57,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, onDeactivated, onUnmounted, Ref, ref, watch, shallowRef } from 'vue';
+import { computed, onDeactivated, onUnmounted, type Ref, ref, watch, shallowRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import { Interpreter, Parser, values } from '@syuilo/aiscript';
 import MkButton from '@/components/MkButton.vue';
@@ -67,7 +67,7 @@ import { url } from '@/config.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkAsUi from '@/components/MkAsUi.vue';
-import { AsUiComponent, AsUiRoot, registerAsUiLib } from '@/scripts/aiscript/ui.js';
+import { type AsUiComponent, type AsUiRoot, registerAsUiLib } from '@/scripts/aiscript/ui.js';
 import { aiScriptReadline, createAiScriptEnv } from '@/scripts/aiscript/api.js';
 import MkFolder from '@/components/MkFolder.vue';
 import MkCode from '@/components/MkCode.vue';

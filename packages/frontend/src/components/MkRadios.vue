@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <script lang="ts">
-import { VNode, defineComponent, h, ref, watch } from 'vue';
+import { type VNode, defineComponent, h, ref, watch } from 'vue';
 import MkRadio from './MkRadio.vue';
 
 export default defineComponent({

@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ShallowRef } from 'vue';
+import type { ShallowRef } from 'vue';
 import { EventEmitter } from 'eventemitter3';
-import { IRouter, Resolved, RouteDef, RouterEvent } from '@/nirax.js';
+import type { IRouter, Resolved, RouteDef, RouterEvent } from '@/nirax.js';
 
 function getMainRouter(): IRouter {
 	const router = mainRouterHolder;

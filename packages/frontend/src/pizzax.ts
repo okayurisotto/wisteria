@@ -5,7 +5,7 @@
 
 // PIZZAX --- A lightweight store
 
-import { onUnmounted, Ref, ref, watch } from 'vue';
+import { onUnmounted, type Ref, ref, watch } from 'vue';
 import { BroadcastChannel } from 'broadcast-channel';
 import { $i } from '@/account.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { onUnmounted, Ref, ShallowRef } from 'vue';
+import { onUnmounted, type Ref, type ShallowRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import { useStream } from '@/stream.js';
 import { $i } from '@/account.js';

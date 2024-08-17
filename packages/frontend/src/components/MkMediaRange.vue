@@ -14,7 +14,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script setup lang="ts">
-import { computed, ModelRef } from 'vue';
+import { computed, type ModelRef } from 'vue';
 
 withDefaults(defineProps<{
 	buffer?: number;
