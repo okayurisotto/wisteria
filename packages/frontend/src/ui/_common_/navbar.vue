@@ -108,390 +108,244 @@ function more(ev: MouseEvent) {
 
 <style lang="scss" module>
 .root {
-	--nav-width: 250px;
-	--nav-icon-only-width: 80px;
+	--navbar-width: 250px;
+	--navbar-width-icon-only: 80px;
 
-	flex: 0 0 var(--nav-width);
-	width: var(--nav-width);
+	flex: 0 0 var(--navbar-width);
+	width: var(--navbar-width);
 	box-sizing: border-box;
 }
 
 .body {
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: 1001;
-	width: var(--nav-icon-only-width);
-	height: 100dvh;
-	box-sizing: border-box;
-	overflow: auto;
-	overflow-x: clip;
-	overscroll-behavior: contain;
+	--divider-height: 40px;
+	--divider-margin-inline: 16px;
+	--divider-width: 1px;
+	--icon-size: 32px;
+	--indicator-size: 8px;
+	--instance-icon-size: 38px;
+	--item-children-gap: 8px;
+	--item-height: 40px;
+	--item-padding-inline: 16px;
+	--navbar-children-gap: 20px;
+	--navbar-padding-block: 20px;
+	--navbar-padding-inline: 18px;
+
 	background: var(--navBg);
+	box-sizing: border-box;
 	contain: strict;
 	display: flex;
 	flex-direction: column;
+	height: 100dvh;
+	overflow-x: clip;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	width: var(--navbar-width-icon-only);
+	z-index: 1001;
 }
 
-.root:not(.iconOnly) {
+.root {
 	.body {
-		width: var(--nav-width);
+		width: var(--navbar-width);
 	}
 
 	.top {
+		-webkit-backdrop-filter: var(--blur, blur(8px));
+		backdrop-filter: var(--blur, blur(8px));
+		background: var(--X14);
+		padding-block: var(--navbar-padding-block) var(--navbar-children-gap);
 		position: sticky;
 		top: 0;
 		z-index: 1;
-		padding: 20px 0;
-		background: var(--X14);
-		-webkit-backdrop-filter: var(--blur, blur(8px));
-		backdrop-filter: var(--blur, blur(8px));
 	}
 
 	.banner {
+		-webkit-mask-image: linear-gradient(0deg, rgba(0,0,0,0) 15%, rgba(0,0,0,0.75) 100%);
+		background-position: center center;
+		background-size: cover;
+		height: 100%;
+		left: 0;
+		mask-image: linear-gradient(0deg, rgba(0,0,0,0) 15%, rgba(0,0,0,0.75) 100%);
 		position: absolute;
 		top: 0;
-		left: 0;
 		width: 100%;
-		height: 100%;
-		background-size: cover;
-		background-position: center center;
-		-webkit-mask-image: linear-gradient(0deg, rgba(0,0,0,0) 15%, rgba(0,0,0,0.75) 100%);
-		mask-image: linear-gradient(0deg, rgba(0,0,0,0) 15%, rgba(0,0,0,0.75) 100%);
 	}
 
 	.instance {
-		position: relative;
 		display: block;
+		position: relative;
 		text-align: center;
 		width: 100%;
 	}
 
 	.instanceIcon {
-		display: inline-block;
-		width: 38px;
 		aspect-ratio: 1;
+		display: inline-block;
+		width: var(--instance-icon-size);
 	}
 
 	.bottom {
-		position: sticky;
-		bottom: 0;
-		padding-top: 20px;
-		background: var(--X14);
 		-webkit-backdrop-filter: var(--blur, blur(8px));
 		backdrop-filter: var(--blur, blur(8px));
+		background: var(--X14);
+		bottom: 0;
+		display: flex;
+		flex-direction: column;
+		padding-block: var(--navbar-children-gap) var(--navbar-padding-block);
+		padding-inline: var(--navbar-padding-inline);
+		position: sticky;
 	}
 
 	.post {
-		position: relative;
-		display: block;
-		width: 100%;
-		height: 40px;
+		align-items: center;
+		background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
+		border-radius: var(--item-height);
 		color: var(--fgOnAccent);
+		display: flex;
 		font-weight: bold;
+		gap: var(--item-children-gap);
+		height: var(--item-height);
+		padding-inline: var(--item-padding-inline);
+		position: relative;
 		text-align: left;
-
-		&:before {
-			content: "";
-			display: block;
-			width: calc(100% - 38px);
-			height: 100%;
-			margin: auto;
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			border-radius: 999px;
-			background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
-		}
+		width: 100%;
 
 		&:hover, &.active {
-			&:before {
-				background: var(--accentLighten);
-			}
+			background: var(--accentLighten);
 		}
 	}
 
 	.postIcon {
-		position: relative;
-		margin-left: 30px;
-		margin-right: 8px;
 		width: 32px;
-	}
-
-	.postText {
-		position: relative;
 	}
 
 	.account {
-		position: relative;
-		display: flex;
 		align-items: center;
-		padding: 20px 0 20px 30px;
-		width: 100%;
-		text-align: left;
 		box-sizing: border-box;
+		display: flex;
+		gap: var(--item-children-gap);
 		overflow: clip;
+		padding-block-start: 20px;
+		padding-inline: var(--item-padding-inline);
+		text-align: left;
+		width: 100%;
 	}
 
 	.avatar {
-		display: block;
-		flex-shrink: 0;
-		position: relative;
-		width: 32px;
 		aspect-ratio: 1;
-		margin-right: 8px;
+		flex-shrink: 0;
+		width: var(--icon-size);
 	}
 
 	.acct {
 		display: block;
 		flex-shrink: 1;
-		padding-right: 8px;
 	}
 
 	.middle {
-		flex: 1;
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+		padding-inline: var(--navbar-padding-inline);
 	}
 
 	.divider {
-		margin: 16px 16px;
-		border-top: solid 0.5px var(--divider);
+		border-block: calc(var(--divider-width) / 2) solid var(--divider);
+		box-sizing: border-box;
+		margin-block: calc((var(--divider-height) - var(--divider-width)) / 2);
+		margin-inline: var(--divider-margin-inline);
+		width: calc(100% - var(--divider-margin-inline) * 2);
 	}
 
 	.item {
-		position: relative;
-		display: block;
-		padding-left: 30px;
-		line-height: 2.85rem;
-		text-overflow: ellipsis;
-		overflow: hidden;
-		white-space: nowrap;
-		width: 100%;
-		text-align: left;
+		align-items: center;
+		border-radius: calc(var(--item-height) / 2);
 		box-sizing: border-box;
 		color: var(--navFg);
+		display: flex;
+		gap: var(--item-children-gap);
+		height: var(--item-height);
+		line-height: 2.85rem;
+		padding-inline: var(--item-padding-inline);
+		position: relative;
+		text-align: left;
+		width: 100%;
 
 		&:hover {
-			text-decoration: none;
 			color: var(--navHoverFg);
+			text-decoration: none;
 		}
 
 		&.active {
+			background: var(--accentedBg);
 			color: var(--navActive);
 		}
 
 		&:hover, &.active {
 			color: var(--accent);
-
-			&:before {
-				content: "";
-				display: block;
-				width: calc(100% - 34px);
-				height: 100%;
-				margin: auto;
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				border-radius: 999px;
-				background: var(--accentedBg);
-			}
 		}
 	}
 
 	.itemIcon {
+		min-width: var(--icon-size);
 		position: relative;
-		width: 32px;
-		margin-right: 8px;
+		width: var(--icon-size);
 	}
 
 	.itemIndicator {
-		position: absolute;
-		top: 0;
-		left: 20px;
+		animation: global-blink 1s infinite;
 		color: var(--navIndicator);
 		font-size: 8px;
-		animation: global-blink 1s infinite;
+		left: calc(var(--indicator-size) / -2);
+		position: absolute;
+		top: 0;
 
 		&:has(.itemIndicateValueIcon) {
+			align-items: center;
 			animation: none;
-			left: auto;
-			right: 40px;
+			display: flex;
 			font-size: 10px;
+			height: 100%;
+			left: auto;
+			right: 0;
 		}
 	}
 
 	.itemText {
-		position: relative;
 		font-size: 0.9em;
+		overflow-x: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 }
 
 .root.iconOnly {
-	flex: 0 0 var(--nav-icon-only-width);
-	width: var(--nav-icon-only-width);
+	max-width: var(--navbar-width-icon-only);
 
 	.body {
-		width: var(--nav-icon-only-width);
+		--divider-height: 25px;
+		--divider-margin-inline: calc((var(--navbar-width-icon-only) - var(--item-height)) / 2);
+		--item-height: 50px;
+		--item-padding-inline: 0;
+		--navbar-padding-inline: 0;
+		--icon-size: 38px;
+		--instance-icon-size: 32px;
+
+		width: var(--navbar-width-icon-only);
 	}
 
-	.top {
-		position: sticky;
-		top: 0;
-		z-index: 1;
-		padding: 20px 0;
-		background: var(--X14);
-		-webkit-backdrop-filter: var(--blur, blur(8px));
-		backdrop-filter: var(--blur, blur(8px));
+	.middle, .bottom {
+		align-items: center;
 	}
 
-	.instance {
-		display: block;
-		text-align: center;
-		width: 100%;
-	}
-
-	.instanceIcon {
-		display: inline-block;
-		width: 30px;
-		aspect-ratio: 1;
-	}
-
-	.bottom {
-		position: sticky;
-		bottom: 0;
-		padding-top: 20px;
-		background: var(--X14);
-		-webkit-backdrop-filter: var(--blur, blur(8px));
-		backdrop-filter: var(--blur, blur(8px));
-	}
-
-	.post {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 52px;
-		text-align: center;
-
-		&:before {
-			content: "";
-			display: block;
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			margin: auto;
-			width: 52px;
-			aspect-ratio: 1/1;
-			border-radius: 100%;
-			background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
-		}
-
-		&:hover, &.active {
-			&:before {
-				background: var(--accentLighten);
-			}
-		}
-	}
-
-	.postIcon {
-		position: relative;
-		color: var(--fgOnAccent);
-	}
-
-	.postText {
-		display: none;
-	}
-
+	.item,
+	.post,
 	.account {
-		display: block;
-		text-align: center;
-		padding: 20px 0;
-		width: 100%;
-		overflow: clip;
+		justify-content: center;
+		width: var(--item-height);
 	}
 
-	.avatar {
-		display: inline-block;
-		width: 38px;
-		aspect-ratio: 1;
-	}
-
-	.acct {
+	.itemText, .postText, .acct {
 		display: none;
-	}
-
-	.middle {
-		flex: 1;
-	}
-
-	.divider {
-		margin: 8px auto;
-		width: calc(100% - 32px);
-		border-top: solid 0.5px var(--divider);
-	}
-
-	.item {
-		display: block;
-		position: relative;
-		padding: 18px 0;
-		width: 100%;
-		text-align: center;
-
-		&:hover, &.active {
-			text-decoration: none;
-			color: var(--accent);
-
-			&:before {
-				content: "";
-				display: block;
-				height: 100%;
-				aspect-ratio: 1;
-				margin: auto;
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				border-radius: 999px;
-				background: var(--accentedBg);
-			}
-
-			> .icon,
-			> .text {
-				opacity: 1;
-			}
-		}
-	}
-
-	.itemIcon {
-		display: block;
-		margin: 0 auto;
-		opacity: 0.7;
-	}
-
-	.itemText {
-		display: none;
-	}
-
-	.itemIndicator {
-		position: absolute;
-		top: 6px;
-		left: 24px;
-		color: var(--navIndicator);
-		font-size: 8px;
-		animation: global-blink 1s infinite;
-
-		&:has(.itemIndicateValueIcon) {
-			animation: none;
-			top: 4px;
-			left: auto;
-			right: 4px;
-			font-size: 10px;
-		}
 	}
 }
 </style>
