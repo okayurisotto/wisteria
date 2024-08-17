@@ -59,7 +59,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		:leaveToClass="defaultStore.state.animation ? $style.transition_menuDrawer_leaveTo : ''"
 	>
 		<div v-if="drawerMenuShowing" :class="$style.menuDrawer">
-			<XDrawerMenu/>
+			<XSidebar/>
 		</div>
 	</Transition>
 
@@ -99,7 +99,6 @@ import { defineAsyncComponent, provide, onMounted, computed, ref, watch, shallow
 import XCommon from './_common_/common.vue';
 import type MkStickyContainer from '@/components/global/MkStickyContainer.vue';
 import { instanceName } from '@/config.js';
-import XDrawerMenu from '@/ui/_common_/navbar-for-mobile.vue';
 import * as os from '@/os.js';
 import { defaultStore } from '@/store.js';
 import { navbarItemDef } from '@/navbar.js';
@@ -519,7 +518,7 @@ $widgets-hide-threshold: 1090px;
 	left: 0;
 	z-index: 1001;
 	height: 100dvh;
-	width: 240px;
+	width: 250px;
 	box-sizing: border-box;
 	contain: strict;
 	overflow: auto;

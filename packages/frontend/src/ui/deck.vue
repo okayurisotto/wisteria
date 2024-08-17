@@ -83,7 +83,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		:leaveToClass="defaultStore.state.animation ? $style.transition_menuDrawer_leaveTo : ''"
 	>
 		<div v-if="drawerMenuShowing" :class="$style.menu">
-			<XDrawerMenu/>
+			<XSidebar/>
 		</div>
 	</Transition>
 
@@ -97,7 +97,6 @@ import { v4 as uuid } from 'uuid';
 import XCommon from './_common_/common.vue';
 import { deckStore, addColumn as addColumnToStore, loadDeck, getProfiles, deleteProfile as deleteProfile_ } from './deck/deck-store.js';
 import XSidebar from '@/ui/_common_/navbar.vue';
-import XDrawerMenu from '@/ui/_common_/navbar-for-mobile.vue';
 import MkButton from '@/components/MkButton.vue';
 import * as os from '@/os.js';
 import { navbarItemDef } from '@/navbar.js';
@@ -466,7 +465,7 @@ body {
 	left: 0;
 	z-index: 1001;
 	height: 100dvh;
-	width: 240px;
+	width: 250px;
 	box-sizing: border-box;
 	contain: strict;
 	overflow: auto;
