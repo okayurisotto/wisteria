@@ -108,10 +108,6 @@ function reset() {
 	}));
 }
 
-watch(menuDisplay, async () => {
-	await reloadAsk();
-});
-
 const headerActions = computed(() => []);
 
 const headerTabs = computed(() => []);
