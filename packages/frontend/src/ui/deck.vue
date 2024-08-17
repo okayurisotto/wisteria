@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div :class="[$style.root, { [$style.rootIsMobile]: isMobile }]">
-	<XSidebar v-if="!isMobile"/>
+	<XSidebar v-if="!isMobile" :class="[$style.navbar, { [$style.navbarIconOnly]: iconOnly }]"/>
 
 	<div :class="$style.main">
 		<XAnnouncements v-if="$i"/>
@@ -265,6 +265,22 @@ async function deleteProfile() {
 	unisonReload();
 }
 
+// #region iconOnly
+
+const iconOnly = ref(false);
+
+const calcViewState = () => {
+	iconOnly.value = defaultStore.state.menuDisplay === 'sideIcon';
+};
+
+calcViewState();
+
+watch(defaultStore.reactiveState.menuDisplay, () => {
+	calcViewState();
+});
+
+// #endregion
+
 //#region clock
 
 const now = ref(new Date());
@@ -344,6 +360,20 @@ body {
 
 .rootIsMobile {
 	padding-bottom: 100px;
+}
+
+.navbar {
+	width: 250px;
+}
+
+.navbarIconOnly {
+	width: 80px;
+}
+
+@media (width < 1280px) {
+	.navbar {
+		width: 80px;
+	}
 }
 
 .main {

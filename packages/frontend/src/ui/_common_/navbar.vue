@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="[$style.root, { [$style.iconOnly]: iconOnly }]">
+<div :class="$style.root">
 	<div :class="$style.body">
 		<div :class="$style.top">
 			<div :class="$style.banner" :style="{ backgroundImage: `url(${ instance.bannerUrl })` }"></div>
@@ -60,7 +60,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, ref, watch } from 'vue';
+import { computed, defineAsyncComponent } from 'vue';
 import { openInstanceMenu } from './common.js';
 import * as os from '@/os.js';
 import { navbarItemDef } from '@/navbar.js';
@@ -69,8 +69,6 @@ import { defaultStore } from '@/store.js';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
 
-const iconOnly = ref(false);
-
 const menu = computed(() => defaultStore.state.menu);
 const otherMenuItemIndicated = computed(() => {
 	for (const def in navbarItemDef) {
@@ -78,18 +76,6 @@ const otherMenuItemIndicated = computed(() => {
 		if (navbarItemDef[def].indicated) return true;
 	}
 	return false;
-});
-
-const calcViewState = () => {
-	iconOnly.value = (window.innerWidth <= 1279) || (defaultStore.state.menuDisplay === 'sideIcon');
-};
-
-calcViewState();
-
-window.addEventListener('resize', calcViewState);
-
-watch(defaultStore.reactiveState.menuDisplay, () => {
-	calcViewState();
 });
 
 function openAccountMenu(ev: MouseEvent) {
@@ -107,28 +93,31 @@ function more(ev: MouseEvent) {
 </script>
 
 <style lang="scss" module>
-.root {
-	--navbar-width: 250px;
-	--navbar-width-icon-only: 80px;
+/**
+ * このコンポーネントは、親要素によって`width: 80px`か`width: 250px`が指定されることを期待しています。
+ * 80pxではアイコンのみ表示され、250pxではアイコンとそのラベルが表示されます。
+ * それ以外の幅が指定された場合、レイアウトが崩れないことは保証されません。
+ */
 
-	flex: 0 0 var(--navbar-width);
-	width: var(--navbar-width);
-	box-sizing: border-box;
+.root {
+	container-type: inline-size;
 }
 
 .body {
-	--divider-height: 40px;
-	--divider-margin-inline: 16px;
-	--divider-width: 1px;
+	--divider-border-width: 1px;
 	--icon-size: 32px;
 	--indicator-size: 8px;
 	--instance-icon-size: 38px;
 	--item-children-gap: 8px;
 	--item-height: 40px;
 	--item-padding-inline: 16px;
+	--item-width: min(100%, 250px);
 	--navbar-children-gap: 20px;
 	--navbar-padding-block: 20px;
 	--navbar-padding-inline: 18px;
+
+	--divider-height: var(--item-height);
+	--divider-margin-inline: calc((100% - var(--item-width)) / 2 + var(--item-padding-inline));
 
 	background: var(--navBg);
 	box-sizing: border-box;
@@ -139,198 +128,192 @@ function more(ev: MouseEvent) {
 	overflow-x: clip;
 	overflow-y: auto;
 	overscroll-behavior: contain;
-	width: var(--navbar-width-icon-only);
+	width: 100%;
 	z-index: 1001;
 }
 
-.root {
-	.body {
-		width: var(--navbar-width);
-	}
+.top {
+	-webkit-backdrop-filter: var(--blur, blur(8px));
+	backdrop-filter: var(--blur, blur(8px));
+	background: var(--X14);
+	padding-block: var(--navbar-padding-block) var(--navbar-children-gap);
+	position: sticky;
+	top: 0;
+	z-index: 1;
+}
 
-	.top {
-		-webkit-backdrop-filter: var(--blur, blur(8px));
-		backdrop-filter: var(--blur, blur(8px));
-		background: var(--X14);
-		padding-block: var(--navbar-padding-block) var(--navbar-children-gap);
-		position: sticky;
-		top: 0;
-		z-index: 1;
-	}
+.banner {
+	-webkit-mask-image: linear-gradient(0deg, rgba(0,0,0,0) 15%, rgba(0,0,0,0.75) 100%);
+	background-position: center center;
+	background-size: cover;
+	height: 100%;
+	left: 0;
+	mask-image: linear-gradient(0deg, rgba(0,0,0,0) 15%, rgba(0,0,0,0.75) 100%);
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
 
-	.banner {
-		-webkit-mask-image: linear-gradient(0deg, rgba(0,0,0,0) 15%, rgba(0,0,0,0.75) 100%);
-		background-position: center center;
-		background-size: cover;
-		height: 100%;
-		left: 0;
-		mask-image: linear-gradient(0deg, rgba(0,0,0,0) 15%, rgba(0,0,0,0.75) 100%);
-		position: absolute;
-		top: 0;
-		width: 100%;
-	}
+.instance {
+	display: block;
+	position: relative;
+	text-align: center;
+	width: 100%;
+}
 
-	.instance {
-		display: block;
-		position: relative;
-		text-align: center;
-		width: 100%;
-	}
+.instanceIcon {
+	aspect-ratio: 1;
+	display: inline-block;
+	width: var(--instance-icon-size);
+}
 
-	.instanceIcon {
-		aspect-ratio: 1;
-		display: inline-block;
-		width: var(--instance-icon-size);
-	}
+.bottom {
+	-webkit-backdrop-filter: var(--blur, blur(8px));
+	align-items: center;
+	backdrop-filter: var(--blur, blur(8px));
+	background: var(--X14);
+	bottom: 0;
+	display: flex;
+	flex-direction: column;
+	padding-block: var(--navbar-children-gap) var(--navbar-padding-block);
+	padding-inline: var(--navbar-padding-inline);
+	position: sticky;
+}
 
-	.bottom {
-		-webkit-backdrop-filter: var(--blur, blur(8px));
-		backdrop-filter: var(--blur, blur(8px));
-		background: var(--X14);
-		bottom: 0;
-		display: flex;
-		flex-direction: column;
-		padding-block: var(--navbar-children-gap) var(--navbar-padding-block);
-		padding-inline: var(--navbar-padding-inline);
-		position: sticky;
-	}
+.post {
+	align-items: center;
+	background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
+	border-radius: var(--item-height);
+	color: var(--fgOnAccent);
+	display: flex;
+	font-weight: bold;
+	gap: var(--item-children-gap);
+	height: var(--item-height);
+	padding-inline: var(--item-padding-inline);
+	position: relative;
+	text-align: left;
+	width: var(--item-width);
 
-	.post {
-		align-items: center;
-		background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
-		border-radius: var(--item-height);
-		color: var(--fgOnAccent);
-		display: flex;
-		font-weight: bold;
-		gap: var(--item-children-gap);
-		height: var(--item-height);
-		padding-inline: var(--item-padding-inline);
-		position: relative;
-		text-align: left;
-		width: 100%;
-
-		&:hover, &.active {
-			background: var(--accentLighten);
-		}
-	}
-
-	.postIcon {
-		width: 32px;
-	}
-
-	.account {
-		align-items: center;
-		box-sizing: border-box;
-		display: flex;
-		gap: var(--item-children-gap);
-		overflow: clip;
-		padding-block-start: 20px;
-		padding-inline: var(--item-padding-inline);
-		text-align: left;
-		width: 100%;
-	}
-
-	.avatar {
-		aspect-ratio: 1;
-		flex-shrink: 0;
-		width: var(--icon-size);
-	}
-
-	.acct {
-		display: block;
-		flex-shrink: 1;
-	}
-
-	.middle {
-		display: flex;
-		flex-direction: column;
-		flex-grow: 1;
-		padding-inline: var(--navbar-padding-inline);
-	}
-
-	.divider {
-		border-block: calc(var(--divider-width) / 2) solid var(--divider);
-		box-sizing: border-box;
-		margin-block: calc((var(--divider-height) - var(--divider-width)) / 2);
-		margin-inline: var(--divider-margin-inline);
-		width: calc(100% - var(--divider-margin-inline) * 2);
-	}
-
-	.item {
-		align-items: center;
-		border-radius: calc(var(--item-height) / 2);
-		box-sizing: border-box;
-		color: var(--navFg);
-		display: flex;
-		gap: var(--item-children-gap);
-		height: var(--item-height);
-		line-height: 2.85rem;
-		padding-inline: var(--item-padding-inline);
-		position: relative;
-		text-align: left;
-		width: 100%;
-
-		&:hover {
-			color: var(--navHoverFg);
-			text-decoration: none;
-		}
-
-		&.active {
-			background: var(--accentedBg);
-			color: var(--navActive);
-		}
-
-		&:hover, &.active {
-			color: var(--accent);
-		}
-	}
-
-	.itemIcon {
-		min-width: var(--icon-size);
-		position: relative;
-		width: var(--icon-size);
-	}
-
-	.itemIndicator {
-		animation: global-blink 1s infinite;
-		color: var(--navIndicator);
-		font-size: 8px;
-		left: calc(var(--indicator-size) / -2);
-		position: absolute;
-		top: 0;
-
-		&:has(.itemIndicateValueIcon) {
-			align-items: center;
-			animation: none;
-			display: flex;
-			font-size: 10px;
-			height: 100%;
-			left: auto;
-			right: 0;
-		}
-	}
-
-	.itemText {
-		font-size: 0.9em;
-		overflow-x: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+	&:hover, &.active {
+		background: var(--accentLighten);
 	}
 }
 
-.root.iconOnly {
-	max-width: var(--navbar-width-icon-only);
+.postIcon {
+	width: 32px;
+}
 
+.account {
+	align-items: center;
+	box-sizing: border-box;
+	display: flex;
+	gap: var(--item-children-gap);
+	overflow: clip;
+	padding-block-start: 20px;
+	padding-inline: var(--item-padding-inline);
+	text-align: left;
+	width: var(--item-width);
+}
+
+.avatar {
+	aspect-ratio: 1;
+	flex-shrink: 0;
+	width: var(--icon-size);
+}
+
+.acct {
+	display: block;
+	flex-shrink: 1;
+}
+
+.middle {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	padding-inline: var(--navbar-padding-inline);
+}
+
+.divider {
+	border-block: calc(var(--divider-border-width) / 2) solid var(--divider);
+	box-sizing: border-box;
+	margin-block: calc((var(--divider-height) - var(--divider-border-width)) / 2);
+	margin-inline: var(--divider-margin-inline);
+	width: calc(100% - var(--divider-margin-inline) * 2);
+}
+
+.item {
+	align-items: center;
+	border-radius: calc(var(--item-height) / 2);
+	box-sizing: border-box;
+	color: var(--navFg);
+	display: flex;
+	gap: var(--item-children-gap);
+	height: var(--item-height);
+	line-height: 2.85rem;
+	padding-inline: var(--item-padding-inline);
+	position: relative;
+	text-align: left;
+	width: var(--item-width);
+
+	&:hover {
+		color: var(--navHoverFg);
+		text-decoration: none;
+	}
+
+	&.active {
+		background: var(--accentedBg);
+		color: var(--navActive);
+	}
+
+	&:hover, &.active {
+		color: var(--accent);
+	}
+}
+
+.itemIcon {
+	min-width: var(--icon-size);
+	position: relative;
+	width: var(--icon-size);
+}
+
+.itemIndicator {
+	animation: global-blink 1s infinite;
+	color: var(--navIndicator);
+	font-size: 8px;
+	left: calc(var(--indicator-size) / -2);
+	position: absolute;
+	top: 0;
+
+	&:has(.itemIndicateValueIcon) {
+		align-items: center;
+		animation: none;
+		display: flex;
+		font-size: 10px;
+		height: 100%;
+		left: auto;
+		right: 0;
+	}
+}
+
+.itemText {
+	font-size: 0.9em;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+// 期待される幅（80pxもしくは250px）のちょうど中間の幅で変化
+// 165px = (80px + 250px) / 2
+@container (width < 165px) {
 	.body {
 		--divider-height: 25px;
-		--divider-margin-inline: calc((var(--navbar-width-icon-only) - var(--item-height)) / 2);
+		--divider-margin-inline: calc(50% - var(--item-height) / 2);
+		--icon-size: 38px;
+		--instance-icon-size: 32px;
 		--item-height: 50px;
 		--item-padding-inline: 0;
 		--navbar-padding-inline: 0;
-		--icon-size: 38px;
-		--instance-icon-size: 32px;
-
-		width: var(--navbar-width-icon-only);
 	}
 
 	.middle, .bottom {

@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div :class="$style.root">
-	<XSidebar v-if="!isMobile" :class="$style.sidebar"/>
+	<XSidebar v-if="!isMobile" :class="[$style.sidebar, { [$style.sidebarIconOnly]: iconOnly }]"/>
 
 	<MkStickyContainer ref="contents" :class="$style.contents" style="container-type: inline-size;" @contextmenu.stop="onContextmenu">
 		<template #header>
@@ -243,6 +243,22 @@ watch(navFooter, () => {
 
 useScrollPositionManager(() => contents.value.rootEl, mainRouter);
 
+// #region iconOnly
+
+const iconOnly = ref(false);
+
+const calcViewState = () => {
+	iconOnly.value = defaultStore.state.menuDisplay === 'sideIcon';
+};
+
+calcViewState();
+
+watch(defaultStore.reactiveState.menuDisplay, () => {
+	calcViewState();
+});
+
+// #endregion
+
 //#region clock
 
 const now = ref(new Date());
@@ -341,7 +357,18 @@ $widgets-hide-threshold: 1090px;
 }
 
 .sidebar {
+	width: 250px;
 	border-right: solid 0.5px var(--divider);
+}
+
+.sidebarIconOnly {
+	width: 80px;
+}
+
+@media (width < 1280px) {
+	.sidebar {
+		width: 80px;
+	}
 }
 
 .contents {
