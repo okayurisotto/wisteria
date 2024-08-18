@@ -13,7 +13,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import isChromatic from 'chromatic/isChromatic';
 import { computed, inject, type Ref } from 'vue';
 import { i18n } from '@/i18n.js';
 import { dateTimeFormat } from '@/scripts/intl-const.js';
@@ -24,7 +23,7 @@ const props = withDefaults(defineProps<{
 	mode?: 'relative' | 'absolute' | 'detail';
 	colored?: boolean;
 }>(), {
-	origin: isChromatic() ? () => new Date('2023-04-01T00:00:00Z') : null,
+	origin: null,
 	mode: 'relative',
 });
 

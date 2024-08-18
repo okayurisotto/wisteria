@@ -16,7 +16,6 @@
 		// TODO
 		// "verbatimModuleSyntax": true
 	},
-	"exclude": [".storybook/**/*"],
 	"extends": ["../../tsconfig.json"],
 	"include": ["./**/*.ts", "./**/*.vue"]
 }

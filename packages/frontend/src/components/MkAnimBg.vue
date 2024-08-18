@@ -9,7 +9,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, shallowRef } from 'vue';
-import isChromatic from 'chromatic/isChromatic';
 
 const canvasEl = shallowRef<HTMLCanvasElement>();
 
@@ -228,35 +227,30 @@ onMounted(() => {
 	const vertices = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
 
-	if (isChromatic()) {
-		gl!.uniform1f(u_time, 0);
-		gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
-	} else {
-		function render(timeStamp: number) {
-			let sizeChanged = false;
-			if (Math.abs(height - canvas.offsetHeight) > 2) {
-				height = canvas.offsetHeight;
-				canvas.height = height;
-				sizeChanged = true;
-			}
-			if (Math.abs(width - canvas.offsetWidth) > 2) {
-				width = canvas.offsetWidth;
-				canvas.width = width;
-				sizeChanged = true;
-			}
-			if (sizeChanged && gl) {
-				gl.uniform2fv(u_resolution, [width, height]);
-				gl.viewport(0, 0, width, height);
-			}
-
-			gl!.uniform1f(u_time, timeStamp);
-			gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
-
-			handle = window.requestAnimationFrame(render);
+	function render(timeStamp: number) {
+		let sizeChanged = false;
+		if (Math.abs(height - canvas.offsetHeight) > 2) {
+			height = canvas.offsetHeight;
+			canvas.height = height;
+			sizeChanged = true;
 		}
+		if (Math.abs(width - canvas.offsetWidth) > 2) {
+			width = canvas.offsetWidth;
+			canvas.width = width;
+			sizeChanged = true;
+		}
+		if (sizeChanged && gl) {
+			gl.uniform2fv(u_resolution, [width, height]);
+			gl.viewport(0, 0, width, height);
+		}
+
+		gl!.uniform1f(u_time, timeStamp);
+		gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
 
 		handle = window.requestAnimationFrame(render);
 	}
+
+	handle = window.requestAnimationFrame(render);
 });
 
 onUnmounted(() => {
