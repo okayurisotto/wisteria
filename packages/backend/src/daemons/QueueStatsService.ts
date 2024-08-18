@@ -88,7 +88,7 @@ export class QueueStatsService implements OnApplicationShutdown {
 		clearInterval(this.intervalId);
 	}
 
-	public onApplicationShutdown(signal?: string | undefined): void {
+	public onApplicationShutdown(): void {
 		this.dispose();
 	}
 }

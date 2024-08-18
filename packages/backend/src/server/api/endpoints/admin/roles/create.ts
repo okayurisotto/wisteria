@@ -46,7 +46,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		super(meta, paramDef, async (ps, me) => {
 			const created = await this.roleService.create(ps, me);
 
-			return await this.roleEntityService.pack(created, me);
+			return await this.roleEntityService.pack(created);
 		});
 	}
 }

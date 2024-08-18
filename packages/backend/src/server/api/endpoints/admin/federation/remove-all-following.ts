@@ -33,7 +33,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly queueService: QueueService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const followings = await this.followingsRepository.findBy({
 				followerHost: ps.host,
 			});

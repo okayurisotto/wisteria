@@ -35,7 +35,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly apResolverService: ApResolverService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const resolver = this.apResolverService.createResolver();
 			const object = await resolver.resolve(ps.uri);
 			return object;

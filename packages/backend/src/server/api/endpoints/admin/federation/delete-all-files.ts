@@ -30,7 +30,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly driveService: DriveService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const files = await this.driveFilesRepository.findBy({
 				userHost: ps.host,
 			});

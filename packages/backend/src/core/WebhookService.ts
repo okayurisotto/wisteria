@@ -85,7 +85,7 @@ export class WebhookService implements OnApplicationShutdown {
 		this.redisForSub.off('message', this.onMessage);
 	}
 
-	public onApplicationShutdown(signal?: string | undefined): void {
+	public onApplicationShutdown(): void {
 		this.dispose();
 	}
 }

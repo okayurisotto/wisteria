@@ -32,7 +32,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.retentionAggregationsRepository)
 		private readonly retentionAggregationsRepository: RetentionAggregationsRepository,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async () => {
 			const records = await this.retentionAggregationsRepository.find({
 				order: {
 					id: 'DESC',

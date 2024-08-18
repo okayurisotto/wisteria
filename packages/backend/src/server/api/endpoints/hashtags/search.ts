@@ -30,7 +30,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.hashtagsRepository)
 		private readonly hashtagsRepository: HashtagsRepository,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const hashtags = await this.hashtagsRepository.createQueryBuilder('tag')
 				.where('tag.name like :q', { q: sqlLikeEscape(ps.query.toLowerCase()) + '%' })
 				.orderBy('tag.count', 'DESC')

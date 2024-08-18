@@ -8,7 +8,6 @@ import { Brackets } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { RoleAssignmentsRepository, RolesRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { MiUser } from '@/models/User.js';
 import type { MiRole } from '@/models/Role.js';
 import { DEFAULT_POLICIES } from '@/core/RoleService.js';
 import { IdService } from '@/core/IdService.js';
@@ -25,10 +24,7 @@ export class RoleEntityService {
 		private readonly idService: IdService,
 	) {}
 
-	public async pack(
-		src: MiRole['id'] | MiRole,
-		me?: { id: MiUser['id'] } | null | undefined,
-	) {
+	public async pack(src: MiRole['id'] | MiRole) {
 		const role = typeof src === 'object' ? src : await this.rolesRepository.findOneByOrFail({ id: src });
 
 		const assignedCount = await this.roleAssignmentsRepository.createQueryBuilder('assign')
@@ -71,10 +67,7 @@ export class RoleEntityService {
 		});
 	}
 
-	public packMany(
-		roles: any[],
-		me: { id: MiUser['id'] },
-	) {
-		return Promise.all(roles.map(x => this.pack(x, me)));
+	public packMany(roles: any[]) {
+		return Promise.all(roles.map(x => this.pack(x)));
 	}
 }

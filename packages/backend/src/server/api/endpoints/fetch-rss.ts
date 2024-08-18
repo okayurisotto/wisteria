@@ -32,7 +32,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly httpRequestService: HttpRequestService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const res = await this.httpRequestService.send(ps.url, {
 				method: 'GET',
 				headers: {

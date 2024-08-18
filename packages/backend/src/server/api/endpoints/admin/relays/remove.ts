@@ -25,7 +25,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly relayService: RelayService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			await this.relayService.removeRelay(ps.inbox);
 		});
 	}

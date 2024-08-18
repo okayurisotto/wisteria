@@ -53,7 +53,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly abuseUserReportEntityService: AbuseUserReportEntityService,
 		private readonly queryService: QueryService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const query = this.queryService.makePaginationQuery(this.abuseUserReportsRepository.createQueryBuilder('report'), ps.sinceId, ps.untilId);
 
 			switch (ps.state) {

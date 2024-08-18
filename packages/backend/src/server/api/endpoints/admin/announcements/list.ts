@@ -50,7 +50,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly queryService: QueryService,
 		private readonly idService: IdService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const query = this.queryService.makePaginationQuery(this.announcementsRepository.createQueryBuilder('announcement'), ps.sinceId, ps.untilId);
 			query.andWhere('announcement.isActive = true');
 			if (ps.userId) {

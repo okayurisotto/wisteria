@@ -27,7 +27,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly customEmojiService: CustomEmojiService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			await this.customEmojiService.setLicenseBulk(ps.ids, ps.license ?? null);
 		});
 	}

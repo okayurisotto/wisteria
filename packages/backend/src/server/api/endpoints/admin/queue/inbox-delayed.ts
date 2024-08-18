@@ -26,7 +26,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject('queue:inbox') public inboxQueue: InboxQueue,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async () => {
 			const jobs = await this.inboxQueue.getJobs(['delayed']);
 
 			const res = [] as [string, number][];

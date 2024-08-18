@@ -43,12 +43,12 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly roleEntityService: RoleEntityService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const role = await this.rolesRepository.findOneBy({ id: ps.roleId });
 			if (role == null) {
 				throw new ApiError(meta.errors.noSuchRole);
 			}
-			return await this.roleEntityService.pack(role, me);
+			return await this.roleEntityService.pack(role);
 		});
 	}
 }

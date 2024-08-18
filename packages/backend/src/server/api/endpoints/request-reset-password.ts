@@ -55,7 +55,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly idService: IdService,
 		private readonly emailService: EmailService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const user = await this.usersRepository.findOneBy({
 				usernameLower: ps.username.toLowerCase(),
 				host: IsNull(),

@@ -36,7 +36,7 @@ export const paramDef = z.object({
 export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			return ps;
 		});
 	}

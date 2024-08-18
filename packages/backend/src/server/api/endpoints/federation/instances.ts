@@ -46,7 +46,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly instanceEntityService: InstanceEntityService,
 		private readonly metaService: MetaService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const query = this.instancesRepository.createQueryBuilder('instance');
 
 			switch (ps.sort) {

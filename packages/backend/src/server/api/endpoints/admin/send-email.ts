@@ -27,7 +27,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly emailService: EmailService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			await this.emailService.sendEmail(ps.to, ps.subject, ps.text, ps.text);
 		});
 	}

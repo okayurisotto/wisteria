@@ -41,7 +41,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly userEntityService: UserEntityService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const profile = await this.userProfilesRepository.findOne({
 				where: { email: ps.email },
 				relations: ['user'],

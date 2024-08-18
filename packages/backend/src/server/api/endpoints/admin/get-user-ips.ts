@@ -7,7 +7,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { UserIpsRepository } from '@/models/_.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { DI } from '@/di-symbols.js';
-import { IdService } from '@/core/IdService.js';
 import { z } from 'zod';
 import { IdSchema } from '@/models/zod/IdSchema.js';
 
@@ -32,10 +31,8 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		@Inject(DI.userIpsRepository)
 		private readonly userIpsRepository: UserIpsRepository,
-
-		private readonly idService: IdService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const ips = await this.userIpsRepository.find({
 				where: { userId: ps.userId },
 				order: { id: 'DESC' },

@@ -4,7 +4,6 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import * as Redis from 'ioredis';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { NotesRepository, AntennasRepository } from '@/models/_.js';
 import { QueryService } from '@/core/QueryService.js';
@@ -50,9 +49,6 @@ export const paramDef = z.object({
 @Injectable()
 export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
-		@Inject(DI.redisForTimelines)
-		private readonly redisForTimelines: Redis.Redis,
-
 		@Inject(DI.notesRepository)
 		private readonly notesRepository: NotesRepository,
 

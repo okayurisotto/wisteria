@@ -34,7 +34,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly queueService: QueueService,
 		private readonly userSuspendService: UserSuspendService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const user = await this.usersRepository.findOneBy({ id: ps.userId });
 
 			if (user == null) {

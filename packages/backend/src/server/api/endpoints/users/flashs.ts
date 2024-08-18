@@ -37,7 +37,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly flashEntityService: FlashEntityService,
 		private readonly queryService: QueryService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const query = this.queryService.makePaginationQuery(this.flashsRepository.createQueryBuilder('flash'), ps.sinceId, ps.untilId)
 				.andWhere('flash.userId = :userId', { userId: ps.userId })
 				.andWhere('flash.visibility = \'public\'');

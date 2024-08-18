@@ -37,7 +37,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly metaService: MetaService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const exist = await this.usersRepository.countBy({
 				host: IsNull(),
 				usernameLower: ps.username.toLowerCase(),

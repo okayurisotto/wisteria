@@ -41,7 +41,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly hashtagEntityService: HashtagEntityService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const hashtag = await this.hashtagsRepository.findOneBy({ name: normalizeForSearch(ps.tag) });
 			if (hashtag == null) {
 				throw new ApiError(meta.errors.noSuchHashtag);

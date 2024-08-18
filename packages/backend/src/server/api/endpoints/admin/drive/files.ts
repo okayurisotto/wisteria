@@ -42,7 +42,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly queryService: QueryService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const query = this.queryService.makePaginationQuery(this.driveFilesRepository.createQueryBuilder('file'), ps.sinceId, ps.untilId);
 
 			if (ps.userId) {

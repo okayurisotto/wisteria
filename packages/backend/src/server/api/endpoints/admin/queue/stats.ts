@@ -37,7 +37,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		@Inject('queue:objectStorage') public objectStorageQueue: ObjectStorageQueue,
 		@Inject('queue:webhookDeliver') public webhookDeliverQueue: WebhookDeliverQueue,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async () => {
 			const deliverJobCounts = await this.deliverQueue.getJobCounts();
 			const inboxJobCounts = await this.inboxQueue.getJobCounts();
 			const dbJobCounts = await this.dbQueue.getJobCounts();

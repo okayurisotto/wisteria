@@ -32,7 +32,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly avatarDecorationService: AvatarDecorationService,
 		private readonly roleService: RoleService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async () => {
 			const decorations = await this.avatarDecorationService.getAll();
 			const allRoles = await this.roleService.getRoles();
 

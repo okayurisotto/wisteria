@@ -8,7 +8,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { FollowingsRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { UserFollowingService } from '@/core/UserFollowingService.js';
 import { DI } from '@/di-symbols.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { ApiError } from '../../error.js';
@@ -65,7 +64,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly userEntityService: UserEntityService,
 		private readonly getterService: GetterService,
-		private readonly userFollowingService: UserFollowingService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const follower = me;

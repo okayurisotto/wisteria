@@ -19,7 +19,6 @@ import { MiRole } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import type { Serialized } from '@/types.js';
-import type Emitter from 'strict-event-emitter-types';
 import type { EventEmitter } from 'events';
 import type { UnionToIntersection, ValueOf } from 'type-fest';
 import type { z } from 'zod';

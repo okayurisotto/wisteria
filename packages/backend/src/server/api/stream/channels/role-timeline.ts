@@ -5,7 +5,6 @@
 
 import { Injectable } from '@nestjs/common';
 import { isUserRelated } from '@/misc/is-user-related.js';
-import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { RoleService } from '@/core/RoleService.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { type MiChannelService, Channel } from '../channel.js';
@@ -17,7 +16,6 @@ class RoleTimelineChannel extends Channel {
 	private roleId: string;
 
 	constructor(
-		private readonly noteEntityService: NoteEntityService,
 		private readonly roleservice: RoleService,
 
 		id: string,
@@ -68,13 +66,11 @@ export class RoleTimelineChannelService implements MiChannelService<false> {
 	public readonly kind = RoleTimelineChannel.kind;
 
 	constructor(
-		private readonly noteEntityService: NoteEntityService,
 		private readonly roleservice: RoleService,
 	) {}
 
 	public create(id: string, connection: Channel['connection']): RoleTimelineChannel {
 		return new RoleTimelineChannel(
-			this.noteEntityService,
 			this.roleservice,
 			id,
 			connection,

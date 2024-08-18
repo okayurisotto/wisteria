@@ -44,7 +44,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly instanceEntityService: InstanceEntityService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const [topSubInstances, topPubInstances, allSubCount, allPubCount] = await Promise.all([
 				this.instancesRepository.find({
 					where: {

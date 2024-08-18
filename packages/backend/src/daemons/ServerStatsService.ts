@@ -74,7 +74,7 @@ export class ServerStatsService implements OnApplicationShutdown {
 		}
 	}
 
-	public onApplicationShutdown(signal?: string | undefined): void {
+	public onApplicationShutdown(): void {
 		this.dispose();
 	}
 }

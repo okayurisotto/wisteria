@@ -41,7 +41,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly avatarDecorationService: AvatarDecorationService,
 		private readonly idService: IdService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async () => {
 			const avatarDecorations = await this.avatarDecorationService.getAll();
 
 			return avatarDecorations.map(avatarDecoration => ({

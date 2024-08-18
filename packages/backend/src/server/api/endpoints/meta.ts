@@ -112,7 +112,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly metaService: MetaService,
 		private readonly instanceActorService: InstanceActorService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const instance = await this.metaService.fetch();
 
 			const ads = await this.adsRepository.createQueryBuilder('ads')

@@ -33,9 +33,9 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly db: DataSource,
 
 		@Inject(DI.redis)
-		private readonly redisClient: Redis.Redis,
+		redisClient: Redis.Redis,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async () => {
 			if (!envOption.isTest) throw new Error('NODE_ENV is not a test');
 
 			await redisClient.flushdb();

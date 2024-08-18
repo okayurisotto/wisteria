@@ -47,7 +47,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly emojiEntityService: EmojiEntityService,
 		private readonly queryService: QueryService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const q = this.queryService.makePaginationQuery(this.emojisRepository.createQueryBuilder('emoji'), ps.sinceId, ps.untilId)
 				.andWhere('emoji.host IS NULL');
 

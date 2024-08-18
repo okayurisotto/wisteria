@@ -31,11 +31,11 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly roleEntityService: RoleEntityService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async () => {
 			const roles = await this.rolesRepository.find({
 				order: { lastUsedAt: 'DESC' },
 			});
-			return await this.roleEntityService.packMany(roles, me);
+			return await this.roleEntityService.packMany(roles);
 		});
 	}
 }

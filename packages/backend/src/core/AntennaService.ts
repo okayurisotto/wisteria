@@ -201,7 +201,7 @@ export class AntennaService implements OnApplicationShutdown {
 		this.redisForSub.off('message', this.onRedisMessage);
 	}
 
-	public onApplicationShutdown(signal?: string | undefined): void {
+	public onApplicationShutdown(): void {
 		this.dispose();
 	}
 }

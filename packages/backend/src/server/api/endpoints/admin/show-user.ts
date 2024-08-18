@@ -133,7 +133,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				moderationNote: profile.moderationNote ?? '',
 				signins,
 				policies: await this.roleUserService.getUserPolicies(user.id),
-				roles: await this.roleEntityService.packMany(roles, me),
+				roles: await this.roleEntityService.packMany(roles),
 				roleAssigns: roleAssigns.map(a => ({
 					createdAt: this.idService.parse(a.id).date.toISOString(),
 					expiresAt: a.expiresAt ? a.expiresAt.toISOString() : null,

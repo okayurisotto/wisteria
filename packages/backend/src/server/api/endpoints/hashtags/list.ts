@@ -35,7 +35,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly hashtagEntityService: HashtagEntityService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const query = this.hashtagsRepository.createQueryBuilder('tag');
 
 			if (ps.attachedToUserOnly) query.andWhere('tag.attachedUsersCount != 0');

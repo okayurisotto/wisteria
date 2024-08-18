@@ -32,7 +32,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly utilityService: UtilityService,
 		private readonly fetchInstanceMetadataService: FetchInstanceMetadataService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const instance = await this.instancesRepository.findOneBy({ host: this.utilityService.toPuny(ps.host) });
 
 			if (instance == null) {

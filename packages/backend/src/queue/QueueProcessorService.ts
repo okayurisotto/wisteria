@@ -439,7 +439,7 @@ export class QueueProcessorService implements OnApplicationShutdown {
 		]);
 	}
 
-	public async onApplicationShutdown(signal?: string | undefined): Promise<void> {
+	public async onApplicationShutdown(): Promise<void> {
 		await this.stop();
 	}
 }

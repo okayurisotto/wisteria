@@ -34,7 +34,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly emojiEntityService: EmojiEntityService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const emoji = await this.emojisRepository.findOneOrFail({
 				where: {
 					name: ps.name,

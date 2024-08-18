@@ -39,7 +39,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly idService: IdService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const req = await this.passwordResetRequestsRepository.findOneByOrFail({
 				token: ps.token,
 			});

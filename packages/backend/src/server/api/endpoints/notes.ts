@@ -39,7 +39,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly noteEntityService: NoteEntityService,
 		private readonly queryService: QueryService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (ps) => {
 			const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), ps.sinceId, ps.untilId)
 				.andWhere('note.visibility = \'public\'')
 				.andWhere('note.localOnly = FALSE')
