@@ -142,7 +142,7 @@ import { LoggerService } from './LoggerService.js';
 import type { Provider } from '@nestjs/common';
 import { ReactionDeleteService } from './ReactionDeleteService.js';
 import { ReactionDecodeService } from './ReactionDecodeService.js';
-import { LegacyReactionConvertService } from './LegacyReactionConvertService copy.js';
+import { LegacyReactionConvertService } from './LegacyReactionConvertService.js';
 import { CustomEmojiAliasService } from './CustomEmojiAliasService.js';
 import { CustomEmojiPopulateService } from './CustomEmojiPopulateService.js';
 import { AlsoKnownAsValidateService } from './AlsoKnownAsValidateService.js';

@@ -18,7 +18,7 @@ import type { OnModuleInit } from '@nestjs/common';
 import type { UserEntityService } from './UserEntityService.js';
 import type { DriveFileEntityService } from './DriveFileEntityService.js';
 import { ReactionDecodeService } from '../ReactionDecodeService.js';
-import { LegacyReactionConvertService } from '../LegacyReactionConvertService copy.js';
+import { LegacyReactionConvertService } from '../LegacyReactionConvertService.js';
 import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
 import type { z } from 'zod';
 import type { NoteSchema } from '@/models/zod/note.js';
