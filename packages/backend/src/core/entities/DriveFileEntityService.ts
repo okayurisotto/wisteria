@@ -11,17 +11,16 @@ import type { Config } from '@/config.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
-import { appendQuery, query } from '@/misc/prelude/url.js';
 import { deepClone } from '@/misc/clone.js';
 import { isMimeImage } from '@/misc/is-mime-image.js';
 import { isNotNull } from '@/misc/is-not-null.js';
 import { IdService } from '@/core/IdService.js';
-import { UtilityService } from '../UtilityService.js';
 import { VideoProcessingService } from '../VideoProcessingService.js';
 import { DriveFolderEntityService } from './DriveFolderEntityService.js';
 import type { z } from 'zod';
 import type { DriveFileSchema } from '@/models/zod/drive-file.js';
 import { UserLiteEntityService } from './UserLiteEntityService.js';
+import { DriveFilePublicUrlGetService } from './DriveFilePublicUrlGetService.js';
 
 type PackOptions = {
 	detail?: boolean;
@@ -38,11 +37,11 @@ export class DriveFileEntityService {
 		@Inject(DI.driveFilesRepository)
 		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private readonly utilityService: UtilityService,
 		private readonly driveFolderEntityService: DriveFolderEntityService,
 		private readonly videoProcessingService: VideoProcessingService,
 		private readonly idService: IdService,
 		private readonly userLiteEntityService: UserLiteEntityService,
+		private readonly driveFilePublicUrlGetService: DriveFilePublicUrlGetService,
 	) {}
 
 	public validateFileName(name: string): boolean {
@@ -55,7 +54,7 @@ export class DriveFileEntityService {
 		);
 	}
 
-	public getPublicProperties(file: MiDriveFile): MiDriveFile['properties'] {
+	private getPublicProperties(file: MiDriveFile): MiDriveFile['properties'] {
 		if (file.properties.orientation != null) {
 			const properties = deepClone(file.properties);
 			if (file.properties.orientation >= 5) {
@@ -68,61 +67,26 @@ export class DriveFileEntityService {
 		return file.properties;
 	}
 
-	private getProxiedUrl(url: string, mode?: 'static' | 'avatar'): string {
-		return appendQuery(
-			`${this.config.mediaProxy}/${mode ?? 'image'}.webp`,
-			query({
-				url,
-				...(mode ? { [mode]: '1' } : {}),
-			}),
-		);
-	}
-
-	public getThumbnailUrl(file: MiDriveFile): string | null {
+	private getThumbnailUrl(file: MiDriveFile): string | null {
 		if (file.type.startsWith('video')) {
 			if (file.thumbnailUrl) return file.thumbnailUrl;
 
 			return this.videoProcessingService.getExternalVideoThumbnailUrl(file.webpublicUrl ?? file.url);
 		} else if (file.uri != null && file.userHost != null && this.config.externalMediaProxyEnabled) {
 			// 動画ではなくリモートかつメディアプロキシ
-			return this.getProxiedUrl(file.uri, 'static');
+			return this.driveFilePublicUrlGetService.getProxiedUrl(file.uri, 'static');
 		}
 
 		if (file.uri != null && file.isLink && this.config.proxyRemoteFiles) {
 			// リモートかつ期限切れはローカルプロキシを試みる
 			// 従来は/files/${thumbnailAccessKey}にアクセスしていたが、
 			// /filesはメディアプロキシにリダイレクトするようにしたため直接メディアプロキシを指定する
-			return this.getProxiedUrl(file.uri, 'static');
+			return this.driveFilePublicUrlGetService.getProxiedUrl(file.uri, 'static');
 		}
 
 		const url = file.webpublicUrl ?? file.url;
 
 		return file.thumbnailUrl ?? (isMimeImage(file.type, 'sharp-convertible-image') ? url : null);
-	}
-
-	public getPublicUrl(file: MiDriveFile, mode?: 'avatar'): string { // static = thumbnail
-		// リモートかつメディアプロキシ
-		if (file.uri != null && file.userHost != null && this.config.externalMediaProxyEnabled) {
-			return this.getProxiedUrl(file.uri, mode);
-		}
-
-		// リモートかつ期限切れはローカルプロキシを試みる
-		if (file.uri != null && file.isLink && this.config.proxyRemoteFiles) {
-			const key = file.webpublicAccessKey;
-
-			if (key && !key.match('/')) {	// 古いものはここにオブジェクトストレージキーが入ってるので除外
-				const url = `${this.config.url}/files/${key}`;
-				if (mode === 'avatar') return this.getProxiedUrl(file.uri, 'avatar');
-				return url;
-			}
-		}
-
-		const url = file.webpublicUrl ?? file.url;
-
-		if (mode === 'avatar') {
-			return this.getProxiedUrl(url, 'avatar');
-		}
-		return url;
 	}
 
 	public async calcDriveUsageOf(user: MiUser['id'] | { id: MiUser['id'] }): Promise<number> {
@@ -131,39 +95,6 @@ export class DriveFileEntityService {
 		const { sum } = await this.driveFilesRepository
 			.createQueryBuilder('file')
 			.where('file.userId = :id', { id: id })
-			.andWhere('file.isLink = FALSE')
-			.select('SUM(file.size)', 'sum')
-			.getRawOne();
-
-		return parseInt(sum, 10) || 0;
-	}
-
-	public async calcDriveUsageOfHost(host: string): Promise<number> {
-		const { sum } = await this.driveFilesRepository
-			.createQueryBuilder('file')
-			.where('file.userHost = :host', { host: this.utilityService.toPuny(host) })
-			.andWhere('file.isLink = FALSE')
-			.select('SUM(file.size)', 'sum')
-			.getRawOne();
-
-		return parseInt(sum, 10) || 0;
-	}
-
-	public async calcDriveUsageOfLocal(): Promise<number> {
-		const { sum } = await this.driveFilesRepository
-			.createQueryBuilder('file')
-			.where('file.userHost IS NULL')
-			.andWhere('file.isLink = FALSE')
-			.select('SUM(file.size)', 'sum')
-			.getRawOne();
-
-		return parseInt(sum, 10) || 0;
-	}
-
-	public async calcDriveUsageOfRemote(): Promise<number> {
-		const { sum } = await this.driveFilesRepository
-			.createQueryBuilder('file')
-			.where('file.userHost IS NOT NULL')
 			.andWhere('file.isLink = FALSE')
 			.select('SUM(file.size)', 'sum')
 			.getRawOne();
@@ -192,7 +123,7 @@ export class DriveFileEntityService {
 			isSensitive: file.isSensitive,
 			blurhash: file.blurhash,
 			properties: opts.self ? file.properties : this.getPublicProperties(file),
-			url: opts.self ? file.url : this.getPublicUrl(file),
+			url: opts.self ? file.url : this.driveFilePublicUrlGetService.getPublicUrl(file),
 			thumbnailUrl: this.getThumbnailUrl(file),
 			comment: file.comment,
 			folderId: file.folderId,
@@ -206,7 +137,7 @@ export class DriveFileEntityService {
 		});
 	}
 
-	public async packNullable(
+	private async packNullable(
 		src: MiDriveFile['id'] | MiDriveFile,
 		options?: PackOptions,
 	): Promise<z.infer<typeof DriveFileSchema> | null> {
@@ -228,7 +159,7 @@ export class DriveFileEntityService {
 			isSensitive: file.isSensitive,
 			blurhash: file.blurhash,
 			properties: opts.self ? file.properties : this.getPublicProperties(file),
-			url: opts.self ? file.url : this.getPublicUrl(file),
+			url: opts.self ? file.url : this.driveFilePublicUrlGetService.getPublicUrl(file),
 			thumbnailUrl: this.getThumbnailUrl(file),
 			comment: file.comment,
 			folderId: file.folderId,

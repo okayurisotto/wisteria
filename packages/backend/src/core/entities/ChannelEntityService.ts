@@ -9,11 +9,11 @@ import type { ChannelFavoritesRepository, ChannelFollowingsRepository, ChannelsR
 import type { MiUser } from '@/models/User.js';
 import type { MiChannel } from '@/models/Channel.js';
 import { IdService } from '@/core/IdService.js';
-import { DriveFileEntityService } from './DriveFileEntityService.js';
 import { NoteEntityService } from './NoteEntityService.js';
 import { In } from 'typeorm';
 import type { z } from 'zod';
 import type { ChannelSchema } from '@/models/zod/channel.js';
+import { DriveFilePublicUrlGetService } from './DriveFilePublicUrlGetService.js';
 
 @Injectable()
 export class ChannelEntityService {
@@ -34,8 +34,8 @@ export class ChannelEntityService {
 		private readonly driveFilesRepository: DriveFilesRepository,
 
 		private readonly noteEntityService: NoteEntityService,
-		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly idService: IdService,
+		private readonly driveFilePublicUrlGetService: DriveFilePublicUrlGetService,
 	) {}
 
 	public async pack(
@@ -81,7 +81,7 @@ export class ChannelEntityService {
 			name: channel.name,
 			description: channel.description,
 			userId: channel.userId,
-			bannerUrl: banner ? this.driveFileEntityService.getPublicUrl(banner) : null,
+			bannerUrl: banner ? this.driveFilePublicUrlGetService.getPublicUrl(banner) : null,
 			pinnedNoteIds: channel.pinnedNoteIds,
 			color: channel.color,
 			isArchived: channel.isArchived,

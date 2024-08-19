@@ -10,10 +10,10 @@ import { DI } from '@/di-symbols.js';
 import type { DriveFilesRepository, NotesRepository, UserProfilesRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
 import type { MiUser } from '@/models/User.js';
-import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { IdService } from '@/core/IdService.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 import { UserLiteEntityService } from './entities/UserLiteEntityService.js';
+import { DriveFilePublicUrlGetService } from './entities/DriveFilePublicUrlGetService.js';
 
 @Injectable()
 export class FeedService {
@@ -30,9 +30,9 @@ export class FeedService {
 		@Inject(DI.driveFilesRepository)
 		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly idService: IdService,
 		private readonly userLiteEntityService: UserLiteEntityService,
+		private readonly driveFilePublicUrlGetService: DriveFilePublicUrlGetService,
 	) {}
 
 	public async packFeed(user: MiUser) {
@@ -83,7 +83,7 @@ export class FeedService {
 				date: this.idService.parse(note.id).date,
 				description: note.cw ?? undefined,
 				content: note.text ?? undefined,
-				image: file ? this.driveFileEntityService.getPublicUrl(file) : undefined,
+				image: file ? this.driveFilePublicUrlGetService.getPublicUrl(file) : undefined,
 			});
 		}
 

@@ -133,6 +133,7 @@ import { FeedService } from './FeedService.js';
 import { FileGetService } from './FileGetService.js';
 import { MetricsModule } from './metrics/MetricsModule.js';
 import { UserLiteEntityService } from './entities/UserLiteEntityService.js';
+import { DriveFilePublicUrlGetService } from './entities/DriveFilePublicUrlGetService.js';
 
 // #region 文字列ベースでのinjection用(循環参照対応のため)
 const $DriveFileEntityService: Provider = { provide: 'DriveFileEntityService', useExisting: DriveFileEntityService };
@@ -231,6 +232,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		ChannelEntityService,
 		ClipEntityService,
 		DriveFileEntityService,
+		DriveFilePublicUrlGetService,
 		DriveFolderEntityService,
 		EmojiEntityService,
 		FollowingEntityService,
@@ -372,6 +374,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		ChannelEntityService,
 		ClipEntityService,
 		DriveFileEntityService,
+		DriveFilePublicUrlGetService,
 		DriveFolderEntityService,
 		EmojiEntityService,
 		FollowingEntityService,

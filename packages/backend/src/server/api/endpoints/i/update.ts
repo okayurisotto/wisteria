@@ -25,7 +25,6 @@ import { HashtagService } from '@/core/HashtagService.js';
 import { DI } from '@/di-symbols.js';
 import { RoleService } from '@/core/RoleService.js';
 import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
-import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import type { Config } from '@/config.js';
 import { safeForSql } from '@/misc/safe-for-sql.js';
@@ -36,6 +35,7 @@ import { RoleUserService } from '@/core/RoleUserService.js';
 import { z } from 'zod';
 import { BirthdaySchema, DescriptionSchema, LocationSchema, MeDetailedSchema, NameSchema, NotificationRecieveConfig } from '@/models/zod/user.js';
 import { IdSchema } from '@/models/zod/IdSchema.js';
+import { DriveFilePublicUrlGetService } from '@/core/entities/DriveFilePublicUrlGetService.js';
 
 export const meta = {
 	tags: ['account'],
@@ -196,7 +196,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly pagesRepository: PagesRepository,
 
 		private readonly userEntityService: UserEntityService,
-		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly globalEventService: GlobalEventService,
 		private readonly userFollowingService: UserFollowingService,
 		private readonly accountUpdateService: AccountUpdateService,
@@ -207,6 +206,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly roleUserService: RoleUserService,
 		private readonly httpRequestService: HttpRequestService,
 		private readonly avatarDecorationService: AvatarDecorationService,
+		private readonly driveFilePublicUrlGetService: DriveFilePublicUrlGetService,
 	) {
 		super(meta, paramDef, async (ps, _user, token) => {
 			const user = await this.usersRepository.findOneByOrFail({ id: _user.id }) as MiLocalUser;
@@ -288,7 +288,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				if (!avatar.type.startsWith('image/')) throw new ApiError(meta.errors.avatarNotAnImage);
 
 				updates.avatarId = avatar.id;
-				updates.avatarUrl = this.driveFileEntityService.getPublicUrl(avatar, 'avatar');
+				updates.avatarUrl = this.driveFilePublicUrlGetService.getPublicUrl(avatar, 'avatar');
 				updates.avatarBlurhash = avatar.blurhash;
 			} else if (ps.avatarId === null) {
 				updates.avatarId = null;
@@ -303,7 +303,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				if (!banner.type.startsWith('image/')) throw new ApiError(meta.errors.bannerNotAnImage);
 
 				updates.bannerId = banner.id;
-				updates.bannerUrl = this.driveFileEntityService.getPublicUrl(banner);
+				updates.bannerUrl = this.driveFilePublicUrlGetService.getPublicUrl(banner);
 				updates.bannerBlurhash = banner.blurhash;
 			} else if (ps.bannerId === null) {
 				updates.bannerId = null;

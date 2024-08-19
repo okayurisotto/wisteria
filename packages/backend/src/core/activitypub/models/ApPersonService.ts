@@ -28,7 +28,6 @@ import { HashtagService } from '@/core/HashtagService.js';
 import { MiUserNotePining } from '@/models/UserNotePining.js';
 import { StatusError } from '@/misc/status-error.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { AccountMoveService } from '@/core/AccountMoveService.js';
 import { checkHttps } from '@/misc/check-https.js';
 import { getApId, getApType, getOneApHrefNullable, isActor, isCollection, isCollectionOrOrderedCollection, isPropertyValue } from '../type.js';
@@ -43,6 +42,7 @@ import type { IActor, IObject } from '../type.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
+import { DriveFilePublicUrlGetService } from '@/core/entities/DriveFilePublicUrlGetService.js';
 
 const nameLength = 128;
 const summaryLength = 2048;
@@ -86,11 +86,11 @@ export class ApPersonService implements OnModuleInit {
 		private readonly utilityService: UtilityService,
 		private readonly apLoggerService: ApLoggerService,
 		private readonly mfmService: MfmService,
-		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly federatedInstanceService: FederatedInstanceService,
 		private readonly fetchInstanceMetadataService: FetchInstanceMetadataService,
 		private readonly apMfmService: ApMfmService,
 		private readonly hashtagService: HashtagService,
+		private readonly driveFilePublicUrlGetService: DriveFilePublicUrlGetService,
 	) {
 		this.logger = this.apLoggerService.logger;
 	}
@@ -217,14 +217,14 @@ export class ApPersonService implements OnModuleInit {
 			...(avatar
 				? {
 						avatarId: avatar.id,
-						avatarUrl: avatar.url ? this.driveFileEntityService.getPublicUrl(avatar, 'avatar') : null,
+						avatarUrl: avatar.url ? this.driveFilePublicUrlGetService.getPublicUrl(avatar, 'avatar') : null,
 						avatarBlurhash: avatar.blurhash,
 					}
 				: {}),
 			...(banner
 				? {
 						bannerId: banner.id,
-						bannerUrl: banner.url ? this.driveFileEntityService.getPublicUrl(banner) : null,
+						bannerUrl: banner.url ? this.driveFilePublicUrlGetService.getPublicUrl(banner) : null,
 						bannerBlurhash: banner.blurhash,
 					}
 				: {}),

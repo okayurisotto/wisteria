@@ -21,7 +21,6 @@ import type { MiPollVote } from '@/models/PollVote.js';
 import { UserKeypairService } from '@/core/UserKeypairService.js';
 import { MfmService } from '@/core/MfmService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import type { MiUserKeypair } from '@/models/UserKeypair.js';
 import type { UsersRepository, UserProfilesRepository, NotesRepository, DriveFilesRepository, PollsRepository } from '@/models/_.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
@@ -31,6 +30,7 @@ import { LdSignatureService } from './LdSignatureService.js';
 import { ApMfmService } from './ApMfmService.js';
 import type { IAccept, IActivity, IAdd, IAnnounce, IApDocument, IApEmoji, IApHashtag, IApImage, IApMention, IBlock, ICreate, IDelete, IFlag, IFollow, IKey, ILike, IMove, IObject, IPost, IQuestion, IReject, IRemove, ITombstone, IUndo, IUpdate } from './type.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
+import { DriveFilePublicUrlGetService } from '../entities/DriveFilePublicUrlGetService.js';
 
 @Injectable()
 export class ApRendererService {
@@ -55,12 +55,12 @@ export class ApRendererService {
 
 		private readonly customEmojiService: CustomEmojiService,
 		private readonly userEntityService: UserEntityService,
-		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly ldSignatureService: LdSignatureService,
 		private readonly userKeypairService: UserKeypairService,
 		private readonly apMfmService: ApMfmService,
 		private readonly mfmService: MfmService,
 		private readonly idService: IdService,
+		private readonly driveFilePublicUrlGetService: DriveFilePublicUrlGetService,
 	) {}
 
 	public renderAccept(object: string | IObject, user: { id: MiUser['id']; host: null }): IAccept {
@@ -156,7 +156,7 @@ export class ApRendererService {
 		return {
 			type: 'Document',
 			mediaType: file.webpublicType ?? file.type,
-			url: this.driveFileEntityService.getPublicUrl(file),
+			url: this.driveFilePublicUrlGetService.getPublicUrl(file),
 			name: file.comment,
 		};
 	}
@@ -229,7 +229,7 @@ export class ApRendererService {
 	public renderImage(file: MiDriveFile): IApImage {
 		return {
 			type: 'Image',
-			url: this.driveFileEntityService.getPublicUrl(file),
+			url: this.driveFilePublicUrlGetService.getPublicUrl(file),
 			sensitive: file.isSensitive,
 			name: file.comment,
 		};
