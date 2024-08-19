@@ -10,9 +10,9 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiFlash } from '@/models/Flash.js';
 import { IdService } from '@/core/IdService.js';
-import { UserEntityService } from './UserEntityService.js';
 import type { z } from 'zod';
 import type { FlashSchema } from '@/models/zod/flash.js';
+import { UserLiteEntityService } from './UserLiteEntityService.js';
 
 @Injectable()
 export class FlashEntityService {
@@ -23,8 +23,8 @@ export class FlashEntityService {
 		@Inject(DI.flashLikesRepository)
 		private readonly flashLikesRepository: FlashLikesRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly idService: IdService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	public async pack(
@@ -39,7 +39,7 @@ export class FlashEntityService {
 			createdAt: this.idService.parse(flash.id).date.toISOString(),
 			updatedAt: flash.updatedAt.toISOString(),
 			userId: flash.userId,
-			user: this.userEntityService.pack(flash.user ?? flash.userId, me), // { schema: 'UserDetailed' } すると無限ループするので注意
+			user: this.userLiteEntityService.packLite(flash.user ?? flash.userId),
 			title: flash.title,
 			summary: flash.summary,
 			script: flash.script,

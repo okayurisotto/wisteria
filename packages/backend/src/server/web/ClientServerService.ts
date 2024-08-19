@@ -13,7 +13,6 @@ import { getNoteSummary } from '@/misc/get-note-summary.js';
 import { DI } from '@/di-symbols.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 import { MetaService } from '@/core/MetaService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { PageEntityService } from '@/core/entities/PageEntityService.js';
 import { GalleryPostEntityService } from '@/core/entities/GalleryPostEntityService.js';
@@ -26,6 +25,7 @@ import { ClientLoggerService } from './ClientLoggerService.js';
 import { PUG_DIR } from '@/path.js';
 import { Hono, type MiddlewareHandler } from 'hono';
 import path from 'node:path';
+import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService.js';
 
 declare module 'hono' {
 	interface ContextRenderer {
@@ -67,7 +67,6 @@ export class ClientServerService {
 		private readonly flashsRepository: FlashsRepository,
 
 		private readonly flashEntityService: FlashEntityService,
-		private readonly userEntityService: UserEntityService,
 		private readonly noteEntityService: NoteEntityService,
 		private readonly pageEntityService: PageEntityService,
 		private readonly galleryPostEntityService: GalleryPostEntityService,
@@ -76,6 +75,7 @@ export class ClientServerService {
 		private readonly metaService: MetaService,
 		private readonly urlPreviewService: UrlPreviewService,
 		private readonly clientLoggerService: ClientLoggerService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	private generateCommonPugData(meta: MiMeta) {
@@ -189,7 +189,7 @@ export class ClientServerService {
 				user,
 				profile,
 				me,
-				avatarUrl: user.avatarUrl ?? this.userEntityService.getIdenticonUrl(user),
+				avatarUrl: user.avatarUrl ?? this.userLiteEntityService.getIdenticonUrl(user),
 				sub: c.req.param('sub'),
 			});
 		});

@@ -6,13 +6,13 @@
 import { Injectable } from '@nestjs/common';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { UserFollowingService } from '@/core/UserFollowingService.js';
 import { ApiError } from '../../../error.js';
 import { z } from 'zod';
 import { IdSchema } from '@/models/zod/IdSchema.js';
 import { UserLiteSchema } from '@/models/zod/user-lite.js';
+import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService.js';
 
 export const meta = {
 	tags: ['following', 'account'],
@@ -45,9 +45,9 @@ export const paramDef = z.object({
 @Injectable()
 export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
-		private readonly userEntityService: UserEntityService,
 		private readonly getterService: GetterService,
 		private readonly userFollowingService: UserFollowingService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Fetch followee
@@ -65,7 +65,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				throw err;
 			}
 
-			return await this.userEntityService.pack(followee.id, me);
+			return await this.userLiteEntityService.packLite(followee.id);
 		});
 	}
 }

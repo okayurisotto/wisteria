@@ -10,9 +10,9 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiRegistrationTicket } from '@/models/RegistrationTicket.js';
 import { IdService } from '@/core/IdService.js';
-import { UserEntityService } from './UserEntityService.js';
 import type { z } from 'zod';
 import type { InviteCodeSchema } from '@/models/zod/invite-code.js';
+import { UserLiteEntityService } from './UserLiteEntityService.js';
 
 @Injectable()
 export class InviteCodeEntityService {
@@ -20,8 +20,8 @@ export class InviteCodeEntityService {
 		@Inject(DI.registrationTicketsRepository)
 		private readonly registrationTicketsRepository: RegistrationTicketsRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly idService: IdService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	public async pack(
@@ -42,8 +42,8 @@ export class InviteCodeEntityService {
 			code: target.code,
 			expiresAt: target.expiresAt ? target.expiresAt.toISOString() : null,
 			createdAt: this.idService.parse(target.id).date.toISOString(),
-			createdBy: target.createdBy ? await this.userEntityService.pack(target.createdBy, me) : null,
-			usedBy: target.usedBy ? await this.userEntityService.pack(target.usedBy, me) : null,
+			createdBy: target.createdBy ? await this.userLiteEntityService.packLite(target.createdBy) : null,
+			usedBy: target.usedBy ? await this.userLiteEntityService.packLite(target.usedBy) : null,
 			usedAt: target.usedAt ? target.usedAt.toISOString() : null,
 			used: !!target.usedAt,
 		});

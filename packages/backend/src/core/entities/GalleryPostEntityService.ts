@@ -10,10 +10,10 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiGalleryPost } from '@/models/GalleryPost.js';
 import { IdService } from '@/core/IdService.js';
-import { UserEntityService } from './UserEntityService.js';
 import { DriveFileEntityService } from './DriveFileEntityService.js';
 import type { z } from 'zod';
 import type { GalleryPostSchema } from '@/models/zod/gallery-post.js';
+import { UserLiteEntityService } from './UserLiteEntityService.js';
 
 @Injectable()
 export class GalleryPostEntityService {
@@ -24,9 +24,9 @@ export class GalleryPostEntityService {
 		@Inject(DI.galleryLikesRepository)
 		private readonly galleryLikesRepository: GalleryLikesRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly idService: IdService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	public async pack(
@@ -41,7 +41,7 @@ export class GalleryPostEntityService {
 			createdAt: this.idService.parse(post.id).date.toISOString(),
 			updatedAt: post.updatedAt.toISOString(),
 			userId: post.userId,
-			user: this.userEntityService.pack(post.user ?? post.userId, me),
+			user: this.userLiteEntityService.packLite(post.user ?? post.userId),
 			title: post.title,
 			description: post.description,
 			fileIds: post.fileIds,

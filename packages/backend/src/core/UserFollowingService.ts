@@ -28,6 +28,7 @@ import { AlsoKnownAsValidateService } from './AlsoKnownAsValidateService.js';
 import { envOption } from '@/env.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
+import { UserLiteEntityService } from './entities/UserLiteEntityService.js';
 
 type Local = MiLocalUser | {
 	id: MiLocalUser['id'];
@@ -79,6 +80,7 @@ export class UserFollowingService {
 		private readonly userBlockingUnblockService: UserBlockingUnblockService,
 		private readonly loggerService: LoggerService,
 		private readonly alsoKnownAsValidateService: AlsoKnownAsValidateService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {
 		this.logger = this.loggerService.getLogger('following/create');
 	}
@@ -283,7 +285,7 @@ export class UserFollowingService {
 
 		// Publish followed event
 		if (isLocalUser(followee)) {
-			this.userEntityService.pack(follower.id, followee).then(async (packed) => {
+			this.userLiteEntityService.packLite(follower.id, followee).then(async (packed) => {
 				this.globalEventService.publishMainStream(followee.id, 'followed', packed);
 
 				const webhooks = (await this.webhookService.getActiveWebhooks()).filter(x => x.userId === followee.id && x.on.includes('followed'));
@@ -457,7 +459,7 @@ export class UserFollowingService {
 
 		// Publish receiveRequest event
 		if (isLocalUser(followee)) {
-			this.userEntityService.pack(follower.id, followee).then((packed) => {
+			this.userLiteEntityService.packLite(follower.id, followee).then((packed) => {
 				this.globalEventService.publishMainStream(followee.id, 'receiveFollowRequest', packed);
 			});
 

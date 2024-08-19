@@ -9,8 +9,8 @@ import type { Config } from '@/config.js';
 import { IsNull } from 'typeorm';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 import type { UsersRepository } from '@/models/_.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { Hono } from 'hono';
+import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService.js';
 
 @Injectable()
 export class AvatarRedirectServerService {
@@ -23,7 +23,7 @@ export class AvatarRedirectServerService {
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,
 
-		private readonly userEntityService: UserEntityService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {
 		this.fallbackUrl = new URL(
 			'/static-assets/user-unknown.png',
@@ -48,7 +48,7 @@ export class AvatarRedirectServerService {
 		if (user === null) return null;
 
 		if (user.avatarUrl !== null) return user.avatarUrl;
-		return this.userEntityService.getIdenticonUrl(user);
+		return this.userLiteEntityService.getIdenticonUrl(user);
 	}
 
 	public createServer(): Hono {

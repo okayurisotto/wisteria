@@ -13,6 +13,7 @@ import { DI } from '@/di-symbols.js';
 import { sqlLikeEscape } from '@/misc/sql-like-escape.js';
 import { z } from 'zod';
 import { UserSchema } from '@/models/zod/user.js';
+import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService.js';
 
 export const meta = {
 	tags: ['users'],
@@ -42,6 +43,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly userProfilesRepository: UserProfilesRepository,
 
 		private readonly userEntityService: UserEntityService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const activeThreshold = new Date(Date.now() - (1000 * 60 * 60 * 24 * 30)); // 30日
@@ -131,7 +133,11 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				}
 			}
 
-			return await this.userEntityService.packMany(users, me, { schema: ps.detail ? 'UserDetailed' : 'UserLite' });
+			if (ps.detail) {
+				return await this.userEntityService.packMany(users, me, { schema: 'UserDetailed' });
+			} else {
+				return await Promise.all(users.map(u => this.userLiteEntityService.packLite(u)));
+			}
 		});
 	}
 }

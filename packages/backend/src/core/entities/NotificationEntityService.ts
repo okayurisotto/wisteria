@@ -13,12 +13,12 @@ import type { MiNote } from '@/models/Note.js';
 import { isNotNull } from '@/misc/is-not-null.js';
 import { type FilterUnionByProperty, notificationTypes } from '@/types.js';
 import { RoleEntityService } from './RoleEntityService.js';
-import { UserEntityService } from './UserEntityService.js';
 import { NoteEntityService } from './NoteEntityService.js';
 import type { z } from 'zod';
 import type { NoteSchema } from '@/models/zod/note.js';
 import type { UserLiteSchema } from '@/models/zod/user-lite.js';
 import type { NotificationSchema } from '@/models/zod/notification.js';
+import { UserLiteEntityService } from './UserLiteEntityService.js';
 
 const NOTE_REQUIRED_NOTIFICATION_TYPES = new Set(['note', 'mention', 'reply', 'renote', 'quote', 'reaction', 'pollEnded'] as (typeof notificationTypes[number])[]);
 const NOTE_REQUIRED_GROUPED_NOTIFICATION_TYPES = new Set(['note', 'mention', 'reply', 'renote', 'renote:grouped', 'quote', 'reaction', 'reaction:grouped', 'pollEnded']);
@@ -36,8 +36,8 @@ export class NotificationEntityService {
 		private readonly followRequestsRepository: FollowRequestsRepository,
 
 		private readonly roleEntityService: RoleEntityService,
-		private readonly userEntityService: UserEntityService,
 		private readonly noteEntityService: NoteEntityService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	public async pack(
@@ -65,7 +65,7 @@ export class NotificationEntityService {
 			? (
 					hint?.packedUsers != null
 						? hint.packedUsers.get(notification.notifierId)
-						: this.userEntityService.pack(notification.notifierId, { id: meId })
+						: this.userLiteEntityService.packLite(notification.notifierId)
 				)
 			: undefined;
 		const role = notification.type === 'roleAssigned' ? await this.roleEntityService.pack(notification.roleId) : undefined;
@@ -125,7 +125,7 @@ export class NotificationEntityService {
 				where: { id: In(userIds) },
 			})
 			: [];
-		const packedUsersArray = await this.userEntityService.packMany(users, { id: meId });
+		const packedUsersArray = await Promise.all(users.map(u => this.userLiteEntityService.packLite(u)));
 		const packedUsers = new Map(packedUsersArray.map(p => [p.id, p]));
 
 		// 既に解決されたフォローリクエストの通知を除外
@@ -168,7 +168,7 @@ export class NotificationEntityService {
 			? (
 					hint?.packedUsers != null
 						? hint.packedUsers.get(notification.notifierId)
-						: this.userEntityService.pack(notification.notifierId, { id: meId })
+						: this.userLiteEntityService.packLite(notification.notifierId)
 				)
 			: undefined;
 
@@ -176,7 +176,7 @@ export class NotificationEntityService {
 			const reactions = await Promise.all(notification.reactions.map(async (reaction) => {
 				const user = hint?.packedUsers != null
 					? hint.packedUsers.get(reaction.userId)!
-					: await this.userEntityService.pack(reaction.userId, { id: meId });
+					: await this.userLiteEntityService.packLite(reaction.userId);
 				return {
 					user,
 					reaction: reaction.reaction,
@@ -196,7 +196,7 @@ export class NotificationEntityService {
 					return packedUser;
 				}
 
-				return this.userEntityService.pack(userId, { id: meId });
+				return this.userLiteEntityService.packLite(userId);
 			}));
 			return await awaitAll({
 				id: notification.id,
@@ -269,7 +269,7 @@ export class NotificationEntityService {
 				where: { id: In(userIds) },
 			})
 			: [];
-		const packedUsersArray = await this.userEntityService.packMany(users, { id: meId });
+		const packedUsersArray = await Promise.all(users.map(u => this.userLiteEntityService.packLite(u)));
 		const packedUsers = new Map(packedUsersArray.map(p => [p.id, p]));
 
 		// 既に解決されたフォローリクエストの通知を除外

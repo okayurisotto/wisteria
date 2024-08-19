@@ -18,10 +18,10 @@ import { isNotNull } from '@/misc/is-not-null.js';
 import { IdService } from '@/core/IdService.js';
 import { UtilityService } from '../UtilityService.js';
 import { VideoProcessingService } from '../VideoProcessingService.js';
-import { UserEntityService } from './UserEntityService.js';
 import { DriveFolderEntityService } from './DriveFolderEntityService.js';
 import type { z } from 'zod';
 import type { DriveFileSchema } from '@/models/zod/drive-file.js';
+import { UserLiteEntityService } from './UserLiteEntityService.js';
 
 type PackOptions = {
 	detail?: boolean;
@@ -38,11 +38,11 @@ export class DriveFileEntityService {
 		@Inject(DI.driveFilesRepository)
 		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly utilityService: UtilityService,
 		private readonly driveFolderEntityService: DriveFolderEntityService,
 		private readonly videoProcessingService: VideoProcessingService,
 		private readonly idService: IdService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	public validateFileName(name: string): boolean {
@@ -202,7 +202,7 @@ export class DriveFileEntityService {
 				})
 				: null,
 			userId: opts.withUser ? file.userId : null,
-			user: (opts.withUser && file.userId) ? this.userEntityService.pack(file.userId) : null,
+			user: (opts.withUser && file.userId) ? this.userLiteEntityService.packLite(file.userId) : null,
 		});
 	}
 
@@ -238,7 +238,7 @@ export class DriveFileEntityService {
 				})
 				: null,
 			userId: opts.withUser ? file.userId : null,
-			user: (opts.withUser && file.userId) ? this.userEntityService.pack(file.userId) : null,
+			user: (opts.withUser && file.userId) ? this.userLiteEntityService.packLite(file.userId) : null,
 		});
 	}
 

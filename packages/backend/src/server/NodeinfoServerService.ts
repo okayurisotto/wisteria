@@ -8,11 +8,11 @@ import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
 import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DEFAULT_POLICIES } from '@/core/RoleService.js';
 import { Hono } from 'hono';
 import type { NotesRepository, UsersRepository } from '@/models/_.js';
 import { IsNull } from 'typeorm';
+import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService';
 
 const nodeinfo2_1path = '/nodeinfo/2.1';
 const nodeinfo2_0path = '/nodeinfo/2.0';
@@ -30,8 +30,8 @@ export class NodeinfoServerService {
 		@Inject(DI.notesRepository)
 		private readonly notesRespository: NotesRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly metaService: MetaService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	public getLinks() {
@@ -54,7 +54,7 @@ export class NodeinfoServerService {
 		const activeMonth = null;
 
 		const proxyAccount = meta.proxyAccountId
-			? await this.userEntityService.pack(meta.proxyAccountId).catch(() => null)
+			? await this.userLiteEntityService.packLite(meta.proxyAccountId).catch(() => null)
 			: null;
 
 		const basePolicies = { ...DEFAULT_POLICIES, ...meta.policies };

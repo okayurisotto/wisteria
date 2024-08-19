@@ -9,11 +9,11 @@ import type { NoteReactionsRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiNoteReaction } from '@/models/NoteReaction.js';
-import { UserEntityService } from './UserEntityService.js';
 import { NoteEntityService } from './NoteEntityService.js';
 import { LegacyReactionConvertService } from '../LegacyReactionConvertService.js';
 import type { z } from 'zod';
 import type { NoteReactionSchema } from '@/models/zod/note-reaction.js';
+import { UserLiteEntityService } from './UserLiteEntityService.js';
 
 @Injectable()
 export class NoteReactionEntityService {
@@ -23,8 +23,8 @@ export class NoteReactionEntityService {
 
 		private readonly legacyReactionConvertService: LegacyReactionConvertService,
 		private readonly idService: IdService,
-		private readonly userEntityService: UserEntityService,
 		private readonly noteEntityService: NoteEntityService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	public async pack(
@@ -43,7 +43,7 @@ export class NoteReactionEntityService {
 		return {
 			id: reaction.id,
 			createdAt: this.idService.parse(reaction.id).date.toISOString(),
-			user: await this.userEntityService.pack(reaction.user ?? reaction.userId, me),
+			user: await this.userLiteEntityService.packLite(reaction.user ?? reaction.userId),
 			type: this.legacyReactionConvertService.convertLegacyReaction(reaction.reaction),
 			...(opts.withNote
 				? {

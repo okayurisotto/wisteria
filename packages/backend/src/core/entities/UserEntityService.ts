@@ -11,7 +11,6 @@ import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import type { Promiseable } from '@/misc/prelude/await-all.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import { USER_ACTIVE_THRESHOLD, USER_ONLINE_THRESHOLD } from '@/const.js';
 import type { MiLocalUser, MiPartialLocalUser, MiPartialRemoteUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import { birthdaySchema, descriptionSchema, localUsernameSchema, locationSchema, nameSchema, passwordSchema } from '@/models/User.js';
 import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, NoteUnreadsRepository, UserNotePiningsRepository, UserProfilesRepository, MiUserProfile, RenoteMutingsRepository, UserMemoRepository, InstancesRepository } from '@/models/_.js';
@@ -29,6 +28,7 @@ import { isRemoteUser } from '@/misc/isRemoteUser.js';
 import type { MeDetailedSchema, UserDetailedNotMeSchema, UserDetailedSchema } from '@/models/zod/user.js';
 import type { UserLiteSchema } from '@/models/zod/user-lite.js';
 import type { z } from 'zod';
+import { UserLiteEntityService } from './UserLiteEntityService.js';
 
 const ajv = new Ajv();
 
@@ -95,6 +95,7 @@ export class UserEntityService implements OnModuleInit {
 		private readonly noteEntityService: NoteEntityService,
 		private readonly customEmojiPopulateService: CustomEmojiPopulateService,
 		private readonly roleUserService: RoleUserService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	onModuleInit() {
@@ -184,7 +185,7 @@ export class UserEntityService implements OnModuleInit {
 		};
 	}
 
-	public async getHasUnreadAntenna(userId: MiUser['id']): Promise<boolean> {
+	private async getHasUnreadAntenna(userId: MiUser['id']): Promise<boolean> {
 		/*
 		const myAntennas = (await this.antennaService.getAntennas()).filter(a => a.userId === userId);
 
@@ -200,7 +201,7 @@ export class UserEntityService implements OnModuleInit {
 		return false; // TODO
 	}
 
-	public async getNotificationsInfo(userId: MiUser['id']): Promise<{
+	private async getNotificationsInfo(userId: MiUser['id']): Promise<{
 		hasUnread: boolean;
 		unreadCount: number;
 	}> {
@@ -230,29 +231,12 @@ export class UserEntityService implements OnModuleInit {
 		return response;
 	}
 
-	public async getHasPendingReceivedFollowRequest(userId: MiUser['id']): Promise<boolean> {
+	private async getHasPendingReceivedFollowRequest(userId: MiUser['id']): Promise<boolean> {
 		const count = await this.followRequestsRepository.countBy({
 			followeeId: userId,
 		});
 
 		return count > 0;
-	}
-
-	public getOnlineStatus(user: MiUser): 'unknown' | 'online' | 'active' | 'offline' {
-		if (user.hideOnlineStatus) return 'unknown';
-		if (user.lastActiveDate == null) return 'unknown';
-		const elapsed = Date.now() - user.lastActiveDate.getTime();
-		return (
-			elapsed < USER_ONLINE_THRESHOLD
-				? 'online'
-				: elapsed < USER_ACTIVE_THRESHOLD
-					? 'active'
-					: 'offline'
-		);
-	}
-
-	public getIdenticonUrl(user: MiUser): string {
-		return `${this.config.url}/identicon/${user.username.toLowerCase()}@${user.host ?? this.config.host}`;
 	}
 
 	public getUserUri(user: MiLocalUser | MiPartialLocalUser | MiRemoteUser | MiPartialRemoteUser): string {
@@ -263,7 +247,7 @@ export class UserEntityService implements OnModuleInit {
 		return `${this.config.url}/users/${userId}`;
 	}
 
-	public async pack<S extends 'MeDetailed' | 'UserDetailedNotMe' | 'UserDetailed' | 'UserLite' = 'UserLite'>(
+	public async pack<S extends 'MeDetailed' | 'UserDetailedNotMe' | 'UserDetailed'>(
 		src: MiUser['id'] | MiUser,
 		me?: { id: MiUser['id'] } | null | undefined,
 		options?: {
@@ -326,7 +310,7 @@ export class UserEntityService implements OnModuleInit {
 			name: user.name,
 			username: user.username,
 			host: user.host,
-			avatarUrl: user.avatarUrl ?? this.getIdenticonUrl(user),
+			avatarUrl: user.avatarUrl ?? this.userLiteEntityService.getIdenticonUrl(user),
 			avatarBlurhash: user.avatarBlurhash,
 			avatarDecorations: user.avatarDecorations.length > 0
 				? this.avatarDecorationService.getAll().then(decorations => user.avatarDecorations.filter(ud => decorations.some(d => d.id === ud.id)).map(ud => ({
@@ -353,7 +337,7 @@ export class UserEntityService implements OnModuleInit {
 					: undefined)
 				: undefined,
 			emojis: this.customEmojiPopulateService.populateEmojis(user.emojis, user.host),
-			onlineStatus: this.getOnlineStatus(user),
+			onlineStatus: this.userLiteEntityService.getOnlineStatus(user),
 			// パフォーマンス上の理由でローカルユーザーのみ
 			badgeRoles: user.host == null
 				? this.roleUserService.getUserBadgeRoles(user.id).then(rs => rs.sort((a, b) => b.displayOrder - a.displayOrder).map(r => ({
@@ -503,7 +487,7 @@ export class UserEntityService implements OnModuleInit {
 		return await awaitAll(packed);
 	}
 
-	public packMany<S extends 'MeDetailed' | 'UserDetailedNotMe' | 'UserDetailed' | 'UserLite' = 'UserLite'>(
+	public packMany<S extends 'MeDetailed' | 'UserDetailedNotMe' | 'UserDetailed'>(
 		users: (MiUser['id'] | MiUser)[],
 		me?: { id: MiUser['id'] } | null | undefined,
 		options?: {

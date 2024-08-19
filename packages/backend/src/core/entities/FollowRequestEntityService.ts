@@ -8,7 +8,7 @@ import { DI } from '@/di-symbols.js';
 import type { FollowRequestsRepository } from '@/models/_.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiFollowRequest } from '@/models/FollowRequest.js';
-import { UserEntityService } from './UserEntityService.js';
+import { UserLiteEntityService } from './UserLiteEntityService.js';
 
 @Injectable()
 export class FollowRequestEntityService {
@@ -16,7 +16,7 @@ export class FollowRequestEntityService {
 		@Inject(DI.followRequestsRepository)
 		private readonly followRequestsRepository: FollowRequestsRepository,
 
-		private readonly userEntityService: UserEntityService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	public async pack(
@@ -27,8 +27,8 @@ export class FollowRequestEntityService {
 
 		return {
 			id: request.id,
-			follower: await this.userEntityService.pack(request.followerId, me),
-			followee: await this.userEntityService.pack(request.followeeId, me),
+			follower: await this.userLiteEntityService.packLite(request.followerId),
+			followee: await this.userLiteEntityService.packLite(request.followeeId),
 		};
 	}
 }

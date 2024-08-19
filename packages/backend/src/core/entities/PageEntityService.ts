@@ -11,10 +11,10 @@ import type { MiUser } from '@/models/User.js';
 import type { MiPage } from '@/models/Page.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import { IdService } from '@/core/IdService.js';
-import { UserEntityService } from './UserEntityService.js';
 import { DriveFileEntityService } from './DriveFileEntityService.js';
 import type { z } from 'zod';
 import type { PageSchema } from '@/models/zod/page.js';
+import { UserLiteEntityService } from './UserLiteEntityService.js';
 
 @Injectable()
 export class PageEntityService {
@@ -28,9 +28,9 @@ export class PageEntityService {
 		@Inject(DI.driveFilesRepository)
 		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly idService: IdService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	public async pack(
@@ -87,7 +87,7 @@ export class PageEntityService {
 			createdAt: this.idService.parse(page.id).date.toISOString(),
 			updatedAt: page.updatedAt.toISOString(),
 			userId: page.userId,
-			user: this.userEntityService.pack(page.user ?? page.userId, me), // { schema: 'UserDetailed' } すると無限ループするので注意
+			user: this.userLiteEntityService.packLite(page.user ?? page.userId),
 			content: page.content,
 			variables: page.variables,
 			title: page.title,

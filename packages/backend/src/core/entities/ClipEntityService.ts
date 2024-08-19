@@ -9,9 +9,9 @@ import type { ClipFavoritesRepository, ClipsRepository, MiUser } from '@/models/
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiClip } from '@/models/Clip.js';
 import { IdService } from '@/core/IdService.js';
-import { UserEntityService } from './UserEntityService.js';
 import type { z } from 'zod';
 import type { ClipSchema } from '@/models/zod/clip.js';
+import { UserLiteEntityService } from './UserLiteEntityService.js';
 
 @Injectable()
 export class ClipEntityService {
@@ -22,8 +22,8 @@ export class ClipEntityService {
 		@Inject(DI.clipFavoritesRepository)
 		private readonly clipFavoritesRepository: ClipFavoritesRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly idService: IdService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	public async pack(
@@ -38,7 +38,7 @@ export class ClipEntityService {
 			createdAt: this.idService.parse(clip.id).date.toISOString(),
 			lastClippedAt: clip.lastClippedAt ? clip.lastClippedAt.toISOString() : null,
 			userId: clip.userId,
-			user: this.userEntityService.pack(clip.user ?? clip.userId),
+			user: this.userLiteEntityService.packLite(clip.user ?? clip.userId),
 			name: clip.name,
 			description: clip.description,
 			isPublic: clip.isPublic,

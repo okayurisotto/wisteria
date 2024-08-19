@@ -15,7 +15,6 @@ import { isNotNull } from '@/misc/is-not-null.js';
 import { DebounceLoader } from '@/misc/loader.js';
 import { IdService } from '@/core/IdService.js';
 import type { OnModuleInit } from '@nestjs/common';
-import type { UserEntityService } from './UserEntityService.js';
 import type { DriveFileEntityService } from './DriveFileEntityService.js';
 import { ReactionDecodeService } from '../ReactionDecodeService.js';
 import { LegacyReactionConvertService } from '../LegacyReactionConvertService.js';
@@ -23,10 +22,10 @@ import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
 import type { z } from 'zod';
 import type { NoteSchema } from '@/models/zod/note.js';
 import type { DriveFileSchema } from '@/models/zod/drive-file.js';
+import { UserLiteEntityService } from './UserLiteEntityService.js';
 
 @Injectable()
 export class NoteEntityService implements OnModuleInit {
-	private userEntityService!: UserEntityService;
 	private driveFileEntityService!: DriveFileEntityService;
 	private readonly noteLoader = new DebounceLoader((id: string) => {
 		return this.notesRepository.findOneOrFail({
@@ -63,10 +62,10 @@ export class NoteEntityService implements OnModuleInit {
 		private readonly legacyReactionConvertService: LegacyReactionConvertService,
 		private readonly idService: IdService,
 		private readonly customEmojiPopulateService: CustomEmojiPopulateService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	onModuleInit() {
-		this.userEntityService = this.moduleRef.get('UserEntityService');
 		this.driveFileEntityService = this.moduleRef.get('DriveFileEntityService');
 	}
 
@@ -317,7 +316,7 @@ export class NoteEntityService implements OnModuleInit {
 			id: note.id,
 			createdAt: this.idService.parse(note.id).date.toISOString(),
 			userId: note.userId,
-			user: this.userEntityService.pack(note.user ?? note.userId, me),
+			user: this.userLiteEntityService.packLite(note.user ?? note.userId),
 			text: text,
 			cw: note.cw,
 			visibility: note.visibility,

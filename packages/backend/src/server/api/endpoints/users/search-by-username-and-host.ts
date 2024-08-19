@@ -14,6 +14,7 @@ import { DI } from '@/di-symbols.js';
 import { sqlLikeEscape } from '@/misc/sql-like-escape.js';
 import { z } from 'zod';
 import { UserSchema } from '@/models/zod/user.js';
+import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService.js';
 
 export const meta = {
 	tags: ['users'],
@@ -45,6 +46,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly followingsRepository: FollowingsRepository,
 
 		private readonly userEntityService: UserEntityService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const setUsernameAndHostQuery = (query = this.usersRepository.createQueryBuilder('user')) => {
@@ -117,7 +119,11 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 					.getMany();
 			}
 
-			return await this.userEntityService.packMany(users, me, { schema: ps.detail ? 'UserDetailed' : 'UserLite' });
+			if (ps.detail) {
+				return await this.userEntityService.packMany(users, me, { schema: 'UserDetailed' });
+			} else {
+				return await Promise.all(users.map(u => this.userLiteEntityService.packLite(u)));
+			}
 		});
 	}
 }

@@ -8,9 +8,9 @@ import { DI } from '@/di-symbols.js';
 import type { MiUserListMembership, UserListMembershipsRepository, UserListsRepository } from '@/models/_.js';
 import type { MiUserList } from '@/models/UserList.js';
 import { IdService } from '@/core/IdService.js';
-import { UserEntityService } from './UserEntityService.js';
 import type { z } from 'zod';
 import type { UserListSchema } from '@/models/zod/user-list.js';
+import { UserLiteEntityService } from './UserLiteEntityService.js';
 
 @Injectable()
 export class UserListEntityService {
@@ -21,8 +21,8 @@ export class UserListEntityService {
 		@Inject(DI.userListMembershipsRepository)
 		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly idService: IdService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	public async pack(
@@ -50,7 +50,7 @@ export class UserListEntityService {
 			id: x.id,
 			createdAt: this.idService.parse(x.id).date.toISOString(),
 			userId: x.userId,
-			user: await this.userEntityService.pack(x.userId),
+			user: await this.userLiteEntityService.packLite(x.userId),
 			withReplies: x.withReplies,
 		})));
 	}

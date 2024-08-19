@@ -10,10 +10,10 @@ import { DI } from '@/di-symbols.js';
 import type { DriveFilesRepository, NotesRepository, UserProfilesRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
 import type { MiUser } from '@/models/User.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { IdService } from '@/core/IdService.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
+import { UserLiteEntityService } from './entities/UserLiteEntityService.js';
 
 @Injectable()
 export class FeedService {
@@ -30,9 +30,9 @@ export class FeedService {
 		@Inject(DI.driveFilesRepository)
 		private readonly driveFilesRepository: DriveFilesRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly idService: IdService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	public async packFeed(user: MiUser) {
@@ -60,7 +60,7 @@ export class FeedService {
 			generator: 'Wisteria',
 			description: `${user.notesCount} Notes, ${profile.followingVisibility === 'public' ? user.followingCount : '?'} Following, ${profile.followersVisibility === 'public' ? user.followersCount : '?'} Followers${profile.description ? ` · ${profile.description}` : ''}`,
 			link: author.link,
-			image: user.avatarUrl ?? this.userEntityService.getIdenticonUrl(user),
+			image: user.avatarUrl ?? this.userLiteEntityService.getIdenticonUrl(user),
 			feedLinks: {
 				json: `${author.link}.json`,
 				atom: `${author.link}.atom`,

@@ -8,7 +8,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { FollowingsRepository } from '@/models/_.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { UserFollowingService } from '@/core/UserFollowingService.js';
 import { DI } from '@/di-symbols.js';
 import { GetterService } from '@/server/api/GetterService.js';
@@ -16,6 +15,7 @@ import { ApiError } from '../../error.js';
 import { z } from 'zod';
 import { IdSchema } from '@/models/zod/IdSchema.js';
 import { UserLiteSchema } from '@/models/zod/user-lite.js';
+import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService.js';
 
 export const meta = {
 	tags: ['following', 'users'],
@@ -77,9 +77,9 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.followingsRepository)
 		private readonly followingsRepository: FollowingsRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly getterService: GetterService,
 		private readonly userFollowingService: UserFollowingService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const follower = me;
@@ -117,7 +117,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				throw e;
 			}
 
-			return await this.userEntityService.pack(followee.id, me);
+			return await this.userLiteEntityService.packLite(followee.id);
 		});
 	}
 }

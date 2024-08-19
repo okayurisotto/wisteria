@@ -11,11 +11,11 @@ import type { MiUserListMembership } from '@/models/UserListMembership.js';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ProxyAccountService } from '@/core/ProxyAccountService.js';
 import { QueueService } from '@/core/QueueService.js';
 import { RoleUserService } from './RoleUserService.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
+import { UserLiteEntityService } from './entities/UserLiteEntityService.js';
 
 @Injectable()
 export class UserListService {
@@ -25,12 +25,12 @@ export class UserListService {
 		@Inject(DI.userListMembershipsRepository)
 		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly idService: IdService,
 		private readonly globalEventService: GlobalEventService,
 		private readonly proxyAccountService: ProxyAccountService,
 		private readonly queueService: QueueService,
 		private readonly roleUserService: RoleUserService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {}
 
 	public async addMember(target: MiUser, list: MiUserList, me: MiUser) {
@@ -48,7 +48,7 @@ export class UserListService {
 			userListUserId: list.userId,
 		} as MiUserListMembership);
 
-		this.globalEventService.publishUserListStream(list.id, 'userAdded', await this.userEntityService.pack(target));
+		this.globalEventService.publishUserListStream(list.id, 'userAdded', await this.userLiteEntityService.packLite(target));
 
 		// このインスタンス内にこのリモートユーザーをフォローしているユーザーがいなくても投稿を受け取るためにダミーのユーザーがフォローしたということにする
 		if (isRemoteUser(target)) {
@@ -65,7 +65,7 @@ export class UserListService {
 			userListId: list.id,
 		});
 
-		this.globalEventService.publishUserListStream(list.id, 'userRemoved', await this.userEntityService.pack(target));
+		this.globalEventService.publishUserListStream(list.id, 'userRemoved', await this.userLiteEntityService.packLite(target));
 	}
 
 	public async updateMembership(target: MiUser, list: MiUserList, options: { withReplies?: boolean }) {

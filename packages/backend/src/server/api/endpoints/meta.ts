@@ -9,7 +9,6 @@ import JSON5 from 'json5';
 import type { AdsRepository } from '@/models/_.js';
 import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { InstanceActorService } from '@/core/InstanceActorService.js';
 import type { Config } from '@/config.js';
@@ -18,6 +17,7 @@ import { DEFAULT_POLICIES } from '@/core/RoleService.js';
 import { z } from 'zod';
 import { IdSchema } from '@/models/zod/IdSchema.js';
 import { RolePoliciesSchema } from '@/models/zod/role.js';
+import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService';
 
 export const meta = {
 	tags: ['meta'],
@@ -108,9 +108,9 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.adsRepository)
 		private readonly adsRepository: AdsRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly metaService: MetaService,
 		private readonly instanceActorService: InstanceActorService,
+		private readonly userLiteEntityService: UserLiteEntityService,
 	) {
 		super(meta, paramDef, async (ps) => {
 			const instance = await this.metaService.fetch();
@@ -197,7 +197,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			};
 
 			if (ps.detail) {
-				const proxyAccount = instance.proxyAccountId ? await this.userEntityService.pack(instance.proxyAccountId).catch(() => null) : null;
+				const proxyAccount = instance.proxyAccountId ? await this.userLiteEntityService.packLite(instance.proxyAccountId).catch(() => null) : null;
 
 				response.proxyAccountName = proxyAccount ? proxyAccount.username : null;
 				response.features = {
