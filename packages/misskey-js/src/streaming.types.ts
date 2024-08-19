@@ -1,4 +1,4 @@
-import {
+import type {
 	Antenna,
 	DriveFile,
 	DriveFolder,
@@ -10,7 +10,7 @@ import {
 	UserDetailedNotMe,
 	UserLite,
 } from './entities.js';
-import {
+import type {
 	AnnouncementCreated,
 	EmojiAdded, EmojiDeleted,
 	EmojiUpdated,

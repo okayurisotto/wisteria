@@ -4,8 +4,7 @@
 		"experimentalDecorators": true,
 		"paths": {
 			"@/*": ["./src/*"]
-		},
-		"verbatimModuleSyntax": true
+		}
 	},
 	"extends": ["@tsconfig/node-lts/tsconfig.json", "../../tsconfig.json"],
 	"include": ["src"]

@@ -6,7 +6,8 @@
 		"moduleResolution": "bundler",
 		"noEmit": true,
 		"resolveJsonModule": true,
-		"useDefineForClassFields": true
+		"useDefineForClassFields": true,
+		"verbatimModuleSyntax": true
 	},
 	"exclude": ["built"],
 	"extends": ["@tsconfig/strictest/tsconfig.json"]

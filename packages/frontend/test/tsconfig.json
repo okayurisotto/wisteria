@@ -1,43 +1,13 @@
 {
 	"compilerOptions": {
-		"allowJs": true,
-		"noEmitOnError": false,
-		"noImplicitAny": true,
-		"noImplicitReturns": true,
-		"noUnusedParameters": false,
-		"noUnusedLocals": true,
-		"noFallthroughCasesInSwitch": true,
-		"declaration": false,
-		"sourceMap": true,
-		"target": "ES2022",
-		"module": "nodenext",
-		"moduleResolution": "nodenext",
-		"allowSyntheticDefaultImports": true,
-		"removeComments": false,
-		"noLib": false,
-		"strict": true,
-		"strictNullChecks": true,
-		"strictPropertyInitialization": false,
-		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true,
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"baseUrl": "./",
+		"lib": ["ESNext", "DOM"],
 		"paths": {
 			"@/*": ["../src/*"]
 		},
-		"typeRoots": [
-			"../node_modules/@types"
-		],
-		"lib": [
-			"esnext",
-			"dom"
-		],
+		"target": "ES2022",
+		"typeRoots": ["../node_modules/@types"],
 		"types": ["node"]
 	},
-	"compileOnSave": false,
-	"include": [
-		"./**/*.ts",
-		"../src/**/*.vue"
-	]
+	"extends": ["../../../tsconfig.json"],
+	"include": ["./**/*.ts", "../src/**/*.vue"]
 }

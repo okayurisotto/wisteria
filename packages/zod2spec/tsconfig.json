@@ -1,4 +1,5 @@
 {
-  "extends": ["../../tsconfig.json", "@tsconfig/node-lts/tsconfig.json"],
-  "include": ["./src/**/*.ts"]
+	"compilerOptions": {},
+	"extends": ["../../tsconfig.json", "@tsconfig/node-lts/tsconfig.json"],
+	"include": ["./src/**/*.ts"]
 }

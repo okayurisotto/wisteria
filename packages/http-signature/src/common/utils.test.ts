@@ -1,5 +1,5 @@
 import { test, expect, describe } from 'vitest';
-import { isUniqueArray, safeParseInteger } from './utils';
+import { isUniqueArray, safeParseInteger } from './utils.js';
 
 describe('isUniqueArray', () => {
 	test('unique array', () => {

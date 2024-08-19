@@ -11,8 +11,7 @@
 			"./node_modules/@vue-macros",
 			"./node_modules"
 		],
-		"types": ["vite/client", "vitest/importMeta"],
-		"verbatimModuleSyntax": true
+		"types": ["vite/client", "vitest/importMeta"]
 	},
 	"extends": ["../../tsconfig.json"],
 	"include": ["./**/*.ts", "./**/*.vue"]

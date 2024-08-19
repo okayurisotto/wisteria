@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest';
-import { parseHeaders } from './parseHeaders';
+import { parseHeaders } from './parseHeaders.js';
 
 test('can parse headers parameter', () => {
 	const input = '(request-target) (created) (expires) host date digest content-length';

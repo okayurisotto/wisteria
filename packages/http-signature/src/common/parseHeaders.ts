@@ -1,5 +1,5 @@
 import { map, or, pattern, separated } from 'parcom';
-import type { Result } from './types';
+import type { Result } from './types.js';
 
 const normalHeaderFieldName = map(
 	pattern(/^([a-z-]+)/),

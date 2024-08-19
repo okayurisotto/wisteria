@@ -1,4 +1,4 @@
-import { ModerationLogPayloads } from './consts.js';
+import type { ModerationLogPayloads } from './consts.js';
 import type { components } from './autogen.js';
 
 export type Error = components['schemas']['Error'];

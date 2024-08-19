@@ -1,7 +1,5 @@
 {
-	"compilerOptions": {
-		"verbatimModuleSyntax": true
-	},
-	"extends": ["@tsconfig/node-lts/tsconfig.json", "../../tsconfig.json"],
+	"compilerOptions": {},
+	"extends": ["../../tsconfig.json", "@tsconfig/node-lts/tsconfig.json"],
 	"include": ["src"]
 }
