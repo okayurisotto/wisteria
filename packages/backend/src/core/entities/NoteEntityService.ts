@@ -5,7 +5,6 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { In } from 'typeorm';
-import { ModuleRef } from '@nestjs/core';
 import { DI } from '@/di-symbols.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiUser } from '@/models/User.js';
@@ -14,8 +13,7 @@ import type { UsersRepository, NotesRepository, FollowingsRepository, PollsRepos
 import { isNotNull } from '@/misc/is-not-null.js';
 import { DebounceLoader } from '@/misc/loader.js';
 import { IdService } from '@/core/IdService.js';
-import type { OnModuleInit } from '@nestjs/common';
-import type { DriveFileEntityService } from './DriveFileEntityService.js';
+import { DriveFileEntityService } from './DriveFileEntityService.js';
 import { ReactionDecodeService } from '../ReactionDecodeService.js';
 import { LegacyReactionConvertService } from '../LegacyReactionConvertService.js';
 import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
@@ -25,8 +23,7 @@ import type { DriveFileSchema } from '@/models/zod/drive-file.js';
 import { UserLiteEntityService } from './UserLiteEntityService.js';
 
 @Injectable()
-export class NoteEntityService implements OnModuleInit {
-	private driveFileEntityService!: DriveFileEntityService;
+export class NoteEntityService {
 	private readonly noteLoader = new DebounceLoader((id: string) => {
 		return this.notesRepository.findOneOrFail({
 			where: { id },
@@ -35,8 +32,6 @@ export class NoteEntityService implements OnModuleInit {
 	});
 
 	constructor(
-		private readonly moduleRef: ModuleRef,
-
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,
 
@@ -63,11 +58,8 @@ export class NoteEntityService implements OnModuleInit {
 		private readonly idService: IdService,
 		private readonly customEmojiPopulateService: CustomEmojiPopulateService,
 		private readonly userLiteEntityService: UserLiteEntityService,
+		private readonly driveFileEntityService: DriveFileEntityService,
 	) {}
-
-	onModuleInit() {
-		this.driveFileEntityService = this.moduleRef.get('DriveFileEntityService');
-	}
 
 	private async hideNote(packedNote: z.infer<typeof NoteSchema>, meId: MiUser['id'] | null) {
 		// TODO: isVisibleForMe を使うようにしても良さそう(型違うけど)

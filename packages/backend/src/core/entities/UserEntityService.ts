@@ -20,7 +20,7 @@ import { AnnouncementService } from '@/core/AnnouncementService.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 import type { OnModuleInit } from '@nestjs/common';
 import { NoteEntityService } from './NoteEntityService.js';
-import type { PageEntityService } from './PageEntityService.js';
+import { PageEntityService } from './PageEntityService.js';
 import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
 import { RoleUserService } from '../RoleUserService.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
@@ -42,7 +42,6 @@ type Refs = {
 @Injectable()
 export class UserEntityService implements OnModuleInit {
 	private apPersonService: ApPersonService;
-	private pageEntityService: PageEntityService;
 
 	constructor(
 		private readonly moduleRef: ModuleRef,
@@ -96,11 +95,11 @@ export class UserEntityService implements OnModuleInit {
 		private readonly customEmojiPopulateService: CustomEmojiPopulateService,
 		private readonly roleUserService: RoleUserService,
 		private readonly userLiteEntityService: UserLiteEntityService,
+		private readonly pageEntityService: PageEntityService,
 	) {}
 
 	onModuleInit() {
 		this.apPersonService = this.moduleRef.get('ApPersonService');
-		this.pageEntityService = this.moduleRef.get('PageEntityService');
 	}
 
 	// #region Validators
