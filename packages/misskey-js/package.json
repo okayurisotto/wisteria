@@ -12,8 +12,8 @@
 		"generate": "openapi-typescript ../backend/built/api.json -o ./src/autogen.ts"
 	},
 	"devDependencies": {
-		"@types/node": "^20.14.14",
-		"openapi-typescript": "^6",
+		"@types/node": "^20.16.1",
+		"openapi-typescript": "^6.7.6",
 		"tsup": "^8.2.4",
 		"typescript": "5.5.4"
 	},

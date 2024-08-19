@@ -11,7 +11,7 @@
 		"types": "./built/index.d.ts"
 	},
 	"devDependencies": {
-		"@types/node": "^20.14.14",
+		"@types/node": "^20.16.1",
 		"tsup": "^8.2.4",
 		"typescript": "5.5.4",
 		"vitest": "2.0.5"
