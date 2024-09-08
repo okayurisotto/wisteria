@@ -80,7 +80,7 @@ export class UserLiteEntityService {
 				: [],
 			isBot: user.isBot,
 			isCat: user.isCat,
-			instance: user.host == null
+			instance: user.host
 				? this.instancesRepository.findOneBy({ host: user.host }).then(instance => instance
 					? {
 							name: instance.name,
