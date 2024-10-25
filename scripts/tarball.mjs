@@ -12,6 +12,9 @@ const ignore = [
 	'**/.git/**/*',
 	'**/*ignore',
 	'**/.gitmodules',
+
+	'.config/**/*',
+	'compose.yaml',
 	// Exclude files you don't want to include in the tarball here
 ];
 
