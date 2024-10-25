@@ -44,7 +44,6 @@
 		"cypress": "13.6.3",
 		"eslint": "^9.9.0",
 		"eslint-plugin-vue": "^9.27.0",
-		"execa": "8.0.1",
 		"fast-glob": "3.3.2",
 		"ignore-walk": "6.0.4",
 		"js-yaml": "4.1.0",
