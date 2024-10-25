@@ -76,43 +76,26 @@ watch(() => props.acct, fetchUser, {
 
 const headerActions = computed(() => []);
 
-const headerTabs = computed(() => user.value ? [{
-	key: 'home',
-	title: i18n.ts.overview,
-	icon: 'ti ti-home',
-}, {
-	key: 'notes',
-	title: i18n.ts.notes,
-	icon: 'ti ti-pencil',
-}, ...($i && ($i.id === user.value.id || $i.isAdmin || $i.isModerator)) || user.value.publicReactions ? [{
-	key: 'reactions',
-	title: i18n.ts.reaction,
-	icon: 'ti ti-mood-happy',
-}] : [], {
-	key: 'clips',
-	title: i18n.ts.clips,
-	icon: 'ti ti-paperclip',
-}, {
-	key: 'lists',
-	title: i18n.ts.lists,
-	icon: 'ti ti-list',
-}, {
-	key: 'pages',
-	title: i18n.ts.pages,
-	icon: 'ti ti-news',
-}, {
-	key: 'flashs',
-	title: 'Play',
-	icon: 'ti ti-player-play',
-}, {
-	key: 'gallery',
-	title: i18n.ts.gallery,
-	icon: 'ti ti-icons',
-}, {
-	key: 'raw',
-	title: 'Raw',
-	icon: 'ti ti-code',
-}] : []);
+const headerTabs = computed(() => {
+	if (user.value == null) return [];
+
+	const isReactionsVisible = user.value.publicReactions || ($i && ($i.id === user.value.id || $i.isAdmin || $i.isModerator));
+	const isLocalUser = user.value.host === null;
+
+	return [
+		{ key: 'home', title: i18n.ts.overview, icon: 'ti ti-home' },
+		{ key: 'notes', title: i18n.ts.notes, icon: 'ti ti-pencil' },
+		...(isReactionsVisible ? [{ key: 'reactions', title: i18n.ts.reaction, icon: 'ti ti-mood-happy' }] : []),
+		...(isLocalUser ? [
+			{ key: 'clips', title: i18n.ts.clips, icon: 'ti ti-paperclip' },
+			{ key: 'lists', title: i18n.ts.lists, icon: 'ti ti-list' },
+			{ key: 'pages', title: i18n.ts.pages, icon: 'ti ti-news' },
+			{ key: 'flashs', title: 'Play', icon: 'ti ti-player-play' },
+			{ key: 'gallery', title: i18n.ts.gallery, icon: 'ti ti-icons' },
+		] : []),
+		{ key: 'raw', title: 'Raw', icon: 'ti ti-code' },
+	];
+});
 
 definePageMetadata(() => ({
 	title: i18n.ts.user,
