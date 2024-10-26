@@ -104,17 +104,17 @@ function more(ev: MouseEvent) {
 }
 
 .body {
-	--divider-border-width: 1px;
-	--icon-size: 32px;
-	--indicator-size: 8px;
-	--instance-icon-size: 38px;
-	--item-children-gap: 8px;
-	--item-height: 40px;
-	--item-padding-inline: 16px;
+	--divider-border-width: 0.1em;
+	--icon-size: 2em;
+	--indicator-size: 0.5em;
+	--instance-icon-size: 2.5em;
+	--item-children-gap: 0.5em;
+	--item-height: 3em;
+	--item-padding-inline: 0.75em;
 	--item-width: min(100%, 250px);
-	--navbar-children-gap: 20px;
-	--navbar-padding-block: 20px;
-	--navbar-padding-inline: 18px;
+	--navbar-children-gap: 1.5em;
+	--navbar-padding-block: 1.5em;
+	--navbar-padding-inline: 1em;
 
 	--divider-height: var(--item-height);
 	--divider-margin-inline: calc((100% - var(--item-width)) / 2 + var(--item-padding-inline));
@@ -200,7 +200,7 @@ function more(ev: MouseEvent) {
 }
 
 .postIcon {
-	width: 32px;
+	width: var(--icon-size);
 }
 
 .account {
@@ -209,7 +209,7 @@ function more(ev: MouseEvent) {
 	display: flex;
 	gap: var(--item-children-gap);
 	overflow: clip;
-	padding-block-start: 20px;
+	padding-block-start: var(--navbar-children-gap);
 	padding-inline: var(--item-padding-inline);
 	text-align: left;
 	width: var(--item-width);
@@ -280,7 +280,7 @@ function more(ev: MouseEvent) {
 .itemIndicator {
 	animation: global-blink 1s infinite;
 	color: var(--navIndicator);
-	font-size: 8px;
+	font-size: var(--indicator-size);
 	left: calc(var(--indicator-size) / -2);
 	position: absolute;
 	top: 0;
@@ -289,7 +289,7 @@ function more(ev: MouseEvent) {
 		align-items: center;
 		animation: none;
 		display: flex;
-		font-size: 10px;
+		font-size: 0.6em;
 		height: 100%;
 		left: auto;
 		right: 0;
@@ -307,11 +307,11 @@ function more(ev: MouseEvent) {
 // 165px = (80px + 250px) / 2
 @container (width < 165px) {
 	.body {
-		--divider-height: 25px;
+		--divider-height: 2em;
 		--divider-margin-inline: calc(50% - var(--item-height) / 2);
-		--icon-size: 38px;
-		--instance-icon-size: 32px;
-		--item-height: 50px;
+		--icon-size: 2.75em;
+		--instance-icon-size: 2.25em;
+		--item-height: 3.5em;
 		--item-padding-inline: 0;
 		--navbar-padding-inline: 0;
 	}
