@@ -7,8 +7,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div :class="[$style.root, { _panel: !widgetProps.transparent }]" data-cy-mkw-calendar>
 	<div :class="[$style.calendar, { [$style.isHoliday]: isHoliday }]">
 		<p :class="$style.monthAndYear">
-			<span :class="$style.year">{{ i18n.tsx.yearX({ year }) }}</span>
-			<span :class="$style.month">{{ i18n.tsx.monthX({ month }) }}</span>
+			<span>{{ i18n.tsx.yearX({ year }) }}</span>
+			<span>{{ i18n.tsx.monthX({ month }) }}</span>
 		</p>
 		<p v-if="month === 1 && day === 1" class="day">🎉{{ i18n.tsx.dayX({ day }) }}<span style="display: inline-block; transform: scaleX(-1);">🎉</span></p>
 		<p v-else :class="$style.day">{{ i18n.tsx.dayX({ day }) }}</p>
@@ -16,19 +16,19 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</div>
 	<div :class="$style.info">
 		<div :class="$style.infoSection">
-			<p :class="$style.infoText">{{ i18n.ts.today }}<b :class="$style.percentage">{{ dayP.toFixed(1) }}%</b></p>
+			<p :class="$style.infoText">{{ i18n.ts.today }}<b>{{ dayP.toFixed(1) }}%</b></p>
 			<div :class="$style.meter">
 				<div :class="$style.meterVal" :style="{ width: `${dayP}%` }"></div>
 			</div>
 		</div>
 		<div :class="$style.infoSection">
-			<p :class="$style.infoText">{{ i18n.ts.thisMonth }}<b :class="$style.percentage">{{ monthP.toFixed(1) }}%</b></p>
+			<p :class="$style.infoText">{{ i18n.ts.thisMonth }}<b>{{ monthP.toFixed(1) }}%</b></p>
 			<div :class="$style.meter">
 				<div :class="$style.meterVal" :style="{ width: `${monthP}%` }"></div>
 			</div>
 		</div>
 		<div :class="$style.infoSection">
-			<p :class="$style.infoText">{{ i18n.ts.thisYear }}<b :class="$style.percentage">{{ yearP.toFixed(1) }}%</b></p>
+			<p :class="$style.infoText">{{ i18n.ts.thisYear }}<b>{{ yearP.toFixed(1) }}%</b></p>
 			<div :class="$style.meter">
 				<div :class="$style.meterVal" :style="{ width: `${yearP}%` }"></div>
 			</div>
@@ -119,18 +119,20 @@ defineExpose<WidgetComponentExpose>({
 
 <style lang="scss" module>
 .root {
-	padding: 16px 0;
+	--meter-height: 0.25em;
 
-	&:after {
-		content: "";
-		display: block;
-		clear: both;
-	}
+	padding: 16px;
+	display: flex;
+	gap: 16px;
 }
 
 .calendar {
-	float: left;
-	width: 60%;
+	flex-grow: 3;
+
+	display: flex;
+	flex-direction: column;
+	gap: 0.75em;
+	justify-content: space-between;
 	text-align: center;
 
 	&.isHoliday {
@@ -140,79 +142,71 @@ defineExpose<WidgetComponentExpose>({
 	}
 }
 
+.monthAndYear {
+	display: flex;
+	gap: 0.75em;
+	justify-content: center;
+}
+
+.monthAndYear,
+.weekDay,
+.day {
+	margin: 0;
+}
+
 .monthAndYear,
 .weekDay {
-	margin: 0;
-	line-height: 18px;
 	font-size: 0.9em;
 }
 
-.year,
-.month {
-	margin: 0 4px;
-}
-
 .day {
-	margin: 10px 0;
-	line-height: 32px;
 	font-size: 1.75em;
 }
 
 .info {
-	display: block;
-	float: left;
-	width: 40%;
-	padding: 0 16px 0 0;
+	flex-grow: 2;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 	box-sizing: border-box;
 }
 
 .infoSection {
-	margin-bottom: 8px;
-
-	&:last-child {
-		margin-bottom: 4px;
-	}
+	display: flex;
+	flex-direction: column;
+	gap: 0.2em;
 
 	&:nth-child(1) {
-		> .meter > .meterVal {
-			background: #f7796c;
-		}
+		--meter-color: #f7796c;
 	}
 
 	&:nth-child(2) {
-		> .meter > .meterVal {
-			background: #a1de41;
-		}
+		--meter-color: #a1de41;
 	}
 
 	&:nth-child(3) {
-		> .meter > .meterVal {
-			background: #41ddde;
-		}
+		--meter-color: #41ddde;
 	}
 }
 
 .infoText {
 	display: flex;
-	margin: 0 0 2px 0;
+	margin: 0;
+	justify-content: space-between;
 	font-size: 0.75em;
-	line-height: 18px;
 	opacity: 0.8;
 }
 
-.percentage {
-	margin-left: auto;
-}
-
 .meter {
-	width: 100%;
+	height: var(--meter-height);
 	overflow: hidden;
 	background: var(--X11);
-	border-radius: 8px;
+	border-radius: calc(var(--meter-height) / 2);
 }
 
 .meterVal {
-	height: 4px;
+	background-color: var(--meter-color);
+	height: var(--meter-height);
 	transition: width .3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 </style>
