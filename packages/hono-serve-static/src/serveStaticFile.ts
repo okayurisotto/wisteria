@@ -1,5 +1,6 @@
 import { createReadStream } from 'node:fs';
 import { lstat } from 'node:fs/promises';
+import { Stream } from 'node:stream';
 import type { MiddlewareHandler } from 'hono';
 import mime from 'mime/lite';
 
@@ -27,7 +28,7 @@ export const serveStaticFile = (opts: { path: string }): MiddlewareHandler => {
 
 		if (rangeHeaderValue === null) {
 			c.status(200);
-			return c.body(stream);
+			return c.body(Stream.Readable.toWeb(stream));
 		} else {
 			// TODO
 			c.status(400);
