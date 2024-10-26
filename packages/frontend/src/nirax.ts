@@ -10,7 +10,7 @@ import { EventEmitter } from 'eventemitter3';
 import { safeURIDecode } from '@/scripts/safe-uri-decode.js';
 
 interface RouteDefBase {
-	path: string;
+	path: `/${string}`;
 	query?: Record<string, string>;
 	loginRequired?: boolean;
 	name?: string;
@@ -71,30 +71,36 @@ export type Resolved = {
 	};
 };
 
-function parsePath(path: string): ParsedPath {
-	const res = [] as ParsedPath;
+const parsePath = (path_: `/${string}`): ParsedPath => {
+	const pattern = /^(?<prefix>.+)?:(?<name>\w+?)?(?<wildcard>\(\*\))?(?<optional>\?)?$/;
 
-	path = path.substring(1);
+	const parsed: ParsedPath = [];
+	const path = path_.substring(1);
 
 	for (const part of path.split('/')) {
-		if (part.includes(':')) {
-			const prefix = part.substring(0, part.indexOf(':'));
-			const placeholder = part.substring(part.indexOf(':') + 1);
-			const wildcard = placeholder.includes('(*)');
-			const optional = placeholder.endsWith('?');
-			res.push({
-				name: placeholder.replace('(*)', '').replace('?', ''),
-				startsWith: prefix !== '' ? prefix : undefined,
-				wildcard,
-				optional,
+		const matchResult = part.match(pattern);
+
+		if (matchResult !== null) {
+			const prefix = matchResult.groups?.['prefix'];
+			const name = matchResult.groups?.['name'];
+			const wildcard = matchResult.groups?.['wildcard'];
+			const optional = matchResult.groups?.['optional'];
+
+			parsed.push({
+				name: name ?? '',
+				...(prefix !== undefined ? { startsWith: prefix } : {}),
+				wildcard: wildcard !== undefined,
+				optional: optional !== undefined,
 			});
 		} else if (part.length !== 0) {
-			res.push(part);
+			parsed.push(part);
+		} else {
+			// ?
 		}
 	}
 
-	return res;
-}
+	return parsed;
+};
 
 export interface IRouter extends EventEmitter<RouterEvent> {
 	current: Resolved;
