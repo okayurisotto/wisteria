@@ -22,10 +22,10 @@ export const meta = {
 	cacheSec: 60 * 60,
 
 	res: z.object({
-		topSubInstances: FederationInstanceSchema.array().optional(),
-		otherFollowersCount: z.number().optional(),
-		topPubInstances: FederationInstanceSchema.array().optional(),
-		otherFollowingCount: z.number().optional(),
+		topSubInstances: FederationInstanceSchema.array(),
+		otherFollowersCount: z.number(),
+		topPubInstances: FederationInstanceSchema.array(),
+		otherFollowingCount: z.number(),
 	}),
 } as const;
 
