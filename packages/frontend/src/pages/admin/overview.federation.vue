@@ -24,8 +24,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div class="icon"><i class="ti ti-world-download"></i></div>
 				<div class="body">
 					<div class="value">
-						<!-- TODO -->
-						{{ number(null) }}
+						{{ number(totalSub) }}
 					</div>
 					<div class="label">Sub</div>
 				</div>
@@ -34,8 +33,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div class="icon"><i class="ti ti-world-upload"></i></div>
 				<div class="body">
 					<div class="value">
-						<!-- TODO -->
-						{{ number(null) }}
+						{{ number(totalPub) }}
 					</div>
 					<div class="label">Pub</div>
 				</div>
@@ -56,11 +54,16 @@ import { useChartTooltip } from '@/scripts/use-chart-tooltip.js';
 const topSubInstancesForPie = ref<InstanceForPie[] | null>(null);
 const topPubInstancesForPie = ref<InstanceForPie[] | null>(null);
 const fetching = ref(true);
+const totalSub = ref<number | null>(null);
+const totalPub = ref<number | null>(null);
 
 const { handler: externalTooltipHandler } = useChartTooltip();
 
 onMounted(async () => {
 	misskeyApiGet('federation/stats', { limit: 10 }).then(res => {
+		totalSub.value = res.topSubInstances.length + res.otherFollowersCount;
+		totalPub.value = res.topPubInstances.length + res.otherFollowingCount;
+
 		topSubInstancesForPie.value = [
 			...res.topSubInstances.map(x => ({
 				name: x.host,
