@@ -244,8 +244,8 @@ importers:
         specifier: 3.3.2
         version: 3.3.2
       nodemailer:
-        specifier: 6.9.8
-        version: 6.9.8
+        specifier: 6.9.16
+        version: 6.9.16
       nsfwjs:
         specifier: ^3.0.0
         version: 3.0.0(@tensorflow/tfjs@4.20.0(encoding@0.1.13)(seedrandom@3.0.5))
@@ -450,8 +450,8 @@ importers:
         specifier: 3.0.3
         version: 3.0.3
       '@types/nodemailer':
-        specifier: 6.4.14
-        version: 6.4.14
+        specifier: 6.4.16
+        version: 6.4.16
       '@types/pg':
         specifier: 8.11.0
         version: 8.11.0
@@ -2499,8 +2499,8 @@ packages:
   '@types/node@22.8.1':
     resolution: {integrity: sha512-k6Gi8Yyo8EtrNtkHXutUu2corfDf9su95VYVP10aGYMMROM6SAItZi0w1XszA6RtWTHSVp5OeFof37w0IEqCQg==}
 
-  '@types/nodemailer@6.4.14':
-    resolution: {integrity: sha512-fUWthHO9k9DSdPCSPRqcu6TWhYyxTBg382vlNIttSe9M7XfsT06y0f24KHXtbnijPGGRIcVvdKHTNikOI6qiHA==}
+  '@types/nodemailer@6.4.16':
+    resolution: {integrity: sha512-uz6hN6Pp0upXMcilM61CoKyjT7sskBoOWpptkjjJp8jIMlTdc3xG01U7proKkXzruMS4hS0zqtHNkNPFB20rKQ==}
 
   '@types/offscreencanvas@2019.3.0':
     resolution: {integrity: sha512-esIJx9bQg+QYF0ra8GnvfianIY8qWB0GBx54PK5Eps6m+xTj86KLavHv6qDhzKcu5UUOgNfJ2pWaIIV7TRUd9Q==}
@@ -5224,8 +5224,8 @@ packages:
   node-releases@2.0.18:
     resolution: {integrity: sha512-d9VeXT4SJ7ZeOqGX6R5EM022wpL+eWPooLI+5UpWn2jCT1aosUQEhQP214x33Wkwx3JQMvIm+tIoVOdodFS40g==}
 
-  nodemailer@6.9.8:
-    resolution: {integrity: sha512-cfrYUk16e67Ks051i4CntM9kshRYei1/o/Gi8K1d+R34OIs21xdFnW7Pt7EucmVKA0LKtqUGNcjMZ7ehjl49mQ==}
+  nodemailer@6.9.16:
+    resolution: {integrity: sha512-psAuZdTIRN08HKVd/E8ObdV6NO7NTBY3KsC30F7M4H1OnmLCUNaS56FpYxyb26zWLSyYF9Ozch9KYHhHegsiOQ==}
     engines: {node: '>=6.0.0'}
 
   nofilter@3.1.0:
@@ -9425,7 +9425,7 @@ snapshots:
     dependencies:
       undici-types: 6.19.8
 
-  '@types/nodemailer@6.4.14':
+  '@types/nodemailer@6.4.16':
     dependencies:
       '@types/node': 20.17.1
 
@@ -9513,7 +9513,7 @@ snapshots:
 
   '@types/yauzl@2.10.3':
     dependencies:
-      '@types/node': 22.8.1
+      '@types/node': 20.17.1
     optional: true
 
   '@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@9.13.0)(typescript@5.5.4))(eslint@9.13.0)(typescript@5.5.4)':
@@ -12583,7 +12583,7 @@ snapshots:
 
   node-releases@2.0.18: {}
 
-  nodemailer@6.9.8: {}
+  nodemailer@6.9.16: {}
 
   nofilter@3.1.0: {}
 
