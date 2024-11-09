@@ -13,7 +13,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 				<div :key="user.id" class="main _panel">
 					<div class="banner-container" :style="style">
-						<div class="banner" :style="style"></div>
 						<div class="fade"></div>
 						<div class="title">
 							<MkUserName class="name" :user="user" :nowrap="true"/>
@@ -287,24 +286,14 @@ onMounted(() => {
 					position: relative;
 					height: 250px;
 					overflow: clip;
-					background-size: cover;
 					background-position: center;
-
-					> .banner {
-						height: 100%;
-						background-color: #4c5e6d;
-						background-size: cover;
-						background-position: center;
-						box-shadow: 0 0 128px rgba(0, 0, 0, 0.5) inset;
-					}
+					background-size: cover;
+					box-shadow: 0 0 128px rgba(0, 0, 0, 0.5) inset;
 
 					> .fade {
 						position: absolute;
-						bottom: 0;
-						left: 0;
-						width: 100%;
-						height: 78px;
-						background: linear-gradient(transparent, rgba(#000, 0.7));
+						inset: 0;
+						background: linear-gradient(transparent 70%, rgba(#000, 0.7));
 					}
 
 					> .followed {
