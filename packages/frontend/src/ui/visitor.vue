@@ -301,7 +301,7 @@ onBeforeUnmount(() => {
 				padding: 10px;
 				box-sizing: border-box;
 				text-align: center;
-				border-radius: 999px;
+				border-radius: var(--rounded-full);
 
 				&._button {
 					background: var(--panel);

@@ -122,6 +122,6 @@ defineExpose<WidgetComponentExpose>({
 	width: auto;
 	max-width: 90%;
 	margin-bottom: 8px;
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 }
 </style>

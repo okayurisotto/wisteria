@@ -251,7 +251,7 @@ onDeactivated(() => {
 	container-type: inline-size;
 	position: relative;
 	border: .5px solid var(--divider);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	overflow: clip;
 }
 
@@ -309,7 +309,7 @@ onDeactivated(() => {
 
 	.controlButton {
 		padding: 6px;
-		border-radius: calc(var(--radius) / 2);
+		border-radius: var(--rounded-full);
 		font-size: 1.05rem;
 
 		&:hover {

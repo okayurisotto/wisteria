@@ -202,7 +202,7 @@ const rejectFollowRequest = () => {
 	width: 80%;
 	height: 80%;
 	font-size: 15px;
-	border-radius: 100%;
+	border-radius: var(--rounded-full);
 	color: #fff;
 }
 
@@ -215,7 +215,7 @@ const rejectFollowRequest = () => {
 }
 
 .icon_app {
-	border-radius: 6px;
+	border-radius: var(--rounded);
 }
 
 .subIcon {
@@ -226,7 +226,7 @@ const rejectFollowRequest = () => {
 	width: 20px;
 	height: 20px;
 	box-sizing: border-box;
-	border-radius: 100%;
+	border-radius: var(--rounded-full);
 	background: var(--panel);
 	box-shadow: 0 0 0 3px var(--panel);
 	font-size: 11px;
@@ -361,7 +361,7 @@ const rejectFollowRequest = () => {
 	width: 20px;
 	height: 20px;
 	box-sizing: border-box;
-	border-radius: 100%;
+	border-radius: var(--rounded-full);
 	background: var(--panel);
 	box-shadow: 0 0 0 3px var(--panel);
 	font-size: 11px;

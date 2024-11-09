@@ -81,7 +81,7 @@ function choose(visibility: typeof Misskey.noteVisibilities[number]): void {
 	&.asDrawer {
 		padding: 12px 0 max(env(safe-area-inset-bottom, 0px), 12px) 0;
 		width: 100%;
-		border-radius: 24px;
+		border-radius: var(--rounded);
 		border-bottom-right-radius: 0;
 		border-bottom-left-radius: 0;
 

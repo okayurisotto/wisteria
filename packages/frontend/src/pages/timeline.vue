@@ -360,16 +360,16 @@ definePageMetadata(() => ({
 	display: block;
 	margin: var(--margin) auto 0 auto;
 	padding: 8px 16px;
-	border-radius: 32px;
+	border-radius: var(--rounded-full);
 }
 
 .postForm {
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 }
 
 .tl {
 	background: var(--bg);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	overflow: clip;
 }
 </style>

@@ -157,7 +157,7 @@ watch(() => props.user.avatarBlurhash, () => {
 	display: inline-block;
 	vertical-align: bottom;
 	flex-shrink: 0;
-	border-radius: 100%;
+	border-radius: var(--rounded-full);
 	line-height: 16px;
 }
 
@@ -167,7 +167,7 @@ watch(() => props.user.avatarBlurhash, () => {
 	left: 0;
 	right: 0;
 	top: 0;
-	border-radius: 100%;
+	border-radius: var(--rounded-full);
 	z-index: 1;
 	overflow: clip;
 	object-fit: cover;
@@ -185,10 +185,10 @@ watch(() => props.user.avatarBlurhash, () => {
 }
 
 .square {
-	border-radius: 20%;
+	border-radius: var(--rounded);
 
 	> .inner {
-		border-radius: 20%;
+		border-radius: var(--rounded);
 	}
 }
 

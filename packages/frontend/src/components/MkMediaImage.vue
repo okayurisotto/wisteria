@@ -156,7 +156,7 @@ function showMenu(ev: MouseEvent) {
 .hide {
 	display: block;
 	position: absolute;
-	border-radius: 6px;
+	border-radius: var(--rounded);
 	background-color: var(--fg);
 	color: var(--accentLighten);
 	font-size: 12px;
@@ -186,7 +186,7 @@ function showMenu(ev: MouseEvent) {
 .menu {
 	display: block;
 	position: absolute;
-	border-radius: 999px;
+	border-radius: var(--rounded-full);
 	background-color: rgba(0, 0, 0, 0.3);
 	-webkit-backdrop-filter: var(--blur, blur(15px));
 	backdrop-filter: var(--blur, blur(15px));
@@ -222,7 +222,7 @@ function showMenu(ev: MouseEvent) {
 .indicator {
 	/* Hardcode to black because either --bg or --fg makes it hard to read in dark/light mode */
 	background-color: black;
-	border-radius: 6px;
+	border-radius: var(--rounded);
 	color: var(--accentLighten);
 	display: inline-block;
 	font-weight: bold;

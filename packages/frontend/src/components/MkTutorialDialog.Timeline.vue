@@ -32,7 +32,7 @@ import { i18n } from '@/i18n.js';
 
 <style lang="scss" module>
 .exampleNoteRoot {
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	border: var(--panelBorder);
 	background: var(--panel);
 }
@@ -67,7 +67,7 @@ import { i18n } from '@/i18n.js';
 		left: 0;
 		right: 0;
 		bottom: 0;
-		border-radius: 999px;
+		border-radius: var(--rounded-full);
 		background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
 	}
 

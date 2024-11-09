@@ -183,7 +183,7 @@ function more(ev: MouseEvent) {
 .post {
 	align-items: center;
 	background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
-	border-radius: var(--item-height);
+	border-radius: var(--rounded-full);
 	color: var(--fgOnAccent);
 	display: flex;
 	font-weight: bold;
@@ -244,7 +244,7 @@ function more(ev: MouseEvent) {
 
 .item {
 	align-items: center;
-	border-radius: calc(var(--item-height) / 2);
+	border-radius: var(--rounded-full);
 	box-sizing: border-box;
 	color: var(--navFg);
 	display: flex;

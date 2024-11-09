@@ -228,7 +228,7 @@ definePageMetadata(() => ({
 		display: block;
 		margin: 0 16px 0 0;
 		height: 64px;
-		border-radius: 8px;
+		border-radius: var(--rounded);
 	}
 
 	> .name {

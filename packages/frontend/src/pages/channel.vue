@@ -318,7 +318,7 @@ definePageMetadata(() => ({
 	padding: 8px 12px;
 	font-size: 80%;
 	background: rgba(0, 0, 0, 0.7);
-	border-radius: 6px;
+	border-radius: var(--rounded);
 	color: #fff;
 }
 
@@ -333,7 +333,7 @@ definePageMetadata(() => ({
 	left: 16px;
 	background: rgba(0, 0, 0, 0.7);
 	color: var(--warn);
-	border-radius: 6px;
+	border-radius: var(--rounded);
 	font-weight: bold;
 	font-size: 1em;
 	padding: 4px 7px;

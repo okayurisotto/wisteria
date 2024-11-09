@@ -82,7 +82,7 @@ const cancel = () => {
   max-width: 100%;
   height: 40cqh;
   background-image: repeating-linear-gradient(45deg, transparent, transparent 8px, var(--X5) 8px, var(--X5) 14px);
-  border-radius: var(--radius);
+  border-radius: var(--rounded);
   margin: auto;
   overflow-y: hidden;
 }
@@ -99,6 +99,6 @@ const cancel = () => {
   padding: 3px 10px;
   background-color: var(--X5);
   border: solid 1px var(--divider);
-  border-radius: var(--radius);
+  border-radius: var(--rounded);
 }
 </style>

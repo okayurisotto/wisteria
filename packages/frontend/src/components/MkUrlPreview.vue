@@ -238,7 +238,7 @@ onUnmounted(() => {
 .link {
 	font-size: 14px;
 	box-shadow: 0 0 0 1px var(--divider);
-	border-radius: 8px;
+	border-radius: var(--rounded);
 	align-items: center;
 	box-sizing: border-box;
 	display: flex;
@@ -266,7 +266,7 @@ onUnmounted(() => {
 
 .thumbnail {
 	height: 100%;
-	border-radius: 0 8px 8px 0;
+	border-radius: 0 var(--rounded) var(--rounded) 0;
 	max-width: 191px; // 1.91 : 1
 	object-fit: cover;
 }

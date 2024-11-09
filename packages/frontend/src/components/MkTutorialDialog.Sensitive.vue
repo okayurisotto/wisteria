@@ -90,7 +90,7 @@ const exampleNote = reactive<Misskey.entities.Note>({
 
 <style lang="scss" module>
 .exampleRoot {
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	border: var(--panelBorder);
 	background: var(--panel);
 }
@@ -125,7 +125,7 @@ const exampleNote = reactive<Misskey.entities.Note>({
 		left: 0;
 		right: 0;
 		bottom: 0;
-		border-radius: 999px;
+		border-radius: var(--rounded-full);
 		background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
 	}
 

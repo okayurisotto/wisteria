@@ -371,7 +371,7 @@ onDeactivated(() => {
 .indicator {
 	/* Hardcode to black because either --bg or --fg makes it hard to read in dark/light mode */
 	background-color: black;
-	border-radius: 6px;
+	border-radius: var(--rounded);
 	color: var(--accentLighten);
 	display: inline-block;
 	font-weight: bold;
@@ -382,7 +382,7 @@ onDeactivated(() => {
 .hide {
 	display: block;
 	position: absolute;
-	border-radius: 6px;
+	border-radius: var(--rounded);
 	background-color: var(--fg);
 	color: var(--accentLighten);
 	font-size: 12px;
@@ -442,7 +442,7 @@ onDeactivated(() => {
 	background: var(--accent);
 	color: #fff;
 	padding: 1rem;
-	border-radius: 99rem;
+	border-radius: var(--rounded-full);
 
 	font-size: 1.1rem;
 }
@@ -501,7 +501,7 @@ onDeactivated(() => {
 
 	.controlButton {
 		padding: 6px;
-		border-radius: calc(var(--radius) / 2);
+		border-radius: var(--rounded);
 		transition: background-color .2s ease-in-out;
 		font-size: 1.05rem;
 

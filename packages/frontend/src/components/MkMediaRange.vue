@@ -61,7 +61,7 @@ const modelValue = computed({
 		background-color: var(--sliderBg);
 		background-image: linear-gradient(to right,currentColor var(--value,0),transparent var(--value,0));
 		border: 0;
-		border-radius: 99rem;
+		border-radius: var(--rounded-full);
 		height: 5px;
 		transition: box-shadow .3s ease;
 		user-select: none;
@@ -70,7 +70,7 @@ const modelValue = computed({
 	&::-moz-range-track {
 		background: transparent;
 		border: 0;
-		border-radius: 99rem;
+		border-radius: var(--rounded-full);
 		height: 5px;
 		transition: box-shadow .3s ease;
 		user-select: none;
@@ -82,7 +82,7 @@ const modelValue = computed({
 		appearance: none;
 		background: #fff;
 		border: 0;
-		border-radius: 100%;
+		border-radius: var(--rounded-full);
 		box-shadow: 0 1px 1px rgba(35, 40, 47, .15),0 0 0 1px rgba(35, 40, 47, .2);
 		height: 13px;
 		margin-top: -4px;
@@ -98,7 +98,7 @@ const modelValue = computed({
 	&::-moz-range-thumb {
 		background: #fff;
 		border: 0;
-		border-radius: 100%;
+		border-radius: var(--rounded-full);
 		box-shadow: 0 1px 1px rgba(35, 40, 47, .15),0 0 0 1px rgba(35, 40, 47, .2);
 		height: 13px;
 		position: relative;
@@ -112,7 +112,7 @@ const modelValue = computed({
 
 	&::-moz-range-progress {
 		background: currentColor;
-		border-radius: 99rem;
+		border-radius: var(--rounded-full);
 		height: 5px;
 	}
 }
@@ -122,7 +122,7 @@ const modelValue = computed({
 	background: transparent;
 	color: var(--sliderBg);
 	border: 0;
-	border-radius: 99rem;
+	border-radius: var(--rounded-full);
 	height: 5px;
 	left: 0;
 	margin-top: -2.5px;
@@ -137,14 +137,14 @@ const modelValue = computed({
 
 	&::-webkit-progress-value {
 		background: currentColor;
-		border-radius: 100px;
+		border-radius: var(--rounded-full);
 		min-width: 5px;
 		transition: width .2s ease;
 	}
 
 	&::-moz-progress-bar {
 		background: currentColor;
-		border-radius: 100px;
+		border-radius: var(--rounded-full);
 		min-width: 5px;
 		transition: width .2s ease;
 	}

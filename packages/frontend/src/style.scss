@@ -7,7 +7,9 @@
  */
 
 :root {
-	--radius: 12px;
+	--rounded: 0.4rem;
+	--rounded-full: 99rem;
+
 	--marginFull: 16px;
 	--marginHalf: 10px;
 
@@ -155,7 +157,7 @@ rt {
 	display: inline-block;
 	width: 1em;
 	height: 1em;
-	border-radius: 100%;
+	border-radius: var(--rounded-full);
 	background: currentColor;
 }
 
@@ -168,7 +170,7 @@ rt {
 	min-width: 1.5em;
 	align-items: center;
 	justify-content: center;
-	border-radius: 99rem;
+	border-radius: var(--rounded-full);
 	padding: 0.3em 0.5em;
 }
 
@@ -277,7 +279,7 @@ rt {
 
 ._panel {
 	background: var(--panel);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	overflow: clip;
 }
 
@@ -323,7 +325,7 @@ rt {
 	box-sizing: border-box;
 	text-align: center;
 	border: solid 0.5px var(--divider);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 
 	&:active {
 		border-color: var(--accent);
@@ -332,7 +334,7 @@ rt {
 
 ._popup {
 	background: var(--popup);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	contain: content;
 }
 
@@ -354,7 +356,7 @@ rt {
 	padding: 2px 3px;
 	color: var(--accent);
 	border: solid 1px var(--accent);
-	border-radius: 4px;
+	border-radius: var(--rounded);
 	vertical-align: top;
 }
 
@@ -394,7 +396,7 @@ rt {
 		vertical-align: bottom;
 		height: 128px;
 		margin-bottom: 16px;
-		border-radius: 16px;
+		border-radius: var(--rounded);
 	}
 }
 

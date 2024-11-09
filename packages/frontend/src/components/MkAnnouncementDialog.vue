@@ -84,7 +84,7 @@ onMounted(() => {
 	max-width: 480px;
 	box-sizing: border-box;
 	background: var(--panel);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 }
 
 .header {

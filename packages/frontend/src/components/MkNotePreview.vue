@@ -56,7 +56,7 @@ const props = defineProps<{
 	margin: 0 10px 0 0 !important;
 	width: 40px !important;
 	height: 40px !important;
-	border-radius: 8px !important;
+	border-radius: var(--rounded) !important;
 	pointer-events: none !important;
 }
 

@@ -121,7 +121,7 @@ const bannerStyle = computed(() => {
 			padding: 8px 12px;
 			font-size: 80%;
 			background: rgba(0, 0, 0, 0.7);
-			border-radius: 6px;
+			border-radius: var(--rounded);
 			color: #fff;
 		}
 
@@ -132,7 +132,7 @@ const bannerStyle = computed(() => {
 			left: 16px;
 			background: rgba(0, 0, 0, 0.7);
 			color: var(--warn);
-			border-radius: 6px;
+			border-radius: var(--rounded);
 			font-weight: bold;
 			font-size: 1em;
 			padding: 4px 7px;
@@ -198,7 +198,7 @@ const bannerStyle = computed(() => {
 	transform: translate(25%, -25%);
 	background-color: var(--accent);
 	border: solid var(--bg) 4px;
-	border-radius: 100%;
+	border-radius: var(--rounded-full);
 	width: 1.5rem;
 	height: 1.5rem;
 	aspect-ratio: 1 / 1;

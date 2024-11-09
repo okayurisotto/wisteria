@@ -283,7 +283,7 @@ const previewable = (file: Misskey.entities.DriveFile): boolean => {
 
 .media {
 	overflow: hidden; // clipにするとバグる
-	border-radius: 8px;
+	border-radius: var(--rounded);
 }
 
 :global(.pswp) {
@@ -317,7 +317,7 @@ const previewable = (file: Misskey.entities.DriveFile): boolean => {
 	margin: 0 auto;
 	text-align: center;
 	padding: var(--margin);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	max-height: 8em;
 	overflow-y: auto;
 	text-shadow: var(--bg) 0 0 10px, var(--bg) 0 0 3px, var(--bg) 0 0 3px;

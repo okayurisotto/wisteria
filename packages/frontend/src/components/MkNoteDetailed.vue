@@ -520,7 +520,7 @@ function loadConversation() {
 	width: 28px;
 	height: 28px;
 	margin: 0 8px 0 0;
-	border-radius: 6px;
+	border-radius: var(--rounded);
 }
 
 .renoteText {
@@ -592,7 +592,7 @@ function loadConversation() {
 	font-size: 80%;
 	line-height: 1;
 	border: solid 0.5px var(--divider);
-	border-radius: 4px;
+	border-radius: var(--rounded);
 }
 
 .noteHeaderInfo {
@@ -631,7 +631,7 @@ function loadConversation() {
 
 .translation {
 	border: solid 0.5px var(--divider);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	padding: 12px;
 	margin-top: 8px;
 }
@@ -647,7 +647,7 @@ function loadConversation() {
 .quoteNote {
 	padding: 16px;
 	border: dashed 1px var(--renote);
-	border-radius: 8px;
+	border-radius: var(--rounded);
 	overflow: clip;
 }
 
@@ -725,7 +725,7 @@ function loadConversation() {
 .reactionTab {
 	padding: 4px 6px;
 	border: solid 1px var(--divider);
-	border-radius: 6px;
+	border-radius: var(--rounded);
 }
 
 .reactionTabActive {

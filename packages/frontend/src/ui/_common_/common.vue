@@ -236,7 +236,7 @@ if ($i) {
 		border: solid 2px transparent;
 		border-top-color: var(--accent);
 		border-left-color: var(--accent);
-		border-radius: 50%;
+		border-radius: var(--rounded-full);
 		animation: progress-spinner 400ms linear infinite;
 	}
 }

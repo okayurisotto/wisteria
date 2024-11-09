@@ -304,7 +304,7 @@ onMounted(() => {
 						color: #fff;
 						background: rgba(0, 0, 0, 0.7);
 						font-size: 0.7em;
-						border-radius: 6px;
+						border-radius: var(--rounded);
 					}
 
 					> .actions {
@@ -315,7 +315,7 @@ onMounted(() => {
 						backdrop-filter: var(--blur, blur(8px));
 						background: rgba(0, 0, 0, 0.2);
 						padding: 8px;
-						border-radius: 24px;
+						border-radius: var(--rounded-full);
 
 						> .menu {
 							vertical-align: bottom;
@@ -367,7 +367,7 @@ onMounted(() => {
 								color: #fff;
 								-webkit-backdrop-filter: var(--blur, blur(8px));
 								backdrop-filter: var(--blur, blur(8px));
-								border-radius: 24px;
+								border-radius: var(--rounded-full);
 								padding: 4px 8px;
 								font-size: 80%;
 							}
@@ -411,7 +411,7 @@ onMounted(() => {
 
 					> .role {
 						border: solid 1px var(--color, var(--divider));
-						border-radius: 999px;
+						border-radius: var(--rounded-full);
 						margin-right: 4px;
 						padding: 3px 8px;
 					}
@@ -426,7 +426,7 @@ onMounted(() => {
 					background: transparent;
 					color: var(--fg);
 					border: 1px solid var(--divider);
-					border-radius: 8px;
+					border-radius: var(--rounded);
 					padding: 8px;
 					line-height: 0;
 
@@ -624,7 +624,7 @@ onMounted(() => {
 <style lang="scss" module>
 .tl {
 	background: var(--bg);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	overflow: clip;
 }
 

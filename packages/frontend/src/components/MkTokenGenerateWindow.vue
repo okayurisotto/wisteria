@@ -137,7 +137,7 @@ function enableAll(): void {
 	margin: 8px -6px 0;
 	padding: 24px 6px 6px;
 	border: 2px solid var(--error);
-	border-radius: calc(var(--radius) / 2);
+	border-radius: var(--rounded);
 }
 
 .adminPermissionsHeader {

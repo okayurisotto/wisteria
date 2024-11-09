@@ -66,7 +66,7 @@ defineExpose({
 
 			.note {
 				background: var(--panel);
-				border-radius: var(--radius);
+				border-radius: var(--rounded);
 			}
 		}
 	}

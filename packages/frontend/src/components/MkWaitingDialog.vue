@@ -48,7 +48,7 @@ watch(() => props.showing, () => {
 	box-sizing: border-box;
 	text-align: center;
 	background: var(--panel);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	width: 250px;
 
 	&.iconOnly {

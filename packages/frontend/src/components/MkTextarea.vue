@@ -182,7 +182,7 @@ onUnmounted(() => {
 	color: var(--fg);
 	background: var(--panel);
 	border: solid 1px var(--panel);
-	border-radius: 6px;
+	border-radius: var(--rounded);
 	outline: none;
 	box-shadow: none;
 	box-sizing: border-box;
@@ -226,7 +226,7 @@ onUnmounted(() => {
 
 .mfmPreview {
   padding: 12px;
-  border-radius: var(--radius);
+  border-radius: var(--rounded);
   box-sizing: border-box;
   min-height: 130px;
 	pointer-events: none;

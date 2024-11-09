@@ -249,7 +249,7 @@ onUnmounted(() => {
 	bottom: 0;
 	height: 3px;
 	background: var(--accent);
-	border-radius: 999px;
+	border-radius: var(--rounded-full);
 	transition: none;
 	pointer-events: none;
 

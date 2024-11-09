@@ -567,7 +567,7 @@ function emitUpdReaction(emoji: string, delta: number) {
 			width: calc(100% - 8px);
 			height: calc(100% - 8px);
 			border: dashed 1px var(--focus);
-			border-radius: var(--radius);
+			border-radius: var(--rounded);
 			box-sizing: border-box;
 		}
 	}
@@ -590,7 +590,7 @@ function emitUpdReaction(emoji: string, delta: number) {
 			padding: 0 4px;
 			margin-bottom: 0 !important;
 			background: var(--popup);
-			border-radius: 8px;
+			border-radius: var(--rounded);
 			box-shadow: 0px 4px 32px var(--shadow);
 		}
 
@@ -722,7 +722,7 @@ function emitUpdReaction(emoji: string, delta: number) {
 	left: 8px;
 	width: 5px;
 	height: calc(100% - 16px);
-	border-radius: 999px;
+	border-radius: var(--rounded-full);
 	pointer-events: none;
 }
 
@@ -762,7 +762,7 @@ function emitUpdReaction(emoji: string, delta: number) {
 	background: var(--popup);
 	padding: 6px 10px;
 	font-size: 0.8em;
-	border-radius: 999px;
+	border-radius: var(--rounded-full);
 	box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
 }
 
@@ -792,7 +792,7 @@ function emitUpdReaction(emoji: string, delta: number) {
 	background: var(--panel);
 	padding: 6px 10px;
 	font-size: 0.8em;
-	border-radius: 999px;
+	border-radius: var(--rounded-full);
 	box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
 }
 
@@ -807,7 +807,7 @@ function emitUpdReaction(emoji: string, delta: number) {
 
 .translation {
 	border: solid 0.5px var(--divider);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	padding: 12px;
 	margin-top: 8px;
 }
@@ -827,7 +827,7 @@ function emitUpdReaction(emoji: string, delta: number) {
 .quoteNote {
 	padding: 16px;
 	border: dashed 1px var(--renote);
-	border-radius: 8px;
+	border-radius: var(--rounded);
 	overflow: clip;
 }
 

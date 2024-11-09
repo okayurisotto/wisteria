@@ -646,7 +646,7 @@ defineExpose({
 					width: var(--eachSize);
 					height: var(--eachSize);
 					contain: strict;
-					border-radius: 4px;
+					border-radius: var(--rounded);
 					font-size: 24px;
 
 					&:focus-visible {

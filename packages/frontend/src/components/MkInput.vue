@@ -243,7 +243,7 @@ defineExpose({
 	color: var(--fg);
 	background: var(--panel);
 	border: solid 1px var(--panel);
-	border-radius: 6px;
+	border-radius: var(--rounded);
 	outline: none;
 	box-shadow: none;
 	box-sizing: border-box;

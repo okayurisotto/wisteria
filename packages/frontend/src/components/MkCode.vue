@@ -70,7 +70,7 @@ function copy() {
 	padding: 1em;
 	margin: .5em 0;
 	overflow: auto;
-	border-radius: 8px;
+	border-radius: var(--rounded);
 }
 
 .codeBlockFallbackCode {
@@ -88,7 +88,7 @@ function copy() {
 	cursor: pointer;
 
 	box-sizing: border-box;
-	border-radius: 8px;
+	border-radius: var(--rounded);
 	padding: 24px;
 	margin-top: 4px;
 	color: var(--fg);

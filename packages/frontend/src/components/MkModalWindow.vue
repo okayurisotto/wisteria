@@ -95,7 +95,7 @@ defineExpose({
 	display: flex;
 	flex-direction: column;
 	contain: content;
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 
 	--root-margin: 24px;
 

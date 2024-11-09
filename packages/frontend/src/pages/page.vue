@@ -229,7 +229,7 @@ definePageMetadata(() => ({
 				width: 100%;
 				height: auto;
 				aspect-ratio: 3/1;
-				border-radius: var(--radius);
+				border-radius: var(--rounded);
 				overflow: hidden;
 				object-fit: cover;
 			}

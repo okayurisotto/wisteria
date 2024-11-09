@@ -109,7 +109,7 @@ const vote = async (id) => {
 	padding: 4px;
 	//border: solid 0.5px var(--divider);
 	background: var(--accentedBg);
-	border-radius: 4px;
+	border-radius: var(--rounded);
 	overflow: clip;
 	cursor: pointer;
 }
@@ -129,7 +129,7 @@ const vote = async (id) => {
 	display: inline-block;
 	padding: 3px 5px;
 	background: var(--panel);
-	border-radius: 3px;
+	border-radius: var(--rounded);
 }
 
 .info {

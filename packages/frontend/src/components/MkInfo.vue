@@ -38,7 +38,7 @@ function close() {
 	font-size: 90%;
 	background: var(--infoBg);
 	color: var(--infoFg);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	white-space: pre-wrap;
 
 	&.warn {

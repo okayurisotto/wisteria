@@ -42,7 +42,7 @@ const props = defineProps<{
 .eyeCatchingImageRoot {
 	width: 100%;
 	height: 200px;
-	border-radius: var(--radius) var(--radius) 0 0;
+	border-radius: var(--rounded) var(--rounded) 0 0;
 	overflow: hidden;
 }
 </style>
@@ -58,14 +58,14 @@ const props = defineProps<{
 
 	> .thumbnail {
 		& + article {
-			border-radius: 0 0 var(--radius) var(--radius);
+			border-radius: 0 0 var(--rounded) var(--rounded);
 		}
 	}
 
 	> article {
 		background-color: var(--panel);
 		padding: 16px;
-		border-radius: var(--radius);
+		border-radius: var(--rounded);
 
 		> header {
 			margin-bottom: 8px;

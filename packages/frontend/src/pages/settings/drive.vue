@@ -143,12 +143,12 @@ definePageMetadata(() => ({
 .meter {
 	height: 10px;
 	background: rgba(0, 0, 0, 0.1);
-	border-radius: 999px;
+	border-radius: var(--rounded-full);
 	overflow: clip;
 }
 
 .meterValue {
 	height: 100%;
-	border-radius: 999px;
+	border-radius: var(--rounded-full);
 }
 </style>

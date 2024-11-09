@@ -200,7 +200,7 @@ onMounted(async () => {
 
 .filePreviewRoot {
 	background: var(--panel);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	// MkMediaList 内の上部マージン 4px
 	padding: calc(1rem - 4px) 1rem 1rem;
 }
@@ -226,7 +226,7 @@ onMounted(async () => {
 
 	.fileQuickActionsOthersButton {
 		padding: .5rem;
-		border-radius: 99rem;
+		border-radius: var(--rounded-full);
 
 		&:hover,
 		&:focus-visible {
@@ -252,7 +252,7 @@ onMounted(async () => {
 	align-items: center;
 	min-width: 0;
 	font-weight: 700;
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	font-size: .8rem;
 
 	>.fileNameEditIcon {
@@ -285,7 +285,7 @@ onMounted(async () => {
 	display: block;
 	width: 100%;
 	padding: .5rem 1rem;
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 
 	.fileAltEditIcon {
 		display: inline-block;

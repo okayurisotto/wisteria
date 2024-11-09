@@ -102,7 +102,7 @@ defineExpose<WidgetComponentExpose>({
 
 	.img {
 		border: solid 4px transparent;
-		border-radius: 8px;
+		border-radius: var(--rounded);
 	}
 }
 
@@ -121,7 +121,7 @@ defineExpose<WidgetComponentExpose>({
 		background-size: cover;
 		background-clip: content-box;
 		border: solid 2px transparent;
-		border-radius: 4px;
+		border-radius: var(--rounded);
 	}
 }
 </style>

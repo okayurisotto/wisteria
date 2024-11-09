@@ -21,7 +21,7 @@ defineProps<{
 	padding: 16px;
 	background: var(--infoWarnBg);
 	color: var(--infoWarnFg);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	overflow: clip;
 }
 

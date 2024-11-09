@@ -185,7 +185,7 @@ definePageMetadata(() => ({
 
 <style lang="scss" scoped>
 .rfqxtzch {
-	border-radius: 6px;
+	border-radius: var(--rounded);
 
 	> .toggle {
 		position: relative;
@@ -249,7 +249,7 @@ definePageMetadata(() => ({
 			width: 50px - 6;
 			height: 50px - 6;
 			background-color: #FFCF96;
-			border-radius: 50px;
+			border-radius: var(--rounded-full);
 			box-shadow: 0 2px 6px rgba(0,0,0,.3);
 			transition: all 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
 			transform:  rotate(-45deg);
@@ -259,7 +259,7 @@ definePageMetadata(() => ({
 				background-color: #E8CDA5;
 				opacity: 0;
 				transition: opacity 200ms ease-in-out !important;
-				border-radius: 100%;
+				border-radius: var(--rounded-full);
 			}
 
 			.crater--1 {
@@ -288,7 +288,7 @@ definePageMetadata(() => ({
 			position: absolute;
 			background-color: #ffffff;
 			transition: all 300ms cubic-bezier(0.445, 0.05, 0.55, 0.95) !important;
-			border-radius: 50%;
+			border-radius: var(--rounded-full);
 		}
 
 		.star--1 {

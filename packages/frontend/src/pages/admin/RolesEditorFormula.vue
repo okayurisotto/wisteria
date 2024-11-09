@@ -142,7 +142,7 @@ function removeSelf() {
 
 .item {
 	border: solid 2px var(--divider);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	padding: 12px;
 
 	&:hover {

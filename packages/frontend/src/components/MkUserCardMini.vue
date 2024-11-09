@@ -34,7 +34,7 @@ $bodyInfoHieght: 16px;
 	align-items: center;
 	padding: 16px;
 	background: var(--panel);
-	border-radius: 8px;
+	border-radius: var(--rounded);
 }
 
 .avatar {

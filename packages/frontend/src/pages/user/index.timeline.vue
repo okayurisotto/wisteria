@@ -57,7 +57,7 @@ const pagination = computed(() => tab.value === 'featured' ? {
 
 .tl {
 	background: var(--bg);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	overflow: clip;
 }
 </style>

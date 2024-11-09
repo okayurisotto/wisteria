@@ -142,7 +142,7 @@ function exploreOtherServers() {
 .panel {
 	position: relative;
 	background: var(--panel);
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	box-shadow: 0 12px 32px rgb(0 0 0 / 25%);
 }
 
@@ -163,7 +163,7 @@ function exploreOtherServers() {
 	right: 16px;
 	width: 32px;
 	height: 32px;
-	border-radius: 8px;
+	border-radius: var(--rounded);
 	font-size: 18px;
 }
 

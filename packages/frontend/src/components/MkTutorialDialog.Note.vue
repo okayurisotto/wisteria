@@ -104,7 +104,7 @@ function removeReaction(emoji) {
 
 <style lang="scss" module>
 .exampleNoteRoot {
-	border-radius: var(--radius);
+	border-radius: var(--rounded);
 	border: var(--panelBorder);
 	background: var(--panel);
 }

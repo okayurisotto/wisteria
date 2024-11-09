@@ -78,7 +78,7 @@ const mock = inject<boolean>('mock', false);
 	padding: 1px 6px;
 	font-size: 80%;
 	border: solid 0.5px var(--divider);
-	border-radius: 3px;
+	border-radius: var(--rounded);
 }
 
 .username {

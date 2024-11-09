@@ -258,9 +258,7 @@ onBeforeUnmount(() => {
 	&.asDrawer {
 		padding: 12px 0 max(env(safe-area-inset-bottom, 0px), 12px) 0;
 		width: 100%;
-		border-radius: 24px;
-		border-bottom-right-radius: 0;
-		border-bottom-left-radius: 0;
+		border-radius: var(--rounded) var(--rounded) 0 0;
 
 		> .item {
 			font-size: 1em;
@@ -308,7 +306,7 @@ onBeforeUnmount(() => {
 		margin: auto;
 		width: calc(100% - 16px);
 		height: 100%;
-		border-radius: 6px;
+		border-radius: var(--rounded);
 	}
 
 	&:not(:disabled):hover {
