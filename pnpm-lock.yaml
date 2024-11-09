@@ -761,15 +761,16 @@ importers:
       '@napi-rs/canvas':
         specifier: ^0.1.58
         version: 0.1.58
+      random-seed:
+        specifier: 0.3.0
+        version: 0.3.0
+    devDependencies:
       '@types/node':
         specifier: ^20.17.1
         version: 20.17.1
       '@types/random-seed':
         specifier: 0.3.5
         version: 0.3.5
-      random-seed:
-        specifier: 0.3.0
-        version: 0.3.0
       tsup:
         specifier: ^8.3.4
         version: 8.3.4(@microsoft/api-extractor@7.47.3(@types/node@20.17.1))(@swc/core@1.7.39)(postcss@8.4.47)(typescript@5.6.3)(yaml@2.6.0)
