@@ -66,7 +66,7 @@
 		"file-type": "19.0.0",
 		"fluent-ffmpeg": "2.1.2",
 		"got": "14.1.0",
-		"happy-dom": "10.0.3",
+		"happy-dom": "15.10.2",
 		"hono": "^4.6.6",
 		"hono-serve-static": "workspace:*",
 		"hpagent": "1.2.0",
