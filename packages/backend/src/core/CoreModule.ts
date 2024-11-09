@@ -6,7 +6,6 @@
 import { Module } from '@nestjs/common';
 import { AccountMoveService } from './AccountMoveService.js';
 import { AccountUpdateService } from './AccountUpdateService.js';
-import { AiService } from './AiService.js';
 import { AnnouncementService } from './AnnouncementService.js';
 import { AntennaService } from './AntennaService.js';
 import { AppLockService } from './AppLockService.js';
@@ -151,7 +150,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		LoggerService,
 		AccountMoveService,
 		AccountUpdateService,
-		AiService,
 		AnnouncementService,
 		AntennaService,
 		AppLockService,
@@ -290,7 +288,6 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		LoggerService,
 		AccountMoveService,
 		AccountUpdateService,
-		AiService,
 		AnnouncementService,
 		AntennaService,
 		AppLockService,

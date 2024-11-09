@@ -55,11 +55,6 @@ export const INTERNAL_STORAGE_DIR = path.join(ROOT_DIR, 'files');
 /** `/packages/backend` */
 const BACKEND_DIR = path.join(ROOT_DIR, 'packages/backend');
 
-/** `/packages/backend/nsfw-model/` */
-export const NSFW_MODEL_DIR = pathToFileURL(
-	path.join(BACKEND_DIR, 'nsfw-model/'),
-).href;
-
 /** `/packages/backend/assets` */
 export const STATIC_ASSETS_DIR = path.join(BACKEND_DIR, 'assets');
 

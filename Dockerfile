@@ -43,7 +43,6 @@ FROM --platform=$TARGETPLATFORM fetcher AS installer
 COPY --link ./healthcheck.sh                            ./healthcheck.sh
 COPY --link ./packages/backend/assets                   ./packages/backend/assets
 COPY --link ./packages/backend/migration                ./packages/backend/migration
-COPY --link ./packages/backend/nsfw-model               ./packages/backend/nsfw-model
 COPY --link ./packages/backend/ormconfig.js             ./packages/backend/ormconfig.js
 COPY --link ./packages/backend/package.json             ./packages/backend/package.json
 COPY --link ./packages/frontend/assets                  ./packages/frontend/assets

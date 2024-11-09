@@ -22,49 +22,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</MkFolder>
 
 				<MkFolder>
-					<template #icon><i class="ti ti-eye-off"></i></template>
-					<template #label>{{ i18n.ts.sensitiveMediaDetection }}</template>
-					<template v-if="sensitiveMediaDetection === 'all'" #suffix>{{ i18n.ts.all }}</template>
-					<template v-else-if="sensitiveMediaDetection === 'local'" #suffix>{{ i18n.ts.localOnly }}</template>
-					<template v-else-if="sensitiveMediaDetection === 'remote'" #suffix>{{ i18n.ts.remoteOnly }}</template>
-					<template v-else #suffix>{{ i18n.ts.none }}</template>
-
-					<div class="_gaps_m">
-						<span>{{ i18n.ts._sensitiveMediaDetection.description }}</span>
-
-						<MkRadios v-model="sensitiveMediaDetection">
-							<option value="none">{{ i18n.ts.none }}</option>
-							<option value="all">{{ i18n.ts.all }}</option>
-							<option value="local">{{ i18n.ts.localOnly }}</option>
-							<option value="remote">{{ i18n.ts.remoteOnly }}</option>
-						</MkRadios>
-
-						<MkRange v-model="sensitiveMediaDetectionSensitivity" :min="0" :max="4" :step="1" :textConverter="(v) => `${v + 1}`">
-							<template #label>{{ i18n.ts._sensitiveMediaDetection.sensitivity }}</template>
-							<template #caption>{{ i18n.ts._sensitiveMediaDetection.sensitivityDescription }}</template>
-						</MkRange>
-
-						<MkSwitch v-model="enableSensitiveMediaDetectionForVideos">
-							<template #label>{{ i18n.ts._sensitiveMediaDetection.analyzeVideos }}<span class="_beta">{{ i18n.ts.beta }}</span></template>
-							<template #caption>{{ i18n.ts._sensitiveMediaDetection.analyzeVideosDescription }}</template>
-						</MkSwitch>
-
-						<MkSwitch v-model="setSensitiveFlagAutomatically">
-							<template #label>{{ i18n.ts._sensitiveMediaDetection.setSensitiveFlagAutomatically }} ({{ i18n.ts.notRecommended }})</template>
-							<template #caption>{{ i18n.ts._sensitiveMediaDetection.setSensitiveFlagAutomaticallyDescription }}</template>
-						</MkSwitch>
-
-						<!-- 現状 false positive が多すぎて実用に耐えない
-						<MkSwitch v-model="disallowUploadWhenPredictedAsPorn">
-							<template #label>{{ i18n.ts._sensitiveMediaDetection.disallowUploadWhenPredictedAsPorn }}</template>
-						</MkSwitch>
-						-->
-
-						<MkButton primary @click="save"><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton>
-					</div>
-				</MkFolder>
-
-				<MkFolder>
 					<template #label>Active Email Validation</template>
 					<template v-if="enableActiveEmailValidation" #suffix>Enabled</template>
 					<template v-else #suffix>Disabled</template>
