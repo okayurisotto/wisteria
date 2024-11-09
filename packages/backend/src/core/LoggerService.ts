@@ -4,12 +4,11 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@/logger.js';
-import type { KEYWORD } from 'color-convert/conversions.js';
+import { Logger, type ColorName } from '@/logger.js';
 
 @Injectable()
 export class LoggerService {
-	public getLogger(domain: string, color?: KEYWORD | undefined) {
+	public getLogger(domain: string, color?: ColorName | undefined) {
 		return new Logger(domain, color);
 	}
 }

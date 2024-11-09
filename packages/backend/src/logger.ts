@@ -4,14 +4,15 @@
  */
 
 import chalk from 'chalk';
-import { default as convertColor } from 'color-convert';
+import colors from 'color-name';
 import { format as dateFormat } from 'date-fns';
 import { envOption } from './env.js';
-import type { KEYWORD } from 'color-convert/conversions.js';
+
+export type ColorName = keyof typeof colors;
 
 type Context = {
 	name: string;
-	color?: KEYWORD | undefined;
+	color?: ColorName | undefined;
 };
 
 type Level = 'error' | 'success' | 'warning' | 'debug' | 'info';
@@ -20,14 +21,14 @@ export class Logger {
 	private readonly context: Context;
 	private parentLogger: Logger | null = null;
 
-	constructor(context: string, color?: KEYWORD) {
+	constructor(context: string, color?: ColorName) {
 		this.context = {
 			name: context,
 			color: color,
 		};
 	}
 
-	public createSubLogger(context: string, color?: KEYWORD): Logger {
+	public createSubLogger(context: string, color?: ColorName): Logger {
 		const logger = new Logger(context, color);
 		logger.parentLogger = this;
 		return logger;
@@ -73,8 +74,8 @@ export class Logger {
 		})();
 
 		const contexts = [this.context, ...subContexts].map((d) => {
-			return d.color
-				? chalk.rgb(...convertColor.keyword.rgb(d.color))(d.name)
+			return d.color !== undefined
+				? chalk.rgb(...colors[d.color])(d.name)
 				: chalk.white(d.name);
 		});
 

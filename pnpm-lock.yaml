@@ -150,9 +150,9 @@ importers:
       cli-highlight:
         specifier: 2.1.11
         version: 2.1.11
-      color-convert:
-        specifier: 2.0.1
-        version: 2.0.1
+      color-name:
+        specifier: ^2.0.0
+        version: 2.0.0
       content-disposition:
         specifier: 0.5.4
         version: 0.5.4
@@ -407,9 +407,9 @@ importers:
       '@types/bcryptjs':
         specifier: 2.4.6
         version: 2.4.6
-      '@types/color-convert':
-        specifier: 2.0.3
-        version: 2.0.3
+      '@types/color-name':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@types/content-disposition':
         specifier: 0.5.8
         version: 0.5.8
@@ -2385,9 +2385,6 @@ packages:
   '@types/chai@4.3.20':
     resolution: {integrity: sha512-/pC9HAB5I/xMlc5FP77qjCnI16ChlJfW0tGa0IUcFn38VJrTV6DeZ60NU5KZBtaOZqjdpwTWohz5HU1RrhiYxQ==}
 
-  '@types/color-convert@2.0.3':
-    resolution: {integrity: sha512-2Q6wzrNiuEvYxVQqhh7sXM2mhIhvZR/Paq4FdsQkOMgWsCIkKvSGj8Le1/XalulrmgOzPMqNa0ix+ePY4hTrfg==}
-
   '@types/color-name@2.0.0':
     resolution: {integrity: sha512-63mTjolMJv75upGaUbT6J3lRDWl6pETPQsaWni9w3dMArhNBpgtHkX8ISb9zLV3YYLPA/SMk8ZGALa3k9WY/aQ==}
 
@@ -3323,6 +3320,10 @@ packages:
 
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+
+  color-name@2.0.0:
+    resolution: {integrity: sha512-SbtvAMWvASO5TE2QP07jHBMXKafgdZz8Vrsrn96fiL+O92/FN/PLARzUW5sKt013fjAprK2d2iCn2hk2Xb5oow==}
+    engines: {node: '>=12.20'}
 
   color-string@1.9.1:
     resolution: {integrity: sha512-shrVawQFojnZv6xM40anx4CkoDP+fZsw/ZerEMsW/pyzsRbElpsL/DBVW7q3ExxwusdNXI3lXpuhEZkzs8p5Eg==}
@@ -9148,10 +9149,6 @@ snapshots:
 
   '@types/chai@4.3.20': {}
 
-  '@types/color-convert@2.0.3':
-    dependencies:
-      '@types/color-name': 2.0.0
-
   '@types/color-name@2.0.0': {}
 
   '@types/content-disposition@0.5.8': {}
@@ -10319,6 +10316,8 @@ snapshots:
       color-name: 1.1.4
 
   color-name@1.1.4: {}
+
+  color-name@2.0.0: {}
 
   color-string@1.9.1:
     dependencies:
