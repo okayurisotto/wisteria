@@ -1,15 +1,16 @@
 import { bundledThemesInfo } from 'shiki';
-import { getHighlighterCore, loadWasm } from 'shiki/core';
+import { createHighlighterCore } from 'shiki/core';
+import { loadWasm } from 'shiki/engine-oniguruma.mjs';
 import darkPlus from 'shiki/themes/dark-plus.mjs';
 import { unique } from './array.js';
 import { deepClone } from './clone.js';
 import { deepMerge } from './merge.js';
-import type { Highlighter, LanguageRegistration, ThemeRegistration, ThemeRegistrationRaw } from 'shiki';
+import type { HighlighterCore, LanguageRegistration, ThemeRegistration, ThemeRegistrationRaw } from 'shiki';
 import { ColdDeviceStorage } from '@/store.js';
 import lightTheme from '@/themes/_light.json5';
 import darkTheme from '@/themes/_dark.json5';
 
-let _highlighter: Highlighter | null = null;
+let _highlighter: HighlighterCore | null = null;
 
 export async function getTheme(mode: 'light' | 'dark', getName: true): Promise<string>;
 export async function getTheme(mode: 'light' | 'dark', getName?: false): Promise<ThemeRegistration | ThemeRegistrationRaw>;
@@ -46,14 +47,14 @@ export async function getTheme(mode: 'light' | 'dark', getName = false): Promise
 	return darkPlus;
 }
 
-export async function getHighlighter(): Promise<Highlighter> {
+export async function getHighlighter(): Promise<HighlighterCore> {
 	if (!_highlighter) {
 		return await initHighlighter();
 	}
 	return _highlighter;
 }
 
-export async function initHighlighter() {
+async function initHighlighter() {
 	const aiScriptGrammar = await import('aiscript-vscode/aiscript/syntaxes/aiscript.tmLanguage.json');
 
 	await loadWasm(import('shiki/onig.wasm?init'));
@@ -64,7 +65,7 @@ export async function initHighlighter() {
 		...(await Promise.all([getTheme('light'), getTheme('dark')])),
 	]);
 
-	const highlighter = await getHighlighterCore({
+	const highlighter = await createHighlighterCore({
 		themes,
 		langs: [
 			import('shiki/langs/javascript.mjs'),
