@@ -179,7 +179,7 @@ import * as os from '@/os.js';
 import * as sound from '@/scripts/sound.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { defaultStore, noteViewInterruptors } from '@/store.js';
-import { reactionPicker } from '@/scripts/reaction-picker.js';
+import { ReactionPicker } from '@/scripts/reaction-picker.js';
 import { extractUrlFromMfm } from '@/scripts/extract-url-from-mfm.js';
 import { $i } from '@/account.js';
 import { i18n } from '@/i18n.js';
@@ -384,7 +384,7 @@ function react(viaKeyboard = false): void {
 		}
 	} else {
 		blur();
-		reactionPicker.show(reactButton.value ?? null, note.value, reaction => {
+		ReactionPicker.show(reactButton.value ?? null, note.value, reaction => {
 			sound.playMisskeySfx('reaction');
 
 			if (props.mock) {

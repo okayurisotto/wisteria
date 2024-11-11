@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { defineAsyncComponent, type Ref, ref } from 'vue';
+import { defineAsyncComponent } from 'vue';
 import { popup } from '@/os.js';
 import { defaultStore } from '@/store.js';
 
@@ -13,48 +13,34 @@ import { defaultStore } from '@/store.js';
  * 投稿フォームなどで絵文字を選択する時など、絵文字ピックアップ後でもダイアログが消えずに残り、
  * 一度表示したダイアログを連続で使用できることが望ましいシーンでの利用が想定される。
  */
-class EmojiPicker {
-	private src: Ref<HTMLElement | null> = ref(null);
-	private manualShowing = ref(false);
-	private onChosen?: (emoji: string) => void;
-	private onClosed?: () => void;
+export class EmojiPicker {
+	constructor(
+		private readonly src: HTMLElement | null,
+		private readonly onChosen?: (emoji: string) => void,
+		private readonly onClosed?: () => void,
+	) {}
 
-	constructor() {
-		// nop
-	}
-
-	public async init() {
-		const emojisRef = defaultStore.reactiveState.pinnedEmojis;
+	private async init() {
 		await popup(defineAsyncComponent(() => import('@/components/MkEmojiPickerDialog.vue')), {
 			src: this.src,
-			pinnedEmojis: emojisRef,
+			pinnedEmojis: defaultStore.reactiveState.pinnedEmojis.value,
 			asReactionPicker: false,
-			manualShowing: this.manualShowing,
 			choseAndClose: false,
 		}, {
 			done: emoji => {
 				if (this.onChosen) this.onChosen(emoji);
 			},
-			close: () => {
-				this.manualShowing.value = false;
-			},
 			closed: () => {
-				this.src.value = null;
 				if (this.onClosed) this.onClosed();
 			},
-		});
+		}, 'closed');
 	}
 
-	public show(
-		src: HTMLElement,
+	public static async show(
+		src: HTMLElement | null,
 		onChosen?: EmojiPicker['onChosen'],
 		onClosed?: EmojiPicker['onClosed'],
 	) {
-		this.src.value = src;
-		this.manualShowing.value = true;
-		this.onChosen = onChosen;
-		this.onClosed = onClosed;
+		return await new EmojiPicker(src, onChosen, onClosed).init();
 	}
 }
-
-export const emojiPicker = new EmojiPicker();

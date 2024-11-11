@@ -10,8 +10,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 	:zPriority="'middle'"
 	:preferType="defaultStore.state.emojiPickerUseDrawerForMobile === false ? 'popup' : 'auto'"
 	:transparentBg="true"
-	:manualShowing="manualShowing"
-	:src="src"
+	:manualShowing="props.manualShowing"
+	:src="props.src"
 	@click="modal?.close()"
 	@opening="opening"
 	@close="emit('close')"
@@ -21,10 +21,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 		ref="picker"
 		class="_popup _shadow"
 		:class="{ [$style.drawer]: type === 'drawer' }"
-		:showPinned="showPinned"
-		:pinnedEmojis="pinnedEmojis"
-		:asReactionPicker="asReactionPicker"
-		:targetNote="targetNote"
+		:showPinned="props.showPinned"
+		:pinnedEmojis="props.pinnedEmojis"
+		:asReactionPicker="props.asReactionPicker"
+		:targetNote="props.targetNote"
 		:asDrawer="type === 'drawer'"
 		:max-height="maxHeight"
 		@chosen="chosen"
@@ -41,16 +41,16 @@ import { defaultStore } from '@/store.js';
 
 const props = withDefaults(defineProps<{
 	manualShowing?: boolean | null;
-	src?: HTMLElement;
+	src?: HTMLElement | null;
 	showPinned?: boolean;
-  pinnedEmojis?: string[],
+  pinnedEmojis?: string[] | undefined;
 	asReactionPicker?: boolean;
 	targetNote?: Misskey.entities.Note;
   choseAndClose?: boolean;
 }>(), {
+	src: null,
 	manualShowing: null,
 	showPinned: true,
-	pinnedEmojis: undefined,
 	asReactionPicker: false,
 	choseAndClose: true,
 });

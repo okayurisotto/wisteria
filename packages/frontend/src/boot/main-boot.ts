@@ -14,11 +14,9 @@ import { $i, signout, updateAccount } from '@/account.js';
 import { fetchInstance, instance } from '@/instance.js';
 import { ColdDeviceStorage, defaultStore } from '@/store.js';
 import { makeHotkey } from '@/scripts/hotkey.js';
-import { reactionPicker } from '@/scripts/reaction-picker.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { initializeSw } from '@/scripts/initialize-sw.js';
 import { deckStore } from '@/ui/deck/deck-store.js';
-import { emojiPicker } from '@/scripts/emoji-picker.js';
 import { mainRouter } from '@/router/main.js';
 
 export async function mainBoot() {
@@ -28,9 +26,6 @@ export async function mainBoot() {
 		ui === 'deck' ? defineAsyncComponent(() => import('@/ui/deck.vue')) :
 		defineAsyncComponent(() => import('@/ui/universal.vue')),
 	));
-
-	reactionPicker.init();
-	emojiPicker.init();
 
 	if (isClientUpdated && $i) {
 		popup(defineAsyncComponent(() => import('@/components/MkUpdated.vue')), {}, {}, 'closed');

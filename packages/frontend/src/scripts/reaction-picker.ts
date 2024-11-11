@@ -3,51 +3,41 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as Misskey from 'misskey-js';
-import { defineAsyncComponent, type Ref, ref } from 'vue';
+import { defineAsyncComponent } from 'vue';
+import type * as Misskey from 'misskey-js';
 import { popup } from '@/os.js';
 import { defaultStore } from '@/store.js';
 
-class ReactionPicker {
-	private src: Ref<HTMLElement | null> = ref(null);
-	private manualShowing = ref(false);
-	private targetNote: Ref<Misskey.entities.Note | null> = ref(null);
-	private onChosen?: (reaction: string) => void;
-	private onClosed?: () => void;
+export class ReactionPicker {
+	constructor(
+		private readonly src: HTMLElement | null,
+		private readonly targetNote: Misskey.entities.Note | null,
+		private readonly onChosen?: (reaction: string) => void,
+		private readonly onClosed?: () => void,
+	) {}
 
-	constructor() {
-		// nop
-	}
-
-	public async init() {
-		const reactionsRef = defaultStore.reactiveState.reactions;
+	private async init() {
 		await popup(defineAsyncComponent(() => import('@/components/MkEmojiPickerDialog.vue')), {
 			src: this.src,
-			pinnedEmojis: reactionsRef,
+			pinnedEmojis: defaultStore.reactiveState.reactions.value,
 			asReactionPicker: true,
-			targetNote: this.targetNote,
-			manualShowing: this.manualShowing,
+			...(this.targetNote !== null ? { targetNote: this.targetNote } : {}),
 		}, {
 			done: reaction => {
 				if (this.onChosen) this.onChosen(reaction);
 			},
-			close: () => {
-				this.manualShowing.value = false;
-			},
 			closed: () => {
-				this.src.value = null;
 				if (this.onClosed) this.onClosed();
 			},
-		});
+		}, 'closed');
 	}
 
-	public show(src: HTMLElement | null, targetNote: Misskey.entities.Note | null, onChosen?: ReactionPicker['onChosen'], onClosed?: ReactionPicker['onClosed']) {
-		this.src.value = src;
-		this.targetNote.value = targetNote;
-		this.manualShowing.value = true;
-		this.onChosen = onChosen;
-		this.onClosed = onClosed;
+	public static async show(
+		src: HTMLElement | null,
+		targetNote: Misskey.entities.Note | null,
+		onChosen?: ReactionPicker['onChosen'],
+		onClosed?: ReactionPicker['onClosed'],
+	) {
+		return await new ReactionPicker(src, targetNote, onChosen, onClosed).init();
 	}
 }
-
-export const reactionPicker = new ReactionPicker();

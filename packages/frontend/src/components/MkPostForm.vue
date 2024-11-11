@@ -126,7 +126,7 @@ import { uploadFile } from '@/scripts/upload.js';
 import { deepClone } from '@/scripts/clone.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { miLocalStorage } from '@/local-storage.js';
-import { emojiPicker } from '@/scripts/emoji-picker.js';
+import { EmojiPicker } from '@/scripts/emoji-picker.js';
 import { mfmFunctionPicker } from '@/scripts/mfm-function-picker.js';
 
 const $i = signinRequired();
@@ -828,7 +828,7 @@ async function insertEmoji(ev: MouseEvent) {
 	textAreaReadOnly.value = true;
 	const target = ev.currentTarget ?? ev.target;
 	if (target == null) return;
-	emojiPicker.show(
+	EmojiPicker.show(
 		target as HTMLElement,
 		emoji => {
 			insertTextAtCursor(textareaEl.value, emoji);

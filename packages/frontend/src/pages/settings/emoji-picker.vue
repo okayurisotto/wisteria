@@ -134,8 +134,8 @@ import { defaultStore } from '@/store.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { deepClone } from '@/scripts/clone.js';
-import { reactionPicker } from '@/scripts/reaction-picker.js';
-import { emojiPicker } from '@/scripts/emoji-picker.js';
+import { ReactionPicker } from '@/scripts/reaction-picker.js';
+import { EmojiPicker } from '@/scripts/emoji-picker.js';
 import MkCustomEmoji from '@/components/global/MkCustomEmoji.vue';
 import MkEmoji from '@/components/global/MkEmoji.vue';
 import MkFolder from '@/components/MkFolder.vue';
@@ -157,11 +157,11 @@ const chooseEmoji = (ev: MouseEvent) => pickEmoji(pinnedEmojis, ev);
 const setDefaultEmoji = () => setDefault(pinnedEmojis);
 
 function previewReaction(ev: MouseEvent) {
-	reactionPicker.show(getHTMLElement(ev), null);
+	ReactionPicker.show(getHTMLElement(ev), null);
 }
 
 function previewEmoji(ev: MouseEvent) {
-	emojiPicker.show(getHTMLElement(ev));
+	EmojiPicker.show(getHTMLElement(ev));
 }
 
 async function overwriteFromPinnedEmojis() {

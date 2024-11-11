@@ -121,13 +121,13 @@ import { $i } from '@/account.js';
 import { checkReactionPermissions } from '@/scripts/check-reaction-permissions.js';
 
 const props = withDefaults(defineProps<{
-	showPinned?: boolean;
-  pinnedEmojis?: string[];
-	maxHeight?: number;
-	asDrawer?: boolean;
-	asWindow?: boolean;
-	asReactionPicker?: boolean; // 今は使われてないが将来的に使いそう
-	targetNote?: Misskey.entities.Note;
+	showPinned?: boolean | undefined;
+  pinnedEmojis?: string[] | undefined;
+	maxHeight?: number | undefined;
+	asDrawer?: boolean | undefined;
+	asWindow?: boolean | undefined;
+	asReactionPicker?: boolean | undefined; // 今は使われてないが将来的に使いそう
+	targetNote?: Misskey.entities.Note | undefined;
 }>(), {
 	showPinned: true,
 });
