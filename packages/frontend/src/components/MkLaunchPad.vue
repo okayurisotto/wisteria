@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkModal ref="modal" v-slot="{ type, maxHeight }" :preferType="preferedModalType" :anchor="anchor" :transparentBg="true" :src="src" @click="modal?.close()" @closed="emit('closed')">
+<MkModal ref="modal" v-slot="{ type, maxHeight }" :preferType="preferedModalType" :anchor="props.anchor" :transparentBg="true" :src="props.src" @click="modal?.close()" @closed="emit('closed')">
 	<div class="szkkfdyq _popup _shadow" :class="{ asDrawer: type === 'drawer' }" :style="{ maxHeight: maxHeight ? maxHeight + 'px' : '' }">
 		<div class="main">
 			<template v-for="item in items" :key="item.text">
@@ -34,9 +34,10 @@ import { defaultStore } from '@/store.js';
 import { deviceKind } from '@/scripts/device-kind.js';
 
 const props = withDefaults(defineProps<{
-	src?: HTMLElement;
-	anchor?: { x: string; y: string; };
+	src?: HTMLElement | null;
+	anchor?: { x: 'left' | 'center' | 'right'; y: 'top' | 'center' | 'bottom' };
 }>(), {
+	src: null,
 	anchor: () => ({ x: 'right', y: 'center' }),
 });
 

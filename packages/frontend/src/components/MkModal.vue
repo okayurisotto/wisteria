@@ -69,7 +69,7 @@ type ModalTypes = 'popup' | 'dialog' | 'drawer';
 
 const props = withDefaults(defineProps<{
 	manualShowing?: boolean | null;
-	anchor?: { x: string; y: string; };
+	anchor?: { x: 'left' | 'center' | 'right'; y: 'top' | 'center' | 'bottom'; };
 	src?: HTMLElement | null;
 	preferType?: ModalTypes | 'auto';
 	zPriority?: 'low' | 'middle' | 'high';
@@ -198,10 +198,10 @@ const onOpened = () => {
 	emit('opened');
 
 	// モーダルコンテンツにマウスボタンが押され、コンテンツ外でマウスボタンが離されたときにモーダルバックグラウンドクリックと判定させないためにマウスイベントを監視しフラグ管理する
-	const el = content.value!.children[0];
-	el.addEventListener('mousedown', ev => {
+	const el = content.value?.children[0];
+	el?.addEventListener('mousedown', () => {
 		contentClicking = true;
-		window.addEventListener('mouseup', ev => {
+		window.addEventListener('mouseup', () => {
 			// click イベントより先に mouseup イベントが発生するかもしれないのでちょっと待つ
 			window.setTimeout(() => {
 				contentClicking = false;
