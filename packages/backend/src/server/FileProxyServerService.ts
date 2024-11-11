@@ -35,6 +35,8 @@ import {
 	parseBytesRangeHeaderValue,
 } from '@/misc/range-header-value.js';
 import { Hono, type Context } from 'hono';
+import { DUMMY_PNG_FILE } from '@/path';
+import { Readable } from 'node:stream';
 
 @Injectable()
 export class FileProxyServerService {
@@ -80,9 +82,7 @@ export class FileProxyServerService {
 
 		if (c.req.query('fallback') !== undefined) {
 			// TODO
-			// return c.body('/dummy.png', ASSETS_DIR);
-
-			return c.body(null);
+			return c.body(Readable.toWeb(fs.createReadStream(DUMMY_PNG_FILE)));
 		}
 
 		if (err instanceof InvalidFileKeyError) {
