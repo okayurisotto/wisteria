@@ -73,7 +73,6 @@ const props = withDefaults(defineProps<{
 	src?: HTMLElement | null;
 	preferType?: ModalTypes | 'auto';
 	zPriority?: 'low' | 'middle' | 'high';
-	noOverlap?: boolean;
 	transparentBg?: boolean;
 }>(), {
 	manualShowing: null,
@@ -81,7 +80,6 @@ const props = withDefaults(defineProps<{
 	anchor: () => ({ x: 'center', y: 'bottom' }),
 	preferType: 'auto',
 	zPriority: 'low',
-	noOverlap: true,
 	transparentBg: false,
 });
 
