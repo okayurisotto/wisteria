@@ -34,7 +34,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 >
 	<div v-show="manualShowing != null ? manualShowing : showing" v-hotkey.global="keymap" :class="[$style.root, { [$style.drawer]: type === 'drawer', [$style.dialog]: type === 'dialog', [$style.popup]: type === 'popup' }]" :style="{ zIndex, pointerEvents: (manualShowing != null ? manualShowing : showing) ? 'auto' : 'none', '--transformOrigin': transformOrigin }">
 		<div class="_modalBg" :class="[$style.bg, { [$style.bgTransparent]: isEnableBgTransparent }]" :style="{ zIndex }" @click="onBgClick" @mousedown="onBgClick" @contextmenu.prevent.stop="() => {}"></div>
-		<div ref="content" :class="[$style.content, { [$style.fixed]: fixed }]" :style="{ zIndex }" @click.self="onBgClick">
+		<div
+			ref="content"
+			:class="[$style.content, { [$style.fixed]: fixed }]"
+			:style="{ zIndex, left: align?.left + 'px', top: align?.top + 'px' }"
+			@click.self="onBgClick"
+		>
 			<slot :max-height="maxHeight" :type="type"></slot>
 		</div>
 	</div>
@@ -42,7 +47,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { nextTick, normalizeClass, onMounted, onUnmounted, provide, watch, ref, shallowRef, computed } from 'vue';
+import { nextTick, normalizeClass, onMounted, provide, watch, ref, shallowRef, computed } from 'vue';
+import { useWindowSize } from '@vueuse/core';
 import * as os from '@/os.js';
 import { isTouchUsing } from '@/scripts/touch.js';
 import { defaultStore } from '@/store.js';
@@ -130,6 +136,7 @@ const transitionDuration = computed((() =>
 					? 200
 					: 0
 ));
+const windowSize = useWindowSize();
 
 let contentClicking = false;
 
@@ -150,7 +157,7 @@ function onBgClick() {
 }
 
 if (type.value === 'drawer') {
-	maxHeight.value = window.innerHeight / 1.5;
+	maxHeight.value = windowSize.height.value / 1.5;
 }
 
 const keymap = {
@@ -160,7 +167,7 @@ const keymap = {
 const MARGIN = 16;
 const SCROLLBAR_THICKNESS = 16;
 
-const align = () => {
+const align = computed(() => {
 	if (props.src == null) return;
 	if (type.value === 'drawer') return;
 	if (type.value === 'dialog') return;
@@ -196,15 +203,15 @@ const align = () => {
 
 	if (fixed.value) {
 		// 画面から横にはみ出る場合
-		if (left + width > (window.innerWidth - SCROLLBAR_THICKNESS)) {
-			left = (window.innerWidth - SCROLLBAR_THICKNESS) - width;
+		if (left + width > (windowSize.width.value - SCROLLBAR_THICKNESS)) {
+			left = (windowSize.width.value - SCROLLBAR_THICKNESS) - width;
 		}
 
-		const underSpace = ((window.innerHeight - SCROLLBAR_THICKNESS) - MARGIN) - top;
+		const underSpace = ((windowSize.height.value - SCROLLBAR_THICKNESS) - MARGIN) - top;
 		const upperSpace = (srcRect.top - MARGIN);
 
 		// 画面から縦にはみ出る場合
-		if (top + height > ((window.innerHeight - SCROLLBAR_THICKNESS) - MARGIN)) {
+		if (top + height > ((windowSize.height.value - SCROLLBAR_THICKNESS) - MARGIN)) {
 			if (props.noOverlap && props.anchor.x === 'center') {
 				if (underSpace >= (upperSpace / 3)) {
 					maxHeight.value = underSpace;
@@ -213,22 +220,22 @@ const align = () => {
 					top = (upperSpace + MARGIN) - height;
 				}
 			} else {
-				top = ((window.innerHeight - SCROLLBAR_THICKNESS) - MARGIN) - height;
+				top = ((windowSize.height.value - SCROLLBAR_THICKNESS) - MARGIN) - height;
 			}
 		} else {
 			maxHeight.value = underSpace;
 		}
 	} else {
 		// 画面から横にはみ出る場合
-		if (left + width - window.pageXOffset > (window.innerWidth - SCROLLBAR_THICKNESS)) {
-			left = (window.innerWidth - SCROLLBAR_THICKNESS) - width + window.pageXOffset - 1;
+		if (left + width - window.pageXOffset > (windowSize.width.value - SCROLLBAR_THICKNESS)) {
+			left = (windowSize.width.value - SCROLLBAR_THICKNESS) - width + window.pageXOffset - 1;
 		}
 
-		const underSpace = ((window.innerHeight - SCROLLBAR_THICKNESS) - MARGIN) - (top - window.pageYOffset);
+		const underSpace = ((windowSize.height.value - SCROLLBAR_THICKNESS) - MARGIN) - (top - window.pageYOffset);
 		const upperSpace = (srcRect.top - MARGIN);
 
 		// 画面から縦にはみ出る場合
-		if (top + height - window.pageYOffset > ((window.innerHeight - SCROLLBAR_THICKNESS) - MARGIN)) {
+		if (top + height - window.pageYOffset > ((windowSize.height.value - SCROLLBAR_THICKNESS) - MARGIN)) {
 			if (props.noOverlap && props.anchor.x === 'center') {
 				if (underSpace >= (upperSpace / 3)) {
 					maxHeight.value = underSpace;
@@ -237,7 +244,7 @@ const align = () => {
 					top = window.pageYOffset + ((upperSpace + MARGIN) - height);
 				}
 			} else {
-				top = ((window.innerHeight - SCROLLBAR_THICKNESS) - MARGIN) - height + window.pageYOffset - 1;
+				top = ((windowSize.height.value - SCROLLBAR_THICKNESS) - MARGIN) - height + window.pageYOffset - 1;
 			}
 		} else {
 			maxHeight.value = underSpace;
@@ -269,9 +276,8 @@ const align = () => {
 
 	transformOrigin.value = `${transformOriginX} ${transformOriginY}`;
 
-	content.value.style.left = left + 'px';
-	content.value.style.top = top + 'px';
-};
+	return { left, top };
+});
 
 const onOpened = () => {
 	emit('opened');
@@ -289,10 +295,6 @@ const onOpened = () => {
 	}, { passive: true });
 };
 
-const alignObserver = new ResizeObserver((entries, observer) => {
-	align();
-});
-
 onMounted(() => {
 	watch(() => props.src, async () => {
 		if (props.src) {
@@ -302,17 +304,7 @@ onMounted(() => {
 		fixed.value = (type.value === 'drawer') || (getFixedContainer(props.src) != null);
 
 		await nextTick();
-
-		align();
 	}, { immediate: true });
-
-	nextTick(() => {
-		alignObserver.observe(content.value!);
-	});
-});
-
-onUnmounted(() => {
-	alignObserver.disconnect();
 });
 
 defineExpose({

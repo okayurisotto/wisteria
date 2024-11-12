@@ -85,6 +85,7 @@ function close() {
 		border-bottom-right-radius: 0;
 		border-bottom-left-radius: 0;
 		text-align: center;
+		max-height: 75dvh;
 	}
 
 	> .main {
