@@ -37,10 +37,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div
 			ref="content"
 			:class="[$style.content, { [$style.fixed]: fixed }]"
-			:style="{ zIndex, left: align?.left + 'px', top: align?.top + 'px' }"
+			:style="{ zIndex, left: align?.left.value + 'px', top: align?.top.value + 'px' }"
 			@click.self="onBgClick"
 		>
-			<slot :max-height="maxHeight" :type="type"></slot>
+			<slot :max-height="align?.top.maxLength" :type="type"></slot>
 		</div>
 	</div>
 </Transition>
@@ -53,6 +53,7 @@ import * as os from '@/os.js';
 import { isTouchUsing } from '@/scripts/touch.js';
 import { defaultStore } from '@/store.js';
 import { deviceKind } from '@/scripts/device-kind.js';
+import { getFloatingPosition } from '@/scripts/getFloatingPosition.js';
 
 function getFixedContainer(el: Element | null): Element | null {
 	if (el == null || el.tagName === 'BODY') return null;
@@ -165,116 +166,32 @@ const keymap = {
 };
 
 const MARGIN = 16;
-const SCROLLBAR_THICKNESS = 16;
 
 const align = computed(() => {
 	if (props.src == null) return;
 	if (type.value === 'drawer') return;
 	if (type.value === 'dialog') return;
-
 	if (content.value == null) return;
 
 	const srcRect = props.src.getBoundingClientRect();
 
-	const width = content.value!.offsetWidth;
-	const height = content.value!.offsetHeight;
+	const left = getFloatingPosition({
+		contentAlignment: props.anchor.x === 'left' ? 'negative' : props.anchor.x === 'right' ? 'positive' : 'center',
+		contentSize: content.value.offsetWidth,
+		target: srcRect.left,
+		targetSize: srcRect.width,
+		viewportMargin: MARGIN,
+		viewportSize: windowSize.width.value,
+	});
 
-	let left;
-	let top;
-
-	const x = srcRect.left + (fixed.value ? 0 : window.pageXOffset);
-	const y = srcRect.top + (fixed.value ? 0 : window.pageYOffset);
-
-	if (props.anchor.x === 'center') {
-		left = x + (props.src.offsetWidth / 2) - (width / 2);
-	} else if (props.anchor.x === 'left') {
-		// TODO
-	} else if (props.anchor.x === 'right') {
-		left = x + props.src.offsetWidth;
-	}
-
-	if (props.anchor.y === 'center') {
-		top = (y - (height / 2));
-	} else if (props.anchor.y === 'top') {
-		// TODO
-	} else if (props.anchor.y === 'bottom') {
-		top = y + props.src.offsetHeight;
-	}
-
-	if (fixed.value) {
-		// 画面から横にはみ出る場合
-		if (left + width > (windowSize.width.value - SCROLLBAR_THICKNESS)) {
-			left = (windowSize.width.value - SCROLLBAR_THICKNESS) - width;
-		}
-
-		const underSpace = ((windowSize.height.value - SCROLLBAR_THICKNESS) - MARGIN) - top;
-		const upperSpace = (srcRect.top - MARGIN);
-
-		// 画面から縦にはみ出る場合
-		if (top + height > ((windowSize.height.value - SCROLLBAR_THICKNESS) - MARGIN)) {
-			if (props.noOverlap && props.anchor.x === 'center') {
-				if (underSpace >= (upperSpace / 3)) {
-					maxHeight.value = underSpace;
-				} else {
-					maxHeight.value = upperSpace;
-					top = (upperSpace + MARGIN) - height;
-				}
-			} else {
-				top = ((windowSize.height.value - SCROLLBAR_THICKNESS) - MARGIN) - height;
-			}
-		} else {
-			maxHeight.value = underSpace;
-		}
-	} else {
-		// 画面から横にはみ出る場合
-		if (left + width - window.pageXOffset > (windowSize.width.value - SCROLLBAR_THICKNESS)) {
-			left = (windowSize.width.value - SCROLLBAR_THICKNESS) - width + window.pageXOffset - 1;
-		}
-
-		const underSpace = ((windowSize.height.value - SCROLLBAR_THICKNESS) - MARGIN) - (top - window.pageYOffset);
-		const upperSpace = (srcRect.top - MARGIN);
-
-		// 画面から縦にはみ出る場合
-		if (top + height - window.pageYOffset > ((windowSize.height.value - SCROLLBAR_THICKNESS) - MARGIN)) {
-			if (props.noOverlap && props.anchor.x === 'center') {
-				if (underSpace >= (upperSpace / 3)) {
-					maxHeight.value = underSpace;
-				} else {
-					maxHeight.value = upperSpace;
-					top = window.pageYOffset + ((upperSpace + MARGIN) - height);
-				}
-			} else {
-				top = ((windowSize.height.value - SCROLLBAR_THICKNESS) - MARGIN) - height + window.pageYOffset - 1;
-			}
-		} else {
-			maxHeight.value = underSpace;
-		}
-	}
-
-	if (top < 0) {
-		top = MARGIN;
-	}
-
-	if (left < 0) {
-		left = 0;
-	}
-
-	let transformOriginX = 'center';
-	let transformOriginY = 'center';
-
-	if (top >= srcRect.top + props.src.offsetHeight + (fixed.value ? 0 : window.pageYOffset)) {
-		transformOriginY = 'top';
-	} else if ((top + height) <= srcRect.top + (fixed.value ? 0 : window.pageYOffset)) {
-		transformOriginY = 'bottom';
-	}
-
-	if (left >= srcRect.left + props.src.offsetWidth + (fixed.value ? 0 : window.pageXOffset)) {
-		transformOriginX = 'left';
-	} else if ((left + width) <= srcRect.left + (fixed.value ? 0 : window.pageXOffset)) {
-		transformOriginX = 'right';
-	}
-
-	transformOrigin.value = `${transformOriginX} ${transformOriginY}`;
+	const top = getFloatingPosition({
+		contentAlignment: props.anchor.y === 'top' ? 'negative' : props.anchor.y === 'bottom' ? 'positive' : 'center',
+		contentSize: content.value.offsetHeight,
+		target: srcRect.top,
+		targetSize: srcRect.height,
+		viewportMargin: MARGIN,
+		viewportSize: windowSize.height.value,
+	});
 
 	return { left, top };
 });
