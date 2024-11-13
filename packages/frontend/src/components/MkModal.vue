@@ -42,6 +42,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				left: align?.left.value + 'px',
 				top: align?.top.value + 'px',
 				maxHeight: align?.top.maxLength != null ? align.top.maxLength + 'px' : '',
+				maxWidth: align?.left.maxLength != null ? align.left.maxLength + 'px' : '',
 			}"
 			@click.self="onBgClick"
 		>
