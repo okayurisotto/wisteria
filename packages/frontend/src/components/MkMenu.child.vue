@@ -4,15 +4,26 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div ref="el" :class="$style.root">
+<div
+	ref="el"
+	:class="$style.root"
+	:style="{
+		left: floatingPosition?.left + 'px',
+		top: floatingPosition?.top + 'px',
+		maxWidth: floatingPosition?.maxWidth + 'px',
+		maxHeight: floatingPosition?.maxHeight + 'px',
+	}"
+>
 	<MkMenu :items="items" :align="align" :width="width" :asDrawer="false" @close="onChildClosed"/>
 </div>
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onMounted, onUnmounted, shallowRef, watch } from 'vue';
+import { computed, shallowRef } from 'vue';
 import MkMenu from './MkMenu.vue';
 import type { MenuItem } from '@/types/menu.js';
+import { getFloatingPosition } from '@/scripts/getFloatingPosition';
+import { useWindowSize } from '@vueuse/core';
 
 const props = defineProps<{
 	items: MenuItem[];
@@ -28,27 +39,46 @@ const emit = defineEmits<{
 }>();
 
 const el = shallowRef<HTMLElement>();
-const align = 'left';
+const windowSize = useWindowSize();
 
+const align = 'left';
+const BUTTON_PADDING = 8;
 const SCROLLBAR_THICKNESS = 16;
 
-function setPosition() {
+const floatingPosition = computed(() => {
 	if (el.value == null) return;
-	const rootRect = props.rootElement.getBoundingClientRect();
-	const parentRect = props.targetElement.getBoundingClientRect();
-	const myRect = el.value.getBoundingClientRect();
 
-	let left = props.targetElement.offsetWidth;
-	let top = (parentRect.top - rootRect.top) - 8;
-	if (rootRect.left + left + myRect.width >= (window.innerWidth - SCROLLBAR_THICKNESS)) {
-		left = -myRect.width;
-	}
-	if (rootRect.top + top + myRect.height >= (window.innerHeight - SCROLLBAR_THICKNESS)) {
-		top = top - ((rootRect.top + top + myRect.height) - (window.innerHeight - SCROLLBAR_THICKNESS));
-	}
-	el.value.style.left = left + 'px';
-	el.value.style.top = top + 'px';
-}
+	const parentRect = props.targetElement.getBoundingClientRect();
+	const contentRect = el.value.getBoundingClientRect();
+
+	const left = getFloatingPosition({
+		contentAlignment: 'positive',
+		contentSize: contentRect.width,
+		target: parentRect.x,
+		targetSize: parentRect.width,
+		viewportMargin: SCROLLBAR_THICKNESS,
+		viewportSize: windowSize.width.value,
+		clipBasedOnTarget: false,
+	});
+
+	const top = getFloatingPosition({
+		contentAlignment: 'positive',
+		contentSize: contentRect.height,
+		target: parentRect.y - BUTTON_PADDING,
+		targetSize: parentRect.height + BUTTON_PADDING * 2,
+		viewportMargin: SCROLLBAR_THICKNESS,
+		viewportSize: windowSize.height.value,
+		mode: 'overlap',
+		clipBasedOnTarget: false,
+	});
+
+	return {
+		left: left.value,
+		top: top.value,
+		maxWidth: left.maxLength,
+		maxHeight: top.maxLength,
+	};
+});
 
 function onChildClosed(actioned?: boolean) {
 	if (actioned) {
@@ -57,26 +87,6 @@ function onChildClosed(actioned?: boolean) {
 		emit('closed');
 	}
 }
-
-watch(() => props.targetElement, () => {
-	setPosition();
-});
-
-const ro = new ResizeObserver((entries, observer) => {
-	setPosition();
-});
-
-onMounted(() => {
-	if (el.value) ro.observe(el.value);
-	setPosition();
-	nextTick(() => {
-		setPosition();
-	});
-});
-
-onUnmounted(() => {
-	ro.disconnect();
-});
 
 defineExpose({
 	checkHit: (ev: MouseEvent) => {
@@ -87,6 +97,7 @@ defineExpose({
 
 <style lang="scss" module>
 .root {
-	position: absolute;
+	position: fixed;
+	overflow: scroll;
 }
 </style>
