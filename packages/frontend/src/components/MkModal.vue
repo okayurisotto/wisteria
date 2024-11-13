@@ -37,10 +37,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div
 			ref="content"
 			:class="[$style.content, { [$style.fixed]: fixed }]"
-			:style="{ zIndex, left: align?.left.value + 'px', top: align?.top.value + 'px' }"
+			:style="{
+				zIndex,
+				left: align?.left.value + 'px',
+				top: align?.top.value + 'px',
+				maxHeight: align?.top.maxLength != null ? align.top.maxLength + 'px' : '',
+			}"
 			@click.self="onBgClick"
 		>
-			<slot :max-height="align?.top.maxLength" :type="type"></slot>
+			<slot :type="type"></slot>
 		</div>
 	</div>
 </Transition>
@@ -377,6 +382,10 @@ defineExpose({
 			margin: auto;
 		}
 	}
+}
+
+.content {
+	overflow-y: scroll;
 }
 
 .bg {

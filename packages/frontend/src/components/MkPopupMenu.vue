@@ -4,14 +4,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkModal ref="modal" v-slot="{ type, maxHeight }" :manualShowing="manualShowing" :zPriority="'high'" :src="src" :transparentBg="true" @click="click" @close="onModalClose" @closed="onModalClosed">
+<MkModal ref="modal" v-slot="{ type }" :manualShowing="manualShowing" :zPriority="'high'" :src="src" :transparentBg="true" @click="click" @close="onModalClose" @closed="onModalClosed">
 	<MkMenu
 		:items="items"
 		:align="align"
 		:width="width"
 		:asDrawer="type === 'drawer'"
 		:class="[$style.menu, { [$style.drawer]: type === 'drawer' }]"
-		:style="{ maxHeight: maxHeight != null ? maxHeight + 'px' : undefined }"
 		@close="onMenuClose"
 		@hide="hide"
 	/>

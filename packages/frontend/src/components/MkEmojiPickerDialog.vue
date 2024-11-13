@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <MkModal
 	ref="modal"
-	v-slot="{ type, maxHeight }"
+	v-slot="{ type }"
 	:zPriority="'middle'"
 	:preferType="defaultStore.state.emojiPickerUseDrawerForMobile === false ? 'popup' : 'auto'"
 	:transparentBg="true"
@@ -26,7 +26,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 		:asReactionPicker="props.asReactionPicker"
 		:targetNote="props.targetNote"
 		:asDrawer="type === 'drawer'"
-		:max-height="maxHeight"
 		@chosen="chosen"
 	/>
 </MkModal>

@@ -4,8 +4,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkModal ref="modal" v-slot="{ type, maxHeight }" :preferType="preferedModalType" :anchor="props.anchor" :transparentBg="true" :src="props.src" @click="modal?.close()" @closed="emit('closed')">
-	<div class="szkkfdyq _popup _shadow" :class="{ asDrawer: type === 'drawer' }" :style="{ maxHeight: maxHeight ? maxHeight + 'px' : '' }">
+<MkModal ref="modal" v-slot="{ type }" :preferType="preferedModalType" :anchor="props.anchor" :transparentBg="true" :src="props.src" @click="modal?.close()" @closed="emit('closed')">
+	<div class="szkkfdyq _popup _shadow" :class="{ asDrawer: type === 'drawer' }">
 		<div class="main">
 			<template v-for="item in items" :key="item.text">
 				<button v-if="item.action" v-click-anime class="_button item" @click="$event => { item.action($event); close(); }">
