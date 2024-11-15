@@ -86,8 +86,8 @@ import MkFolder from '@/components/MkFolder.vue';
 
 import { $i } from '@/account.js';
 import { type Theme, applyTheme } from '@/scripts/theme.js';
-import lightTheme from '@/themes/_light.json5';
-import darkTheme from '@/themes/_dark.json5';
+import lightTheme from '@/themes/_light.json';
+import darkTheme from '@/themes/_dark.json';
 import { host } from '@/config.js';
 import * as os from '@/os.js';
 import { ColdDeviceStorage, defaultStore } from '@/store.js';

@@ -7,8 +7,8 @@ import { deepClone } from './clone.js';
 import { deepMerge } from './merge.js';
 import type { HighlighterCore, LanguageRegistration, ThemeRegistration, ThemeRegistrationRaw } from 'shiki';
 import { ColdDeviceStorage } from '@/store.js';
-import lightTheme from '@/themes/_light.json5';
-import darkTheme from '@/themes/_dark.json5';
+import lightTheme from '@/themes/_light.json';
+import darkTheme from '@/themes/_dark.json';
 
 let _highlighter: HighlighterCore | null = null;
 
