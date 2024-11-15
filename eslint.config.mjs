@@ -3,7 +3,6 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
-import pluginVue from 'eslint-plugin-vue';
 
 export default tseslint.config(
 	{ ignores: ['built/'] },
@@ -64,17 +63,6 @@ export default tseslint.config(
 			'@stylistic/indent-binary-ops': ['error', 'tab'],
 			'@stylistic/multiline-comment-style': ['off'], // `@ts`コメントを考慮してくれないため
 			'@stylistic/operator-linebreak': ['error', 'before', { overrides: { '=': 'after', '&&': 'after', '||': 'after' } }],
-		},
-	},
-
-	// Vue
-	...pluginVue.configs['flat/strongly-recommended'],
-	{
-		files: ['*.vue', '**/*.vue'],
-		languageOptions: {
-			parserOptions: {
-				parser: '@typescript-eslint/parser',
-			},
 		},
 	},
 );
