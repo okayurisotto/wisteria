@@ -1,22 +1,20 @@
-import dns from 'dns';
 import { readFile } from 'node:fs/promises';
+import dns from 'node:dns';
 import { defineConfig } from 'vite';
 import * as yaml from 'js-yaml';
 import locales from 'locales';
-import { getConfig } from './vite.config.js';
+import { baseConfig } from './vite.config.js';
 
 dns.setDefaultResultOrder('ipv4first');
-
-const defaultConfig = getConfig();
 
 const { port } = yaml.load(await readFile('../../.config/default.yml', 'utf-8'));
 
 const httpUrl = `http://localhost:${port}/`;
 const websocketUrl = `ws://localhost:${port}/`;
 
-const devConfig = {
+export default defineConfig({
 	// 基本の設定は vite.config.js から引き継ぐ
-	...defaultConfig,
+	...baseConfig,
 	root: 'src',
 	publicDir: '../assets',
 	base: './',
@@ -51,17 +49,14 @@ const devConfig = {
 		},
 	},
 	build: {
-		...defaultConfig.build,
+		...baseConfig.build,
 		rollupOptions: {
-			...defaultConfig.build?.rollupOptions,
+			...baseConfig.build?.rollupOptions,
 			input: 'index.html',
 		},
 	},
-
 	define: {
-		...defaultConfig.define,
+		...baseConfig.define,
 		_LANGS_FULL_: JSON.stringify(Object.entries(locales)),
 	},
-};
-
-export default defineConfig(({ command, mode }) => devConfig);
+});

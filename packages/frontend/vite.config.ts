@@ -1,5 +1,4 @@
 import path from 'path';
-import pluginReplace from '@rollup/plugin-replace';
 import pluginVue from '@vitejs/plugin-vue';
 import { type UserConfig, defineConfig } from 'vite';
 
@@ -39,120 +38,104 @@ function toBase62(n: number): string {
 	return result;
 }
 
-export function getConfig(): UserConfig {
-	return {
-		base: '/vite/',
+export const baseConfig: UserConfig = {
+	base: '/vite/',
 
-		server: {
-			port: 5173,
+	server: {
+		port: 5173,
+	},
+
+	plugins: [
+		pluginVue(),
+		pluginUnwindCssModuleClassName(),
+	],
+
+	resolve: {
+		extensions,
+		alias: {
+			'@/': __dirname + '/src/',
+			'/client-assets/': __dirname + '/assets/',
+			'/static-assets/': __dirname + '/../backend/assets/',
+			'/fluent-emojis/': __dirname + '/../../fluent-emojis/dist/',
+			'/fluent-emoji/': __dirname + '/../../fluent-emojis/dist/',
 		},
+	},
 
-		plugins: [
-			pluginVue(),
-			pluginUnwindCssModuleClassName(),
-			...process.env.NODE_ENV === 'production'
-				? [
-					pluginReplace({
-						preventAssignment: true,
-						values: {
-							'isChromatic()': JSON.stringify(false),
-						},
-					}),
-				]
-				: [],
+	css: {
+		modules: {
+			generateScopedName(name, filename, _css): string {
+				const id = (path.relative(__dirname, filename.split('?')[0]) + '-' + name).replace(/[\\/.?&=]/g, '-').replace(/(src-|vue-)/g, '');
+				if (process.env['NODE_ENV'] === 'production') {
+					return 'x' + toBase62(hash(id)).substring(0, 4);
+				} else {
+					return id;
+				}
+			},
+		},
+	},
+
+	define: {
+		_VERSION_: JSON.stringify(meta.version),
+		_LANGS_: JSON.stringify(Object.entries(locales).map(([k, v]) => [k, v._lang_])),
+		_DEV_: process.env['NODE_ENV'] !== 'production',
+		_DATA_TRANSFER_DRIVE_FILE_: JSON.stringify('mk_drive_file'),
+		_DATA_TRANSFER_DRIVE_FOLDER_: JSON.stringify('mk_drive_folder'),
+		_DATA_TRANSFER_DECK_COLUMN_: JSON.stringify('mk_deck_column'),
+	},
+
+	build: {
+		target: [
+			'chrome116',
+			'firefox116',
+			'safari16',
 		],
-
-		resolve: {
-			extensions,
-			alias: {
-				'@/': __dirname + '/src/',
-				'/client-assets/': __dirname + '/assets/',
-				'/static-assets/': __dirname + '/../backend/assets/',
-				'/fluent-emojis/': __dirname + '/../../fluent-emojis/dist/',
-				'/fluent-emoji/': __dirname + '/../../fluent-emojis/dist/',
+		manifest: 'manifest.json',
+		rollupOptions: {
+			input: {
+				app: './src/_boot_.ts',
+			},
+			output: {
+				manualChunks: {
+					vue: ['vue'],
+					photoswipe: ['photoswipe', 'photoswipe/lightbox', 'photoswipe/style.css'],
+				},
+				chunkFileNames: process.env['NODE_ENV'] === 'production' ? '[hash:8].js' : '[name]-[hash:8].js',
+				assetFileNames: process.env['NODE_ENV'] === 'production' ? '[hash:8][extname]' : '[name]-[hash:8][extname]',
 			},
 		},
+		cssCodeSplit: true,
+		outDir: __dirname + '/../../built/_vite_',
+		assetsDir: '.',
+		emptyOutDir: false,
+		sourcemap: process.env['NODE_ENV'] === 'development',
+		reportCompressedSize: false,
 
-		css: {
-			modules: {
-				generateScopedName(name, filename, _css): string {
-					const id = (path.relative(__dirname, filename.split('?')[0]) + '-' + name).replace(/[\\\/\.\?&=]/g, '-').replace(/(src-|vue-)/g, '');
-					if (process.env.NODE_ENV === 'production') {
-						return 'x' + toBase62(hash(id)).substring(0, 4);
-					} else {
-						return id;
-					}
+		// https://vitejs.dev/guide/dep-pre-bundling.html#monorepos-and-linked-dependencies
+		commonjsOptions: {
+			include: [/misskey-js/, /node_modules/],
+		},
+	},
+
+	worker: {
+		format: 'es',
+	},
+
+	test: {
+		environment: 'happy-dom',
+		deps: {
+			optimizer: {
+				web: {
+					include: [
+						// XXX: misskey-dev/browser-image-resizer has no "type": "module"
+						'browser-image-resizer',
+					],
 				},
 			},
 		},
+		includeSource: ['src/**/*.ts'],
+	},
+};
 
-		define: {
-			_VERSION_: JSON.stringify(meta.version),
-			_LANGS_: JSON.stringify(Object.entries(locales).map(([k, v]) => [k, v._lang_])),
-			_ENV_: JSON.stringify(process.env.NODE_ENV),
-			_DEV_: process.env.NODE_ENV !== 'production',
-			_PERF_PREFIX_: JSON.stringify('Misskey:'),
-			_DATA_TRANSFER_DRIVE_FILE_: JSON.stringify('mk_drive_file'),
-			_DATA_TRANSFER_DRIVE_FOLDER_: JSON.stringify('mk_drive_folder'),
-			_DATA_TRANSFER_DECK_COLUMN_: JSON.stringify('mk_deck_column'),
-			__VUE_OPTIONS_API__: true,
-			__VUE_PROD_DEVTOOLS__: false,
-		},
-
-		build: {
-			target: [
-				'chrome116',
-				'firefox116',
-				'safari16',
-			],
-			manifest: 'manifest.json',
-			rollupOptions: {
-				input: {
-					app: './src/_boot_.ts',
-				},
-				output: {
-					manualChunks: {
-						vue: ['vue'],
-						photoswipe: ['photoswipe', 'photoswipe/lightbox', 'photoswipe/style.css'],
-					},
-					chunkFileNames: process.env.NODE_ENV === 'production' ? '[hash:8].js' : '[name]-[hash:8].js',
-					assetFileNames: process.env.NODE_ENV === 'production' ? '[hash:8][extname]' : '[name]-[hash:8][extname]',
-				},
-			},
-			cssCodeSplit: true,
-			outDir: __dirname + '/../../built/_vite_',
-			assetsDir: '.',
-			emptyOutDir: false,
-			sourcemap: process.env.NODE_ENV === 'development',
-			reportCompressedSize: false,
-
-			// https://vitejs.dev/guide/dep-pre-bundling.html#monorepos-and-linked-dependencies
-			commonjsOptions: {
-				include: [/misskey-js/, /node_modules/],
-			},
-		},
-
-		worker: {
-			format: 'es',
-		},
-
-		test: {
-			environment: 'happy-dom',
-			deps: {
-				optimizer: {
-					web: {
-						include: [
-							// XXX: misskey-dev/browser-image-resizer has no "type": "module"
-							'browser-image-resizer',
-						],
-					},
-				},
-			},
-			includeSource: ['src/**/*.ts'],
-		},
-	};
-}
-
-const config = defineConfig(({ command, mode }) => getConfig());
+const config = defineConfig(baseConfig);
 
 export default config;
