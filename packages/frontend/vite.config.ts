@@ -1,4 +1,5 @@
-import path from 'path';
+import * as crypto from 'node:crypto';
+import path from 'node:path';
 import pluginVue from '@vitejs/plugin-vue';
 import { type UserConfig, defineConfig } from 'vite';
 
@@ -7,36 +8,6 @@ import meta from '../../package.json';
 import pluginUnwindCssModuleClassName from './lib/rollup-plugin-unwind-css-module-class-name.js';
 
 const extensions = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.json', '.json5', '.svg', '.sass', '.scss', '.css', '.vue'];
-
-const hash = (str: string, seed = 0): number => {
-	let h1 = 0xdeadbeef ^ seed,
-		h2 = 0x41c6ce57 ^ seed;
-	for (let i = 0, ch; i < str.length; i++) {
-		ch = str.charCodeAt(i);
-		h1 = Math.imul(h1 ^ ch, 2654435761);
-		h2 = Math.imul(h2 ^ ch, 1597334677);
-	}
-
-	h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-	h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-
-	return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-};
-
-const BASE62_DIGITS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-function toBase62(n: number): string {
-	if (n === 0) {
-		return '0';
-	}
-	let result = '';
-	while (n > 0) {
-		result = BASE62_DIGITS[n % BASE62_DIGITS.length] + result;
-		n = Math.floor(n / BASE62_DIGITS.length);
-	}
-
-	return result;
-}
 
 export const baseConfig: UserConfig = {
 	base: '/vite/',
@@ -63,12 +34,41 @@ export const baseConfig: UserConfig = {
 
 	css: {
 		modules: {
-			generateScopedName(name, filename, _css): string {
-				const id = (path.relative(__dirname, filename.split('?')[0]) + '-' + name).replace(/[\\/.?&=]/g, '-').replace(/(src-|vue-)/g, '');
+			/**
+			 * 正規化したファイルパスのハッシュ値をクラス名として使うようにする。
+			 * デフォルトではCSSのハッシュ値などが使われてしまうため、CSSをほんの少し書き換えただけでクラス名が変わり、
+			 * クラス名に依存した外部のスクリプト（ユーザースクリプトやユーザースタイルシートなど）が動かなくなってしまう。
+			 * ファイルパスのハッシュ値であれば、ファイルを移動させるなどの大規模な変更が行われない限り、クラス名は変わらない。
+			 * （そして大規模な変更ではそもそも外部スクリプトは動かなくなるのだから、クラス名が変わっても問題はない。）
+			 *
+			 * @param name     クラス名
+			 * @param filename ファイルへの絶対パス（ただしクエリパラメータ付き）
+			 * @param css      CSS文字列
+			 */
+			generateScopedName(name, filename, css): string {
+				const removeQuery = (filename: string): string => {
+					return filename.replace(/\?.*/, '');
+				};
+
+				const removeExtension = (filename: string): string => {
+					return filename.replace(/\.\w+?$/, '');
+				};
+
+				const normalize = (filename: string, name: string, root: string): string => {
+					const actualFilename = removeExtension(path.relative(root, removeQuery(filename)));
+					return [...actualFilename.split(/[/.]/), name].join('-');
+				};
+
+				const hash = (data: crypto.BinaryLike): string => {
+					return crypto.createHash('SHA-256').update(data).digest('base64url');
+				};
+
+				const normalized = normalize(filename, name, path.join(__dirname, 'src'));
+
 				if (process.env['NODE_ENV'] === 'production') {
-					return 'x' + toBase62(hash(id)).substring(0, 4);
+					return 'x' + hash(normalized).substring(0, 4);
 				} else {
-					return id;
+					return normalized;
 				}
 			},
 		},
