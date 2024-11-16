@@ -32,6 +32,7 @@
 		"insert-text-at-cursor": "0.3.0",
 		"is-file-animated": "1.0.2",
 		"json5": "2.2.3",
+		"locales": "workspace:*",
 		"mfm-js": "0.24.0",
 		"misskey-js": "workspace:*",
 		"photoswipe": "5.4.3",

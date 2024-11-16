@@ -8,3 +8,4 @@ packages:
   - 'packages/parcom'
   - 'packages/hono-serve-static'
   - 'packages/zod2spec'
+  - 'packages/locales'

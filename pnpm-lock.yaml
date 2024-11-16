@@ -566,6 +566,9 @@ importers:
       json5:
         specifier: 2.2.3
         version: 2.2.3
+      locales:
+        specifier: workspace:*
+        version: link:../locales
       mfm-js:
         specifier: 0.24.0
         version: 0.24.0
@@ -759,6 +762,8 @@ importers:
       typescript:
         specifier: ^5.6.3
         version: 5.6.3
+
+  packages/locales: {}
 
   packages/misskey-js:
     dependencies:

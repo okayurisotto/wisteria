@@ -2,7 +2,7 @@ import dns from 'dns';
 import { readFile } from 'node:fs/promises';
 import { defineConfig } from 'vite';
 import * as yaml from 'js-yaml';
-import locales from '../../locales/index.js';
+import locales from 'locales';
 import { getConfig } from './vite.config.js';
 
 dns.setDefaultResultOrder('ipv4first');
@@ -65,4 +65,3 @@ const devConfig = {
 };
 
 export default defineConfig(({ command, mode }) => devConfig);
-
