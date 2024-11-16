@@ -12,8 +12,6 @@ import postcss from 'postcss';
 import * as terser from 'terser';
 
 import { build as buildLocales } from '../packages/locales/index.js';
-import generateDTS from '../packages/locales/generateDTS.js';
-import meta from '../package.json' with { type: 'json' };
 import buildTarball from './tarball.mjs';
 
 const configDir = fileURLToPath(new URL('../.config', import.meta.url));
@@ -34,15 +32,7 @@ async function copyFrontendTablerIcons() {
 }
 
 async function copyFrontendLocales() {
-	generateDTS();
-
-	await fs.mkdir('./built/_frontend_dist_/locales', { recursive: true });
-
-	const v = { _version_: meta.version };
-
-	for (const [lang, locale] of Object.entries(locales)) {
-		await fs.writeFile(`./built/_frontend_dist_/locales/${lang}.${meta.version}.json`, JSON.stringify({ ...locale, ...v }), 'utf-8');
-	}
+	await fs.cp('./packages/locales/built', './built/_frontend_dist_/locales', { recursive: true });
 }
 
 async function copyBackendViews() {
