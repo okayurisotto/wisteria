@@ -15,10 +15,11 @@ const ignore = [
 
 	'.config/**/*',
 	'compose.yaml',
+
 	// Exclude files you don't want to include in the tarball here
 ];
 
-export default async function build() {
+export const build = async () => {
 	const mkdirPromise = mkdir(resolve(cwd, 'built', 'tarball'), { recursive: true });
 	const pack = new Pack({ cwd, gzip: true });
 	const patterns = await walk({ path: cwd, ignoreFiles: ['.gitignore'] });
@@ -32,4 +33,4 @@ export default async function build() {
 	await mkdirPromise;
 
 	pack.pipe(createWriteStream(resolve(cwd, 'built', 'tarball', `misskey-${meta.version}.tar.gz`)));
-}
+};

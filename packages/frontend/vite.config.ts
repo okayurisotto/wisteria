@@ -104,7 +104,7 @@ export const baseConfig: UserConfig = {
 			},
 		},
 		cssCodeSplit: true,
-		outDir: __dirname + '/../../built/_vite_',
+		outDir: 'built',
 		assetsDir: '.',
 		emptyOutDir: false,
 		sourcemap: process.env['NODE_ENV'] === 'development',

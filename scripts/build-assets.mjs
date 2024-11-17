@@ -5,26 +5,15 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import cssnano from 'cssnano';
-import * as yaml from 'js-yaml';
 import postcss from 'postcss';
 import * as terser from 'terser';
-
+import { loadConfig } from '../packages/backend/built/config.js';
 import { build as buildLocales } from '../packages/locales/index.js';
-import buildTarball from './tarball.mjs';
+import { build as buildTarball } from './tarball.mjs';
 
-const configDir = fileURLToPath(new URL('../.config', import.meta.url));
-const configPath = process.env.MISSKEY_CONFIG_YML
-	? path.resolve(configDir, process.env.MISSKEY_CONFIG_YML)
-	: process.env.NODE_ENV === 'test'
-		? path.resolve(configDir, 'test.yml')
-		: path.resolve(configDir, 'default.yml');
-
-let locales = buildLocales();
-
-async function loadConfig() {
-	return fs.readFile(configPath, 'utf-8').then(data => yaml.load(data)).catch(() => null);
+async function copyFrontend() {
+	await fs.cp('./packages/frontend/built', './built/_vite_', { dereference: true, recursive: true });
 }
 
 async function copyFrontendTablerIcons() {
@@ -33,6 +22,10 @@ async function copyFrontendTablerIcons() {
 
 async function copyFrontendLocales() {
 	await fs.cp('./packages/locales/built', './built/_frontend_dist_/locales', { recursive: true });
+}
+
+async function copySw() {
+	await fs.cp('./packages/sw/built', './built/_sw_dist_', { dereference: true, recursive: true });
 }
 
 async function copyBackendViews() {
@@ -44,6 +37,7 @@ async function copyBackendAssets() {
 }
 
 async function buildBackendScript() {
+	const locales = buildLocales();
 	await fs.mkdir('./packages/backend/built/server/web', { recursive: true });
 
 	for (const file of [
@@ -75,30 +69,21 @@ async function buildBackendStyle() {
 
 async function build() {
 	await Promise.all([
+		copyFrontend(),
 		copyFrontendTablerIcons(),
 		copyFrontendLocales(),
+		copySw(),
 		copyBackendViews(),
 		copyBackendAssets(),
 		buildBackendScript(),
 		buildBackendStyle(),
-		loadConfig().then(async (config) => {
+		(async () => {
+			const config = loadConfig();
 			if (config?.publishTarballInsteadOfProvideRepositoryUrl) {
 				await buildTarball();
 			}
-		}),
+		})(),
 	]);
 }
 
 await build();
-
-if (process.argv.includes('--watch')) {
-	const watcher = fs.watch('./locales');
-	for await (const event of watcher) {
-		const filename = event.filename?.replaceAll('\\', '/');
-		if (/^[a-z]+-[A-Z]+\.yml/.test(filename)) {
-			console.log(`update ${filename} ...`);
-			locales = buildLocales();
-			await copyFrontendLocales();
-		}
-	}
-}

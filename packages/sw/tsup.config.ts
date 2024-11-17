@@ -6,7 +6,7 @@ export default defineConfig({
 	entry: ['./src/sw.ts'],
 	format: 'esm',
 	minify: true,
-	outDir: '../../built/_sw_dist_',
+	outDir: 'built',
 	define: {
 		_DEV_: JSON.stringify(process.env.NODE_ENV !== 'production'),
 		_VERSION_: JSON.stringify(meta.version),
