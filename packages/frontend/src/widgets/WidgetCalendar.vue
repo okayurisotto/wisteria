@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="[$style.root, { _panel: !widgetProps.transparent }]" data-cy-mkw-calendar>
+<div :class="[$style.root, { _panel: !widgetProps.transparent }]">
 	<div :class="[$style.calendar, { [$style.isHoliday]: isHoliday }]">
 		<p :class="$style.monthAndYear">
 			<span>{{ i18n.tsx.yearX({ year }) }}</span>

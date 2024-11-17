@@ -48,7 +48,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</MkA>
 		</div>
 		<div :class="$style.bottom">
-			<button v-tooltip.noDelay.right="i18n.ts.note" class="_button" :class="[$style.post]" data-cy-open-post-form @click="os.post">
+			<button v-tooltip.noDelay.right="i18n.ts.note" class="_button" :class="[$style.post]" @click="os.post">
 				<i class="ti ti-pencil ti-fw" :class="$style.postIcon"></i><span :class="$style.postText">{{ i18n.ts.note }}</span>
 			</button>
 			<button v-tooltip.noDelay.right="`${i18n.ts.account}: @${$i.username}`" class="_button" :class="[$style.account]" @click="openAccountMenu">

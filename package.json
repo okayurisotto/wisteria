@@ -20,9 +20,6 @@
 		"revert": "cd packages/backend && pnpm revert",
 		"migrateandstart": "pnpm migrate && pnpm start",
 		"lint": "pnpm -r lint",
-		"cy:open": "pnpm cypress open --browser --e2e --config-file=cypress.config.ts",
-		"cy:run": "pnpm cypress run",
-		"e2e": "pnpm start-server-and-test start:test http://localhost:61812 cy:run",
 		"test": "pnpm -r test",
 		"clean": "node ./scripts/clean.mjs"
 	},
@@ -40,7 +37,6 @@
 		"@types/js-yaml": "4.0.9",
 		"@types/tar": "6.1.13",
 		"cssnano": "6.0.3",
-		"cypress": "13.6.3",
 		"eslint": "^9.15.0",
 		"eslint-plugin-vue": "^9.31.0",
 		"fast-glob": "3.3.2",
