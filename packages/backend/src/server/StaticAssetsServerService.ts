@@ -217,9 +217,9 @@ export class StaticAssetsServerService {
 
 		// #endregion
 
-		hono.get('/manifest.json', (c) => {
+		hono.get('/manifest.json', async (c) => {
 			c.header('Cache-Control', 'max-age=300');
-			return c.json(this.manifestHandler());
+			return c.json(await this.manifestHandler());
 		});
 
 		hono.get('/opensearch.xml', async (c) => {
