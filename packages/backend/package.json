@@ -35,8 +35,8 @@
 	"dependencies": {
 		"@aws-sdk/client-s3": "3.412.0",
 		"@aws-sdk/lib-storage": "3.412.0",
-		"@bull-board/api": "5.21.3",
-		"@bull-board/hono": "^5.23.0",
+		"@bull-board/api": "6.5.2",
+		"@bull-board/hono": "6.5.2",
 		"@discordapp/twemoji": "15.0.2",
 		"@hono/node-server": "^1.13.2",
 		"@misskey-dev/sharp-read-bmp": "^1.2.0",
