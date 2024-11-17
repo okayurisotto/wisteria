@@ -12,22 +12,6 @@ import { loadConfig } from '../packages/backend/built/config.js';
 import { build as buildLocales } from '../packages/locales/index.js';
 import { build as buildTarball } from './tarball.mjs';
 
-async function copyFrontend() {
-	await fs.cp('./packages/frontend/built', './built/_vite_', { dereference: true, recursive: true });
-}
-
-async function copyFrontendTablerIcons() {
-	await fs.cp('./packages/frontend/node_modules/@tabler/icons-webfont', './built/_frontend_dist_/tabler-icons', { dereference: true, recursive: true });
-}
-
-async function copyFrontendLocales() {
-	await fs.cp('./packages/locales/built', './built/_frontend_dist_/locales', { recursive: true });
-}
-
-async function copySw() {
-	await fs.cp('./packages/sw/built', './built/_sw_dist_', { dereference: true, recursive: true });
-}
-
 async function copyBackendViews() {
 	await fs.cp('./packages/backend/src/server/web/views', './packages/backend/built/server/web/views', { recursive: true });
 }
@@ -69,18 +53,18 @@ async function buildBackendStyle() {
 
 async function build() {
 	await Promise.all([
-		copyFrontend(),
-		copyFrontendTablerIcons(),
-		copyFrontendLocales(),
-		copySw(),
 		copyBackendViews(),
 		copyBackendAssets(),
 		buildBackendScript(),
 		buildBackendStyle(),
 		(async () => {
-			const config = loadConfig();
-			if (config?.publishTarballInsteadOfProvideRepositoryUrl) {
-				await buildTarball();
+			try {
+				const config = loadConfig();
+				if (config?.publishTarballInsteadOfProvideRepositoryUrl) {
+					await buildTarball();
+				}
+			} catch {
+				// Dockerfileからのビルドなどでは設定ファイルが提供されていないためエラーになる
 			}
 		})(),
 	]);

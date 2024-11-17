@@ -6,17 +6,22 @@
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import sysUtils from 'systeminformation';
+import { z } from 'zod';
 import { Logger } from '@/logger.js';
 import { loadConfig } from '@/config.js';
 import { envOption } from '@/env.js';
-import { META_FILE } from '@/path.js';
+import { PACKAGE_JSON_FILE } from '@/path.js';
 import { server, jobQueue } from './common.js';
 import { NestFactory } from '@nestjs/core';
 import { NestLogger } from '@/NestLogger.js';
 import { MainModule } from '@/MainModule.js';
 
+const metaSchema = z.object({
+	version: z.string(),
+});
+
 export const initialize = async () => {
-	const meta = JSON.parse(await fs.readFile(META_FILE, 'utf-8'));
+	const meta = metaSchema.parse(JSON.parse(await fs.readFile(PACKAGE_JSON_FILE, 'utf-8')));
 
 	const coreLogger = new Logger('core', 'cyan');
 	const bootLogger = coreLogger.createSubLogger('boot', 'magenta');

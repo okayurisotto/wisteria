@@ -10,7 +10,8 @@ import { DI } from '@/di-symbols.js';
 import { MetaService } from '@/core/MetaService.js';
 import {
 	FRONTEND_ASSETS_DIR,
-	FRONTEND_DIST_ASSETS_DIR,
+	TABLER_ICONS_DIR,
+	LOCALES_DIR,
 	STATIC_ASSETS_DIR,
 	SW_ASSETS_DIR,
 	TARBALL_DIR,
@@ -138,15 +139,29 @@ export class StaticAssetsServerService {
 		);
 
 		hono.get(
-			'/assets/*',
+			'/assets/locales/*',
 			omitSearch,
 			async (c, next) => {
 				c.header('Cache-Control', `max-age=${7 * 24 * 60 * 60}`);
 				await next();
 			},
 			serveStaticDir({
-				path: FRONTEND_DIST_ASSETS_DIR,
-				mountpoint: '/assets/',
+				path: LOCALES_DIR,
+				mountpoint: '/assets/locales/',
+				index: null,
+			}),
+		);
+
+		hono.get(
+			'/assets/tabler-icons/*',
+			omitSearch,
+			async (c, next) => {
+				c.header('Cache-Control', `max-age=${7 * 24 * 60 * 60}`);
+				await next();
+			},
+			serveStaticDir({
+				path: TABLER_ICONS_DIR,
+				mountpoint: '/assets/tabler-icons/',
 				index: null,
 			}),
 		);

@@ -1,12 +1,8 @@
 import * as path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
 import { envOption } from './env.js';
 
-/** `/packages/backend/built/path.ts` */
-const _filename = fileURLToPath(import.meta.url);
-
 /** `/packages/backend/built` */
-const _dirname = path.dirname(_filename);
+const _dirname = import.meta.dirname;
 
 /** `/` */
 const ROOT_DIR = path.join(_dirname, '../../..');
@@ -29,19 +25,22 @@ export const CONFIG_FILE = envOption.MISSKEY_CONFIG_YML
 const BUILT_DIR = path.join(ROOT_DIR, 'built');
 
 /** `/built/meta.json` */
-export const META_FILE = path.join(BUILT_DIR, 'meta.json');
+export const PACKAGE_JSON_FILE = path.join(ROOT_DIR, 'package.json');
 
-/** `/built/_frontend_dist_` */
-export const FRONTEND_DIST_ASSETS_DIR = path.join(BUILT_DIR, '_frontend_dist_');
+/** `/packages/locales/built` */
+export const LOCALES_DIR = path.join(ROOT_DIR, 'packages/locales/built');
 
-/** `/built/_sw_dist_` */
-export const SW_ASSETS_DIR = path.join(BUILT_DIR, '_sw_dist_');
+/** `/packages/sw/built` */
+export const SW_ASSETS_DIR = path.join(ROOT_DIR, 'packages/sw/built');
 
-/** `/built/_vite_` */
-export const VITE_OUT_DIR = path.join(BUILT_DIR, '_vite_');
+/** `/packages/frontend/built` */
+export const VITE_OUT_DIR = path.join(ROOT_DIR, 'packages/frontend/built');
 
-/** `/built/_vite_/manifest.json` */
+/** `/packages/frontend/built/manifest.json` */
 export const FRONTEND_MANIFEST_FILE = path.join(VITE_OUT_DIR, 'manifest.json');
+
+/** `/packages/frontend/node_modules/@tabler/icons-webfont` */
+export const TABLER_ICONS_DIR = path.join(ROOT_DIR, 'packages/frontend/node_modules/@tabler/icons-webfont');
 
 /** `/built/tarball` */
 export const TARBALL_DIR = path.join(BUILT_DIR, 'tarball');
@@ -71,13 +70,7 @@ export const DUMMY_PNG_FILE = path.join(ASSETS_DIR, 'dummy.png');
 export const PUG_DIR = path.join(BACKEND_DIR, 'built/server/web/views');
 
 /** `/packages/backend/node_modules/@discordapp/twemoji/dist/svg` */
-export const TWEMOJI_DIR = path.join(
-	BACKEND_DIR,
-	'node_modules/@discordapp/twemoji/dist/svg',
-);
+export const TWEMOJI_DIR = path.join(BACKEND_DIR, 'node_modules/@discordapp/twemoji/dist/svg');
 
 /** `/packages/frontend/assets` */
-export const FRONTEND_ASSETS_DIR = path.join(
-	ROOT_DIR,
-	'packages/frontend/assets',
-);
+export const FRONTEND_ASSETS_DIR = path.join(ROOT_DIR, 'packages/frontend/assets');

@@ -7,7 +7,7 @@ import * as fs from 'node:fs';
 import * as yaml from 'js-yaml';
 import type { RedisOptions } from 'ioredis';
 import { z } from 'zod';
-import { META_FILE, FRONTEND_MANIFEST_FILE, CONFIG_FILE } from './path.js';
+import { PACKAGE_JSON_FILE, FRONTEND_MANIFEST_FILE, CONFIG_FILE } from './path.js';
 import { envOption } from './env.js';
 
 const metaSchema = z.object({
@@ -115,7 +115,7 @@ const configSchema = z.object({
 export type Config = ReturnType<typeof loadConfig>;
 
 export const loadConfig = () => {
-	const meta = metaSchema.parse(JSON.parse(fs.readFileSync(META_FILE, 'utf-8')));
+	const meta = metaSchema.parse(JSON.parse(fs.readFileSync(PACKAGE_JSON_FILE, 'utf-8')));
 
 	const clientManifestExists = fs.existsSync(FRONTEND_MANIFEST_FILE);
 	const clientManifest = clientManifestExists

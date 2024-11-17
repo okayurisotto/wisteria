@@ -8,10 +8,9 @@
 	"packageManager": "pnpm@9.13.2+sha512.88c9c3864450350e65a33587ab801acf946d7c814ed1134da4a924f6df5a2120fd36b46aab68f7cd1d413149112d53c7db3a4136624cfd00ff1846a0c6cef48a",
 	"private": true,
 	"scripts": {
-		"build-pre": "node ./scripts/build-pre.mjs",
 		"build-assets": "node ./scripts/build-assets.mjs",
-		"build": "pnpm build-pre && turbo build && pnpm build-assets",
-		"build-misskey-js-with-types": "pnpm build-pre && pnpm --filter backend... --filter=!misskey-js build && pnpm --filter backend generate-api-json && pnpm --filter misskey-js generate && pnpm --filter misskey-js build",
+		"build": "turbo build && pnpm build-assets",
+		"build-misskey-js-with-types": "pnpm --filter backend... --filter=!misskey-js build && pnpm --filter backend generate-api-json && pnpm --filter misskey-js generate && pnpm --filter misskey-js build",
 		"start": "node ./packages/backend/built/boot/entry.js",
 		"init": "pnpm migrate",
 		"migrate": "cd packages/backend && pnpm migrate",
