@@ -24,7 +24,6 @@
 		"cy:run": "pnpm cypress run",
 		"e2e": "pnpm start-server-and-test start:test http://localhost:61812 cy:run",
 		"test": "pnpm -r test",
-		"test-and-coverage": "pnpm -r test-and-coverage",
 		"clean": "node ./scripts/clean.mjs"
 	},
 	"resolutions": {
