@@ -73,7 +73,7 @@
 		"sass": "1.70.0",
 		"typescript": "5.5.4",
 		"vite": "^5.4.10",
-		"vitest": "0.34.6",
+		"vitest": "2.1.5",
 		"vitest-fetch-mock": "0.2.2",
 		"vue-component-type-helpers": "1.8.27",
 		"vue-tsc": "2.0.29"
