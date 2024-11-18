@@ -7,7 +7,6 @@ import bcrypt from 'bcryptjs';
 import { Inject, Injectable } from '@nestjs/common';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { UserProfilesRepository, UserSecurityKeysRepository } from '@/models/_.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '@/server/api/error.js';
@@ -43,7 +42,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.userProfilesRepository)
 		private readonly userProfilesRepository: UserProfilesRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly userAuthService: UserAuthService,
 		private readonly globalEventService: GlobalEventService,
 	) {
@@ -93,10 +91,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			}
 
 			// Publish meUpdated event
-			this.globalEventService.publishMainStream(me.id, 'meUpdated', await this.userEntityService.pack(me.id, me, {
-				schema: 'MeDetailed',
-				includeSecrets: true,
-			}));
+			this.globalEventService.publishMainStream(me.id, 'meUpdated', null);
 
 			return {};
 		});

@@ -81,10 +81,7 @@ export class UserBlockingBlockService {
 		});
 
 		if (isLocalUser(followee)) {
-			const packedUser = await this.userEntityService.pack(followee, followee, {
-				schema: 'MeDetailed',
-			});
-			this.globalEventService.publishMainStream(followee.id, 'meUpdated', packedUser);
+			this.globalEventService.publishMainStream(followee.id, 'meUpdated', null);
 		}
 
 		if (isLocalUser(follower) && !silent) {

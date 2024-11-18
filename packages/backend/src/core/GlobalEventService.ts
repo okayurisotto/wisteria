@@ -28,7 +28,7 @@ import type { DriveFolderSchema } from '@/models/zod/drive-folder';
 import type { EmojiDetailedSchema } from '@/models/zod/emoji';
 import type { NoteSchema } from '@/models/zod/note';
 import type { NotificationSchema } from '@/models/zod/notification';
-import type { UserDetailedNotMeSchema, MeDetailedSchema, UserDetailedSchema } from '@/models/zod/user';
+import type { UserDetailedNotMeSchema, UserDetailedSchema } from '@/models/zod/user';
 import type { UserLiteSchema } from '@/models/zod/user-lite';
 
 // #region Stream type-body definitions
@@ -59,7 +59,7 @@ export interface MainEventTypes {
 	follow: z.infer<typeof UserDetailedNotMeSchema>;
 	followed: z.infer<typeof UserLiteSchema>;
 	unfollow: z.infer<typeof UserDetailedNotMeSchema>;
-	meUpdated: z.infer<typeof MeDetailedSchema>;
+	meUpdated: null;
 	pageEvent: {
 		pageId: MiPage['id'];
 		event: string;

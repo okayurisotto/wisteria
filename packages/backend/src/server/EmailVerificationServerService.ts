@@ -7,7 +7,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { UserProfilesRepository } from '@/models/_.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { Hono } from 'hono';
 
 const FAILED_MESSAGE =
@@ -22,7 +21,6 @@ export class EmailVerificationServerService {
 		private readonly userProfilesRepository: UserProfilesRepository,
 
 		private readonly globalEventService: GlobalEventService,
-		private readonly userEntityService: UserEntityService,
 	) {}
 
 	public async verify(code: string): Promise<boolean> {
@@ -39,18 +37,7 @@ export class EmailVerificationServerService {
 			},
 		);
 
-		this.globalEventService.publishMainStream(
-			profile.userId,
-			'meUpdated',
-			await this.userEntityService.pack(
-				profile.userId,
-				{ id: profile.userId },
-				{
-					schema: 'MeDetailed',
-					includeSecrets: true,
-				},
-			),
-		);
+		this.globalEventService.publishMainStream(profile.userId, 'meUpdated', null);
 
 		return true;
 	}

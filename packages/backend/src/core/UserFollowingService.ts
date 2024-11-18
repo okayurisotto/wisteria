@@ -463,11 +463,7 @@ export class UserFollowingService {
 				this.globalEventService.publishMainStream(followee.id, 'receiveFollowRequest', packed);
 			});
 
-			this.userEntityService.pack(followee.id, followee, {
-				schema: 'MeDetailed',
-			}).then((packed) => {
-				this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed);
-			});
+			this.globalEventService.publishMainStream(followee.id, 'meUpdated', null);
 
 			// 通知を作成
 			this.notificationCreateService.createNotification(followee.id, 'receiveFollowRequest', {
@@ -512,11 +508,7 @@ export class UserFollowingService {
 			followerId: follower.id,
 		});
 
-		this.userEntityService.pack(followee.id, followee, {
-			schema: 'MeDetailed',
-		}).then((packed) => {
-			this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed);
-		});
+		this.globalEventService.publishMainStream(followee.id, 'meUpdated', null);
 	}
 
 	public async acceptFollowRequest(
@@ -541,11 +533,7 @@ export class UserFollowingService {
 			this.queueService.deliver(followee, content, follower.inbox, false);
 		}
 
-		this.userEntityService.pack(followee.id, followee, {
-			schema: 'MeDetailed',
-		}).then((packed) => {
-			this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed);
-		});
+		this.globalEventService.publishMainStream(followee.id, 'meUpdated', null);
 	}
 
 	public async acceptAllFollowRequests(

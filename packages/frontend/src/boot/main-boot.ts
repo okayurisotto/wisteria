@@ -160,8 +160,8 @@ export async function mainBoot() {
 		const main = markRaw(stream.useChannel('main', null, 'System'));
 
 		// 自分の情報が更新されたとき
-		main.on('meUpdated', i => {
-			updateAccount(i);
+		main.on('meUpdated', () => {
+			updateAccount(null);
 		});
 
 		main.on('readAllNotifications', () => {

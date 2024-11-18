@@ -433,7 +433,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			const updatedProfile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
 
 			// Publish meUpdated event
-			this.globalEventService.publishMainStream(user.id, 'meUpdated', iObj);
+			this.globalEventService.publishMainStream(user.id, 'meUpdated', null);
 
 			// 鍵垢を解除したとき、溜まっていたフォローリクエストがあるならすべて承認
 			if (user.isLocked && ps.isLocked === false) {

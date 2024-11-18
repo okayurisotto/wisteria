@@ -106,7 +106,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			});
 
 			// Publish meUpdated event
-			this.globalEventService.publishMainStream(me.id, 'meUpdated', iObj);
+			this.globalEventService.publishMainStream(me.id, 'meUpdated', null);
 
 			if (ps.email != null) {
 				const code = secureRndstr(16, { chars: L_CHARS });
