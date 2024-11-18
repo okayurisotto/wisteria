@@ -16,7 +16,6 @@ import { QueueService } from '@/core/QueueService.js';
 import { RelayService } from '@/core/RelayService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ProxyAccountService } from '@/core/ProxyAccountService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { envOption } from '@/env.js';
@@ -44,7 +43,6 @@ export class AccountMoveService {
 		@Inject(DI.instancesRepository)
 		private readonly instancesRepository: InstancesRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly idService: IdService,
 		private readonly apRendererService: ApRendererService,
 		private readonly apDeliverManagerService: ApDeliverManagerService,
@@ -61,7 +59,7 @@ export class AccountMoveService {
 	 *
 	 * After delivering Move activity, its local followers unfollow the old account and then follow the new one.
 	 */
-	public async moveFromLocal(src: MiLocalUser, dst: MiLocalUser | MiRemoteUser): Promise<unknown> {
+	public async moveFromLocal(src: MiLocalUser, dst: MiLocalUser | MiRemoteUser): Promise<void> {
 		const dstUri = this.userUriService.getUserUri(dst);
 
 		// add movedToUri to indicate that the user has moved
@@ -87,7 +85,6 @@ export class AccountMoveService {
 		await this.apDeliverManagerService.deliverToFollowers(src, moveAct);
 
 		// Publish meUpdated event
-		const iObj = await this.userEntityService.pack(src.id, src, { schema: 'MeDetailed', includeSecrets: true });
 		this.globalEventService.publishMainStream(src.id, 'meUpdated', null);
 
 		// Unfollow after 24 hours
@@ -100,8 +97,6 @@ export class AccountMoveService {
 		})), envOption.isTest ? 10000 : 1000 * 60 * 60 * 24);
 
 		await this.postMoveProcess(src, dst);
-
-		return iObj;
 	}
 
 	public async postMoveProcess(src: MiUser, dst: MiUser): Promise<void> {

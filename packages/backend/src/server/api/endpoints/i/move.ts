@@ -65,8 +65,6 @@ export const meta = {
 			id: 'b234a14e-9ebe-4581-8000-074b3c215962',
 		},
 	},
-
-	res: z.record(z.string(), z.unknown()),
 } as const;
 
 export const paramDef = z.object({
@@ -96,7 +94,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 			// parse user's input into the destination account
 			const acct = AcctEntity.parse(ps.moveToAccount, this.config.host);
-			if (acct === null) return new ApiError(meta.errors.noSuchUser);
+			if (acct === null) throw new ApiError(meta.errors.noSuchUser);
 
 			// retrieve the destination account
 			let moveTo = await this.remoteUserResolveService.resolveUser(acct.value).catch((e: unknown) => {
@@ -126,7 +124,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			// abort if unintended
 			if (!allowed || moveTo.movedToUri) throw new ApiError(meta.errors.destinationAccountForbids);
 
-			return await this.accountMoveService.moveFromLocal(me, moveTo);
+			await this.accountMoveService.moveFromLocal(me, moveTo);
 		});
 	}
 }
