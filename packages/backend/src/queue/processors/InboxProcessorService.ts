@@ -4,14 +4,16 @@
  */
 
 import { URL } from 'node:url';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { verifySignature } from 'http-signature/node';
 import * as Bull from 'bullmq';
+import { DI } from '@/di-symbols.js';
 import type { Logger } from '@/logger.js';
 import { MetaService } from '@/core/MetaService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { FetchInstanceMetadataService } from '@/core/FetchInstanceMetadataService.js';
 import { getApId } from '@/core/activitypub/type.js';
+import type { UserPublickeysRepository } from '@/models/_.js';
 import type { MiRemoteUser } from '@/models/User.js';
 import type { MiUserPublickey } from '@/models/UserPublickey.js';
 import { ApDbResolverService } from '@/core/activitypub/ApDbResolverService.js';
@@ -28,6 +30,9 @@ export class InboxProcessorService {
 	private readonly logger: Logger;
 
 	constructor(
+		@Inject(DI.userPublickeysRepository)
+		private readonly userPublickeysRepository: UserPublickeysRepository,
+
 		private readonly utilityService: UtilityService,
 		private readonly metaService: MetaService,
 		private readonly apInboxService: ApInboxService,
@@ -72,7 +77,13 @@ export class InboxProcessorService {
 		// keyIdでわからなければ、activity.actorを元にDBから取得 || activity.actorを元にリモートから取得
 		if (authUser == null) {
 			try {
-				authUser = await this.apDbResolverService.getAuthUserFromApId(getApId(activity.actor));
+				const user = await this.apPersonService.resolvePerson(getApId(activity.actor)) as MiRemoteUser;
+				if (user.isDeleted) {
+					authUser = null;
+				} else {
+					const key = await this.userPublickeysRepository.findOneBy({ userId: user.id });
+					authUser = { user, key };
+				}
 			} catch (err) {
 				// 対象が4xxならスキップ
 				if (err instanceof StatusError) {

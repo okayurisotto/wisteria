@@ -11,7 +11,6 @@ import type { MiUserPublickey } from '@/models/UserPublickey.js';
 import type { MiNote } from '@/models/Note.js';
 import type { MiLocalUser, MiRemoteUser } from '@/models/User.js';
 import { getApId } from './type.js';
-import { ApPersonService } from './models/ApPersonService.js';
 import type { IObject } from './type.js';
 
 export type UriParseResult = {
@@ -44,8 +43,6 @@ export class ApDbResolverService {
 
 		@Inject(DI.userPublickeysRepository)
 		private readonly userPublickeysRepository: UserPublickeysRepository,
-
-		private readonly apPersonService: ApPersonService,
 	) {}
 
 	public parseUri(value: string | IObject): UriParseResult {
@@ -110,24 +107,6 @@ export class ApDbResolverService {
 		const user = await this.usersRepository.findOneByOrFail({ id: key.userId }).catch(() => null) as MiRemoteUser | null;
 		if (user == null) return null;
 		if (user.isDeleted) return null;
-
-		return {
-			user,
-			key,
-		};
-	}
-
-	/**
-	 * AP Actor id => Misskey User and Key
-	 */
-	public async getAuthUserFromApId(uri: string): Promise<{
-		user: MiRemoteUser;
-		key: MiUserPublickey | null;
-	} | null> {
-		const user = await this.apPersonService.resolvePerson(uri) as MiRemoteUser;
-		if (user.isDeleted) return null;
-
-		const key = await this.userPublickeysRepository.findOneBy({ userId: user.id });
 
 		return {
 			user,
