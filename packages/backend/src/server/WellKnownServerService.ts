@@ -11,11 +11,11 @@ import type { Config } from '@/config.js';
 import { escapeAttribute, escapeValue } from '@/misc/prelude/xml.js';
 import type { MiUser } from '@/models/User.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { NodeinfoServerService } from './NodeinfoServerService.js';
 import type { FindOptionsWhere } from 'typeorm';
 import { Hono, type MiddlewareHandler } from 'hono';
 import { accepts } from 'hono/accepts';
+import { UserUriService } from '@/core/entities/UserUriService.js';
 
 @Injectable()
 export class WellKnownServerService {
@@ -27,7 +27,7 @@ export class WellKnownServerService {
 		private readonly usersRepository: UsersRepository,
 
 		private readonly nodeinfoServerService: NodeinfoServerService,
-		private readonly userEntityService: UserEntityService,
+		private readonly userUriService: UserUriService,
 	) {}
 
 	private toXRD(elements: { name: string; value?: string; attributes?: Record<string, string> }[]): string {
@@ -157,7 +157,7 @@ export class WellKnownServerService {
 			const self = {
 				rel: 'self',
 				type: 'application/activity+json',
-				href: this.userEntityService.genLocalUserUri(user.id),
+				href: this.userUriService.genLocalUserUri(user.id),
 			};
 			const profilePage = {
 				rel: 'http://webfinger.net/rel/profile-page',

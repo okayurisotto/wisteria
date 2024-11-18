@@ -21,6 +21,7 @@ import { ProxyAccountService } from '@/core/ProxyAccountService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { envOption } from '@/env.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
+import { UserUriService } from './entities/UserUriService.js';
 
 @Injectable()
 export class AccountMoveService {
@@ -52,6 +53,7 @@ export class AccountMoveService {
 		private readonly federatedInstanceService: FederatedInstanceService,
 		private readonly relayService: RelayService,
 		private readonly queueService: QueueService,
+		private readonly userUriService: UserUriService,
 	) {}
 
 	/**
@@ -60,7 +62,7 @@ export class AccountMoveService {
 	 * After delivering Move activity, its local followers unfollow the old account and then follow the new one.
 	 */
 	public async moveFromLocal(src: MiLocalUser, dst: MiLocalUser | MiRemoteUser): Promise<unknown> {
-		const dstUri = this.userEntityService.getUserUri(dst);
+		const dstUri = this.userUriService.getUserUri(dst);
 
 		// add movedToUri to indicate that the user has moved
 		const update: Partial<MiLocalUser> = {

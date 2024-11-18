@@ -8,10 +8,9 @@ import * as Redis from 'ioredis';
 import Ajv from 'ajv';
 import { ModuleRef } from '@nestjs/core';
 import { DI } from '@/di-symbols.js';
-import type { Config } from '@/config.js';
 import type { Promiseable } from '@/misc/prelude/await-all.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { MiLocalUser, MiPartialLocalUser, MiPartialRemoteUser, MiRemoteUser, MiUser } from '@/models/User.js';
+import type { MiUser } from '@/models/User.js';
 import { birthdaySchema, descriptionSchema, localUsernameSchema, locationSchema, nameSchema, passwordSchema } from '@/models/User.js';
 import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, NoteUnreadsRepository, UserNotePiningsRepository, UserProfilesRepository, MiUserProfile, RenoteMutingsRepository, UserMemoRepository, InstancesRepository } from '@/models/_.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
@@ -24,7 +23,6 @@ import { PageEntityService } from './PageEntityService.js';
 import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
 import { RoleUserService } from '../RoleUserService.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
-import { isRemoteUser } from '@/misc/isRemoteUser.js';
 import type { MeDetailedSchema, UserDetailedNotMeSchema, UserDetailedSchema } from '@/models/zod/user.js';
 import type { UserLiteSchema } from '@/models/zod/user-lite.js';
 import type { z } from 'zod';
@@ -45,9 +43,6 @@ export class UserEntityService implements OnModuleInit {
 
 	constructor(
 		private readonly moduleRef: ModuleRef,
-
-		@Inject(DI.config)
-		private readonly config: Config,
 
 		@Inject(DI.redis)
 		private readonly redisClient: Redis.Redis,
@@ -236,14 +231,6 @@ export class UserEntityService implements OnModuleInit {
 		});
 
 		return count > 0;
-	}
-
-	public getUserUri(user: MiLocalUser | MiPartialLocalUser | MiRemoteUser | MiPartialRemoteUser): string {
-		return isRemoteUser(user) ? user.uri : this.genLocalUserUri(user.id);
-	}
-
-	public genLocalUserUri(userId: string): string {
-		return `${this.config.url}/users/${userId}`;
 	}
 
 	public async pack<S extends 'MeDetailed' | 'UserDetailedNotMe' | 'UserDetailed'>(

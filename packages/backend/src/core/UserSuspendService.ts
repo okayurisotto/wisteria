@@ -10,8 +10,8 @@ import type { MiUser } from '@/models/User.js';
 import { QueueService } from '@/core/QueueService.js';
 import { DI } from '@/di-symbols.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
+import { UserUriService } from './entities/UserUriService';
 
 @Injectable()
 export class UserSuspendService {
@@ -19,15 +19,15 @@ export class UserSuspendService {
 		@Inject(DI.followingsRepository)
 		private readonly followingsRepository: FollowingsRepository,
 
-		private readonly userEntityService: UserEntityService,
 		private readonly queueService: QueueService,
 		private readonly apRendererService: ApRendererService,
+		private readonly userUriService: UserUriService,
 	) {}
 
 	public async doPostSuspend(user: { id: MiUser['id']; host: MiUser['host'] }): Promise<void> {
 		if (isLocalUser(user)) {
 			// 知り得る全SharedInboxにDelete配信
-			const content = this.apRendererService.addContext(this.apRendererService.renderDelete(this.userEntityService.genLocalUserUri(user.id), user));
+			const content = this.apRendererService.addContext(this.apRendererService.renderDelete(this.userUriService.genLocalUserUri(user.id), user));
 
 			const queue: string[] = [];
 
@@ -54,7 +54,7 @@ export class UserSuspendService {
 	public async doPostUnsuspend(user: MiUser): Promise<void> {
 		if (isLocalUser(user)) {
 			// 知り得る全SharedInboxにUndo Delete配信
-			const content = this.apRendererService.addContext(this.apRendererService.renderUndo(this.apRendererService.renderDelete(this.userEntityService.genLocalUserUri(user.id), user), user));
+			const content = this.apRendererService.addContext(this.apRendererService.renderUndo(this.apRendererService.renderDelete(this.userUriService.genLocalUserUri(user.id), user), user));
 
 			const queue: string[] = [];
 

@@ -36,6 +36,7 @@ import { z } from 'zod';
 import { BirthdaySchema, DescriptionSchema, LocationSchema, MeDetailedSchema, NameSchema, NotificationRecieveConfig } from '@/models/zod/user.js';
 import { IdSchema } from '@/models/zod/IdSchema.js';
 import { DriveFilePublicUrlGetService } from '@/core/entities/DriveFilePublicUrlGetService.js';
+import { UserUriService } from '@/core/entities/UserUriService.js';
 
 export const meta = {
 	tags: ['account'],
@@ -207,6 +208,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly httpRequestService: HttpRequestService,
 		private readonly avatarDecorationService: AvatarDecorationService,
 		private readonly driveFilePublicUrlGetService: DriveFilePublicUrlGetService,
+		private readonly userUriService: UserUriService,
 	) {
 		super(meta, paramDef, async (ps, _user, token) => {
 			const user = await this.usersRepository.findOneByOrFail({ id: _user.id }) as MiLocalUser;
@@ -373,7 +375,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 					});
 					if (knownAs.id === _user.id) throw new ApiError(meta.errors.forbiddenToSetYourself);
 
-					const toUrl = this.userEntityService.getUserUri(knownAs);
+					const toUrl = this.userUriService.getUserUri(knownAs);
 					if (!toUrl) throw new ApiError(meta.errors.uriNull);
 
 					newAlsoKnownAs.add(toUrl);

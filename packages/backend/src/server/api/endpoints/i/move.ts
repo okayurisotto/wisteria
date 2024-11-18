@@ -15,11 +15,11 @@ import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { ApiLoggerService } from '@/server/api/ApiLoggerService.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 
 import { AcctEntity } from '@/misc/AcctEntity.js';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
+import { UserUriService } from '@/core/entities/UserUriService.js';
 
 export const meta = {
 	tags: ['users'],
@@ -84,7 +84,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly accountMoveService: AccountMoveService,
 		private readonly getterService: GetterService,
 		private readonly apPersonService: ApPersonService,
-		private readonly userEntityService: UserEntityService,
+		private readonly userUriService: UserUriService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// check parameter
@@ -104,7 +104,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				throw new ApiError(meta.errors.noSuchUser);
 			});
 			const destination = await this.getterService.getUser(moveTo.id);
-			const newUri = this.userEntityService.getUserUri(destination);
+			const newUri = this.userUriService.getUserUri(destination);
 
 			// update local db
 			await this.apPersonService.updatePerson(newUri);
@@ -112,7 +112,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			moveTo = await this.apPersonService.resolvePerson(newUri);
 
 			// make sure that the user has indicated the old account as an alias
-			const fromUrl = this.userEntityService.genLocalUserUri(me.id);
+			const fromUrl = this.userUriService.genLocalUserUri(me.id);
 			let allowed = false;
 			if (moveTo.alsoKnownAs) {
 				for (const knownAs of moveTo.alsoKnownAs) {

@@ -133,6 +133,7 @@ import { FileGetService } from './FileGetService.js';
 import { MetricsModule } from './metrics/MetricsModule.js';
 import { UserLiteEntityService } from './entities/UserLiteEntityService.js';
 import { DriveFilePublicUrlGetService } from './entities/DriveFilePublicUrlGetService.js';
+import { UserUriService } from './entities/UserUriService.js';
 
 // #region 文字列ベースでのinjection用(循環参照対応のため)
 const $ApResolverService: Provider = { provide: 'ApResolverService', useExisting: ApResolverService };
@@ -253,6 +254,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		FlashEntityService,
 		FlashLikeEntityService,
 		RoleEntityService,
+		UserUriService,
 
 		ApAudienceService,
 		ApDbResolverService,
@@ -391,6 +393,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		FlashEntityService,
 		FlashLikeEntityService,
 		RoleEntityService,
+		UserUriService,
 
 		ApAudienceService,
 		ApDbResolverService,

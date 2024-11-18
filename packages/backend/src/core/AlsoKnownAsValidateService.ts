@@ -6,14 +6,14 @@
 import { Injectable } from '@nestjs/common';
 import type { MiLocalUser, MiRemoteUser } from '@/models/User.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
+import { UserUriService } from './entities/UserUriService.js';
 
 @Injectable()
 export class AlsoKnownAsValidateService {
 	constructor(
-		private readonly userEntityService: UserEntityService,
 		private readonly apPersonService: ApPersonService,
+		private readonly userUriService: UserUriService,
 	) {}
 
 	/**
@@ -40,7 +40,7 @@ export class AlsoKnownAsValidateService {
 
 		if (!dst.alsoKnownAs || dst.alsoKnownAs.length === 0) return null;
 
-		const dstUri = this.userEntityService.getUserUri(dst);
+		const dstUri = this.userUriService.getUserUri(dst);
 
 		for (const srcUri of dst.alsoKnownAs) {
 			try {

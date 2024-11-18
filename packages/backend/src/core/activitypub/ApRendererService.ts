@@ -20,7 +20,6 @@ import type { MiPoll } from '@/models/Poll.js';
 import type { MiPollVote } from '@/models/PollVote.js';
 import { UserKeypairService } from '@/core/UserKeypairService.js';
 import { MfmService } from '@/core/MfmService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import type { MiUserKeypair } from '@/models/UserKeypair.js';
 import type { UsersRepository, UserProfilesRepository, NotesRepository, DriveFilesRepository, PollsRepository } from '@/models/_.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
@@ -31,6 +30,7 @@ import { ApMfmService } from './ApMfmService.js';
 import type { IAccept, IActivity, IAdd, IAnnounce, IApDocument, IApEmoji, IApHashtag, IApImage, IApMention, IBlock, ICreate, IDelete, IFlag, IFollow, IKey, ILike, IMove, IObject, IPost, IQuestion, IReject, IRemove, ITombstone, IUndo, IUpdate } from './type.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
 import { DriveFilePublicUrlGetService } from '../entities/DriveFilePublicUrlGetService.js';
+import { UserUriService } from '../entities/UserUriService.js';
 
 @Injectable()
 export class ApRendererService {
@@ -54,19 +54,19 @@ export class ApRendererService {
 		private readonly pollsRepository: PollsRepository,
 
 		private readonly customEmojiService: CustomEmojiService,
-		private readonly userEntityService: UserEntityService,
 		private readonly ldSignatureService: LdSignatureService,
 		private readonly userKeypairService: UserKeypairService,
 		private readonly apMfmService: ApMfmService,
 		private readonly mfmService: MfmService,
 		private readonly idService: IdService,
 		private readonly driveFilePublicUrlGetService: DriveFilePublicUrlGetService,
+		private readonly userUriService: UserUriService,
 	) {}
 
 	public renderAccept(object: string | IObject, user: { id: MiUser['id']; host: null }): IAccept {
 		return {
 			type: 'Accept',
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: this.userUriService.genLocalUserUri(user.id),
 			object,
 		};
 	}
@@ -74,14 +74,14 @@ export class ApRendererService {
 	public renderAdd(user: MiLocalUser, target: string | IObject | undefined, object: string | IObject): IAdd {
 		return {
 			type: 'Add',
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: this.userUriService.genLocalUserUri(user.id),
 			target,
 			object,
 		};
 	}
 
 	public renderAnnounce(object: string | IObject, note: MiNote): IAnnounce {
-		const attributedTo = this.userEntityService.genLocalUserUri(note.userId);
+		const attributedTo = this.userUriService.genLocalUserUri(note.userId);
 
 		let to: string[] = [];
 		let cc: string[] = [];
@@ -101,7 +101,7 @@ export class ApRendererService {
 
 		return {
 			id: `${this.config.url}/notes/${note.id}/activity`,
-			actor: this.userEntityService.genLocalUserUri(note.userId),
+			actor: this.userUriService.genLocalUserUri(note.userId),
 			type: 'Announce',
 			published: this.idService.parse(note.id).date.toISOString(),
 			to,
@@ -123,7 +123,7 @@ export class ApRendererService {
 		return {
 			type: 'Block',
 			id: `${this.config.url}/blocks/${block.id}`,
-			actor: this.userEntityService.genLocalUserUri(block.blockerId),
+			actor: this.userUriService.genLocalUserUri(block.blockerId),
 			object: block.blockee.uri,
 		};
 	}
@@ -131,7 +131,7 @@ export class ApRendererService {
 	public renderCreate(object: IObject, note: MiNote): ICreate {
 		const activity: ICreate = {
 			id: `${this.config.url}/notes/${note.id}/activity`,
-			actor: this.userEntityService.genLocalUserUri(note.userId),
+			actor: this.userUriService.genLocalUserUri(note.userId),
 			type: 'Create',
 			published: this.idService.parse(note.id).date.toISOString(),
 			object,
@@ -146,7 +146,7 @@ export class ApRendererService {
 	public renderDelete(object: IObject | string, user: { id: MiUser['id']; host: null }): IDelete {
 		return {
 			type: 'Delete',
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: this.userUriService.genLocalUserUri(user.id),
 			object,
 			published: new Date().toISOString(),
 		};
@@ -181,7 +181,7 @@ export class ApRendererService {
 	public renderFlag(user: MiLocalUser, object: IObject | string, content: string): IFlag {
 		return {
 			type: 'Flag',
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: this.userUriService.genLocalUserUri(user.id),
 			content,
 			object,
 		};
@@ -191,7 +191,7 @@ export class ApRendererService {
 		return {
 			id: `${this.config.url}/activities/follow-relay/${relay.id}`,
 			type: 'Follow',
-			actor: this.userEntityService.genLocalUserUri(relayActor.id),
+			actor: this.userUriService.genLocalUserUri(relayActor.id),
 			object: 'https://www.w3.org/ns/activitystreams#Public',
 		};
 	}
@@ -202,7 +202,7 @@ export class ApRendererService {
 	 */
 	public async renderFollowUser(id: MiUser['id']): Promise<string> {
 		const user = await this.usersRepository.findOneByOrFail({ id: id }) as MiPartialLocalUser | MiPartialRemoteUser;
-		return this.userEntityService.getUserUri(user);
+		return this.userUriService.getUserUri(user);
 	}
 
 	public renderFollow(
@@ -213,8 +213,8 @@ export class ApRendererService {
 		return {
 			id: requestId ?? `${this.config.url}/follows/${follower.id}/${followee.id}`,
 			type: 'Follow',
-			actor: this.userEntityService.getUserUri(follower),
-			object: this.userEntityService.getUserUri(followee),
+			actor: this.userUriService.getUserUri(follower),
+			object: this.userUriService.getUserUri(followee),
 		};
 	}
 
@@ -239,7 +239,7 @@ export class ApRendererService {
 		return {
 			id: `${this.config.url}/users/${user.id}${postfix ?? '/publickey'}`,
 			type: 'Key',
-			owner: this.userEntityService.genLocalUserUri(user.id),
+			owner: this.userUriService.genLocalUserUri(user.id),
 			publicKeyPem: createPublicKey(key.publicKey).export({
 				type: 'spki',
 				format: 'pem',
@@ -272,7 +272,7 @@ export class ApRendererService {
 	public renderMention(mention: MiPartialLocalUser | MiPartialRemoteUser): IApMention {
 		return {
 			type: 'Mention',
-			href: this.userEntityService.getUserUri(mention),
+			href: this.userUriService.getUserUri(mention),
 			name: isRemoteUser(mention) ? `@${mention.username}@${mention.host}` : `@${(mention as MiLocalUser).username}`,
 		};
 	}
@@ -281,8 +281,8 @@ export class ApRendererService {
 		src: MiPartialLocalUser | MiPartialRemoteUser,
 		dst: MiPartialLocalUser | MiPartialRemoteUser,
 	): IMove {
-		const actor = this.userEntityService.getUserUri(src);
-		const target = this.userEntityService.getUserUri(dst);
+		const actor = this.userUriService.getUserUri(src);
+		const target = this.userUriService.getUserUri(dst);
 		return {
 			id: `${this.config.url}/moves/${src.id}/${dst.id}`,
 			actor,
@@ -334,7 +334,7 @@ export class ApRendererService {
 			}
 		}
 
-		const attributedTo = this.userEntityService.genLocalUserUri(note.userId);
+		const attributedTo = this.userUriService.genLocalUserUri(note.userId);
 
 		const mentions = (JSON.parse(note.mentionedRemoteUsers) as IMentionedRemoteUsers).map(x => x.uri);
 
@@ -435,7 +435,7 @@ export class ApRendererService {
 	}
 
 	public async renderPerson(user: MiLocalUser) {
-		const id = this.userEntityService.genLocalUserUri(user.id);
+		const id = this.userUriService.genLocalUserUri(user.id);
 		const isSystem = user.username.includes('.');
 
 		const [avatar, banner, profile] = await Promise.all([
@@ -498,7 +498,7 @@ export class ApRendererService {
 		return {
 			type: 'Question',
 			id: `${this.config.url}/questions/${note.id}`,
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: this.userUriService.genLocalUserUri(user.id),
 			content: note.text ?? '',
 			[poll.multiple ? 'anyOf' : 'oneOf']: poll.choices.map((text, i) => ({
 				name: text,
@@ -514,7 +514,7 @@ export class ApRendererService {
 	public renderReject(object: string | IObject, user: { id: MiUser['id'] }): IReject {
 		return {
 			type: 'Reject',
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: this.userUriService.genLocalUserUri(user.id),
 			object,
 		};
 	}
@@ -522,7 +522,7 @@ export class ApRendererService {
 	public renderRemove(user: { id: MiUser['id'] }, target: string | IObject | undefined, object: string | IObject): IRemove {
 		return {
 			type: 'Remove',
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: this.userUriService.genLocalUserUri(user.id),
 			target,
 			object,
 		};
@@ -541,7 +541,7 @@ export class ApRendererService {
 		return {
 			type: 'Undo',
 			...(id ? { id } : {}),
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: this.userUriService.genLocalUserUri(user.id),
 			object,
 			published: new Date().toISOString(),
 		};
@@ -550,7 +550,7 @@ export class ApRendererService {
 	public renderUpdate(object: string | IObject, user: { id: MiUser['id'] }): IUpdate {
 		return {
 			id: `${this.config.url}/users/${user.id}#updates/${new Date().getTime()}`,
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: this.userUriService.genLocalUserUri(user.id),
 			type: 'Update',
 			to: ['https://www.w3.org/ns/activitystreams#Public'],
 			object,
@@ -561,14 +561,14 @@ export class ApRendererService {
 	public renderVote(user: { id: MiUser['id'] }, vote: MiPollVote, note: MiNote, poll: MiPoll, pollOwner: MiRemoteUser): ICreate {
 		return {
 			id: `${this.config.url}/users/${user.id}#votes/${vote.id}/activity`,
-			actor: this.userEntityService.genLocalUserUri(user.id),
+			actor: this.userUriService.genLocalUserUri(user.id),
 			type: 'Create',
 			to: [pollOwner.uri],
 			published: new Date().toISOString(),
 			object: {
 				id: `${this.config.url}/users/${user.id}#votes/${vote.id}`,
 				type: 'Note',
-				attributedTo: this.userEntityService.genLocalUserUri(user.id),
+				attributedTo: this.userUriService.genLocalUserUri(user.id),
 				to: [pollOwner.uri],
 				inReplyTo: note.uri,
 				name: poll.choices[vote.choice],
