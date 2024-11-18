@@ -6,7 +6,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import Ajv from 'ajv';
-import { ModuleRef } from '@nestjs/core';
 import { DI } from '@/di-symbols.js';
 import type { Promiseable } from '@/misc/prelude/await-all.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
@@ -17,7 +16,6 @@ import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
 import { IdService } from '@/core/IdService.js';
 import { AnnouncementService } from '@/core/AnnouncementService.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
-import type { OnModuleInit } from '@nestjs/common';
 import { NoteEntityService } from './NoteEntityService.js';
 import { PageEntityService } from './PageEntityService.js';
 import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
@@ -38,12 +36,8 @@ type Refs = {
 };
 
 @Injectable()
-export class UserEntityService implements OnModuleInit {
-	private apPersonService: ApPersonService;
-
+export class UserEntityService {
 	constructor(
-		private readonly moduleRef: ModuleRef,
-
 		@Inject(DI.redis)
 		private readonly redisClient: Redis.Redis,
 
@@ -91,11 +85,8 @@ export class UserEntityService implements OnModuleInit {
 		private readonly roleUserService: RoleUserService,
 		private readonly userLiteEntityService: UserLiteEntityService,
 		private readonly pageEntityService: PageEntityService,
+		private readonly apPersonService: ApPersonService,
 	) {}
-
-	onModuleInit() {
-		this.apPersonService = this.moduleRef.get('ApPersonService');
-	}
 
 	// #region Validators
 	public validateLocalUsername = ajv.compile(localUsernameSchema);
