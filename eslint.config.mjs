@@ -16,7 +16,7 @@ export default tseslint.config(
 		languageOptions: {
 			parserOptions: {
 				extraFileExtensions: ['.vue'],
-				EXPERIMENTAL_useProjectService: true, // https://typescript-eslint.io/blog/announcing-typescript-eslint-v8-beta#project-service
+				projectService: true, // https://typescript-eslint.io/blog/announcing-typescript-eslint-v8-beta#project-service
 				tsconfigRootDir: import.meta.dirname,
 			},
 		},
