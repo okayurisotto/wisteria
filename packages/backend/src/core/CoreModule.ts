@@ -136,10 +136,7 @@ import { DriveFilePublicUrlGetService } from './entities/DriveFilePublicUrlGetSe
 import { UserUriService } from './entities/UserUriService.js';
 
 // #region 文字列ベースでのinjection用(循環参照対応のため)
-const $ApResolverService: Provider = { provide: 'ApResolverService', useExisting: ApResolverService };
-const $ApImageService: Provider = { provide: 'ApImageService', useExisting: ApImageService };
 const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNoteService };
-const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: ApPersonService };
 // #endregion
 
 @Module({
@@ -277,10 +274,7 @@ const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: Ap
 		QueueService,
 
 		// #region 文字列ベースでのinjection用(循環参照対応のため)
-		$ApResolverService,
-		$ApImageService,
 		$ApNoteService,
-		$ApPersonService,
 		// #endregion
 	],
 	exports: [
