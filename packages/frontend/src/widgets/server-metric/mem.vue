@@ -23,7 +23,7 @@ import bytes from '@/filters/bytes.js';
 
 const props = defineProps<{
 	connection: Misskey.ChannelConnection<Misskey.Channels['serverStats']>,
-	meta: Misskey.entities.ServerInfoResponse
+	meta: Misskey.Endpoints['server-info']['response']
 }>();
 
 const usage = ref<number>(0);

@@ -114,7 +114,7 @@ const isTimelineAvailable = ref(instance.policies?.ltlAvailable || instance.poli
 const showMenu = ref(false);
 const isDesktop = ref(window.innerWidth >= DESKTOP_THRESHOLD);
 const narrow = ref(window.innerWidth < 1280);
-const meta = ref<Misskey.entities.MetaResponse>();
+const meta = ref<Misskey.Endpoints['meta']['response']>();
 
 const keymap = computed(() => {
 	return {

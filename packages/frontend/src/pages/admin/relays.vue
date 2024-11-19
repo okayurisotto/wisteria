@@ -33,7 +33,7 @@ import { misskeyApi } from '@/scripts/misskey-api.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 
-const relays = ref<Misskey.entities.AdminRelaysListResponse>([]);
+const relays = ref<Misskey.Endpoints['admin/relays/list']['response']>([]);
 
 async function addRelay() {
 	const { canceled, result: inbox } = await os.inputText({

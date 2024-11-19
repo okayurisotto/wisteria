@@ -19,7 +19,7 @@ import { instanceName } from '@/config.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 
-const meta = ref<Misskey.entities.MetaResponse | null>(null);
+const meta = ref<Misskey.Endpoints['meta']['response'] | null>(null);
 
 misskeyApi('meta', { detail: true }).then(res => {
 	meta.value = res;

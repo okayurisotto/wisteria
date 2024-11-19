@@ -43,7 +43,7 @@ import { misskeyApi, misskeyApiGet } from '@/scripts/misskey-api.js';
 import MkVisitorDashboard from '@/components/MkVisitorDashboard.vue';
 import { getProxiedImageUrl } from '@/scripts/media-proxy.js';
 
-const meta = ref<Misskey.entities.MetaResponse>();
+const meta = ref<Misskey.Endpoints['meta']['response']>();
 const instances = ref<Misskey.entities.FederationInstance[]>();
 
 function getInstanceIcon(instance: Misskey.entities.FederationInstance): string {

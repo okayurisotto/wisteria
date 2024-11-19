@@ -44,6 +44,7 @@ export type UserDetailed = components['schemas']['UserDetailed'];
 export type UserDetailedNotMe = components['schemas']['UserDetailedNotMe'];
 export type UserList = components['schemas']['UserList'];
 export type UserLite = components['schemas']['UserLite'];
+export type FollowingFolloweePopulated = components['schemas']['UserLite'];
 
 export type ID = string;
 export type DateString = string;
@@ -51,7 +52,7 @@ export type DateString = string;
 export type PageEvent = {
 	pageId: Page['id'];
 	event: string;
-	var: any;
+	var: unknown;
 	userId: User['id'];
 	user: User;
 };
@@ -187,7 +188,7 @@ export type ServerStats = {
 	fs: {
 		r: number;
 		w: number;
-	}
+	};
 };
 
 export type ServerStatsLog = ServerStats[];
@@ -210,15 +211,15 @@ export type QueueStats = {
 export type QueueStatsLog = QueueStats[];
 
 export type EmojiAdded = {
-	emoji: EmojiDetailed
+	emoji: EmojiDetailed;
 };
 
 export type EmojiUpdated = {
-	emojis: EmojiDetailed[]
+	emojis: EmojiDetailed[];
 };
 
 export type EmojiDeleted = {
-	emojis: EmojiDetailed[]
+	emojis: EmojiDetailed[];
 };
 
 export type AnnouncementCreated = {
@@ -226,27 +227,27 @@ export type AnnouncementCreated = {
 };
 
 export type SignupRequest = {
-	username: string;
-	password: string;
-	host?: string;
-	invitationCode?: string;
-	emailAddress?: string;
+	'username': string;
+	'password': string;
+	'host'?: string;
+	'invitationCode'?: string;
+	'emailAddress'?: string;
 	'hcaptcha-response'?: string | null;
 	'g-recaptcha-response'?: string | null;
 	'turnstile-response'?: string | null;
-}
+};
 
 export type SignupResponse = MeDetailed & {
 	token: string;
-}
+};
 
 export type SignupPendingRequest = {
 	code: string;
 };
 
 export type SignupPendingResponse = {
-	id: User['id'],
-	i: string,
+	id: User['id'];
+	i: string;
 };
 
 export type SigninRequest = {
@@ -256,6 +257,6 @@ export type SigninRequest = {
 };
 
 export type SigninResponse = {
-	id: User['id'],
-	i: string,
+	id: User['id'];
+	i: string;
 };

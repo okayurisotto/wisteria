@@ -12,5 +12,5 @@ export {
 	moderationLogTypes,
 } from './consts.js';
 export * as api from './api.js';
-export * as entities from './entities.js';
+export type * as entities from './entities.js';
 export * as acct from './acct.js';

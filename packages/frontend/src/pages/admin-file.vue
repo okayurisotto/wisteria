@@ -86,7 +86,7 @@ import { iAmAdmin, iAmModerator } from '@/account.js';
 
 const tab = ref('overview');
 const file = ref<Misskey.entities.DriveFile | null>(null);
-const info = ref<Misskey.entities.AdminDriveShowFileResponse | null>(null);
+const info = ref<Misskey.Endpoints['admin/drive/show-file']['response'] | null>(null);
 const isSensitive = ref<boolean>(false);
 
 const props = defineProps<{

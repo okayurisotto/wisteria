@@ -59,7 +59,7 @@ import { definePageMetadata } from '@/scripts/page-metadata.js';
 const $i = signinRequired();
 
 const loading = ref(true);
-const avatarDecorations = ref<Misskey.entities.GetAvatarDecorationsResponse>([]);
+const avatarDecorations = ref<Misskey.Endpoints['get-avatar-decorations']['response']>([]);
 
 misskeyApi('get-avatar-decorations').then(_avatarDecorations => {
 	avatarDecorations.value = _avatarDecorations;

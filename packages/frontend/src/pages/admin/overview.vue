@@ -62,7 +62,7 @@ import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkFoldableSection from '@/components/MkFoldableSection.vue';
 
 const rootEl = shallowRef<HTMLElement>();
-const serverInfo = ref<Misskey.entities.ServerInfoResponse | null>(null);
+const serverInfo = ref<Misskey.Endpoints['server-info']['response'] | null>(null);
 const topSubInstancesForPie = ref<InstanceForPie[] | null>(null);
 const topPubInstancesForPie = ref<InstanceForPie[] | null>(null);
 const newUsers = ref<Misskey.entities.UserDetailed[] | null>(null);

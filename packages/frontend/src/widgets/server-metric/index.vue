@@ -63,7 +63,7 @@ const { widgetProps, configure, save } = useWidgetPropsManager(name,
 	emit,
 );
 
-const meta = ref<Misskey.entities.ServerInfoResponse | null>(null);
+const meta = ref<Misskey.Endpoints['server-info']['response'] | null>(null);
 
 misskeyApiGet('server-info', {}).then(res => {
 	meta.value = res;

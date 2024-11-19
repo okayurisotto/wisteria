@@ -121,7 +121,7 @@ const props = defineProps<{
 
 const tab = ref('overview');
 
-const meta = ref<Misskey.entities.AdminMetaResponse | null>(null);
+const meta = ref<Misskey.Endpoints['admin/meta']['response'] | null>(null);
 const instance = ref<Misskey.entities.FederationInstance | null>(null);
 const suspended = ref(false);
 const isBlocked = ref(false);

@@ -45,7 +45,7 @@ import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkFolder from '@/components/MkFolder.vue';
 
-const avatarDecorations = ref<Misskey.entities.AdminAvatarDecorationsListResponse>([]);
+const avatarDecorations = ref<Misskey.Endpoints['admin/avatar-decorations/list']['response']>([]);
 
 function add() {
 	avatarDecorations.value.unshift({

@@ -27,7 +27,7 @@ import { misskeyApi } from '@/scripts/misskey-api.js';
 import { i18n } from '@/i18n.js';
 
 const props = defineProps<{
-	session: Misskey.entities.AuthSessionShowResponse;
+	session: Misskey.Endpoints['auth/session/show']['response'];
 }>();
 
 const emit = defineEmits<{

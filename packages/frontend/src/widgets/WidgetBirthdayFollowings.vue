@@ -53,7 +53,7 @@ const { widgetProps, configure } = useWidgetPropsManager(name,
 	emit,
 );
 
-const users = ref<Misskey.entities.FollowingFolloweePopulated[]>([]);
+const users = ref<Misskey.Endpoints['users/following']['response']>([]);
 const fetching = ref(true);
 let lastFetchedAt = '1970-01-01';
 

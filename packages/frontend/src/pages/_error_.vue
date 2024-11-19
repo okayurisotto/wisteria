@@ -45,7 +45,7 @@ const props = withDefaults(defineProps<{
 
 const loaded = ref(false);
 const serverIsDead = ref(false);
-const meta = ref<Misskey.entities.MetaResponse | null>(null);
+const meta = ref<Misskey.Endpoints['meta']['response'] | null>(null);
 
 misskeyApi('meta', {
 	detail: false,

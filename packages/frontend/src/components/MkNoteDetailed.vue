@@ -273,7 +273,7 @@ const isMyRenote = $i && ($i.id === note.value.userId);
 const showContent = ref(false);
 const isDeleted = ref(false);
 const muted = ref($i ? checkWordMute(appearNote.value, $i, $i.mutedWords) : false);
-const translation = ref<Misskey.entities.NotesTranslateResponse | null>(null);
+const translation = ref<Misskey.Endpoints['notes/translate']['response'] | null>(null);
 const translating = ref(false);
 const parsed = appearNote.value.text ? mfm.parse(appearNote.value.text) : null;
 const urls = parsed ? extractUrlFromMfm(parsed).filter((url) => appearNote.value.renote?.url !== url && appearNote.value.renote?.uri !== url) : null;

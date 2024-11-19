@@ -152,7 +152,7 @@ const props = withDefaults(defineProps<{
 	initialTab: 'overview',
 });
 
-const stats = ref<Misskey.entities.StatsResponse | null>(null);
+const stats = ref<Misskey.Endpoints['stats']['response'] | null>(null);
 const tab = ref(props.initialTab);
 
 const initStats = () => misskeyApi('stats', {

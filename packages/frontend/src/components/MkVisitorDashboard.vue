@@ -62,8 +62,8 @@ import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
 import MkNumber from '@/components/MkNumber.vue';
 
-const meta = ref<Misskey.entities.MetaResponse | null>(null);
-const stats = ref<Misskey.entities.StatsResponse | null>(null);
+const meta = ref<Misskey.Endpoints['meta']['response'] | null>(null);
+const stats = ref<Misskey.Endpoints['stats']['response'] | null>(null);
 
 misskeyApi('meta', { detail: true }).then(_meta => {
 	meta.value = _meta;

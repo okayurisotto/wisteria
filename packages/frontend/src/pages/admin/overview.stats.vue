@@ -66,7 +66,7 @@ import MkNumber from '@/components/MkNumber.vue';
 import { customEmojis } from '@/custom-emojis.js';
 import { defaultStore } from '@/store.js';
 
-const stats = ref<Misskey.entities.StatsResponse | null>(null);
+const stats = ref<Misskey.Endpoints['stats']['response'] | null>(null);
 const onlineUsersCount = ref(0);
 const fetching = ref(true);
 

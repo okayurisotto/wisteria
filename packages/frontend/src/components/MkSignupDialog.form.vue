@@ -98,7 +98,7 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'signup', user: Misskey.entities.SigninResponse): void;
+	(ev: 'signup', user: Misskey.entities.SignupResponse): void;
 	(ev: 'signupEmailPending'): void;
 }>();
 

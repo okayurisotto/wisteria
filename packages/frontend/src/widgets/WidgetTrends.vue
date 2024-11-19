@@ -55,7 +55,7 @@ const { widgetProps, configure } = useWidgetPropsManager(name,
 	emit,
 );
 
-const stats = ref<Misskey.entities.HashtagsTrendResponse>([]);
+const stats = ref<Misskey.Endpoints['hashtags/trend']['response']>([]);
 const fetching = ref(true);
 
 const fetch = () => {

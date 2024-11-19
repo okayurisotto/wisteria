@@ -56,7 +56,7 @@ const props = defineProps<{
 }>();
 
 const state = ref<'waiting' | 'accepted' | 'fetch-session-error' | 'denied' | null>(null);
-const session = ref<Misskey.entities.AuthSessionShowResponse | null>(null);
+const session = ref<Misskey.Endpoints['auth/session/show']['response'] | null>(null);
 
 function accepted() {
 	state.value = 'accepted';

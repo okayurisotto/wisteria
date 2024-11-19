@@ -33,7 +33,7 @@ import FormLink from '@/components/form/link.vue';
 import FormSection from '@/components/form/section.vue';
 import MkButton from '@/components/MkButton.vue';
 
-const scopesWithDomain = ref<Misskey.entities.IRegistryScopesWithDomainResponse | null>(null);
+const scopesWithDomain = ref<Misskey.Endpoints['i/registry/scopes-with-domain'] | null>(null);
 
 function fetchScopes() {
 	misskeyApi('i/registry/scopes-with-domain').then(res => {

@@ -22,7 +22,7 @@ import XPie from './pie.vue';
 import bytes from '@/filters/bytes.js';
 
 const props = defineProps<{
-	meta: Misskey.entities.ServerInfoResponse;
+	meta: Misskey.Endpoints['server-info']['response'];
 }>();
 
 const usage = computed(() => props.meta.fs.used / props.meta.fs.total);
