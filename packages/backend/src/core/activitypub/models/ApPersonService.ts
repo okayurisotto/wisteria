@@ -35,7 +35,7 @@ import { extractApHashtags } from './tag.js';
 import type { OnModuleInit } from '@nestjs/common';
 import { ApNoteService } from './ApNoteService.js';
 import { ApMfmService } from '../ApMfmService.js';
-import type { ApResolverService, Resolver } from '../ApResolverService.js';
+import { ApResolverService, type Resolver } from '../ApResolverService.js';
 import { ApLoggerService } from '../ApLoggerService.js';
 import { ApImageService } from './ApImageService.js';
 import type { IActor, IObject } from '../type.js';
@@ -51,12 +51,12 @@ type Field = Record<'name' | 'value', string>;
 
 @Injectable()
 export class ApPersonService implements OnModuleInit {
-	private apResolverService: ApResolverService;
 	private apNoteService: ApNoteService;
-	private apImageService: ApImageService;
 	private readonly logger: Logger;
 
 	constructor(
+		private readonly apResolverService: ApResolverService,
+		private readonly apImageService: ApImageService,
 		private readonly accountMoveService: AccountMoveService,
 
 		private readonly moduleRef: ModuleRef,
@@ -96,9 +96,7 @@ export class ApPersonService implements OnModuleInit {
 	}
 
 	onModuleInit(): void {
-		this.apResolverService = this.moduleRef.get('ApResolverService');
 		this.apNoteService = this.moduleRef.get('ApNoteService');
-		this.apImageService = this.moduleRef.get('ApImageService');
 	}
 
 	private punyHost(url: string): string {
