@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div class="_gaps">
 	<div class="_gaps">
-		<MkInput v-model="searchQuery" :large="true" :autofocus="true" type="search" @enter="search">
+		<MkInput v-model="queryRaw" :large="true" :autofocus="true" type="search" @enter="search">
 			<template #prefix><i class="ti ti-search"></i></template>
 		</MkInput>
 		<MkFolder>
@@ -42,67 +42,67 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import type * as Misskey from 'misskey-js';
 import MkNotes from '@/components/MkNotes.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkButton from '@/components/MkButton.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
-import { misskeyApi } from '@/scripts/misskey-api.js';
 import MkFoldableSection from '@/components/MkFoldableSection.vue';
 import MkFolder from '@/components/MkFolder.vue';
-import { useRouter } from '@/router/supplier.js';
-
-const router = useRouter();
 
 const key = ref(0);
-const searchQuery = ref('');
-const searchOrigin = ref('combined');
+const queryRaw = ref('');
 const notePagination = ref();
-const user = ref<any>(null);
+const user = ref<Misskey.entities.UserLite | null>(null);
 const isLocalOnly = ref(false);
 
-function selectUser() {
-	os.selectUser({ includeSelf: true }).then(_user => {
-		user.value = _user;
-	});
-}
+const query = computed(() => {
+	const query = queryRaw.value.trim();
+	if (query === '') return null;
+	return query;
+});
 
-async function search() {
-	const query = searchQuery.value.toString().trim();
+onMounted(() => {
+	const searchParam = new URL(location.href).searchParams.get('q');
+	if (searchParam === null) return;
 
-	if (query == null || query === '') return;
+	queryRaw.value = searchParam;
+	search();
+});
 
-	if (query.startsWith('https://')) {
-		const promise = misskeyApi('ap/show', {
-			uri: query,
-		});
+const selectUser = async () => {
+	user.value = await os.selectUser({ includeSelf: true })
+};
 
-		os.promiseDialog(promise, null, null, i18n.ts.fetchingAsApObject);
+const updateUrl = () => {
+	const url = new URL(location.href);
 
-		const res = await promise;
-
-		if (res.type === 'User') {
-			router.push(`/@${res.object.username}@${res.object.host}`);
-		} else if (res.type === 'Note') {
-			router.push(`/notes/${res.object.id}`);
-		}
-
-		return;
+	if (query.value === null) {
+		url.searchParams.delete('q');
+	} else {
+		url.searchParams.set('q', query.value);
 	}
+
+	history.pushState(null, "", url.href);
+};
+
+const search = () => {
+	if (query.value === null) return;
+	updateUrl();
 
 	notePagination.value = {
 		endpoint: 'notes/search',
 		limit: 10,
 		params: {
-			query: searchQuery.value,
-			userId: user.value ? user.value.id : null,
+			query: query.value,
+			userId: user.value?.id ?? null,
+			...(isLocalOnly.value ? { host: '.' } : {}),
 		},
 	};
 
-	if (isLocalOnly.value) notePagination.value.params.host = '.';
-
 	key.value++;
-}
+};
 </script>
