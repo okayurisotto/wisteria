@@ -25,73 +25,75 @@ export const meta = {
 	requireCredential: false,
 
 	res: z.object({
-		maintainerName: z.string().nullable().optional(),
-		maintainerEmail: z.string().nullable().optional(),
-		version: z.string().optional(),
-		providesTarball: z.boolean().optional(),
-		name: z.string().optional(),
-		shortName: z.string().nullable().optional(),
-		uri: z.string()/* example: "https://misskey.example.com" *//* format: url */.optional(),
-		description: z.string().nullable().optional(),
-		langs: z.string().array().optional(),
-		tosUrl: z.string().nullable().optional(),
-		repositoryUrl: z.string().nullable().default('https://github.com/misskey-dev/misskey'),
-		feedbackUrl: z.string().nullable().default('https://github.com/misskey-dev/misskey/issues/new'),
-		defaultDarkTheme: z.string().nullable().optional(),
-		defaultLightTheme: z.string().nullable().optional(),
-		disableRegistration: z.boolean().optional(),
+		maintainerName: z.string().nullable(),
+		maintainerEmail: z.string().nullable(),
+		version: z.string(),
+		providesTarball: z.boolean(),
+		name: z.string().nullable(),
+		shortName: z.string().nullable(),
+		uri: z.string()/* example: "https://misskey.example.com" *//* format: url */,
+		description: z.string().nullable(),
+		langs: z.string().array(),
+		tosUrl: z.string().nullable(),
+		repositoryUrl: z.string().nullable(),
+		feedbackUrl: z.string().nullable(),
+		defaultDarkTheme: z.string().nullable(),
+		defaultLightTheme: z.string().nullable(),
+		disableRegistration: z.boolean(),
 		cacheRemoteFiles: z.boolean().optional(),
 		cacheRemoteSensitiveFiles: z.boolean().optional(),
-		emailRequiredForSignup: z.boolean().optional(),
-		enableHcaptcha: z.boolean().optional(),
-		hcaptchaSiteKey: z.string().nullable().optional(),
-		enableMcaptcha: z.boolean().optional(),
-		mcaptchaSiteKey: z.string().nullable().optional(),
-		mcaptchaInstanceUrl: z.string().nullable().optional(),
-		enableRecaptcha: z.boolean().optional(),
-		recaptchaSiteKey: z.string().nullable().optional(),
-		enableTurnstile: z.boolean().optional(),
-		turnstileSiteKey: z.string().nullable().optional(),
-		swPublickey: z.string().nullable().optional(),
-		mascotImageUrl: z.string().default('/assets/ai.png'),
-		bannerUrl: z.string().optional(),
-		serverErrorImageUrl: z.string().nullable().optional(),
-		infoImageUrl: z.string().nullable().optional(),
-		notFoundImageUrl: z.string().nullable().optional(),
-		iconUrl: z.string().nullable().optional(),
-		maxNoteTextLength: z.number().optional(),
+		emailRequiredForSignup: z.boolean(),
+		enableHcaptcha: z.boolean(),
+		hcaptchaSiteKey: z.string().nullable(),
+		enableMcaptcha: z.boolean(),
+		mcaptchaSiteKey: z.string().nullable(),
+		mcaptchaInstanceUrl: z.string().nullable(),
+		enableRecaptcha: z.boolean(),
+		recaptchaSiteKey: z.string().nullable(),
+		enableTurnstile: z.boolean(),
+		turnstileSiteKey: z.string().nullable(),
+		swPublickey: z.string().nullable(),
+		mascotImageUrl: z.string().nullable(),
+		bannerUrl: z.string().optional().nullable(),
+		serverErrorImageUrl: z.string().nullable(),
+		infoImageUrl: z.string().nullable(),
+		notFoundImageUrl: z.string().nullable(),
+		iconUrl: z.string().nullable(),
+		maxNoteTextLength: z.number(),
 		ads: z.object({
-			id: IdSchema.optional(),
-			url: z.string()/* format: url */.optional(),
-			place: z.string().optional(),
-			ratio: z.number().optional(),
-			imageUrl: z.string()/* format: url */.optional(),
-			dayOfWeek: z.number().int().optional(),
+			id: IdSchema,
+			url: z.string()/* format: url */,
+			place: z.string(),
+			ratio: z.number(),
+			imageUrl: z.string()/* format: url */,
+			dayOfWeek: z.number().int(),
 		}).array(),
-		notesPerOneAd: z.number().default(0),
+		notesPerOneAd: z.number(),
 		requireSetup: z.boolean().optional(),
-		enableEmail: z.boolean().optional(),
-		enableServiceWorker: z.boolean().optional(),
-		translatorAvailable: z.boolean().optional(),
+		enableEmail: z.boolean(),
+		enableServiceWorker: z.boolean(),
+		translatorAvailable: z.boolean(),
 		proxyAccountName: z.string().nullable().optional(),
-		mediaProxy: z.string().optional(),
+		mediaProxy: z.string(),
 		features: z.object({
-			registration: z.boolean().optional(),
+			registration: z.boolean(),
 			localTimeline: z.boolean().optional(),
 			globalTimeline: z.boolean().optional(),
-			hcaptcha: z.boolean().optional(),
-			recaptcha: z.boolean().optional(),
-			objectStorage: z.boolean().optional(),
-			serviceWorker: z.boolean().optional(),
-			miauth: z.boolean().optional().default(true),
-		}),
-		backgroundImageUrl: z.string().nullable().optional(),
-		impressumUrl: z.string().nullable().optional(),
-		logoImageUrl: z.string().nullable().optional(),
-		privacyPolicyUrl: z.string().nullable().optional(),
-		serverRules: z.string().array().optional(),
-		themeColor: z.string().nullable().optional(),
-		policies: RolePoliciesSchema.optional(),
+			hcaptcha: z.boolean(),
+			recaptcha: z.boolean(),
+			objectStorage: z.boolean(),
+			serviceWorker: z.boolean(),
+			miauth: z.boolean(),
+			emailRequiredForSignup: z.boolean(),
+			turnstile: z.boolean(),
+		}).optional(),
+		backgroundImageUrl: z.string().nullable(),
+		impressumUrl: z.string().nullable(),
+		logoImageUrl: z.string().nullable(),
+		privacyPolicyUrl: z.string().nullable(),
+		serverRules: z.string().array(),
+		themeColor: z.string().nullable(),
+		policies: RolePoliciesSchema,
 	}),
 } as const;
 
@@ -125,7 +127,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				}))
 				.getMany();
 
-			const response: any = {
+			const response: z.infer<(typeof meta)['res']> = {
 				maintainerName: instance.maintainerName,
 				maintainerEmail: instance.maintainerEmail,
 
@@ -165,8 +167,12 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				logoImageUrl: instance.logoImageUrl,
 				maxNoteTextLength: MAX_NOTE_TEXT_LENGTH,
 				// クライアントの手間を減らすためあらかじめJSONに変換しておく
-				defaultLightTheme: instance.defaultLightTheme ? JSON.stringify(JSON5.parse(instance.defaultLightTheme)) : null,
-				defaultDarkTheme: instance.defaultDarkTheme ? JSON.stringify(JSON5.parse(instance.defaultDarkTheme)) : null,
+				defaultLightTheme: instance.defaultLightTheme !== null
+					? JSON.stringify(JSON5.parse(instance.defaultLightTheme))
+					: null,
+				defaultDarkTheme: instance.defaultDarkTheme !== null
+					? JSON.stringify(JSON5.parse(instance.defaultDarkTheme))
+					: null,
 				ads: ads.map(ad => ({
 					id: ad.id,
 					url: ad.url,
@@ -186,20 +192,17 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				policies: { ...DEFAULT_POLICIES, ...instance.policies },
 
 				mediaProxy: this.config.mediaProxy,
-
-				...(ps.detail
-					? {
-							cacheRemoteFiles: instance.cacheRemoteFiles,
-							cacheRemoteSensitiveFiles: instance.cacheRemoteSensitiveFiles,
-							requireSetup: !await this.instanceActorService.realLocalUsersPresent(),
-						}
-					: {}),
 			};
 
 			if (ps.detail) {
-				const proxyAccount = instance.proxyAccountId ? await this.userLiteEntityService.packLite(instance.proxyAccountId).catch(() => null) : null;
+				const proxyAccount = instance.proxyAccountId !== null
+					? await this.userLiteEntityService.packLite(instance.proxyAccountId).catch(() => null)
+					: null;
 
 				response.proxyAccountName = proxyAccount ? proxyAccount.username : null;
+				response.cacheRemoteFiles = instance.cacheRemoteFiles;
+				response.cacheRemoteSensitiveFiles = instance.cacheRemoteSensitiveFiles;
+				response.requireSetup = !await this.instanceActorService.realLocalUsersPresent();
 				response.features = {
 					registration: !instance.disableRegistration,
 					emailRequiredForSignup: instance.emailRequiredForSignup,

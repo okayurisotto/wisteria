@@ -17488,13 +17488,9 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK (with results) */
-      200: {
-        content: {
-          "application/json": {
-            [key: string]: unknown;
-          };
-        };
+      /** @description OK (without any results) */
+      204: {
+        content: never;
       };
       /** @description Client error */
       400: {
@@ -18081,80 +18077,77 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            maintainerName?: string | null;
-            maintainerEmail?: string | null;
-            version?: string;
-            providesTarball?: boolean;
-            name?: string;
-            shortName?: string | null;
-            uri?: string;
-            description?: string | null;
-            langs?: string[];
-            tosUrl?: string | null;
-            /** @default https://github.com/misskey-dev/misskey */
-            repositoryUrl?: string | null;
-            /** @default https://github.com/misskey-dev/misskey/issues/new */
-            feedbackUrl?: string | null;
-            defaultDarkTheme?: string | null;
-            defaultLightTheme?: string | null;
-            disableRegistration?: boolean;
+            maintainerName: string | null;
+            maintainerEmail: string | null;
+            version: string;
+            providesTarball: boolean;
+            name: string | null;
+            shortName: string | null;
+            uri: string;
+            description: string | null;
+            langs: string[];
+            tosUrl: string | null;
+            repositoryUrl: string | null;
+            feedbackUrl: string | null;
+            defaultDarkTheme: string | null;
+            defaultLightTheme: string | null;
+            disableRegistration: boolean;
             cacheRemoteFiles?: boolean;
             cacheRemoteSensitiveFiles?: boolean;
-            emailRequiredForSignup?: boolean;
-            enableHcaptcha?: boolean;
-            hcaptchaSiteKey?: string | null;
-            enableMcaptcha?: boolean;
-            mcaptchaSiteKey?: string | null;
-            mcaptchaInstanceUrl?: string | null;
-            enableRecaptcha?: boolean;
-            recaptchaSiteKey?: string | null;
-            enableTurnstile?: boolean;
-            turnstileSiteKey?: string | null;
-            swPublickey?: string | null;
-            /** @default /assets/ai.png */
-            mascotImageUrl?: string;
-            bannerUrl?: string;
-            serverErrorImageUrl?: string | null;
-            infoImageUrl?: string | null;
-            notFoundImageUrl?: string | null;
-            iconUrl?: string | null;
-            maxNoteTextLength?: number;
+            emailRequiredForSignup: boolean;
+            enableHcaptcha: boolean;
+            hcaptchaSiteKey: string | null;
+            enableMcaptcha: boolean;
+            mcaptchaSiteKey: string | null;
+            mcaptchaInstanceUrl: string | null;
+            enableRecaptcha: boolean;
+            recaptchaSiteKey: string | null;
+            enableTurnstile: boolean;
+            turnstileSiteKey: string | null;
+            swPublickey: string | null;
+            mascotImageUrl: string | null;
+            bannerUrl?: string | null;
+            serverErrorImageUrl: string | null;
+            infoImageUrl: string | null;
+            notFoundImageUrl: string | null;
+            iconUrl: string | null;
+            maxNoteTextLength: number;
             ads: {
-                id?: components["schemas"]["Id"];
-                url?: string;
-                place?: string;
-                ratio?: number;
-                imageUrl?: string;
-                dayOfWeek?: number;
+                id: components["schemas"]["Id"];
+                url: string;
+                place: string;
+                ratio: number;
+                imageUrl: string;
+                dayOfWeek: number;
                 [key: string]: unknown;
               }[];
-            /** @default 0 */
-            notesPerOneAd?: number;
+            notesPerOneAd: number;
             requireSetup?: boolean;
-            enableEmail?: boolean;
-            enableServiceWorker?: boolean;
-            translatorAvailable?: boolean;
+            enableEmail: boolean;
+            enableServiceWorker: boolean;
+            translatorAvailable: boolean;
             proxyAccountName?: string | null;
-            mediaProxy?: string;
-            features: {
-              registration?: boolean;
+            mediaProxy: string;
+            features?: {
+              registration: boolean;
               localTimeline?: boolean;
               globalTimeline?: boolean;
-              hcaptcha?: boolean;
-              recaptcha?: boolean;
-              objectStorage?: boolean;
-              serviceWorker?: boolean;
-              /** @default true */
-              miauth?: boolean;
+              hcaptcha: boolean;
+              recaptcha: boolean;
+              objectStorage: boolean;
+              serviceWorker: boolean;
+              miauth: boolean;
+              emailRequiredForSignup: boolean;
+              turnstile: boolean;
               [key: string]: unknown;
             };
-            backgroundImageUrl?: string | null;
-            impressumUrl?: string | null;
-            logoImageUrl?: string | null;
-            privacyPolicyUrl?: string | null;
-            serverRules?: string[];
-            themeColor?: string | null;
-            policies?: components["schemas"]["RolePolicies"];
+            backgroundImageUrl: string | null;
+            impressumUrl: string | null;
+            logoImageUrl: string | null;
+            privacyPolicyUrl: string | null;
+            serverRules: string[];
+            themeColor: string | null;
+            policies: components["schemas"]["RolePolicies"];
             [key: string]: unknown;
           };
         };
