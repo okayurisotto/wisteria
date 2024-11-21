@@ -37,6 +37,8 @@ export default tseslint.config(
 			'@typescript-eslint/strict-boolean-expressions': ['error'],
 			'@typescript-eslint/switch-exhaustiveness-check': ['error'],
 
+			'@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^_' }],
+
 			'default-param-last': ['off'],
 			'@typescript-eslint/default-param-last': ['error'],
 
