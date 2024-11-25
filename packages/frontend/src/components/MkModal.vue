@@ -36,6 +36,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div class="_modalBg" :class="[$style.bg, { [$style.bgTransparent]: isEnableBgTransparent }]" :style="{ zIndex }" @click="onBgClick" @mousedown="onBgClick" @contextmenu.prevent.stop="() => {}"></div>
 		<div
 			ref="content"
+			class="_shadow"
 			:class="[$style.content, { [$style.fixed]: fixed }]"
 			:style="{
 				zIndex,
