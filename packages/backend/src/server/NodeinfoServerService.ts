@@ -46,7 +46,7 @@ export class NodeinfoServerService {
 
 	private async nodeinfo2(version: '2.0' | '2.1') {
 		const localPosts = await this.notesRespository.countBy({ user: { host: IsNull() } });
-		const total = await this.usersRepository.count();
+		const total = await this.usersRepository.countBy({ host: IsNull() });
 
 		const meta = await this.metaService.fetch();
 
