@@ -82,7 +82,7 @@
 		"mime-types": "2.1.35",
 		"misskey-js": "workspace:*",
 		"ms": "3.0.0-canary.1",
-		"nanoid": "5.0.4",
+		"nanoid": "5.0.9",
 		"node-fetch": "3.3.2",
 		"nodemailer": "6.9.16",
 		"os-utils": "0.0.14",
