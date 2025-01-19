@@ -23,7 +23,7 @@
 	"devDependencies": {
 		"@types/node": "^22.9.0",
 		"@types/sshpk": "^1.17.4",
-		"tsup": "^8.3.4",
+		"tsup": "^8.3.5",
 		"vitest": "2.1.5"
 	}
 }
