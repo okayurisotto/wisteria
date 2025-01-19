@@ -12,7 +12,7 @@
 		"generate": "openapi-typescript ../backend/built/api.json -o ./src/autogen.ts"
 	},
 	"devDependencies": {
-		"@types/node": "^22.9.0",
+		"@types/node": "^22.10.7",
 		"openapi-typescript": "^6.7.6",
 		"tsup": "^8.3.5",
 		"typescript": "5.7.3"
