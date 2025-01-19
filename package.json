@@ -5,7 +5,7 @@
 		"type": "git",
 		"url": "https://github.com/okayurisotto/wisteria.git"
 	},
-	"packageManager": "pnpm@9.13.2+sha512.88c9c3864450350e65a33587ab801acf946d7c814ed1134da4a924f6df5a2120fd36b46aab68f7cd1d413149112d53c7db3a4136624cfd00ff1846a0c6cef48a",
+	"packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0",
 	"private": true,
 	"scripts": {
 		"build-assets": "node ./scripts/build-assets.mjs",
