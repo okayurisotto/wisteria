@@ -79,7 +79,7 @@ FROM --platform=$TARGETPLATFORM node:${IMAGE_TAG}-slim AS runner
 
 RUN \
 	apt-get update \
-	&& apt-get install -y --no-install-recommends ffmpeg tini curl libjemalloc2 \
+	&& apt-get install -y --no-install-recommends ffmpeg tini libjemalloc2 \
 	&& ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists \
