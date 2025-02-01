@@ -1,4 +1,7 @@
 .turbo/
+/.config/default.yml
+/.config/docker.env
+/compose.yaml
 /files/
 built/
 node_modules/
