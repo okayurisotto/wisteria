@@ -17,7 +17,7 @@
 	"devDependencies": {
 		"@types/node": "^22.10.7",
 		"@types/random-seed": "0.3.5",
-		"tsup": "^8.3.5",
+		"tsup": "^8.3.6",
 		"typescript": "^5.7.3"
 	},
 	"dependencies": {
