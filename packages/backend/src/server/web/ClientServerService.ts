@@ -158,7 +158,7 @@ export class ClientServerService {
 			const acct = AcctEntity.parse(acctString, this.config.host);
 
 			const user = acct !== null
-				? await this.usersRepository.findOneByOrFail({
+				? await this.usersRepository.findOneBy({
 					usernameLower: acct.username.toLowerCase(),
 					host: acct.host ?? IsNull(),
 					isSuspended: false,
