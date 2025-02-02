@@ -75,7 +75,7 @@
 		"rollup": "^4.24.0",
 		"sass": "1.70.0",
 		"typescript": "5.7.3",
-		"vite": "^6.0.7",
+		"vite": "^6.0.11",
 		"vitest": "3.0.2",
 		"vitest-fetch-mock": "0.2.2",
 		"vue-component-type-helpers": "1.8.27",
