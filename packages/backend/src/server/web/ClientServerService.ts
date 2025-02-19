@@ -172,6 +172,11 @@ export class ClientServerService {
 
 			c.header('Cache-Control', 'public, max-age=15');
 
+			if (user.host !== null) {
+				c.header('X-Robots-Tag', 'noindex');
+				c.header('X-Robots-Tag', 'nofollow');
+			}
+
 			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
 			if (profile.preventAiLearning) {
 				c.header('X-Robots-Tag', 'noimageai');
@@ -220,6 +225,11 @@ export class ClientServerService {
 			}
 
 			c.header('Cache-Control', 'public, max-age=15');
+
+			if (note.userHost !== null) {
+				c.header('X-Robots-Tag', 'noindex');
+				c.header('X-Robots-Tag', 'nofollow');
+			}
 
 			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: note.userId });
 			if (profile.preventAiLearning) {
