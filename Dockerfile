@@ -8,6 +8,8 @@ ARG IMAGE_TAG=22.13.0-bullseye
 
 FROM --platform=$TARGETPLATFORM node:${IMAGE_TAG} AS fetcher
 
+ENV COREPACK_INTEGRITY_KEYS=0
+
 RUN corepack enable
 
 WORKDIR /misskey
@@ -76,6 +78,8 @@ COPY --link --from=builder /misskey/packages/zod2spec/built            ./package
 # ----------------------------------------------------------
 
 FROM --platform=$TARGETPLATFORM node:${IMAGE_TAG}-slim AS runner
+
+ENV COREPACK_INTEGRITY_KEYS=0
 
 RUN \
 	apt-get update \
