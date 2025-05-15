@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div :class="$style.root">
-	<XSidebar v-if="!isMobile" :class="[$style.sidebar, { [$style.sidebarIconOnly]: iconOnly }]"/>
+	<XSidebar v-if="!showHorizontalNavigation" :class="[$style.sidebar, { [$style.sidebarIconOnly]: iconOnly }]"/>
 
 	<MkStickyContainer ref="contents" :class="$style.contents" style="container-type: inline-size;" @contextmenu.stop="onContextmenu">
 		<template #header>
@@ -18,13 +18,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div :class="$style.spacer"></div>
 	</MkStickyContainer>
 
-	<div v-if="isDesktop && !pageMetadata?.needWideArea" :class="$style.widgets">
+	<div v-if="showWidgets" :class="$style.widgets">
 		<XWidgets/>
 	</div>
 
-	<button v-if="(!isDesktop || pageMetadata?.needWideArea) && !isMobile" :class="$style.widgetButton" class="_button" @click="widgetsShowing = true"><i class="ti ti-apps"></i></button>
+	<button v-if="!showWidgets && !showHorizontalNavigation" :class="$style.widgetButton" class="_button" @click="widgetsShowing = true"><i class="ti ti-apps"></i></button>
 
-	<div v-if="isMobile" ref="navFooter" :class="$style.nav">
+	<div v-if="showHorizontalNavigation" ref="navFooter" :class="$style.nav">
 		<button :class="$style.navButton" class="_button" @click="drawerMenuShowing = true"><i :class="$style.navButtonIcon" class="ti ti-menu-2"></i><span v-if="menuIndicated" :class="$style.navButtonIndicator"><i class="_indicatorCircle"></i></span></button>
 		<button :class="$style.navButton" class="_button" @click="isRoot ? top() : mainRouter.push('/')"><i :class="$style.navButtonIcon" class="ti ti-home"></i></button>
 		<button :class="$style.navButton" class="_button" @click="mainRouter.push('/my/notifications')">
@@ -96,6 +96,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { defineAsyncComponent, provide, onMounted, computed, ref, watch, shallowRef, type Ref, onBeforeUnmount } from 'vue';
+import { useWindowSize } from "@vueuse/core";
 import XCommon from './_common_/common.vue';
 import type MkStickyContainer from '@/components/global/MkStickyContainer.vue';
 import { instanceName } from '@/config.js';
@@ -105,7 +106,6 @@ import { navbarItemDef } from '@/navbar.js';
 import { i18n } from '@/i18n.js';
 import { $i } from '@/account.js';
 import { type PageMetadata, provideMetadataReceiver, provideReactiveMetadata } from '@/scripts/page-metadata.js';
-import { deviceKind } from '@/scripts/device-kind.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { CURRENT_STICKY_BOTTOM } from '@/const.js';
 import { useScrollPositionManager } from '@/nirax.js';
@@ -118,15 +118,9 @@ const XAnnouncements = defineAsyncComponent(() => import('@/ui/_common_/announce
 
 const isRoot = computed(() => mainRouter.currentRoute.value.name === 'index');
 
-const DESKTOP_THRESHOLD = 1100;
-const MOBILE_THRESHOLD = 500;
-
-// デスクトップでウィンドウを狭くしたときモバイルUIが表示されて欲しいことはあるので deviceKind === 'desktop' の判定は行わない
-const isDesktop = ref(window.innerWidth >= DESKTOP_THRESHOLD);
-const isMobile = ref(deviceKind === 'smartphone' || window.innerWidth <= MOBILE_THRESHOLD);
-window.addEventListener('resize', () => {
-	isMobile.value = deviceKind === 'smartphone' || window.innerWidth <= MOBILE_THRESHOLD;
-});
+const { width: windowWidth } = useWindowSize();
+const showWidgets = computed(() => windowWidth.value >= 1100 && !pageMetadata.value?.needWideArea);
+const showHorizontalNavigation = computed(() => windowWidth.value <= 500);
 
 const pageMetadata = ref<null | PageMetadata>(null);
 const widgetsShowing = ref(false);
@@ -182,14 +176,6 @@ defaultStore.loaded.then(() => {
 			name: 'trends',
 			id: 'c', place: 'right', data: {},
 		}]);
-	}
-});
-
-onMounted(() => {
-	if (!isDesktop.value) {
-		window.addEventListener('resize', () => {
-			if (window.innerWidth >= DESKTOP_THRESHOLD) isDesktop.value = true;
-		}, { passive: true });
 	}
 });
 
