@@ -7,7 +7,7 @@ import { createApp, defineAsyncComponent, markRaw } from 'vue';
 import { common } from './common.js';
 import { ui } from '@/config.js';
 import { i18n } from '@/i18n.js';
-import { alert, confirm, popup, post, toast } from '@/os.js';
+import { alert, confirm, popup, post } from '@/os.js';
 import { useStream } from '@/stream.js';
 import * as sound from '@/scripts/sound.js';
 import { $i, signout, updateAccount } from '@/account.js';
@@ -123,16 +123,6 @@ export async function mainBoot() {
 			});
 		}
 
-		const lastUsed = miLocalStorage.getItem('lastUsed');
-		if (lastUsed) {
-			const lastUsedDate = parseInt(lastUsed, 10);
-			// 二時間以上前なら
-			if (Date.now() - lastUsedDate > 1000 * 60 * 60 * 2) {
-				toast(i18n.tsx.welcomeBackWithName({
-					name: $i.name || $i.username,
-				}));
-			}
-		}
 		miLocalStorage.setItem('lastUsed', Date.now().toString());
 
 		const latestDonationInfoShownAt = miLocalStorage.getItem('latestDonationInfoShownAt');
