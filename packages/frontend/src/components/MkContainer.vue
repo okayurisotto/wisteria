@@ -164,9 +164,8 @@ onUnmounted(() => {
 }
 
 .header {
-	position: sticky;
-	top: var(--stickyTop, 0px);
-	left: 0;
+	display: flex;
+	justify-content: space-between;
 	color: var(--panelHeaderFg);
 	background: var(--panelHeaderBg);
 	border-bottom: solid 0.5px var(--panelHeaderDivider);
@@ -188,10 +187,7 @@ onUnmounted(() => {
 }
 
 .headerSub {
-	position: absolute;
 	z-index: 2;
-	top: 0;
-	right: 0;
 	height: 100%;
 }
 
