@@ -25,16 +25,21 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<button v-if="!showWidgets && !showHorizontalNavigation" :class="$style.widgetButton" class="_button" @click="widgetsShowing = true"><i class="ti ti-apps"></i></button>
 
 	<div v-if="showHorizontalNavigation" ref="navFooter" :class="$style.nav">
-		<button :class="$style.navButton" class="_button" @click="drawerMenuShowing = true"><i :class="$style.navButtonIcon" class="ti ti-menu-2"></i><span v-if="menuIndicated" :class="$style.navButtonIndicator"><i class="_indicatorCircle"></i></span></button>
-		<button :class="$style.navButton" class="_button" @click="isRoot ? top() : mainRouter.push('/')"><i :class="$style.navButtonIcon" class="ti ti-home"></i></button>
-		<button :class="$style.navButton" class="_button" @click="mainRouter.push('/my/notifications')">
-			<i :class="$style.navButtonIcon" class="ti ti-bell"></i>
-			<span v-if="$i?.hasUnreadNotification" :class="$style.navButtonIndicator">
-				<span class="_indicateCounter" :class="$style.itemIndicateValueIcon">{{ $i.unreadNotificationsCount > 99 ? '99+' : $i.unreadNotificationsCount }}</span>
-			</span>
+		<button :class="[$style.navButton, { [$style.indicate]: menuIndicated }]" class="_button" @click="drawerMenuShowing = true">
+			<i :class="$style.navButtonIcon" class="ti ti-menu-2"></i>
 		</button>
-		<button :class="$style.navButton" class="_button" @click="widgetsShowing = true"><i :class="$style.navButtonIcon" class="ti ti-apps"></i></button>
-		<button :class="$style.postButton" class="_button" @click="os.post()"><i :class="$style.navButtonIcon" class="ti ti-pencil"></i></button>
+		<button :class="$style.navButton" class="_button" @click="isRoot ? top() : mainRouter.push('/')">
+			<i :class="$style.navButtonIcon" class="ti ti-home"></i>
+		</button>
+		<button :class="[$style.navButton, $style.postButton]" class="_button" @click="os.post()">
+			<i :class="$style.navButtonIcon" class="ti ti-pencil"></i>
+		</button>
+		<button :class="[$style.navButton, { [$style.indicate]: $i?.hasUnreadNotification }]" class="_button" @click="mainRouter.push('/my/notifications')">
+			<i :class="$style.navButtonIcon" class="ti ti-bell"></i>
+		</button>
+		<button :class="$style.navButton" class="_button" @click="widgetsShowing = true">
+			<i :class="$style.navButtonIcon" class="ti ti-apps"></i>
+		</button>
 	</div>
 
 	<Transition
@@ -429,69 +434,51 @@ $widgets-hide-threshold: 1090px;
 	z-index: 1000;
 	bottom: 0;
 	left: 0;
-	padding: 12px 12px max(12px, env(safe-area-inset-bottom, 0px)) 12px;
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-	grid-gap: 8px;
+	padding: var(--margin) var(--margin) max(var(--margin), env(safe-area-inset-bottom, 0px)) var(--margin);
+	display: flex;
+	justify-content: space-around;
+	gap: var(--margin);
 	width: 100%;
 	box-sizing: border-box;
-	-webkit-backdrop-filter: var(--blur, blur(24px));
-	backdrop-filter: var(--blur, blur(24px));
-	background-color: var(--header);
-	border-top: solid 0.5px var(--divider);
+	background-color: var(--bg);
 }
 
 .navButton {
-	position: relative;
-	padding: 0;
-	aspect-ratio: 1;
-	width: 100%;
-	max-width: 60px;
-	margin: auto;
-	border-radius: var(--rounded-full);
 	background: var(--panel);
+	border-radius: var(--rounded);
 	color: var(--fg);
+	flex: 1 0 50px;
+	height: 3rem;
+	position: relative;
 
-	&:hover {
-		background: var(--panelHighlight);
-	}
+	&.indicate::before {
+		content: "";
 
-	&:active {
-		background: var(--X2);
+		animation: blinking 1s infinite;
+		background-color: var(--indicator);
+		border-radius: var(--rounded-full);
+		height: .8rem;
+		position: absolute;
+		right: 0;
+		top: 0;
+		width: .8rem;
+		z-index: 100;
 	}
+}
+
+@keyframes blinking {
+	0% { opacity: 1; transform: scale(1); }
+	20% { opacity: 1; transform: scale(1); }
+	90% { opacity: 0; transform: scale(0.3); }
 }
 
 .postButton {
-	composes: navButton;
 	background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
 	color: var(--fgOnAccent);
-
-	&:hover {
-		background: linear-gradient(90deg, var(--X8), var(--X8));
-	}
-
-	&:active {
-		background: linear-gradient(90deg, var(--X8), var(--X8));
-	}
 }
 
 .navButtonIcon {
-	font-size: 18px;
-	vertical-align: middle;
-}
-
-.navButtonIndicator {
-	position: absolute;
-	top: 0;
-	left: 0;
-	color: var(--indicator);
-	font-size: 16px;
-	animation: global-blink 1s infinite;
-
-	&:has(.itemIndicateValueIcon) {
-		animation: none;
-		font-size: 12px;
-	}
+	font-size: 1rem;
 }
 
 .menuDrawerBg {
