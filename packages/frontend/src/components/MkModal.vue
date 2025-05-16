@@ -42,7 +42,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				zIndex,
 				left: align?.left.value + 'px',
 				top: align?.top.value + 'px',
-				maxHeight: align?.top.maxLength != null ? align.top.maxLength + 'px' : '',
+				maxHeight: align?.top.maxLength != null ? align.top.maxLength + 'px' : maxHeight + 'px',
 				maxWidth: align?.left.maxLength != null ? align.left.maxLength + 'px' : '',
 			}"
 			@click.self="onBgClick"
@@ -163,7 +163,7 @@ function onBgClick() {
 }
 
 if (type.value === 'drawer') {
-	maxHeight.value = windowSize.height.value / 1.5;
+	maxHeight.value = windowSize.height.value * 0.75;
 }
 
 const keymap = {

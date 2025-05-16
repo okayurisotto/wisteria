@@ -444,11 +444,14 @@ $widgets-hide-threshold: 1090px;
 }
 
 .navButton {
+	align-items: center;
 	background: var(--panel);
 	border-radius: var(--rounded);
 	color: var(--fg);
+	display: flex;
 	flex: 1 0 50px;
-	height: 3rem;
+	height: 4rem;
+	justify-content: center;
 	position: relative;
 
 	&.indicate::before {
@@ -478,7 +481,7 @@ $widgets-hide-threshold: 1090px;
 }
 
 .navButtonIcon {
-	font-size: 1rem;
+	font-size: 1.2rem;
 }
 
 .menuDrawerBg {
