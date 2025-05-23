@@ -1175,6 +1175,7 @@ defineExpose({
 	width: 100%;
 	min-height: 90px;
 	height: 100%;
+	resize: vertical;
 }
 
 .textCount {
