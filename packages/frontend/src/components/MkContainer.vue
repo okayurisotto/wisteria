@@ -166,6 +166,7 @@ onUnmounted(() => {
 .header {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	color: var(--panelHeaderFg);
 	background: var(--panelHeaderBg);
 	border-bottom: solid 0.5px var(--panelHeaderDivider);
