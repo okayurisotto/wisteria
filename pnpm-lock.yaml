@@ -282,8 +282,8 @@ importers:
         specifier: 2.13.1
         version: 2.13.1
       secure-json-parse:
-        specifier: 2.7.0
-        version: 2.7.0
+        specifier: 4.0.0
+        version: 4.0.0
       sharp:
         specifier: 0.32.6
         version: 0.32.6
@@ -5368,8 +5368,8 @@ packages:
     resolution: {integrity: sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA==}
     engines: {node: '>=v12.22.7'}
 
-  secure-json-parse@2.7.0:
-    resolution: {integrity: sha512-6aU+Rwsezw7VR8/nyvKTx8QpWH9FrcYiXXlqC4z5d5XQBDRqtbfsRjnwGyqbi3gddNtWHuEk9OANUotL26qKUw==}
+  secure-json-parse@4.0.0:
+    resolution: {integrity: sha512-dxtLJO6sc35jWidmLxo7ij+Eg48PM/kleBsxpC8QJE0qJICe+KawkDQmvCMZUr9u7WKVHgMW6vy3fQ7zMiFZMA==}
 
   seedrandom@3.0.5:
     resolution: {integrity: sha512-8OwmbklUNzwezjGInmZ+2clQmExQPvomqjL7LFqOYqtmuxRgQYqOD3mHaU+MvZn5FLUeVxVfQjwLZW/n/JFuqg==}
@@ -11540,7 +11540,7 @@ snapshots:
     dependencies:
       xmlchars: 2.2.0
 
-  secure-json-parse@2.7.0: {}
+  secure-json-parse@4.0.0: {}
 
   seedrandom@3.0.5: {}
 
