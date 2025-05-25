@@ -38,7 +38,7 @@
 		"start-server-and-test": "2.0.3",
 		"tar": "^6.2.1",
 		"terser": "5.27.0",
-		"turbo": "^2.3.3",
+		"turbo": "^2.5.3",
 		"typescript": "5.8.3",
 		"typescript-eslint": "^8.20.0"
 	}
