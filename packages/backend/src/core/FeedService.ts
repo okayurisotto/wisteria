@@ -35,7 +35,7 @@ export class FeedService {
 		private readonly driveFilePublicUrlGetService: DriveFilePublicUrlGetService,
 	) {}
 
-	public async packFeed(user: MiUser) {
+	public async packFeed(user: MiUser): Promise<Feed> {
 		const author = {
 			link: `${this.config.url}/@${user.username}`,
 			name: user.name ?? user.username,
@@ -53,10 +53,12 @@ export class FeedService {
 			take: 20,
 		});
 
+		const latestNote = notes[0];
+
 		const feed = new Feed({
 			id: author.link,
 			title: `${author.name} (${AcctEntity.from(user.username, user.host, this.config.host).toLongString()})`,
-			updated: notes.length !== 0 ? this.idService.parse(notes[0].id).date : undefined,
+			...(latestNote ? { updated: this.idService.parse(latestNote.id).date } : {}),
 			generator: 'Wisteria',
 			description: `${user.notesCount} Notes, ${profile.followingVisibility === 'public' ? user.followingCount : '?'} Following, ${profile.followersVisibility === 'public' ? user.followersCount : '?'} Followers${profile.description ? ` · ${profile.description}` : ''}`,
 			link: author.link,
