@@ -739,9 +739,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 	}
 
 	private index(note: MiNote) {
-		if (note.text == null && note.cw == null) return;
-
-		this.searchService.indexNote(note);
+		return;
 	}
 
 	private incNotesCountOfUser(user: { id: MiUser['id'] }) {

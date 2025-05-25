@@ -172,20 +172,6 @@ redis:
 #  #extra:
 #  #  username: example-username
 
-#   ┌───────────────────────────┐
-#───┘ MeiliSearch configuration └─────────────────────────────
-
-# You can set scope to local (default value) or global
-# (include notes from remote).
-
-#meilisearch:
-#  host: localhost
-#  port: 7700
-#  apiKey: ''
-#  ssl: true
-#  index: ''
-#  scope: local
-
 #   ┌───────────────┐
 #───┘ ID generation └───────────────────────────────────────────
 

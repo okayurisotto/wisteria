@@ -6,7 +6,6 @@
 import { Global, Inject, Module } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import { DataSource } from 'typeorm';
-import { MeiliSearch } from 'meilisearch';
 import { DI } from './di-symbols.js';
 import { type Config, loadConfig } from './config.js';
 import { createPostgresDataSource } from './postgres.js';
@@ -24,21 +23,6 @@ const $db: Provider = {
 	useFactory: async (config: Config) => {
 		const db = createPostgresDataSource(config);
 		return await db.initialize();
-	},
-	inject: [DI.config],
-};
-
-const $meilisearch: Provider = {
-	provide: DI.meilisearch,
-	useFactory: (config: Config) => {
-		if (config.meilisearch) {
-			return new MeiliSearch({
-				host: `${config.meilisearch.ssl ? 'https' : 'http'}://${config.meilisearch.host}:${config.meilisearch.port}`,
-				apiKey: config.meilisearch.apiKey,
-			});
-		} else {
-			return null;
-		}
 	},
 	inject: [DI.config],
 };
@@ -123,8 +107,8 @@ const $redisForTimelines: Provider<Redis.Redis> = {
 @Global()
 @Module({
 	imports: [RepositoryModule],
-	providers: [$config, $db, $meilisearch, $redis, $redisForPub, $redisForSub, $redisForTimelines],
-	exports: [$config, $db, $meilisearch, $redis, $redisForPub, $redisForSub, $redisForTimelines, RepositoryModule],
+	providers: [$config, $db, $redis, $redisForPub, $redisForSub, $redisForTimelines],
+	exports: [$config, $db, $redis, $redisForPub, $redisForSub, $redisForTimelines, RepositoryModule],
 })
 export class GlobalModule implements OnApplicationShutdown {
 	constructor(

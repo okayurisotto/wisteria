@@ -98,11 +98,6 @@ export class NoteDeleteService {
 			}
 		}
 
-		for (const cascadingNote of cascadingNotes) {
-			this.searchService.unindexNote(cascadingNote);
-		}
-		this.searchService.unindexNote(note);
-
 		await this.notesRepository.delete({
 			id: note.id,
 			userId: user.id,

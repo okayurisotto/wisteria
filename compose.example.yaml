@@ -59,17 +59,6 @@ services:
   #    interval: 5s
   #    retries: 20
 
-  # meilisearch:
-  #  image: getmeili/meilisearch:v1.3.4
-  #  restart: unless-stopped
-  #  environment:
-  #    MEILI_NO_ANALYTICS: true
-  #    MEILI_ENV: production
-  #  env_file:
-  #    - .config/meilisearch.env
-  #  volumes:
-  #    - meili_data:/meili_data
-
   # prometheus:
   #   image: prom/prometheus
   #   restart: unless-stopped
@@ -91,6 +80,5 @@ volumes:
   files:
   redis:
   db:
-  # meili_data:
   # prometheus:
   # grafana:

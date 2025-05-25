@@ -209,9 +209,6 @@ importers:
       jsonld:
         specifier: 8.3.2
         version: 8.3.2(web-streams-polyfill@3.3.3)
-      meilisearch:
-        specifier: 0.37.0
-        version: 0.37.0(encoding@0.1.13)
       mfm-js:
         specifier: 0.24.0
         version: 0.24.0
@@ -4329,9 +4326,6 @@ packages:
 
   mdn-data@2.0.30:
     resolution: {integrity: sha512-GaqWWShW4kv/G9IEucWScBx9G1/vsFZZJUO+tD26M8J8z3Kw5RDQjaoZe03YAClgeS/SWPOcb4nkFBTEi5DUEA==}
-
-  meilisearch@0.37.0:
-    resolution: {integrity: sha512-LdbK6JmRghCawrmWKJSEQF0OiE82md+YqJGE/U2JcCD8ROwlhTx0KM6NX4rQt0u0VpV0QZVG9umYiu3CSSIJAQ==}
 
   merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
@@ -8784,7 +8778,7 @@ snapshots:
 
   axios@0.24.0:
     dependencies:
-      follow-redirects: 1.15.9(debug@4.3.4)
+      follow-redirects: 1.15.9
     transitivePeerDependencies:
       - debug
 
@@ -9817,6 +9811,8 @@ snapshots:
       async: 3.2.6
       which: 1.3.1
 
+  follow-redirects@1.15.9: {}
+
   follow-redirects@1.15.9(debug@4.3.4):
     optionalDependencies:
       debug: 4.3.4
@@ -10502,12 +10498,6 @@ snapshots:
   mdn-data@2.0.28: {}
 
   mdn-data@2.0.30: {}
-
-  meilisearch@0.37.0(encoding@0.1.13):
-    dependencies:
-      cross-fetch: 3.1.8(encoding@0.1.13)
-    transitivePeerDependencies:
-      - encoding
 
   merge-stream@2.0.0: {}
 

@@ -56,14 +56,6 @@ const configSchema = z.object({
 	redisForPubsub: redisConfigSchema.optional(),
 	redisForJobQueue: redisConfigSchema.optional(),
 	redisForTimelines: redisConfigSchema.optional(),
-	meilisearch: z.object({
-		host: z.string(),
-		port: z.string(),
-		apiKey: z.string(),
-		ssl: z.boolean().optional(),
-		index: z.string(),
-		scope: z.enum(['local', 'global']).or(z.string().array()).optional(),
-	}).strict().optional(),
 
 	publishTarballInsteadOfProvideRepositoryUrl: z.boolean().default(false),
 
@@ -151,7 +143,6 @@ export const loadConfig = () => {
 		db: config.db,
 		dbReplications: config.dbReplications,
 		dbSlaves: config.dbSlaves,
-		meilisearch: config.meilisearch,
 		redis,
 		redisForPubsub: config.redisForPubsub !== undefined
 			? { ...config.redisForPubsub.extra, ...convertRedisOptions(config.redisForPubsub, host) }
