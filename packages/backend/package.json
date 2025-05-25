@@ -57,7 +57,7 @@
 		"content-disposition": "0.5.4",
 		"date-fns": "2.30.0",
 		"deep-email-validator": "0.1.21",
-		"feed": "4.2.2",
+		"feed": "5.0.1",
 		"file-type": "21.0.0",
 		"fluent-ffmpeg": "2.1.2",
 		"got": "14.1.0",
