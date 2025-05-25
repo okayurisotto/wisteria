@@ -19,17 +19,16 @@
 		"clean": "node ./scripts/clean.mjs"
 	},
 	"devDependencies": {
-		"@eslint/js": "^9.18.0",
-		"@stylistic/eslint-plugin": "^2.13.0",
+		"@eslint/js": "^9.27.0",
+		"@stylistic/eslint-plugin": "^4.4.0",
 		"@tsconfig/node-lts": "^22.0.1",
 		"@tsconfig/strictest": "^2.0.5",
-		"@types/eslint__js": "^8.42.3",
 		"@types/ignore-walk": "4.0.3",
 		"@types/js-yaml": "4.0.9",
 		"@types/tar": "6.1.13",
 		"cssnano": "6.0.3",
-		"eslint": "^9.18.0",
-		"eslint-plugin-vue": "^9.32.0",
+		"eslint": "^9.27.0",
+		"eslint-plugin-vue": "^10.1.0",
 		"fast-glob": "3.3.2",
 		"ignore-walk": "6.0.4",
 		"js-yaml": "4.1.0",
@@ -40,6 +39,6 @@
 		"terser": "5.27.0",
 		"turbo": "^2.5.3",
 		"typescript": "5.8.3",
-		"typescript-eslint": "^8.20.0"
+		"typescript-eslint": "^8.32.1"
 	}
 }

@@ -54,7 +54,6 @@ export default tseslint.config(
 	},
 
 	// ESLint Stylistic
-	// @ts-expect-error exactOptionalPropertyTypes
 	stylistic.configs.customize({
 		indent: 'tab',
 		semi: true,
