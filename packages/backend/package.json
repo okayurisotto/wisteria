@@ -1,6 +1,5 @@
 {
 	"name": "backend",
-	"main": "./index.js",
 	"private": true,
 	"type": "module",
 	"scripts": {
