@@ -30,7 +30,7 @@ export class EmojiPicker {
 			done: emoji => {
 				if (this.onChosen) this.onChosen(emoji);
 			},
-			closed: () => {
+			close: () => {
 				if (this.onClosed) this.onClosed();
 			},
 		}, 'closed');
