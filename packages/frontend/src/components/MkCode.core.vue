@@ -9,11 +9,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue';
-import { bundledLanguagesInfo } from 'shiki';
-import type { BuiltinLanguage } from 'shiki';
-import { getHighlighter, getTheme } from '@/scripts/code-highlighter.js';
+import { computed } from 'vue';
+import { codeToHtml } from 'shiki';
+import { getTheme } from '@/scripts/code-highlighter.js';
 import { defaultStore } from '@/store.js';
+import { computedAsync } from '@vueuse/core';
 
 const props = defineProps<{
 	code: string;
@@ -21,54 +21,26 @@ const props = defineProps<{
 	codeEditor?: boolean;
 }>();
 
-const highlighter = await getHighlighter();
 const darkMode = defaultStore.reactiveState.darkMode;
-const codeLang = ref<BuiltinLanguage | 'aiscript'>('js');
+const codeLang = computed(() => props.lang ?? 'text');
 
 const [lightThemeName, darkThemeName] = await Promise.all([
-	getTheme('light', true),
-	getTheme('dark', true),
+	getTheme('light'),
+	getTheme('dark'),
 ]);
 
-const html = computed(() => highlighter.codeToHtml(props.code, {
-	lang: codeLang.value,
-	themes: {
-		fallback: 'dark-plus',
-		light: lightThemeName,
-		dark: darkThemeName,
-	},
-	defaultColor: false,
-	cssVariablePrefix: '--shiki-',
-}));
-
-async function fetchLanguage(to: string): Promise<void> {
-	const language = to as BuiltinLanguage;
-
-	// Check for the loaded languages, and load the language if it's not loaded yet.
-	if (!highlighter.getLoadedLanguages().includes(language)) {
-		// Check if the language is supported by Shiki
-		const bundles = bundledLanguagesInfo.filter((bundle) => {
-			// Languages are specified by their id, they can also have aliases (i. e. "js" and "javascript")
-			return bundle.id === language || bundle.aliases?.includes(language);
-		});
-		if (bundles.length > 0) {
-			console.log(`Loading language: ${language}`);
-			await highlighter.loadLanguage(bundles[0].import);
-			codeLang.value = language;
-		} else {
-			codeLang.value = 'js';
-		}
-	} else {
-		codeLang.value = language;
-	}
-}
-
-watch(() => props.lang, (to) => {
-	if (codeLang.value === to || !to) return;
-	return new Promise((resolve) => {
-		fetchLanguage(to).then(() => resolve);
+const html = computedAsync(async () => {
+	return await codeToHtml(props.code, {
+		lang: codeLang.value,
+		themes: {
+			fallback: 'dark-plus',
+			light: lightThemeName,
+			dark: darkThemeName,
+		},
+		defaultColor: false,
+		cssVariablePrefix: '--shiki-',
 	});
-}, { immediate: true });
+});
 </script>
 
 <style module lang="scss">

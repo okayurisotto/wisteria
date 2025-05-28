@@ -17,7 +17,6 @@
 		"@tabler/icons-webfont": "2.44.0",
 		"@vue/eslint-config-typescript": "^14.3.0",
 		"@vueuse/core": "^11.2.0",
-		"aiscript-vscode": "github:aiscript-dev/aiscript-vscode#v0.1.2",
 		"broadcast-channel": "7.0.0",
 		"buraha": "0.0.1",
 		"canvas-confetti": "1.6.1",
