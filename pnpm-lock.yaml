@@ -653,9 +653,6 @@ importers:
       vitest:
         specifier: 3.0.2
         version: 3.0.2(@types/node@22.10.7)(happy-dom@15.10.2)(jsdom@23.2.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.70.0)(terser@5.27.0)(yaml@2.6.0)
-      vitest-fetch-mock:
-        specifier: 0.2.2
-        version: 0.2.2(encoding@0.1.13)(vitest@3.0.2(@types/node@22.10.7)(happy-dom@15.10.2)(jsdom@23.2.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.70.0)(terser@5.27.0)(yaml@2.6.0))
       vue-component-type-helpers:
         specifier: 1.8.27
         version: 1.8.27
@@ -3257,9 +3254,6 @@ packages:
 
   cropperjs@2.0.0-beta.4:
     resolution: {integrity: sha512-tWIQnvbou6eJvQkajwhGLOOEw03dM/i23FmnUQtMKjuzbTDSMP61kcwM77Uit8MXEWcUb5PH8n4jawyrFvj5ag==}
-
-  cross-fetch@3.1.8:
-    resolution: {integrity: sha512-cvA+JwZoU0Xq+h6WkMvAUqPEYy92Obet6UdKLfW60qn99ftItKjB5T+BkyWOFWe2pUyfQ+IJHmpOTznqk1M6Kg==}
 
   cross-fetch@4.0.0:
     resolution: {integrity: sha512-e4a5N8lVvuLgAWgnCrLr2PP0YyDOTHa9H/Rj54dirp61qXnNq46m82bRhNqIA5VccJtWBvPTFRV3TtvHUKPB1g==}
@@ -6282,12 +6276,6 @@ packages:
         optional: true
       yaml:
         optional: true
-
-  vitest-fetch-mock@0.2.2:
-    resolution: {integrity: sha512-XmH6QgTSjCWrqXoPREIdbj40T7i1xnGmAsTAgfckoO75W1IEHKR8hcPCQ7SO16RsdW1t85oUm6pcQRLeBgjVYQ==}
-    engines: {node: '>=14.14.0'}
-    peerDependencies:
-      vitest: '>=0.16.0'
 
   vitest@3.0.2:
     resolution: {integrity: sha512-5bzaHakQ0hmVVKLhfh/jXf6oETDBtgPo8tQCHYB+wftNgFJ+Hah67IsWc8ivx4vFL025Ow8UiuTf4W57z4izvQ==}
@@ -9412,12 +9400,6 @@ snapshots:
     dependencies:
       '@cropper/elements': 2.0.0-rc.2
       '@cropper/utils': 2.0.0-rc.2
-
-  cross-fetch@3.1.8(encoding@0.1.13):
-    dependencies:
-      node-fetch: 2.7.0(encoding@0.1.13)
-    transitivePeerDependencies:
-      - encoding
 
   cross-fetch@4.0.0(encoding@0.1.13):
     dependencies:
@@ -12547,13 +12529,6 @@ snapshots:
       sass: 1.70.0
       terser: 5.27.0
       yaml: 2.6.0
-
-  vitest-fetch-mock@0.2.2(encoding@0.1.13)(vitest@3.0.2(@types/node@22.10.7)(happy-dom@15.10.2)(jsdom@23.2.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.70.0)(terser@5.27.0)(yaml@2.6.0)):
-    dependencies:
-      cross-fetch: 3.1.8(encoding@0.1.13)
-      vitest: 3.0.2(@types/node@22.10.7)(happy-dom@15.10.2)(jsdom@23.2.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.70.0)(terser@5.27.0)(yaml@2.6.0)
-    transitivePeerDependencies:
-      - encoding
 
   vitest@3.0.2(@types/node@22.10.7)(happy-dom@15.10.2)(jsdom@23.2.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.70.0)(terser@5.27.0)(yaml@2.6.0):
     dependencies:
