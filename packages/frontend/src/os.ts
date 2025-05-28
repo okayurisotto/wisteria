@@ -23,7 +23,7 @@ import MkEmojiPickerWindow from '@/components/MkEmojiPickerWindow.vue';
 import MkPopupMenu from '@/components/MkPopupMenu.vue';
 import MkContextMenu from '@/components/MkContextMenu.vue';
 import type { MenuItem } from '@/types/menu.js';
-import copyToClipboard from '@/scripts/copy-to-clipboard.js';
+import { copyToClipboard } from '@/scripts/copy-to-clipboard.js';
 import { showMovedDialog } from '@/scripts/show-moved-dialog.js';
 
 export const openingWindowsCount = ref(0);

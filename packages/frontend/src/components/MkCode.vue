@@ -24,7 +24,7 @@ import * as os from '@/os.js';
 import MkLoading from '@/components/global/MkLoading.vue';
 import XCode from '@/components/MkCode.core.vue';
 import { defaultStore } from '@/store.js';
-import copyToClipboard from '@/scripts/copy-to-clipboard.js';
+import { copyToClipboard } from '@/scripts/copy-to-clipboard.js';
 
 const props = defineProps<{
 	code: string;
