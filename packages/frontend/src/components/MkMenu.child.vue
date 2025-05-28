@@ -6,6 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div
 	ref="el"
+	class="_shadow"
 	:class="$style.root"
 	:style="{
 		left: floatingPosition?.left + 'px',
