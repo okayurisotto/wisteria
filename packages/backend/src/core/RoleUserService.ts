@@ -12,11 +12,11 @@ import { MetaService } from '@/core/MetaService.js';
 import type { MiRole, RoleCondFormulaValue } from '@/models/Role.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { IdService } from '@/core/IdService.js';
-import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
 import type { z } from 'zod';
 import type { NoteSchema } from '@/models/zod/note';
+import { RiverflowService } from './RiverflowService';
 
 export type RolePolicies = {
 	gtlAvailable: boolean;
@@ -93,7 +93,7 @@ export class RoleUserService {
 		private readonly metaService: MetaService,
 		private readonly globalEventService: GlobalEventService,
 		private readonly idService: IdService,
-		private readonly fanoutTimelineService: FanoutTimelineService,
+		private readonly riverflowService: RiverflowService,
 	) {}
 
 	private evalCond(user: MiUser, value: RoleCondFormulaValue): boolean {
@@ -305,15 +305,11 @@ export class RoleUserService {
 		const redisPipeline = this.redisForTimelines.pipeline();
 
 		for (const role of roles) {
-			this.fanoutTimelineService.push(
-				`roleTimeline:${role.id}`,
-				note.id,
-				1000,
-				redisPipeline,
-			);
+			await this.riverflowService.add(`riverflow:role:${role.id}`, note.id);
+			await this.riverflowService.expire(`riverflow:role:${role.id}`, 1000);
 			this.globalEventService.publishRoleTimelineStream(role.id, 'note', note);
 		}
 
-		redisPipeline.exec();
+		await redisPipeline.exec();
 	}
 }

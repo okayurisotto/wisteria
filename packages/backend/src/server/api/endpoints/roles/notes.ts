@@ -10,11 +10,11 @@ import { QueryService } from '@/core/QueryService.js';
 import { DI } from '@/di-symbols.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { IdService } from '@/core/IdService.js';
-import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import { ApiError } from '../../error.js';
 import { z } from 'zod';
 import { IdSchema } from '@/models/zod/IdSchema.js';
 import { NoteSchema } from '@/models/zod/note.js';
+import { RiverflowService } from '@/core/RiverflowService.js';
 
 export const meta = {
 	tags: ['role', 'notes'],
@@ -54,11 +54,11 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly idService: IdService,
 		private readonly noteEntityService: NoteEntityService,
 		private readonly queryService: QueryService,
-		private readonly fanoutTimelineService: FanoutTimelineService,
+		private readonly riverflowService: RiverflowService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate) : null);
-			const sinceId = ps.sinceId ?? (ps.sinceDate ? this.idService.gen(ps.sinceDate) : null);
+			const untilId = ps.untilId ?? (ps.untilDate !== undefined ? this.idService.gen(ps.untilDate) : null);
+			const sinceId = ps.sinceId ?? (ps.sinceDate !== undefined ? this.idService.gen(ps.sinceDate) : null);
 
 			const role = await this.rolesRepository.findOneBy({
 				id: ps.roleId,
@@ -72,8 +72,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				return [];
 			}
 
-			let noteIds = await this.fanoutTimelineService.get(`roleTimeline:${role.id}`, untilId, sinceId);
-			noteIds = noteIds.slice(0, ps.limit);
+			const noteIds = await this.riverflowService.list(`riverflow:role:${role.id}`, untilId, sinceId, 0, ps.limit);
 
 			if (noteIds.length === 0) {
 				return [];
@@ -93,7 +92,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			this.queryService.generateBlockedUserQuery(query, me);
 
 			const notes = await query.getMany();
-			notes.sort((a, b) => a.id > b.id ? -1 : 1);
+			notes.sort(({ id: a }, { id: b }) => a < b ? 1 : -1);
 
 			return await this.noteEntityService.packMany(notes, me);
 		});

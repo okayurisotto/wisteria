@@ -10,14 +10,13 @@ import { QueryService } from '@/core/QueryService.js';
 import { NoteReadService } from '@/core/NoteReadService.js';
 import { DI } from '@/di-symbols.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { IdService } from '@/core/IdService.js';
-import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { trackPromise } from '@/misc/promise-tracker.js';
 import { ApiError } from '../../error.js';
 import { z } from 'zod';
 import { IdSchema } from '@/models/zod/IdSchema.js';
 import { NoteSchema } from '@/models/zod/note.js';
+import { RiverflowService } from '@/core/RiverflowService.js';
 
 export const meta = {
 	tags: ['antennas', 'account', 'notes'],
@@ -55,23 +54,22 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.antennasRepository)
 		private readonly antennasRepository: AntennasRepository,
 
-		private readonly idService: IdService,
 		private readonly noteEntityService: NoteEntityService,
 		private readonly queryService: QueryService,
 		private readonly noteReadService: NoteReadService,
-		private readonly fanoutTimelineService: FanoutTimelineService,
 		private readonly globalEventService: GlobalEventService,
+		private readonly riverflowService: RiverflowService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate) : null);
-			const sinceId = ps.sinceId ?? (ps.sinceDate ? this.idService.gen(ps.sinceDate) : null);
+			const untilId = ps.untilId ?? ps.untilDate ?? null;
+			const sinceId = ps.sinceId ?? ps.sinceDate ?? null;
 
 			const antenna = await this.antennasRepository.findOneBy({
 				id: ps.antennaId,
 				userId: me.id,
 			});
 
-			if (antenna == null) {
+			if (antenna === null) {
 				throw new ApiError(meta.errors.noSuchAntenna);
 			}
 
@@ -86,8 +84,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				this.globalEventService.publishInternalEvent('antennaUpdated', antenna);
 			}
 
-			let noteIds = await this.fanoutTimelineService.get(`antennaTimeline:${antenna.id}`, untilId, sinceId);
-			noteIds = noteIds.slice(0, ps.limit);
+			const noteIds = await this.riverflowService.list(`riverflow:antenna:${antenna.id}`, sinceId, untilId, 0, ps.limit);
 			if (noteIds.length === 0) {
 				return [];
 			}
@@ -106,9 +103,9 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 			const notes = await query.getMany();
 			if (sinceId != null && untilId == null) {
-				notes.sort((a, b) => a.id < b.id ? -1 : 1);
+				notes.sort(({ id: a }, { id: b }) => a < b ? -1 : 1);
 			} else {
-				notes.sort((a, b) => a.id > b.id ? -1 : 1);
+				notes.sort(({ id: a }, { id: b }) => a < b ? 1 : -1);
 			}
 
 			if (notes.length > 0) {

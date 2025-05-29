@@ -62,7 +62,6 @@ import { FileInfoService } from './FileInfoService.js';
 import { SearchService } from './SearchService.js';
 import { ClipService } from './ClipService.js';
 import { FeaturedService } from './FeaturedService.js';
-import { FanoutTimelineService } from './FanoutTimelineService.js';
 import { ChannelFollowingService } from './ChannelFollowingService.js';
 import { RegistryApiService } from './RegistryApiService.js';
 
@@ -134,6 +133,7 @@ import { MetricsModule } from './metrics/MetricsModule.js';
 import { UserLiteEntityService } from './entities/UserLiteEntityService.js';
 import { DriveFilePublicUrlGetService } from './entities/DriveFilePublicUrlGetService.js';
 import { UserUriService } from './entities/UserUriService.js';
+import { RiverflowService } from './RiverflowService.js';
 
 // #region 文字列ベースでのinjection用(循環参照対応のため)
 const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNoteService };
@@ -210,7 +210,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		SearchService,
 		ClipService,
 		FeaturedService,
-		FanoutTimelineService,
 		ChannelFollowingService,
 		RegistryApiService,
 		AlsoKnownAsValidateService,
@@ -252,6 +251,7 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		FlashLikeEntityService,
 		RoleEntityService,
 		UserUriService,
+		RiverflowService,
 
 		ApAudienceService,
 		ApDbResolverService,
@@ -346,7 +346,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		SearchService,
 		ClipService,
 		FeaturedService,
-		FanoutTimelineService,
 		ChannelFollowingService,
 		RegistryApiService,
 		AlsoKnownAsValidateService,
@@ -388,6 +387,7 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		FlashLikeEntityService,
 		RoleEntityService,
 		UserUriService,
+		RiverflowService,
 
 		ApAudienceService,
 		ApDbResolverService,

@@ -13,11 +13,11 @@ import { AcctEntity } from '@/misc/AcctEntity.js';
 import { DI } from '@/di-symbols.js';
 import type { AntennasRepository, UserListMembershipsRepository } from '@/models/_.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
-import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import type { OnApplicationShutdown } from '@nestjs/common';
 import type { Config } from '@/config.js';
 import type { z } from 'zod';
 import type { NoteSchema } from '@/models/zod/note';
+import { RiverflowService } from './RiverflowService.js';
 
 @Injectable()
 export class AntennaService implements OnApplicationShutdown {
@@ -41,7 +41,7 @@ export class AntennaService implements OnApplicationShutdown {
 		private readonly userListMembershipsRepository: UserListMembershipsRepository,
 
 		private readonly globalEventService: GlobalEventService,
-		private readonly fanoutTimelineService: FanoutTimelineService,
+		private readonly riverflowService: RiverflowService,
 	) {
 		this.antennasFetched = false;
 		this.antennas = [];
@@ -94,17 +94,21 @@ export class AntennaService implements OnApplicationShutdown {
 
 	public async addNoteToAntennas(note: MiNote, noteUser: { id: MiUser['id']; username: string; host: string | null }): Promise<void> {
 		const antennas = await this.getAntennas();
-		const antennasWithMatchResult = await Promise.all(antennas.map(antenna => this.checkHitAntenna(antenna, note, noteUser).then(hit => [antenna, hit] as const)));
+		const antennasWithMatchResult = await Promise.all(antennas.map(async (antenna) => {
+			const hit = await this.checkHitAntenna(antenna, note, noteUser);
+			return [antenna, hit] as const;
+		}));
 		const matchedAntennas = antennasWithMatchResult.filter(([, hit]) => hit).map(([antenna]) => antenna);
 
 		const redisPipeline = this.redisForTimelines.pipeline();
 
 		for (const antenna of matchedAntennas) {
-			this.fanoutTimelineService.push(`antennaTimeline:${antenna.id}`, note.id, 200, redisPipeline);
+			await this.riverflowService.add(`riverflow:antenna:${antenna.id}`, note.id);
+			await this.riverflowService.expire(`riverflow:antenna:${antenna.id}`, 200);
 			this.globalEventService.publishAntennaStream(antenna.id, 'note', note);
 		}
 
-		redisPipeline.exec();
+		await redisPipeline.exec();
 	}
 
 	// NOTE: フォローしているユーザーのノート、リストのユーザーのノート、グループのユーザーのノート指定はパフォーマンス上の理由で無効になっている
