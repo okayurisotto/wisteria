@@ -120,16 +120,15 @@ export class GlobalModule implements OnApplicationShutdown {
 	) {}
 
 	public async dispose(): Promise<void> {
+		this.redisClient.disconnect();
+		this.redisForPub.disconnect();
+		this.redisForSub.disconnect();
+		this.redisForTimelines.disconnect();
+
 		// Wait for all potential DB queries
 		await allSettled();
 		// And then disconnect from DB
-		await Promise.all([
-			this.db.destroy(),
-			this.redisClient.disconnect(),
-			this.redisForPub.disconnect(),
-			this.redisForSub.disconnect(),
-			this.redisForTimelines.disconnect(),
-		]);
+		await this.db.destroy();
 	}
 
 	async onApplicationShutdown(): Promise<void> {
