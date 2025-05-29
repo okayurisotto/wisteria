@@ -11,11 +11,11 @@ import type { NoteSchema } from '@/models/zod/note.js';
  * @param {*} note (packされた)投稿
  */
 export const getNoteSummary = (note: z.infer<typeof NoteSchema>): string => {
-	if (note.deletedAt) {
+	if (note.deletedAt != null) {
 		return '(❌⛔)';
 	}
 
-	if (note.isHidden) {
+	if (note.isHidden === true) {
 		return '(⛔)';
 	}
 
@@ -25,12 +25,12 @@ export const getNoteSummary = (note: z.infer<typeof NoteSchema>): string => {
 	if (note.cw != null) {
 		summary += note.cw;
 	} else {
-		summary += note.text ? note.text : '';
+		summary += note.text !== null ? note.text : '';
 	}
 
 	// ファイルが添付されているとき
-	if ((note.files ?? []).length !== 0) {
-		summary += ` (📎${note.files!.length})`;
+	if (note.files !== undefined && note.files.length !== 0) {
+		summary += ` (📎${note.files.length})`;
 	}
 
 	// 投票が添付されているとき
@@ -39,7 +39,7 @@ export const getNoteSummary = (note: z.infer<typeof NoteSchema>): string => {
 	}
 
 	// 返信のとき
-	if (note.replyId) {
+	if (note.replyId != null) {
 		if (note.reply) {
 			summary += `\n\nRE: ${getNoteSummary(note.reply)}`;
 		} else {
@@ -48,7 +48,7 @@ export const getNoteSummary = (note: z.infer<typeof NoteSchema>): string => {
 	}
 
 	// Renoteのとき
-	if (note.renoteId) {
+	if (note.renoteId != null) {
 		if (note.renote) {
 			summary += `\n\nRN: ${getNoteSummary(note.renote)}`;
 		} else {
