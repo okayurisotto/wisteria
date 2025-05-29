@@ -16,8 +16,13 @@ export function isInstanceMuted(note: z.infer<typeof NoteSchema> | MiNote, muted
 	return false;
 }
 
-export function isUserFromMutedInstance(notif: z.infer<typeof NotificationSchema>, mutedInstances: Set<string>): boolean {
-	if (mutedInstances.has(notif.user?.host ?? '')) return true;
-
-	return false;
+export function isUserFromMutedInstance(
+	notification: z.infer<typeof NotificationSchema>,
+	mutedInstances: Set<string>,
+): boolean {
+	return (
+		'user' in notification &&
+		notification.user.host !== null &&
+		mutedInstances.has(notification.user.host)
+	);
 }
