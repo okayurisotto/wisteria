@@ -106,11 +106,6 @@ export const navbarItemDef = reactive({
 		show: computed(() => $i != null),
 		to: '/my/clips',
 	},
-	channels: {
-		title: i18n.ts.channel,
-		icon: 'ti ti-device-tv',
-		to: '/channels',
-	},
 	ui: {
 		title: i18n.ts.switchUi,
 		icon: 'ti ti-devices',
