@@ -177,9 +177,6 @@ defaultStore.loaded.then(() => {
 		}, {
 			name: 'notifications',
 			id: 'b', place: 'right', data: {},
-		}, {
-			name: 'trends',
-			id: 'c', place: 'right', data: {},
 		}]);
 	}
 });
