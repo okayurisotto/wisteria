@@ -98,19 +98,9 @@ function onTabClick(): void {
 	top();
 }
 
-const calcBg = () => {
-	const rawBg = 'var(--bg)';
-	const tinyBg = tinycolor(rawBg.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(rawBg.slice(4, -1)) : rawBg);
-	tinyBg.setAlpha(0.85);
-	bg.value = tinyBg.toRgbString();
-};
-
 let ro: ResizeObserver | null;
 
 onMounted(() => {
-	calcBg();
-	globalEvents.on('themeChanged', calcBg);
-
 	if (el.value && el.value.parentElement) {
 		narrow.value = el.value.parentElement.offsetWidth < 500;
 		ro = new ResizeObserver((entries, observer) => {
@@ -123,15 +113,13 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-	globalEvents.off('themeChanged', calcBg);
 	if (ro) ro.disconnect();
 });
 </script>
 
 <style lang="scss" module>
 .root {
-	-webkit-backdrop-filter: var(--blur, blur(15px));
-	backdrop-filter: var(--blur, blur(15px));
+	background: var(--bg);
 	border-bottom: solid 0.5px var(--divider);
 	width: 100%;
 }
