@@ -48,11 +48,17 @@ import { antennasCache, userListsCache } from '@/cache.js';
 import { deviceKind } from '@/scripts/device-kind.js';
 import { deepMerge } from '@/scripts/merge.js';
 import type { MenuItem } from '@/types/menu.js';
+import { useRouter } from '@/router/supplier';
 
 provide('shouldOmitHeaderTitle', true);
 
 const isLocalTimelineAvailable = ($i == null && instance.policies.ltlAvailable) || ($i != null && $i.policies.ltlAvailable);
 const isGlobalTimelineAvailable = ($i == null && instance.policies.gtlAvailable) || ($i != null && $i.policies.gtlAvailable);
+
+const router = useRouter();
+const userLists = await userListsCache.fetch();
+const antennas = await antennasCache.fetch();
+
 const keymap = {
 	't': focus,
 };
@@ -129,41 +135,31 @@ function top(): void {
 }
 
 async function chooseList(ev: MouseEvent): Promise<void> {
-	const lists = await userListsCache.fetch();
-	const items: MenuItem[] = [
-		...lists.map(list => ({
-			type: 'link' as const,
-			text: list.name,
-			to: `/timeline/list/${list.id}`,
-		})),
-		(lists.length === 0 ? undefined : { type: 'divider' }),
-		{
-			type: 'link' as const,
-			icon: 'ti ti-plus',
-			text: i18n.ts.createNew,
-			to: '/my/lists',
-		},
-	];
+	if (userLists.length === 1) {
+		router.push(`/timeline/list/${userLists[0]!.id}`);
+		return;
+	}
+
+	const items: MenuItem[] = userLists.map(list => ({
+		type: 'link' as const,
+		text: list.name,
+		to: `/timeline/list/${list.id}`,
+	}));
 	os.popupMenu(items, ev.currentTarget ?? ev.target);
 }
 
 async function chooseAntenna(ev: MouseEvent): Promise<void> {
-	const antennas = await antennasCache.fetch();
-	const items: MenuItem[] = [
-		...antennas.map(antenna => ({
-			type: 'link' as const,
-			text: antenna.name,
-			indicate: antenna.hasUnreadNote,
-			to: `/timeline/antenna/${antenna.id}`,
-		})),
-		(antennas.length === 0 ? undefined : { type: 'divider' }),
-		{
-			type: 'link' as const,
-			icon: 'ti ti-plus',
-			text: i18n.ts.createNew,
-			to: '/my/antennas',
-		},
-	];
+	if (antennas.length === 1) {
+		router.push(`/timeline/antenna/${antennas[0]!.id}`);
+		return;
+	}
+
+	const items: MenuItem[] = antennas.map(antenna => ({
+		type: 'link' as const,
+		text: antenna.name,
+		indicate: antenna.hasUnreadNote ?? false,
+		to: `/timeline/antenna/${antenna.id}`,
+	}));
 	os.popupMenu(items, ev.currentTarget ?? ev.target);
 }
 
@@ -264,17 +260,17 @@ const headerTabs = computed(() => [...(defaultStore.reactiveState.pinnedUserList
 	title: i18n.ts._timelines.global,
 	icon: 'ti ti-whirl',
 	iconOnly: true,
-}] : []), {
+}] : []), ...(userLists.length > 0 ? [{
 	icon: 'ti ti-list',
 	title: i18n.ts.lists,
 	iconOnly: true,
 	onClick: chooseList,
-}, {
+}] : []), ...(antennas.length > 0 ? [{
 	icon: 'ti ti-antenna',
 	title: i18n.ts.antennas,
 	iconOnly: true,
 	onClick: chooseAntenna,
-}] as Tab[]);
+}] : [])] as Tab[]);
 
 const headerTabsWhenNotLogin = computed(() => [
 	...(isLocalTimelineAvailable ? [{
