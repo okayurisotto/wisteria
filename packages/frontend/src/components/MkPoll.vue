@@ -27,14 +27,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, inject, type Ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import { sum } from '@/scripts/array.js';
 import { pleaseLogin } from '@/scripts/please-login.js';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { i18n } from '@/i18n.js';
-import { useInterval } from '@/scripts/use-interval.js';
 
 const props = defineProps<{
 	noteId: string;
@@ -42,7 +41,14 @@ const props = defineProps<{
 	readOnly?: boolean;
 }>();
 
-const remaining = ref(-1);
+const now = inject<Ref<Date>>('now');
+if (now === undefined) {
+	throw new Error('[Internal Error]: Dependency on `now` was not resolved. Is `now` correctly provided in this context?');
+}
+
+const remaining = computed(() => {
+	return Math.floor(Math.max(new Date(props.poll.expiresAt!).getTime() - now.value.getTime(), 0) / 1000);
+});
 
 const total = computed(() => sum(props.poll.choices.map(x => x.votes)));
 const closed = computed(() => remaining.value === 0);
@@ -58,24 +64,11 @@ const timer = computed(() => i18n.tsx._poll[
 	d: Math.floor(remaining.value / 86400),
 }));
 
-const showResult = ref(props.readOnly || isVoted.value);
+const showResult = computed(() => {
+	return props.readOnly || isVoted.value || remaining.value === 0;
+});
 
-// 期限付きアンケート
-if (props.poll.expiresAt) {
-	const tick = () => {
-		remaining.value = Math.floor(Math.max(new Date(props.poll.expiresAt!).getTime() - Date.now(), 0) / 1000);
-		if (remaining.value === 0) {
-			showResult.value = true;
-		}
-	};
-
-	useInterval(tick, 3000, {
-		immediate: true,
-		afterMounted: false,
-	});
-}
-
-const vote = async (id) => {
+const vote = async (id: number) => {
 	pleaseLogin();
 
 	if (props.readOnly || closed.value || isVoted.value) return;
