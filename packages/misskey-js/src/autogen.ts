@@ -3649,8 +3649,7 @@ export interface components {
       replyId?: components["schemas"]["Id"];
       renoteId?: components["schemas"]["Id"];
       isHidden?: boolean;
-      /** @enum {string} */
-      visibility: "public" | "home" | "followers" | "specified";
+      visibility: components["schemas"]["NoteVisibility"];
       mentions?: components["schemas"]["Id"][];
       visibleUserIds?: components["schemas"]["Id"][];
       fileIds?: components["schemas"]["Id"][];
@@ -3675,7 +3674,7 @@ export interface components {
         userId: string | null;
       }) | null;
       localOnly?: boolean;
-      reactionAcceptance: string | null;
+      reactionAcceptance: components["schemas"]["NoteReactionAcceptance"];
       renoteCount: number;
       repliesCount: number;
       uri?: string;
@@ -3707,6 +3706,10 @@ export interface components {
       user: components["schemas"]["UserLite"];
       type: string;
     };
+    /** @enum {string|null} */
+    NoteReactionAcceptance: "likeOnly" | "likeOnlyForRemote" | "nonSensitiveOnly" | "nonSensitiveOnlyForLocalLikeOnlyForRemote" | null;
+    /** @enum {string} */
+    NoteVisibility: "public" | "home" | "followers" | "specified";
     Notification: {
       id: components["schemas"]["Id"];
       createdAt: string;
@@ -18991,36 +18994,40 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": {
-          /**
-           * @default public
-           * @enum {string}
-           */
-          visibility?: "public" | "home" | "followers" | "specified";
+          /** @default public */
+          visibility?: components["schemas"]["NoteVisibility"];
+          /** @default [] */
           visibleUserIds?: components["schemas"]["Id"][];
+          /** @default null */
           cw?: string | null;
           /** @default false */
           localOnly?: boolean;
-          /**
-           * @default null
-           * @enum {string|null}
-           */
-          reactionAcceptance?: "likeOnly" | "likeOnlyForRemote" | "nonSensitiveOnly" | "nonSensitiveOnlyForLocalLikeOnlyForRemote" | null;
+          /** @default null */
+          reactionAcceptance?: components["schemas"]["NoteReactionAcceptance"];
           /** @default false */
           noExtractMentions?: boolean;
           /** @default false */
           noExtractHashtags?: boolean;
           /** @default false */
           noExtractEmojis?: boolean;
+          /** @default null */
           replyId?: components["schemas"]["Id"];
+          /** @default null */
           renoteId?: components["schemas"]["Id"];
+          /** @default null */
           channelId?: components["schemas"]["Id"];
+          /** @default null */
           text?: string | null;
           fileIds?: components["schemas"]["Id"][];
           mediaIds?: components["schemas"]["Id"][];
+          /** @default null */
           poll?: ({
             choices: string[];
+            /** @default false */
             multiple?: boolean;
+            /** @default null */
             expiresAt?: number | null;
+            /** @default null */
             expiredAfter?: number | null;
             [key: string]: unknown;
           }) | null;
@@ -19033,7 +19040,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            createdNote?: components["schemas"]["Note"];
+            createdNote: components["schemas"]["Note"];
             [key: string]: unknown;
           };
         };

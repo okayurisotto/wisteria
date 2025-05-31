@@ -6,7 +6,6 @@
 import ms from 'ms';
 import { In } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
-import type { MiUser } from '@/models/User.js';
 import type { UsersRepository, NotesRepository, BlockingsRepository, DriveFilesRepository, ChannelsRepository } from '@/models/_.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiNote } from '@/models/Note.js';
@@ -19,7 +18,7 @@ import { DI } from '@/di-symbols.js';
 import { isPureRenote } from '@/misc/is-pure-renote.js';
 import { ApiError } from '../../error.js';
 import { z } from 'zod';
-import { NoteSchema } from '@/models/zod/note.js';
+import { NoteReactionAcceptanceSchema, NoteSchema, NoteVisibilitySchema } from '@/models/zod/note.js';
 import { IdSchema } from '@/models/zod/IdSchema.js';
 
 export const meta = {
@@ -37,7 +36,7 @@ export const meta = {
 	kind: 'write:notes',
 
 	res: z.object({
-		createdNote: NoteSchema.optional(),
+		createdNote: NoteSchema,
 	}),
 
 	errors: {
@@ -116,29 +115,29 @@ export const meta = {
 } as const;
 
 export const paramDef = z.object({
-	visibility: z.enum(['public', 'home', 'followers', 'specified']).default('public'),
-	visibleUserIds: IdSchema.array().refine(v => new Set(v).size === v.length).optional(),
-	cw: z.string().min(1).max(100).nullable().optional(),
+	visibility: NoteVisibilitySchema.default('public'),
+	visibleUserIds: IdSchema.array().refine(v => new Set(v).size === v.length).default([]),
+	cw: z.string().min(1).max(100).nullable().default(null),
 	localOnly: z.boolean().default(false),
-	reactionAcceptance: z.enum(['likeOnly', 'likeOnlyForRemote', 'nonSensitiveOnly', 'nonSensitiveOnlyForLocalLikeOnlyForRemote']).nullable().default(null),
+	reactionAcceptance: NoteReactionAcceptanceSchema.default(null),
 	noExtractMentions: z.boolean().default(false),
 	noExtractHashtags: z.boolean().default(false),
 	noExtractEmojis: z.boolean().default(false),
-	replyId: IdSchema.nullable().optional(),
-	renoteId: IdSchema.nullable().optional(),
-	channelId: IdSchema.nullable().optional(),
-	text: z.string().min(1).max(MAX_NOTE_TEXT_LENGTH).nullable().optional(),
+	replyId: IdSchema.nullable().default(null),
+	renoteId: IdSchema.nullable().default(null),
+	channelId: IdSchema.nullable().default(null),
+	text: z.string().min(1).max(MAX_NOTE_TEXT_LENGTH).nullable().default(null),
 	fileIds: IdSchema.array().min(1).max(16).refine(v => new Set(v).size === v.length).optional(),
 	mediaIds: IdSchema.array().min(1).max(16).refine(v => new Set(v).size === v.length).optional(),
 	poll: z.object({
 		choices: z.string().min(1).max(50).array().min(2).max(10),
-		multiple: z.boolean().optional(),
-		expiresAt: z.number().int().nullable().optional(),
-		expiredAfter: z.number().int().min(1).nullable().optional(),
-	}).nullable().optional(),
+		multiple: z.boolean().default(false),
+		expiresAt: z.number().int().nullable().default(null),
+		expiredAfter: z.number().int().min(1).nullable().default(null),
+	}).nullable().default(null),
 }).refine((v) => {
-	if (v.renoteId == null && v.fileIds == null && v.mediaIds == null && v.poll == null) {
-		if (v.text == null || /^\s+$/.test(v.text)) {
+	if (v.renoteId === null && v.fileIds == null && v.mediaIds == null && v.poll === null) {
+		if (v.text === null || /^\s+$/.test(v.text)) {
 			return false;
 		} else {
 			return true;
@@ -170,16 +169,13 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly noteCreateService: NoteCreateService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			let visibleUsers: MiUser[] = [];
-			if (ps.visibleUserIds) {
-				visibleUsers = await this.usersRepository.findBy({
-					id: In(ps.visibleUserIds),
-				});
-			}
+			const visibleUsers = ps.visibleUserIds.length !== 0
+				? await this.usersRepository.findBy({ id: In(ps.visibleUserIds) })
+				: [];
 
 			let files: MiDriveFile[] = [];
 			const fileIds = ps.fileIds ?? ps.mediaIds ?? null;
-			if (fileIds != null) {
+			if (fileIds !== null) {
 				files = await this.driveFilesRepository.createQueryBuilder('file')
 					.where('file.userId = :userId AND file.id IN (:...fileIds)', {
 						userId: me.id,
@@ -195,11 +191,11 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			}
 
 			let renote: MiNote | null = null;
-			if (ps.renoteId != null) {
+			if (ps.renoteId !== null) {
 				// Fetch renote to note
 				renote = await this.notesRepository.findOneBy({ id: ps.renoteId });
 
-				if (renote == null) {
+				if (renote === null) {
 					throw new ApiError(meta.errors.noSuchRenoteTarget);
 				} else if (isPureRenote(renote)) {
 					throw new ApiError(meta.errors.cannotReRenote);
@@ -226,7 +222,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 					throw new ApiError(meta.errors.cannotRenoteDueToVisibility);
 				}
 
-				if (renote.channelId && renote.channelId !== ps.channelId) {
+				if (renote.channelId !== null && renote.channelId !== ps.channelId) {
 					// チャンネルのノートに対しリノート要求がきたとき、チャンネル外へのリノート可否をチェック
 					// リノートのユースケースのうち、チャンネル内→チャンネル外は少数だと考えられるため、JOINはせず必要な時に都度取得する
 					const renoteChannel = await this.channelsRepository.findOneBy({ id: renote.channelId });
@@ -241,7 +237,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			}
 
 			let reply: MiNote | null = null;
-			if (ps.replyId != null) {
+			if (ps.replyId !== null) {
 				// Fetch reply
 				reply = await this.notesRepository.findOneBy({ id: ps.replyId });
 
@@ -267,13 +263,16 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				}
 			}
 
-			if (ps.poll) {
-				if (typeof ps.poll.expiresAt === 'number') {
+			let expiresAt: number | null = null;
+			if (ps.poll !== null) {
+				if (ps.poll.expiresAt !== null) {
 					if (ps.poll.expiresAt < Date.now()) {
 						throw new ApiError(meta.errors.cannotCreateAlreadyExpiredPoll);
+					} else {
+						expiresAt = ps.poll.expiresAt;
 					}
-				} else if (typeof ps.poll.expiredAfter === 'number') {
-					ps.poll.expiresAt = Date.now() + ps.poll.expiredAfter;
+				} else if (ps.poll.expiredAfter !== null) {
+					expiresAt = Date.now() + ps.poll.expiredAfter;
 				}
 			}
 
@@ -294,11 +293,11 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 					poll: ps.poll
 						? {
 								choices: ps.poll.choices,
-								multiple: ps.poll.multiple ?? false,
-								expiresAt: ps.poll.expiresAt ? new Date(ps.poll.expiresAt) : null,
+								multiple: ps.poll.multiple,
+								expiresAt: expiresAt !== null ? new Date(expiresAt) : null,
 							}
-						: undefined,
-					text: ps.text ?? undefined,
+						: null,
+					text: ps.text,
 					reply,
 					renote,
 					cw: ps.cw,
@@ -307,9 +306,9 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 					visibility: ps.visibility,
 					visibleUsers,
 					channel,
-					apMentions: ps.noExtractMentions ? [] : undefined,
-					apHashtags: ps.noExtractHashtags ? [] : undefined,
-					apEmojis: ps.noExtractEmojis ? [] : undefined,
+					apMentions: ps.noExtractMentions ? [] : null,
+					apHashtags: ps.noExtractHashtags ? [] : null,
+					apEmojis: ps.noExtractEmojis ? [] : null,
 				});
 
 				return {

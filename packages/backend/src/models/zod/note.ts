@@ -7,6 +7,25 @@ import { z } from 'zod';
 import { UserLiteSchema } from './user-lite.js';
 import { DriveFileSchema } from './drive-file.js';
 import { IdSchema } from './IdSchema.js';
+import type { MiNote } from '../Note.js';
+
+export const NOTE_VISIBILITIES = [
+	'public',
+	'home',
+	'followers',
+	'specified',
+] as const satisfies MiNote['visibility'][];
+
+export const NoteVisibilitySchema = z.enum(NOTE_VISIBILITIES);
+
+export const NOTE_REACTION_ACCEPTANCES = [
+	'likeOnly',
+	'likeOnlyForRemote',
+	'nonSensitiveOnly',
+	'nonSensitiveOnlyForLocalLikeOnlyForRemote',
+] as const satisfies MiNote['reactionAcceptance'][];
+
+export const NoteReactionAcceptanceSchema = z.enum(NOTE_REACTION_ACCEPTANCES).nullable();
 
 const NoteSchemaBase = z.object({
 	id: IdSchema,
@@ -19,7 +38,7 @@ const NoteSchemaBase = z.object({
 	replyId: IdSchema.nullable().optional(),
 	renoteId: IdSchema.nullable().optional(),
 	isHidden: z.boolean().optional(),
-	visibility: z.enum(['public', 'home', 'followers', 'specified']),
+	visibility: NoteVisibilitySchema,
 	mentions: IdSchema.array().optional(),
 	visibleUserIds: IdSchema.array().optional(),
 	fileIds: IdSchema.array().optional(),
@@ -55,7 +74,7 @@ const NoteSchemaBase = z.object({
 		.nullable()
 		.optional(),
 	localOnly: z.boolean().optional(),
-	reactionAcceptance: z.string().nullable(),
+	reactionAcceptance: NoteReactionAcceptanceSchema,
 	renoteCount: z.number(),
 	repliesCount: z.number(),
 	uri: z.string().optional(),

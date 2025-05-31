@@ -21,7 +21,7 @@ import { InviteCodeSchema } from '@/models/zod/invite-code.js';
 import { MutingSchema } from '@/models/zod/muting.js';
 import { NoteFavoriteSchema } from '@/models/zod/note-favorite.js';
 import { NoteReactionSchema } from '@/models/zod/note-reaction.js';
-import { NoteSchema } from '@/models/zod/note.js';
+import { NoteReactionAcceptanceSchema, NoteSchema, NoteVisibilitySchema } from '@/models/zod/note.js';
 import { NotificationSchema } from '@/models/zod/notification.js';
 import { PageSchema } from '@/models/zod/page.js';
 import { QueueCountSchema } from '@/models/zod/queue.js';
@@ -64,6 +64,8 @@ export const models = [
 	{ key: 'Note', schema: NoteSchema },
 	{ key: 'NoteFavorite', schema: NoteFavoriteSchema },
 	{ key: 'NoteReaction', schema: NoteReactionSchema },
+	{ key: 'NoteReactionAcceptance', schema: NoteReactionAcceptanceSchema },
+	{ key: 'NoteVisibility', schema: NoteVisibilitySchema },
 	{ key: 'Notification', schema: NotificationSchema },
 	{ key: 'NotificationRecieveConfig', schema: NotificationRecieveConfig },
 	{ key: 'Page', schema: PageSchema },
