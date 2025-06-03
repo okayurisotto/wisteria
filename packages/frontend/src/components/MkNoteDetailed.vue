@@ -107,36 +107,38 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</MkA>
 			</div>
 			<MkReactionsViewer ref="reactionsViewer" :note="appearNote"/>
-			<button class="_button" :class="$style.noteFooterButton" @click="reply()">
-				<i class="ti ti-arrow-back-up"></i>
-				<p v-if="appearNote.repliesCount > 0" :class="$style.noteFooterButtonCount">{{ appearNote.repliesCount }}</p>
-			</button>
-			<button
-				v-if="canRenote"
-				ref="renoteButton"
-				class="_button"
-				:class="$style.noteFooterButton"
-				@mousedown="renote()"
-			>
-				<i class="ti ti-repeat"></i>
-				<p v-if="appearNote.renoteCount > 0" :class="$style.noteFooterButtonCount">{{ appearNote.renoteCount }}</p>
-			</button>
-			<button v-else class="_button" :class="$style.noteFooterButton" disabled>
-				<i class="ti ti-ban"></i>
-			</button>
-			<button v-if="appearNote.myReaction == null" ref="reactButton" :class="$style.noteFooterButton" class="_button" @mousedown="react()">
-				<i v-if="appearNote.reactionAcceptance === 'likeOnly'" class="ti ti-heart"></i>
-				<i v-else class="ti ti-plus"></i>
-			</button>
-			<button v-if="appearNote.myReaction != null" ref="reactButton" class="_button" :class="[$style.noteFooterButton, $style.reacted]" @click="undoReact(appearNote)">
-				<i class="ti ti-minus"></i>
-			</button>
-			<button v-if="defaultStore.state.showClipButtonInNoteFooter" ref="clipButton" class="_button" :class="$style.noteFooterButton" @mousedown="clip()">
-				<i class="ti ti-paperclip"></i>
-			</button>
-			<button ref="menuButton" class="_button" :class="$style.noteFooterButton" @mousedown="showMenu()">
-				<i class="ti ti-dots"></i>
-			</button>
+			<div :class="$style.noteFooterButtons">
+				<button class="_button" :class="$style.noteFooterButton" @click="reply()">
+					<i class="ti ti-arrow-back-up"></i>
+					<p v-if="appearNote.repliesCount > 0" :class="$style.noteFooterButtonCount">{{ appearNote.repliesCount }}</p>
+				</button>
+				<button
+					v-if="canRenote"
+					ref="renoteButton"
+					class="_button"
+					:class="$style.noteFooterButton"
+					@mousedown="renote()"
+				>
+					<i class="ti ti-repeat"></i>
+					<p v-if="appearNote.renoteCount > 0" :class="$style.noteFooterButtonCount">{{ appearNote.renoteCount }}</p>
+				</button>
+				<button v-else class="_button" :class="$style.noteFooterButton" disabled>
+					<i class="ti ti-ban"></i>
+				</button>
+				<button v-if="appearNote.myReaction == null" ref="reactButton" :class="$style.noteFooterButton" class="_button" @mousedown="react()">
+					<i v-if="appearNote.reactionAcceptance === 'likeOnly'" class="ti ti-heart"></i>
+					<i v-else class="ti ti-plus"></i>
+				</button>
+				<button v-if="appearNote.myReaction != null" ref="reactButton" class="_button" :class="[$style.noteFooterButton, $style.reacted]" @click="undoReact(appearNote)">
+					<i class="ti ti-minus"></i>
+				</button>
+				<button v-if="defaultStore.state.showClipButtonInNoteFooter" ref="clipButton" class="_button" :class="$style.noteFooterButton" @mousedown="clip()">
+					<i class="ti ti-paperclip"></i>
+				</button>
+				<button ref="menuButton" class="_button" :class="$style.noteFooterButton" @mousedown="showMenu()">
+					<i class="ti ti-dots"></i>
+				</button>
+			</div>
 		</footer>
 	</article>
 	<div :class="$style.tabs">
@@ -666,14 +668,15 @@ function loadConversation() {
 	font-size: 0.9em;
 }
 
+.noteFooterButtons {
+	column-gap: 28px;
+	display: flex;
+}
+
 .noteFooterButton {
-	margin: 0;
+	display: block;
 	padding: 8px;
 	opacity: 0.7;
-
-	&:not(:last-child) {
-		margin-right: 28px;
-	}
 
 	&:hover {
 		color: var(--fgHighlighted);
