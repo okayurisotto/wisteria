@@ -42,12 +42,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<span v-else><i class="ti ti-icons"></i></span>
 			</button>
 			<button v-click-anime class="_button" :class="$style.submit" :disabled="!canPost" @click="post">
-				<div :class="$style.submitInner">
-					<template v-if="posted"></template>
-					<template v-else-if="posting"><MkEllipsis/></template>
-					<template v-else>{{ submitText }}</template>
-					<i style="margin-left: 6px;" :class="posted ? 'ti ti-check' : reply ? 'ti ti-arrow-back-up' : renote ? 'ti ti-quote' : 'ti ti-send'"></i>
-				</div>
+				<template v-if="posted"></template>
+				<template v-else-if="posting"><MkEllipsis/></template>
+				<span :class="$style.submitText" v-else>{{ submitText }}</span>
+				<i :class="posted ? 'ti ti-check' : reply ? 'ti ti-arrow-back-up' : renote ? 'ti ti-quote' : 'ti ti-send'"></i>
 			</button>
 		</div>
 	</header>
@@ -948,6 +946,8 @@ defineExpose({
 .root {
 	position: relative;
 	container-type: inline-size;
+	display: flex;
+	flex-direction: column;
 
 	&.modal {
 		width: 100%;
@@ -957,53 +957,62 @@ defineExpose({
 
 //#region header
 .header {
-	z-index: 1000;
-	min-height: 50px;
+	--size: 50px;
+
+	column-gap: 8px;
 	display: flex;
 	flex-wrap: nowrap;
-	gap: 4px;
+	justify-content: space-between;
+	min-height: var(--size);
+	z-index: 1000;
 }
 
 .headerLeft {
 	display: flex;
-	flex: 0 1 100px;
 }
 
 .cancel {
-	padding: 0;
 	font-size: 1em;
-	height: 100%;
-	flex: 0 1 50px;
+	height: var(--size);
+	padding: 0;
+	width: var(--size);
 }
 
 .account {
-	height: 100%;
 	display: inline-flex;
+	height: var(--size);
 	vertical-align: bottom;
-	flex: 0 1 50px;
+	width: var(--size);
 }
 
 .avatar {
-	width: 28px;
-	height: 28px;
+	--avatar-size: calc(var(--size) - 8px * 2);
+
+	height: var(--avatar-size);
 	margin: auto;
+	width: var(--avatar-size);
 }
 
 .headerRight {
-	display: flex;
-	min-height: 48px;
-	font-size: 0.9em;
-	flex-wrap: nowrap;
 	align-items: center;
-	margin-left: auto;
-	gap: 4px;
-	overflow: clip;
-	padding-left: 4px;
+	column-gap: 8px;
+	display: flex;
+	font-size: 0.9em;
+	padding-inline-end: 8px;
 }
 
 .submit {
-	margin: 12px 12px 12px 6px;
-	vertical-align: bottom;
+	--submit-height: calc(var(--size) - 8px * 2);
+	align-items: center;
+	background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
+	border-radius: var(--rounded-full);
+	color: var(--fgOnAccent);
+	column-gap: 8px;
+	display: flex;
+	font-weight: bold;
+	height: var(--submit-height);
+	justify-content: center;
+	padding-inline: calc(var(--submit-height) / 2);
 
 	&:disabled {
 		opacity: 0.7;
@@ -1014,41 +1023,15 @@ defineExpose({
 	}
 
 	&:not(:disabled):hover {
-		> .inner {
 			background: linear-gradient(90deg, var(--X8), var(--X8));
-		}
 	}
 
 	&:not(:disabled):active {
-		> .inner {
 			background: linear-gradient(90deg, var(--X8), var(--X8));
 		}
-	}
-}
-
-.colorBar {
-	position: absolute;
-	top: 0px;
-	left: 12px;
-	width: 5px;
-	height: 100% ;
-	border-radius: var(--rounded-full);
-	pointer-events: none;
-}
-
-.submitInner {
-	padding: 0 12px;
-	line-height: 34px;
-	font-weight: bold;
-	border-radius: var(--rounded-full);
-	min-width: 90px;
-	box-sizing: border-box;
-	color: var(--fgOnAccent);
-	background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
 }
 
 .headerRightItem {
-	margin: 0;
 	padding: 8px;
 	border-radius: var(--rounded-full);
 
@@ -1082,6 +1065,16 @@ defineExpose({
 	}
 }
 //#endregion
+
+.colorBar {
+	position: absolute;
+	top: 0px;
+	left: 12px;
+	width: 5px;
+	height: 100% ;
+	border-radius: var(--rounded-full);
+	pointer-events: none;
+}
 
 .preview {
 	padding: 16px 20px 0 20px;
@@ -1176,6 +1169,7 @@ defineExpose({
 	min-height: 90px;
 	height: 100%;
 	resize: vertical;
+	field-sizing: content;
 }
 
 .textCount {
@@ -1196,26 +1190,18 @@ defineExpose({
 
 .footer {
 	display: flex;
-	padding: 0 16px 16px 16px;
 	font-size: 1em;
+	justify-content: space-between;
+	overflow-x: auto;
+	padding: 0 8px 8px 8px;
 }
 
 .footerLeft {
-	flex: 1;
-	display: grid;
-	grid-auto-flow: row;
-	grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
-	grid-auto-rows: 40px;
+	display: flex;
 }
 
 .footerRight {
-	flex: 0;
-	margin-left: auto;
-	display: grid;
-	grid-auto-flow: row;
-	grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
-	grid-auto-rows: 40px;
-	direction: rtl;
+	display: flex;
 }
 
 .footerButton {
@@ -1224,7 +1210,7 @@ defineExpose({
 	margin: 0;
 	font-size: 1em;
 	width: auto;
-	height: 100%;
+	height: 42px;
 	border-radius: var(--rounded-full);
 	aspect-ratio: 1 / 1;
 
@@ -1242,20 +1228,8 @@ defineExpose({
 }
 
 @container (max-width: 500px) {
-	.headerRight {
-		font-size: .9em;
-	}
-
 	.headerRightButtonText {
 		display: none;
-	}
-
-	.visibility {
-		overflow: initial;
-	}
-
-	.submit {
-		margin: 8px 8px 8px 4px;
 	}
 
 	.toSpecified {
@@ -1265,6 +1239,7 @@ defineExpose({
 	.preview {
 		padding: 16px 14px 0 14px;
 	}
+
 	.cw,
 	.hashtags,
 	.text {
@@ -1281,6 +1256,15 @@ defineExpose({
 }
 
 @container (max-width: 350px) {
+	.submit {
+		padding-inline: 0;
+		width: var(--submit-height);
+	}
+
+	.submitText {
+		display: none;
+	}
+
 	.footer {
 		font-size: 0.9em;
 	}
@@ -1292,10 +1276,5 @@ defineExpose({
 	.footerRight {
 		grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
 	}
-
-	.headerRight {
-		gap: 0;
-	}
-
 }
 </style>
