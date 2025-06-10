@@ -626,8 +626,6 @@ export function post(props: Record<string, any> = {}): Promise<void> {
 	});
 }
 
-export const deckGlobalEvents = new EventEmitter();
-
 /*
 export function checkExistence(fileData: ArrayBuffer): Promise<any> {
 	return new Promise((resolve, reject) => {

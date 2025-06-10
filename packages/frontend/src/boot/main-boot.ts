@@ -5,7 +5,6 @@
 
 import { createApp, defineAsyncComponent, markRaw } from 'vue';
 import { common } from './common.js';
-import { ui } from '@/config.js';
 import { i18n } from '@/i18n.js';
 import { alert, confirm, popup, post } from '@/os.js';
 import { useStream } from '@/stream.js';
@@ -16,15 +15,15 @@ import { ColdDeviceStorage, defaultStore } from '@/store.js';
 import { makeHotkey } from '@/scripts/hotkey.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { initializeSw } from '@/scripts/initialize-sw.js';
-import { deckStore } from '@/ui/deck/deck-store.js';
 import { mainRouter } from '@/router/main.js';
 
 export async function mainBoot() {
 	const { isClientUpdated } = await common(() => createApp(
-		new URLSearchParams(window.location.search).has('zen') || (ui === 'deck' && deckStore.state.useSimpleUiForNonRootPages && location.pathname !== '/') ? defineAsyncComponent(() => import('@/ui/zen.vue')) :
-		!$i ? defineAsyncComponent(() => import('@/ui/visitor.vue')) :
-		ui === 'deck' ? defineAsyncComponent(() => import('@/ui/deck.vue')) :
-		defineAsyncComponent(() => import('@/ui/universal.vue')),
+		new URLSearchParams(window.location.search).has('zen')
+			? defineAsyncComponent(() => import('@/ui/zen.vue'))
+			: !$i
+				? defineAsyncComponent(() => import('@/ui/visitor.vue'))
+				: defineAsyncComponent(() => import('@/ui/universal.vue')),
 	));
 
 	if (isClientUpdated && $i) {

@@ -19,7 +19,6 @@ import { deviceKind } from '@/scripts/device-kind.js';
 import { reloadChannel } from '@/scripts/unison-reload.js';
 import { getUrlWithoutLoginId } from '@/scripts/login-id.js';
 import { getAccountFromId } from '@/scripts/get-account-from-id.js';
-import { deckStore } from '@/ui/deck/deck-store.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { fetchCustomEmojis } from '@/custom-emojis.js';
 import { setupRouter } from '@/router/definition.js';
@@ -116,7 +115,6 @@ export async function common(createVue: () => App<Element>) {
 	//#endregion
 
 	await defaultStore.ready;
-	await deckStore.ready;
 
 	const fetchInstanceMetaPromise = fetchInstance();
 

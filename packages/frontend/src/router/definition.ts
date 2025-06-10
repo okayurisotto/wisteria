@@ -157,10 +157,6 @@ const routes: RouteDef[] = [{
 		name: 'webhook',
 		component: page(() => import('@/pages/settings/webhook.vue')),
 	}, {
-		path: '/deck',
-		name: 'deck',
-		component: page(() => import('@/pages/settings/deck.vue')),
-	}, {
 		path: '/preferences-backups',
 		name: 'preferences-backups',
 		component: page(() => import('@/pages/settings/preferences-backups.vue')),

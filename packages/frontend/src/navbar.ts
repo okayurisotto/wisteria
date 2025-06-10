@@ -6,13 +6,9 @@
 import { computed, reactive } from 'vue';
 import { clearCache } from './scripts/clear-cache.js';
 import { $i } from '@/account.js';
-import { miLocalStorage } from '@/local-storage.js';
 import { openToolsMenu } from '@/ui/_common_/common.js';
 import { lookup } from '@/scripts/lookup.js';
-import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
-import { ui } from '@/config.js';
-import { unisonReload } from '@/scripts/unison-reload.js';
 
 export const navbarItemDef = reactive({
 	notifications: {
@@ -100,27 +96,6 @@ export const navbarItemDef = reactive({
 		icon: 'ti ti-paperclip',
 		show: computed(() => $i != null),
 		to: '/my/clips',
-	},
-	ui: {
-		title: i18n.ts.switchUi,
-		icon: 'ti ti-devices',
-		action: (ev) => {
-			os.popupMenu([{
-				text: i18n.ts.default,
-				active: ui === 'default' || ui === null,
-				action: () => {
-					miLocalStorage.setItem('ui', 'default');
-					unisonReload();
-				},
-			}, {
-				text: i18n.ts.deck,
-				active: ui === 'deck',
-				action: () => {
-					miLocalStorage.setItem('ui', 'deck');
-					unisonReload();
-				},
-			}], ev.currentTarget ?? ev.target);
-		},
 	},
 	tools: {
 		title: i18n.ts.tools,
