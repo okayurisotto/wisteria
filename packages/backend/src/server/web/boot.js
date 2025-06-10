@@ -142,13 +142,6 @@
 		document.documentElement.style.backgroundImage = `url(${wallpaper})`;
 	}
 
-	const customCss = localStorage.getItem('customCss');
-	if (customCss && customCss.length > 0) {
-		const style = document.createElement('style');
-		style.innerHTML = customCss;
-		document.head.appendChild(style);
-	}
-
 	async function addStyle(styleText) {
 		let css = document.createElement('style');
 		css.appendChild(document.createTextNode(styleText));

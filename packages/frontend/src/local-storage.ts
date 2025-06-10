@@ -27,7 +27,6 @@ type Keys =
 	'locale' |
 	'localeVersion' |
 	'theme' |
-	'customCss' |
 	'message_drafts' |
 	'scratchpad' |
 	'debug' |

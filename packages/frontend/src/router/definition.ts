@@ -165,10 +165,6 @@ const routes: RouteDef[] = [{
 		name: 'migration',
 		component: page(() => import('@/pages/settings/migration.vue')),
 	}, {
-		path: '/custom-css',
-		name: 'general',
-		component: page(() => import('@/pages/settings/custom-css.vue')),
-	}, {
 		path: '/accounts',
 		name: 'profile',
 		component: page(() => import('@/pages/settings/accounts.vue')),

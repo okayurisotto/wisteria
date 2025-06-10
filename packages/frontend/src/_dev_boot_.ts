@@ -81,13 +81,6 @@ async function main() {
 	if (wallpaper) {
 		document.documentElement.style.backgroundImage = `url(${wallpaper})`;
 	}
-
-	const customCss = localStorage.getItem('customCss');
-	if (customCss && customCss.length > 0) {
-		const style = document.createElement('style');
-		style.innerHTML = customCss;
-		document.head.appendChild(style);
-	}
 }
 
 function renderError(code: string, details?: string) {
