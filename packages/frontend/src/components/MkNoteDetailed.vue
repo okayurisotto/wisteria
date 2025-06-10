@@ -490,6 +490,14 @@ function loadConversation() {
 
 <style lang="scss" module>
 .root {
+	container-type: inline-size;
+
+	--margin: 24px;
+
+	@container (width < 500px) {
+		--margin: 16px;
+	}
+
 	position: relative;
 	transition: box-shadow 0.1s ease;
 	overflow: clip;
@@ -549,12 +557,8 @@ function loadConversation() {
 }
 
 .note {
-	padding: 32px;
+	padding: var(--margin);
 	font-size: 1.2em;
-
-	&:hover > .main > .footer > .button {
-		opacity: 1;
-	}
 }
 
 .noteHeader {
@@ -673,6 +677,7 @@ function loadConversation() {
 
 	&:hover {
 		color: var(--fgHighlighted);
+		opacity: 1;
 	}
 }
 
@@ -730,52 +735,6 @@ function loadConversation() {
 
 .reactionTabActive {
 	border-color: var(--accent);
-}
-
-@container (max-width: 500px) {
-	.root {
-		font-size: 0.9em;
-	}
-}
-
-@container (max-width: 450px) {
-	.renote {
-		padding: 8px 16px 0 16px;
-	}
-
-	.note {
-		padding: 16px;
-	}
-
-	.noteHeaderAvatar {
-		width: 50px;
-		height: 50px;
-	}
-}
-
-@container (max-width: 350px) {
-	.noteFooterButton {
-		&:not(:last-child) {
-			margin-right: 18px;
-		}
-	}
-}
-
-@container (max-width: 300px) {
-	.root {
-		font-size: 0.825em;
-	}
-
-	.noteHeaderAvatar {
-		width: 50px;
-		height: 50px;
-	}
-
-	.noteFooterButton {
-		&:not(:last-child) {
-			margin-right: 12px;
-		}
-	}
 }
 
 .muted {
