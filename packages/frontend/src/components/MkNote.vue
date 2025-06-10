@@ -51,7 +51,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div :class="$style.main">
 			<MkNoteHeader :note="appearNote" :mini="true"/>
 			<MkInstanceTicker v-if="showTicker" :instance="appearNote.user.instance"/>
-			<div style="container-type: inline-size;">
+			<div>
 				<p v-if="appearNote.cw != null" :class="$style.cw">
 					<Mfm v-if="appearNote.cw != ''" style="margin-right: 8px;" :text="appearNote.cw" :author="appearNote.user" :nyaize="'respect'"/>
 					<MkCwButton v-model="showContent" :text="appearNote.text" :renote="appearNote.renote" :files="appearNote.files" :poll="appearNote.poll" style="margin: 4px 0;"/>
@@ -536,19 +536,19 @@ function emitUpdReaction(emoji: string, delta: number) {
 
 <style lang="scss" module>
 .root {
-	position: relative;
-	transition: box-shadow 0.1s ease;
-	font-size: 1.05em;
-	overflow: clip;
-	contain: content;
+	container-type: inline-size;
 
-	// これらの指定はパフォーマンス向上には有効だが、ノートの高さは一定でないため、
-	// 下の方までスクロールすると上のノートの高さがここで決め打ちされたものに変化し、表示しているノートの位置が変わってしまう
-	// ノートがマウントされたときに自身の高さを取得し contain-intrinsic-size を設定しなおせばほぼ解決できそうだが、
-	// 今度はその処理自体がパフォーマンス低下の原因にならないか懸念される。また、被リアクションでも高さは変化するため、やはり多少のズレは生じる
-	// 一度レンダリングされた要素はブラウザがよしなにサイズを覚えておいてくれるような実装になるまで待った方が良さそう(なるのか？)
-	//content-visibility: auto;
-  //contain-intrinsic-size: 0 128px;
+	--avatar-size: 60px;
+	--margin: 24px;
+
+	@container (width < 500px) {
+		--avatar-size: 40px;
+		--margin: 16px;
+	}
+
+	position: relative;
+	font-size: 1.05em;
+	contain: inline-size layout style paint;
 
 	&:focus-visible {
 		outline: none;
@@ -559,26 +559,13 @@ function emitUpdReaction(emoji: string, delta: number) {
 			display: block;
 			position: absolute;
 			z-index: 10;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
+			inset: 0;
 			margin: auto;
 			width: calc(100% - 8px);
 			height: calc(100% - 8px);
 			border: dashed 1px var(--focus);
 			border-radius: var(--rounded);
-			box-sizing: border-box;
 		}
-	}
-
-	.footer {
-		position: relative;
-		z-index: 1;
-	}
-
-	&:hover > .article > .main > .footer > .footerButton {
-		opacity: 1;
 	}
 
 	&.showActionsOnlyHover {
@@ -588,7 +575,6 @@ function emitUpdReaction(emoji: string, delta: number) {
 			top: 12px;
 			right: 12px;
 			padding: 0 4px;
-			margin-bottom: 0 !important;
 			background: var(--popup);
 			border-radius: var(--rounded);
 			box-shadow: 0px 4px 32px var(--shadow);
@@ -596,10 +582,6 @@ function emitUpdReaction(emoji: string, delta: number) {
 
 		.footerButton {
 			font-size: 90%;
-
-			&:not(:last-child) {
-				margin-right: 0;
-			}
 		}
 	}
 
@@ -633,7 +615,7 @@ function emitUpdReaction(emoji: string, delta: number) {
 	position: relative;
 	display: flex;
 	align-items: center;
-	padding: 16px 32px 8px 32px;
+	padding: var(--margin) var(--margin) var(--margin) var(--margin);
 	line-height: 28px;
 	white-space: pre;
 	color: var(--renote);
@@ -685,7 +667,7 @@ function emitUpdReaction(emoji: string, delta: number) {
 	align-items: center;
 	line-height: 28px;
 	white-space: pre;
-	padding: 0 32px 18px;
+	padding: 0 var(--margin) var(--margin);
 }
 
 .collapsedRenoteTargetAvatar {
@@ -713,7 +695,8 @@ function emitUpdReaction(emoji: string, delta: number) {
 .article {
 	position: relative;
 	display: flex;
-	padding: 28px 32px;
+	padding: var(--margin) var(--margin) calc(var(--margin) / 2) var(--margin);
+	gap: var(--margin);
 }
 
 .colorBar {
@@ -728,18 +711,14 @@ function emitUpdReaction(emoji: string, delta: number) {
 
 .avatar {
 	flex-shrink: 0;
-	display: block !important;
-	margin: 0 14px 0 0;
-	width: 58px;
-	height: 58px;
-	position: sticky !important;
-	top: calc(22px + var(--stickyTop, 0px));
-	left: 0;
+	display: block;
+	width: var(--avatar-size);
+	height: var(--avatar-size);
 }
 
 .main {
 	flex: 1;
-	min-width: 0;
+	overflow: hidden;
 }
 
 .cw {
@@ -837,7 +816,8 @@ function emitUpdReaction(emoji: string, delta: number) {
 }
 
 .footer {
-	margin-bottom: -14px;
+	display: flex;
+	column-gap: var(--margin);
 }
 
 .footerButton {
@@ -845,12 +825,9 @@ function emitUpdReaction(emoji: string, delta: number) {
 	padding: 8px;
 	opacity: 0.7;
 
-	&:not(:last-child) {
-		margin-right: 28px;
-	}
-
 	&:hover {
 		color: var(--fgHighlighted);
+		opacity: 1;
 	}
 }
 
@@ -858,119 +835,6 @@ function emitUpdReaction(emoji: string, delta: number) {
 	display: inline;
 	margin: 0 0 0 8px;
 	opacity: 0.7;
-}
-
-@container (max-width: 580px) {
-	.root {
-		font-size: 0.95em;
-	}
-
-	.renote {
-		padding: 12px 26px 0 26px;
-	}
-
-	.article {
-		padding: 24px 26px;
-	}
-
-	.avatar {
-		width: 50px;
-		height: 50px;
-	}
-}
-
-@container (max-width: 500px) {
-	.root {
-		font-size: 0.9em;
-	}
-
-	.renote {
-		padding: 10px 22px 0 22px;
-	}
-
-	.article {
-		padding: 20px 22px;
-	}
-
-	.footer {
-		margin-bottom: -8px;
-	}
-}
-
-@container (max-width: 480px) {
-	.renote {
-		padding: 8px 16px 0 16px;
-	}
-
-	.tip {
-		padding: 8px 16px 0 16px;
-	}
-
-	.collapsedRenoteTarget {
-		padding: 0 16px 9px;
-		margin-top: 4px;
-	}
-
-	.article {
-		padding: 14px 16px;
-	}
-}
-
-@container (max-width: 450px) {
-	.avatar {
-		margin: 0 10px 0 0;
-		width: 46px;
-		height: 46px;
-		top: calc(14px + var(--stickyTop, 0px));
-	}
-}
-
-@container (max-width: 400px) {
-	.root:not(.showActionsOnlyHover) {
-		.footerButton {
-			&:not(:last-child) {
-				margin-right: 18px;
-			}
-		}
-	}
-}
-
-@container (max-width: 350px) {
-	.root:not(.showActionsOnlyHover) {
-		.footerButton {
-			&:not(:last-child) {
-				margin-right: 12px;
-			}
-		}
-	}
-
-	.colorBar {
-		top: 6px;
-		left: 6px;
-		width: 4px;
-		height: calc(100% - 12px);
-	}
-}
-
-@container (max-width: 300px) {
-	.avatar {
-		width: 44px;
-		height: 44px;
-	}
-
-	.root:not(.showActionsOnlyHover) {
-		.footerButton {
-			&:not(:last-child) {
-				margin-right: 8px;
-			}
-		}
-	}
-}
-
-@container (max-width: 250px) {
-	.quoteNote {
-		padding: 12px;
-	}
 }
 
 .muted {
