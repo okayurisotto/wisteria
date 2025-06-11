@@ -10,7 +10,7 @@ import { EventEmitter } from 'eventemitter3';
 import { safeURIDecode } from '@/scripts/safe-uri-decode.js';
 
 interface RouteDefBase {
-	path: `/${string}`;
+	path: ParsedPath;
 	query?: Record<string, string>;
 	loginRequired?: boolean;
 	name?: string;
@@ -29,14 +29,14 @@ interface RouteDefWithRedirect extends RouteDefBase {
 
 export type RouteDef = RouteDefWithComponent | RouteDefWithRedirect;
 
-type ParsedPath = (string | {
+export type ParsedPath = (string | {
 	name: string;
 	startsWith?: string;
 	wildcard?: boolean;
 	optional?: boolean;
 })[];
 
-export type RouterEvent = {
+export interface RouterEvent {
 	change: (ctx: {
 		beforePath: string;
 		path: string;
@@ -57,7 +57,7 @@ export type RouterEvent = {
 	same: () => void;
 }
 
-export type Resolved = {
+export interface Resolved {
 	route: RouteDef;
 	props: Map<string, string | boolean>;
 	child?: Resolved;
@@ -69,44 +69,13 @@ export type Resolved = {
 		queryString: string | null;
 		hash: string | null;
 	};
-};
-
-const parsePath = (path_: `/${string}`): ParsedPath => {
-	const pattern = /^(?<prefix>.+)?:(?<name>\w+?)?(?<wildcard>\(\*\))?(?<optional>\?)?$/;
-
-	const parsed: ParsedPath = [];
-	const path = path_.substring(1);
-
-	for (const part of path.split('/')) {
-		const matchResult = part.match(pattern);
-
-		if (matchResult !== null) {
-			const prefix = matchResult.groups?.['prefix'];
-			const name = matchResult.groups?.['name'];
-			const wildcard = matchResult.groups?.['wildcard'];
-			const optional = matchResult.groups?.['optional'];
-
-			parsed.push({
-				name: name ?? '',
-				...(prefix !== undefined ? { startsWith: prefix } : {}),
-				wildcard: wildcard !== undefined,
-				optional: optional !== undefined,
-			});
-		} else if (part.length !== 0) {
-			parsed.push(part);
-		} else {
-			// ?
-		}
-	}
-
-	return parsed;
-};
+}
 
 export interface IRouter extends EventEmitter<RouterEvent> {
 	current: Resolved;
 	currentRef: ShallowRef<Resolved>;
 	currentRoute: ShallowRef<RouteDef>;
-	navHook: ((path: string, flag?: any) => boolean) | null;
+	navHook: ((path: string, flag?: unknown) => boolean) | null;
 
 	/**
 	 * ルートの初期化（eventListenerの定義後に必ず呼び出すこと）
@@ -115,21 +84,21 @@ export interface IRouter extends EventEmitter<RouterEvent> {
 
 	resolve(path: string): Resolved | null;
 
-	getCurrentPath(): any;
+	getCurrentPath(): unknown;
 
 	getCurrentKey(): string;
 
-	push(path: string, flag?: any): void;
+	push(path: string, flag?: unknown): void;
 
 	replace(path: string, key?: string | null): void;
 
 	/** @see EventEmitter */
-	eventNames(): Array<EventEmitter.EventNames<RouterEvent>>;
+	eventNames(): EventEmitter.EventNames<RouterEvent>[];
 
 	/** @see EventEmitter */
 	listeners<T extends EventEmitter.EventNames<RouterEvent>>(
 		event: T
-	): Array<EventEmitter.EventListener<RouterEvent, T>>;
+	): EventEmitter.EventListener<RouterEvent, T>[];
 
 	/** @see EventEmitter */
 	listenerCount(
@@ -146,37 +115,37 @@ export interface IRouter extends EventEmitter<RouterEvent> {
 	on<T extends EventEmitter.EventNames<RouterEvent>>(
 		event: T,
 		fn: EventEmitter.EventListener<RouterEvent, T>,
-		context?: any
+		context?: unknown
 	): this;
 
 	/** @see EventEmitter */
 	addListener<T extends EventEmitter.EventNames<RouterEvent>>(
 		event: T,
 		fn: EventEmitter.EventListener<RouterEvent, T>,
-		context?: any
+		context?: unknown
 	): this;
 
 	/** @see EventEmitter */
 	once<T extends EventEmitter.EventNames<RouterEvent>>(
 		event: T,
 		fn: EventEmitter.EventListener<RouterEvent, T>,
-		context?: any
+		context?: unknown
 	): this;
 
 	/** @see EventEmitter */
 	removeListener<T extends EventEmitter.EventNames<RouterEvent>>(
 		event: T,
 		fn?: EventEmitter.EventListener<RouterEvent, T>,
-		context?: any,
-		once?: boolean | undefined
+		context?: unknown,
+		once?: boolean
 	): this;
 
 	/** @see EventEmitter */
 	off<T extends EventEmitter.EventNames<RouterEvent>>(
 		event: T,
 		fn?: EventEmitter.EventListener<RouterEvent, T>,
-		context?: any,
-		once?: boolean | undefined
+		context?: unknown,
+		once?: boolean
 	): this;
 
 	/** @see EventEmitter */
@@ -196,7 +165,7 @@ export class Router extends EventEmitter<RouterEvent> implements IRouter {
 	private currentKey = Date.now().toString();
 	private redirectCount = 0;
 
-	public navHook: ((path: string, flag?: any) => boolean) | null = null;
+	public navHook: ((path: string, flag?: unknown) => boolean) | null = null;
 
 	constructor(routes: Router['routes'], currentPath: Router['currentPath'], isLoggedIn: boolean, notFoundPageComponent: Component) {
 		super();
@@ -222,7 +191,7 @@ export class Router extends EventEmitter<RouterEvent> implements IRouter {
 		const fullPath = path;
 		let queryString: string | null = null;
 		let hash: string | null = null;
-		if (path[0] === '/') path = path.substring(1);
+		if (path.startsWith('/')) path = path.substring(1);
 		if (path.includes('#')) {
 			hash = path.substring(path.indexOf('#') + 1);
 			path = path.substring(0, path.indexOf('#'));
@@ -247,7 +216,7 @@ export class Router extends EventEmitter<RouterEvent> implements IRouter {
 				const props = new Map<string, string>();
 
 				pathMatchLoop:
-				for (const p of parsePath(route.path)) {
+				for (const p of route.path) {
 					if (typeof p === 'string') {
 						if (p === parts[0]) {
 							parts.shift();
@@ -266,7 +235,7 @@ export class Router extends EventEmitter<RouterEvent> implements IRouter {
 							break pathMatchLoop;
 						} else {
 							if (p.startsWith) {
-								if (parts[0] == null || !parts[0].startsWith(p.startsWith)) continue forEachRouteLoop;
+								if (!parts[0]?.startsWith(p.startsWith)) continue forEachRouteLoop;
 
 								props.set(p.name, safeURIDecode(parts[0].substring(p.startsWith.length)));
 								parts.shift();
@@ -403,7 +372,7 @@ export class Router extends EventEmitter<RouterEvent> implements IRouter {
 		return this.currentKey;
 	}
 
-	public push(path: string, flag?: any) {
+	public push(path: string, flag?: unknown) {
 		const beforePath = this.currentPath;
 		if (path === beforePath) {
 			this.emit('same');

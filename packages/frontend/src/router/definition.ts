@@ -4,12 +4,43 @@
  */
 
 import { type App, type AsyncComponentLoader, defineAsyncComponent, provide } from 'vue';
-import type { RouteDef } from '@/nirax.js';
+import type { ParsedPath, RouteDef } from '@/nirax.js';
 import { type IRouter, Router } from '@/nirax.js';
 import { $i, iAmModerator } from '@/account.js';
 import MkLoading from '@/pages/_loading_.vue';
 import MkError from '@/pages/_error_.vue';
 import { setMainRouter } from '@/router/main.js';
+
+const parsePath = (path_: `/${string}`): ParsedPath => {
+	const pattern = /^(?<prefix>.+)?:(?<name>\w+?)?(?<wildcard>\(\*\))?(?<optional>\?)?$/;
+
+	const parsed: ParsedPath = [];
+	const path = path_.substring(1);
+
+	for (const part of path.split('/')) {
+		const matchResult = pattern.exec(part);
+
+		if (matchResult !== null) {
+			const prefix = matchResult.groups?.['prefix'];
+			const name = matchResult.groups?.['name'];
+			const wildcard = matchResult.groups?.['wildcard'];
+			const optional = matchResult.groups?.['optional'];
+
+			parsed.push({
+				name: name ?? '',
+				...(prefix !== undefined ? { startsWith: prefix } : {}),
+				wildcard: wildcard !== undefined,
+				optional: optional !== undefined,
+			});
+		} else if (part.length !== 0) {
+			parsed.push(part);
+		} else {
+			// ?
+		}
+	}
+
+	return parsed;
+};
 
 const page = (loader: AsyncComponentLoader<any>) => defineAsyncComponent({
 	loader: loader,
@@ -18,203 +49,203 @@ const page = (loader: AsyncComponentLoader<any>) => defineAsyncComponent({
 });
 
 const routes: RouteDef[] = [{
-	path: '/@:initUser/pages/:initPageName/view-source',
+	path: parsePath('/@:initUser/pages/:initPageName/view-source'),
 	component: page(() => import('@/pages/page-editor/page-editor.vue')),
 }, {
-	path: '/@:username/pages/:pageName',
+	path: parsePath('/@:username/pages/:pageName'),
 	component: page(() => import('@/pages/page.vue')),
 }, {
-	path: '/@:acct/following',
+	path: parsePath('/@:acct/following'),
 	component: page(() => import('@/pages/user/following.vue')),
 }, {
-	path: '/@:acct/followers',
+	path: parsePath('/@:acct/followers'),
 	component: page(() => import('@/pages/user/followers.vue')),
 }, {
 	name: 'user',
-	path: '/@:acct/:page?',
+	path: parsePath('/@:acct/:page?'),
 	component: page(() => import('@/pages/user/index.vue')),
 }, {
 	name: 'note',
-	path: '/notes/:noteId',
+	path: parsePath('/notes/:noteId'),
 	component: page(() => import('@/pages/note.vue')),
 }, {
 	name: 'list',
-	path: '/list/:listId',
+	path: parsePath('/list/:listId'),
 	component: page(() => import('@/pages/list.vue')),
 }, {
-	path: '/clips/:clipId',
+	path: parsePath('/clips/:clipId'),
 	component: page(() => import('@/pages/clip.vue')),
 }, {
-	path: '/instance-info/:host',
+	path: parsePath('/instance-info/:host'),
 	component: page(() => import('@/pages/instance-info.vue')),
 }, {
 	name: 'settings',
-	path: '/settings',
+	path: parsePath('/settings'),
 	component: page(() => import('@/pages/settings/index.vue')),
 	loginRequired: true,
 	children: [{
-		path: '/profile',
+		path: parsePath('/profile'),
 		name: 'profile',
 		component: page(() => import('@/pages/settings/profile.vue')),
 	}, {
-		path: '/avatar-decoration',
+		path: parsePath('/avatar-decoration'),
 		name: 'avatarDecoration',
 		component: page(() => import('@/pages/settings/avatar-decoration.vue')),
 	}, {
-		path: '/roles',
+		path: parsePath('/roles'),
 		name: 'roles',
 		component: page(() => import('@/pages/settings/roles.vue')),
 	}, {
-		path: '/privacy',
+		path: parsePath('/privacy'),
 		name: 'privacy',
 		component: page(() => import('@/pages/settings/privacy.vue')),
 	}, {
-		path: '/emoji-picker',
+		path: parsePath('/emoji-picker'),
 		name: 'emojiPicker',
 		component: page(() => import('@/pages/settings/emoji-picker.vue')),
 	}, {
-		path: '/drive',
+		path: parsePath('/drive'),
 		name: 'drive',
 		component: page(() => import('@/pages/settings/drive.vue')),
 	}, {
-		path: '/drive/cleaner',
+		path: parsePath('/drive/cleaner'),
 		name: 'drive',
 		component: page(() => import('@/pages/settings/drive-cleaner.vue')),
 	}, {
-		path: '/notifications',
+		path: parsePath('/notifications'),
 		name: 'notifications',
 		component: page(() => import('@/pages/settings/notifications.vue')),
 	}, {
-		path: '/email',
+		path: parsePath('/email'),
 		name: 'email',
 		component: page(() => import('@/pages/settings/email.vue')),
 	}, {
-		path: '/security',
+		path: parsePath('/security'),
 		name: 'security',
 		component: page(() => import('@/pages/settings/security.vue')),
 	}, {
-		path: '/general',
+		path: parsePath('/general'),
 		name: 'general',
 		component: page(() => import('@/pages/settings/general.vue')),
 	}, {
-		path: '/theme/install',
+		path: parsePath('/theme/install'),
 		name: 'theme',
 		component: page(() => import('@/pages/settings/theme.install.vue')),
 	}, {
-		path: '/theme/manage',
+		path: parsePath('/theme/manage'),
 		name: 'theme',
 		component: page(() => import('@/pages/settings/theme.manage.vue')),
 	}, {
-		path: '/theme',
+		path: parsePath('/theme'),
 		name: 'theme',
 		component: page(() => import('@/pages/settings/theme.vue')),
 	}, {
-		path: '/navbar',
+		path: parsePath('/navbar'),
 		name: 'navbar',
 		component: page(() => import('@/pages/settings/navbar.vue')),
 	}, {
-		path: '/statusbar',
+		path: parsePath('/statusbar'),
 		name: 'statusbar',
 		component: page(() => import('@/pages/settings/statusbar.vue')),
 	}, {
-		path: '/sounds',
+		path: parsePath('/sounds'),
 		name: 'sounds',
 		component: page(() => import('@/pages/settings/sounds.vue')),
 	}, {
-		path: '/plugin/install',
+		path: parsePath('/plugin/install'),
 		name: 'plugin',
 		component: page(() => import('@/pages/settings/plugin.install.vue')),
 	}, {
-		path: '/plugin',
+		path: parsePath('/plugin'),
 		name: 'plugin',
 		component: page(() => import('@/pages/settings/plugin.vue')),
 	}, {
-		path: '/import-export',
+		path: parsePath('/import-export'),
 		name: 'import-export',
 		component: page(() => import('@/pages/settings/import-export.vue')),
 	}, {
-		path: '/mute-block',
+		path: parsePath('/mute-block'),
 		name: 'mute-block',
 		component: page(() => import('@/pages/settings/mute-block.vue')),
 	}, {
-		path: '/api',
+		path: parsePath('/api'),
 		name: 'api',
 		component: page(() => import('@/pages/settings/api.vue')),
 	}, {
-		path: '/apps',
+		path: parsePath('/apps'),
 		name: 'api',
 		component: page(() => import('@/pages/settings/apps.vue')),
 	}, {
-		path: '/webhook/edit/:webhookId',
+		path: parsePath('/webhook/edit/:webhookId'),
 		name: 'webhook',
 		component: page(() => import('@/pages/settings/webhook.edit.vue')),
 	}, {
-		path: '/webhook/new',
+		path: parsePath('/webhook/new'),
 		name: 'webhook',
 		component: page(() => import('@/pages/settings/webhook.new.vue')),
 	}, {
-		path: '/webhook',
+		path: parsePath('/webhook'),
 		name: 'webhook',
 		component: page(() => import('@/pages/settings/webhook.vue')),
 	}, {
-		path: '/preferences-backups',
+		path: parsePath('/preferences-backups'),
 		name: 'preferences-backups',
 		component: page(() => import('@/pages/settings/preferences-backups.vue')),
 	}, {
-		path: '/migration',
+		path: parsePath('/migration'),
 		name: 'migration',
 		component: page(() => import('@/pages/settings/migration.vue')),
 	}, {
-		path: '/accounts',
+		path: parsePath('/accounts'),
 		name: 'profile',
 		component: page(() => import('@/pages/settings/accounts.vue')),
 	}, {
-		path: '/other',
+		path: parsePath('/other'),
 		name: 'other',
 		component: page(() => import('@/pages/settings/other.vue')),
 	}, {
-		path: '/',
+		path: parsePath('/'),
 		component: page(() => import('@/pages/_empty_.vue')),
 	}],
 }, {
-	path: '/reset-password/:token?',
+	path: parsePath('/reset-password/:token?'),
 	component: page(() => import('@/pages/reset-password.vue')),
 }, {
-	path: '/signup-complete/:code',
+	path: parsePath('/signup-complete/:code'),
 	component: page(() => import('@/pages/signup-complete.vue')),
 }, {
-	path: '/announcements',
+	path: parsePath('/announcements'),
 	component: page(() => import('@/pages/announcements.vue')),
 }, {
-	path: '/about',
+	path: parsePath('/about'),
 	component: page(() => import('@/pages/about.vue')),
 	hash: 'initialTab',
 }, {
-	path: '/about-misskey',
+	path: parsePath('/about-misskey'),
 	component: page(() => import('@/pages/about-misskey.vue')),
 }, {
-	path: '/invite',
+	path: parsePath('/invite'),
 	name: 'invite',
 	component: page(() => import('@/pages/invite.vue')),
 }, {
-	path: '/ads',
+	path: parsePath('/ads'),
 	component: page(() => import('@/pages/ads.vue')),
 }, {
-	path: '/theme-editor',
+	path: parsePath('/theme-editor'),
 	component: page(() => import('@/pages/theme-editor.vue')),
 	loginRequired: true,
 }, {
-	path: '/roles/:role',
+	path: parsePath('/roles/:role'),
 	component: page(() => import('@/pages/role.vue')),
 }, {
-	path: '/user-tags/:tag',
+	path: parsePath('/user-tags/:tag'),
 	component: page(() => import('@/pages/user-tag.vue')),
 }, {
-	path: '/explore',
+	path: parsePath('/explore'),
 	component: page(() => import('@/pages/explore.vue')),
 	hash: 'initialTab',
 }, {
-	path: '/search',
+	path: parsePath('/search'),
 	component: page(() => import('@/pages/search.vue')),
 	query: {
 		q: 'query',
@@ -223,25 +254,25 @@ const routes: RouteDef[] = [{
 		origin: 'origin',
 	},
 }, {
-	path: '/authorize-follow',
+	path: parsePath('/authorize-follow'),
 	component: page(() => import('@/pages/follow.vue')),
 	loginRequired: true,
 }, {
-	path: '/share',
+	path: parsePath('/share'),
 	component: page(() => import('@/pages/share.vue')),
 	loginRequired: true,
 }, {
-	path: '/api-console',
+	path: parsePath('/api-console'),
 	component: page(() => import('@/pages/api-console.vue')),
 	loginRequired: true,
 }, {
-	path: '/scratchpad',
+	path: parsePath('/scratchpad'),
 	component: page(() => import('@/pages/scratchpad.vue')),
 }, {
-	path: '/auth/:token',
+	path: parsePath('/auth/:token'),
 	component: page(() => import('@/pages/auth.vue')),
 }, {
-	path: '/miauth/:session',
+	path: parsePath('/miauth/:session'),
 	component: page(() => import('@/pages/miauth.vue')),
 	query: {
 		callback: 'callback',
@@ -250,257 +281,257 @@ const routes: RouteDef[] = [{
 		permission: 'permission',
 	},
 }, {
-	path: '/tags/:tag',
+	path: parsePath('/tags/:tag'),
 	component: page(() => import('@/pages/tag.vue')),
 }, {
-	path: '/pages/new',
+	path: parsePath('/pages/new'),
 	component: page(() => import('@/pages/page-editor/page-editor.vue')),
 	loginRequired: true,
 }, {
-	path: '/pages/edit/:initPageId',
+	path: parsePath('/pages/edit/:initPageId'),
 	component: page(() => import('@/pages/page-editor/page-editor.vue')),
 	loginRequired: true,
 }, {
-	path: '/pages',
+	path: parsePath('/pages'),
 	component: page(() => import('@/pages/pages.vue')),
 }, {
-	path: '/play/:id/edit',
+	path: parsePath('/play/:id/edit'),
 	component: page(() => import('@/pages/flash/flash-edit.vue')),
 	loginRequired: true,
 }, {
-	path: '/play/new',
+	path: parsePath('/play/new'),
 	component: page(() => import('@/pages/flash/flash-edit.vue')),
 	loginRequired: true,
 }, {
-	path: '/play/:id',
+	path: parsePath('/play/:id'),
 	component: page(() => import('@/pages/flash/flash.vue')),
 }, {
-	path: '/play',
+	path: parsePath('/play'),
 	component: page(() => import('@/pages/flash/flash-index.vue')),
 }, {
-	path: '/custom-emojis-manager',
+	path: parsePath('/custom-emojis-manager'),
 	component: page(() => import('@/pages/custom-emojis-manager.vue')),
 }, {
-	path: '/avatar-decorations',
+	path: parsePath('/avatar-decorations'),
 	name: 'avatarDecorations',
 	component: page(() => import('@/pages/avatar-decorations.vue')),
 }, {
-	path: '/registry/keys/:domain/:path(*)?',
+	path: parsePath('/registry/keys/:domain/:path(*)?'),
 	component: page(() => import('@/pages/registry.keys.vue')),
 }, {
-	path: '/registry/value/:domain/:path(*)?',
+	path: parsePath('/registry/value/:domain/:path(*)?'),
 	component: page(() => import('@/pages/registry.value.vue')),
 }, {
-	path: '/registry',
+	path: parsePath('/registry'),
 	component: page(() => import('@/pages/registry.vue')),
 }, {
-	path: '/install-extentions',
+	path: parsePath('/install-extentions'),
 	redirect: '/install-extensions',
 	loginRequired: true,
 }, {
-	path: '/install-extensions',
+	path: parsePath('/install-extensions'),
 	component: page(() => import('@/pages/install-extensions.vue')),
 	loginRequired: true,
 }, {
-	path: '/admin/user/:userId',
+	path: parsePath('/admin/user/:userId'),
 	component: iAmModerator ? page(() => import('@/pages/admin-user.vue')) : page(() => import('@/pages/not-found.vue')),
 }, {
-	path: '/admin/file/:fileId',
+	path: parsePath('/admin/file/:fileId'),
 	component: iAmModerator ? page(() => import('@/pages/admin-file.vue')) : page(() => import('@/pages/not-found.vue')),
 }, {
-	path: '/admin',
+	path: parsePath('/admin'),
 	component: iAmModerator ? page(() => import('@/pages/admin/index.vue')) : page(() => import('@/pages/not-found.vue')),
 	children: [{
-		path: '/overview',
+		path: parsePath('/overview'),
 		name: 'overview',
 		component: page(() => import('@/pages/admin/overview.vue')),
 	}, {
-		path: '/users',
+		path: parsePath('/users'),
 		name: 'users',
 		component: page(() => import('@/pages/admin/users.vue')),
 	}, {
-		path: '/emojis',
+		path: parsePath('/emojis'),
 		name: 'emojis',
 		component: page(() => import('@/pages/custom-emojis-manager.vue')),
 	}, {
-		path: '/avatar-decorations',
+		path: parsePath('/avatar-decorations'),
 		name: 'avatarDecorations',
 		component: page(() => import('@/pages/avatar-decorations.vue')),
 	}, {
-		path: '/queue',
+		path: parsePath('/queue'),
 		name: 'queue',
 		component: page(() => import('@/pages/admin/queue.vue')),
 	}, {
-		path: '/files',
+		path: parsePath('/files'),
 		name: 'files',
 		component: page(() => import('@/pages/admin/files.vue')),
 	}, {
-		path: '/federation',
+		path: parsePath('/federation'),
 		name: 'federation',
 		component: page(() => import('@/pages/admin/federation.vue')),
 	}, {
-		path: '/announcements',
+		path: parsePath('/announcements'),
 		name: 'announcements',
 		component: page(() => import('@/pages/admin/announcements.vue')),
 	}, {
-		path: '/ads',
+		path: parsePath('/ads'),
 		name: 'ads',
 		component: page(() => import('@/pages/admin/ads.vue')),
 	}, {
-		path: '/roles/:id/edit',
+		path: parsePath('/roles/:id/edit'),
 		name: 'roles',
 		component: page(() => import('@/pages/admin/roles.edit.vue')),
 	}, {
-		path: '/roles/new',
+		path: parsePath('/roles/new'),
 		name: 'roles',
 		component: page(() => import('@/pages/admin/roles.edit.vue')),
 	}, {
-		path: '/roles/:id',
+		path: parsePath('/roles/:id'),
 		name: 'roles',
 		component: page(() => import('@/pages/admin/roles.role.vue')),
 	}, {
-		path: '/roles',
+		path: parsePath('/roles'),
 		name: 'roles',
 		component: page(() => import('@/pages/admin/roles.vue')),
 	}, {
-		path: '/database',
+		path: parsePath('/database'),
 		name: 'database',
 		component: page(() => import('@/pages/admin/database.vue')),
 	}, {
-		path: '/abuses',
+		path: parsePath('/abuses'),
 		name: 'abuses',
 		component: page(() => import('@/pages/admin/abuses.vue')),
 	}, {
-		path: '/modlog',
+		path: parsePath('/modlog'),
 		name: 'modlog',
 		component: page(() => import('@/pages/admin/modlog.vue')),
 	}, {
-		path: '/settings',
+		path: parsePath('/settings'),
 		name: 'settings',
 		component: page(() => import('@/pages/admin/settings.vue')),
 	}, {
-		path: '/branding',
+		path: parsePath('/branding'),
 		name: 'branding',
 		component: page(() => import('@/pages/admin/branding.vue')),
 	}, {
-		path: '/moderation',
+		path: parsePath('/moderation'),
 		name: 'moderation',
 		component: page(() => import('@/pages/admin/moderation.vue')),
 	}, {
-		path: '/email-settings',
+		path: parsePath('/email-settings'),
 		name: 'email-settings',
 		component: page(() => import('@/pages/admin/email-settings.vue')),
 	}, {
-		path: '/object-storage',
+		path: parsePath('/object-storage'),
 		name: 'object-storage',
 		component: page(() => import('@/pages/admin/object-storage.vue')),
 	}, {
-		path: '/security',
+		path: parsePath('/security'),
 		name: 'security',
 		component: page(() => import('@/pages/admin/security.vue')),
 	}, {
-		path: '/relays',
+		path: parsePath('/relays'),
 		name: 'relays',
 		component: page(() => import('@/pages/admin/relays.vue')),
 	}, {
-		path: '/instance-block',
+		path: parsePath('/instance-block'),
 		name: 'instance-block',
 		component: page(() => import('@/pages/admin/instance-block.vue')),
 	}, {
-		path: '/proxy-account',
+		path: parsePath('/proxy-account'),
 		name: 'proxy-account',
 		component: page(() => import('@/pages/admin/proxy-account.vue')),
 	}, {
-		path: '/external-services',
+		path: parsePath('/external-services'),
 		name: 'external-services',
 		component: page(() => import('@/pages/admin/external-services.vue')),
 	}, {
-		path: '/other-settings',
+		path: parsePath('/other-settings'),
 		name: 'other-settings',
 		component: page(() => import('@/pages/admin/other-settings.vue')),
 	}, {
-		path: '/server-rules',
+		path: parsePath('/server-rules'),
 		name: 'server-rules',
 		component: page(() => import('@/pages/admin/server-rules.vue')),
 	}, {
-		path: '/invites',
+		path: parsePath('/invites'),
 		name: 'invites',
 		component: page(() => import('@/pages/admin/invites.vue')),
 	}, {
-		path: '/',
+		path: parsePath('/'),
 		component: page(() => import('@/pages/_empty_.vue')),
 	}],
 }, {
-	path: '/my/notifications',
+	path: parsePath('/my/notifications'),
 	component: page(() => import('@/pages/notifications.vue')),
 	loginRequired: true,
 }, {
-	path: '/my/favorites',
+	path: parsePath('/my/favorites'),
 	component: page(() => import('@/pages/favorites.vue')),
 	loginRequired: true,
 }, {
-	path: '/my/drive/folder/:folder',
+	path: parsePath('/my/drive/folder/:folder'),
 	component: page(() => import('@/pages/drive.vue')),
 	loginRequired: true,
 }, {
-	path: '/my/drive',
+	path: parsePath('/my/drive'),
 	component: page(() => import('@/pages/drive.vue')),
 	loginRequired: true,
 }, {
-	path: '/my/drive/file/:fileId',
+	path: parsePath('/my/drive/file/:fileId'),
 	component: page(() => import('@/pages/drive.file.vue')),
 	loginRequired: true,
 }, {
-	path: '/my/follow-requests',
+	path: parsePath('/my/follow-requests'),
 	component: page(() => import('@/pages/follow-requests.vue')),
 	loginRequired: true,
 }, {
-	path: '/my/lists/:listId',
+	path: parsePath('/my/lists/:listId'),
 	component: page(() => import('@/pages/my-lists/list.vue')),
 	loginRequired: true,
 }, {
-	path: '/my/lists',
+	path: parsePath('/my/lists'),
 	component: page(() => import('@/pages/my-lists/index.vue')),
 	loginRequired: true,
 }, {
-	path: '/my/clips',
+	path: parsePath('/my/clips'),
 	component: page(() => import('@/pages/my-clips/index.vue')),
 	loginRequired: true,
 }, {
-	path: '/my/antennas/create',
+	path: parsePath('/my/antennas/create'),
 	component: page(() => import('@/pages/my-antennas/create.vue')),
 	loginRequired: true,
 }, {
-	path: '/my/antennas/:antennaId',
+	path: parsePath('/my/antennas/:antennaId'),
 	component: page(() => import('@/pages/my-antennas/edit.vue')),
 	loginRequired: true,
 }, {
-	path: '/my/antennas',
+	path: parsePath('/my/antennas'),
 	component: page(() => import('@/pages/my-antennas/index.vue')),
 	loginRequired: true,
 }, {
-	path: '/timeline/list/:listId',
+	path: parsePath('/timeline/list/:listId'),
 	component: page(() => import('@/pages/user-list-timeline.vue')),
 	loginRequired: true,
 }, {
-	path: '/timeline/antenna/:antennaId',
+	path: parsePath('/timeline/antenna/:antennaId'),
 	component: page(() => import('@/pages/antenna-timeline.vue')),
 	loginRequired: true,
 }, {
-	path: '/timeline',
+	path: parsePath('/timeline'),
 	component: page(() => import('@/pages/timeline.vue')),
 }, {
 	name: 'index',
-	path: '/',
+	path: parsePath('/'),
 	component: $i ? page(() => import('@/pages/timeline.vue')) : page(() => import('@/pages/welcome.vue')),
 	globalCacheKey: 'index',
 }, {
 	// テスト用リダイレクト設定。ログイン中ユーザのプロフィールにリダイレクトする
-	path: '/redirect-test',
+	path: parsePath('/redirect-test'),
 	redirect: $i ? `@${$i.username}` : '/',
 	loginRequired: true,
 }, {
-	path: '/:(*)',
+	path: parsePath('/:(*)'),
 	component: page(() => import('@/pages/not-found.vue')),
 }];
 
