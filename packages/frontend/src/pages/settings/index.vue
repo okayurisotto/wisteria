@@ -124,11 +124,6 @@ const menuDef = computed(() => [{
 		text: i18n.ts.sounds,
 		to: '/settings/sounds',
 		active: currentPage.value?.route.name === 'sounds',
-	}, {
-		icon: 'ti ti-plug',
-		text: i18n.ts.plugins,
-		to: '/settings/plugin',
-		active: currentPage.value?.route.name === 'plugin',
 	}],
 }, {
 	title: i18n.ts.otherSettings,

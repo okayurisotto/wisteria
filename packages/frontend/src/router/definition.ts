@@ -152,14 +152,6 @@ const routes: RouteDef[] = [{
 		name: 'sounds',
 		component: page(() => import('@/pages/settings/sounds.vue')),
 	}, {
-		path: parsePath('/plugin/install'),
-		name: 'plugin',
-		component: page(() => import('@/pages/settings/plugin.install.vue')),
-	}, {
-		path: parsePath('/plugin'),
-		name: 'plugin',
-		component: page(() => import('@/pages/settings/plugin.vue')),
-	}, {
 		path: parsePath('/import-export'),
 		name: 'import-export',
 		component: page(() => import('@/pages/settings/import-export.vue')),
@@ -324,14 +316,6 @@ const routes: RouteDef[] = [{
 }, {
 	path: parsePath('/registry'),
 	component: page(() => import('@/pages/registry.vue')),
-}, {
-	path: parsePath('/install-extentions'),
-	redirect: '/install-extensions',
-	loginRequired: true,
-}, {
-	path: parsePath('/install-extensions'),
-	component: page(() => import('@/pages/install-extensions.vue')),
-	loginRequired: true,
 }, {
 	path: parsePath('/admin/user/:userId'),
 	component: iAmModerator ? page(() => import('@/pages/admin-user.vue')) : page(() => import('@/pages/not-found.vue')),
