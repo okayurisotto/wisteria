@@ -49,7 +49,7 @@ const forceSpacerMin = inject('forceSpacerMin', false) || deviceKind === 'smartp
 	}
 }
 
-@container (min-width: 451px) {
+@container (min-width: 450px) {
 	.root {
 		padding: v-bind('props.marginMax + "px"');
 	}
