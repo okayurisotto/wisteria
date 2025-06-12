@@ -68,28 +68,6 @@ export async function mainBoot() {
 		},
 	};
 
-	if (defaultStore.state.enableSeasonalScreenEffect) {
-		const month = new Date().getMonth() + 1;
-		if (defaultStore.state.hemisphere === 'S') {
-			// ▼南半球
-			if (month === 7 || month === 8) {
-				const SnowfallEffect = (await import('@/scripts/snowfall-effect.js')).SnowfallEffect;
-				new SnowfallEffect({}).render();
-			}
-		} else {
-			// ▼北半球
-			if (month === 12 || month === 1) {
-				const SnowfallEffect = (await import('@/scripts/snowfall-effect.js')).SnowfallEffect;
-				new SnowfallEffect({}).render();
-			} else if (month === 3 || month === 4) {
-				const SakuraEffect = (await import('@/scripts/snowfall-effect.js')).SnowfallEffect;
-				new SakuraEffect({
-					sakura: true,
-				}).render();
-			}
-		}
-	}
-
 	if ($i) {
 		// only add post shortcuts if logged in
 		hotkeys['p|n'] = post;

@@ -35,8 +35,6 @@ export const dateTimeFormat = _dateTimeFormat;
 
 export const timeZone = dateTimeFormat.resolvedOptions().timeZone;
 
-export const hemisphere = /^(australia|pacific|antarctica|indian)\//i.test(timeZone) ? 'S' : 'N';
-
 let _numberFormat: Intl.NumberFormat;
 try {
 	_numberFormat = new Intl.NumberFormat(versatileLang);

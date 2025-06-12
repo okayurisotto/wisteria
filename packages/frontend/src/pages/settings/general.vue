@@ -17,13 +17,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</template>
 	</MkSelect>
 
-	<MkRadios v-model="hemisphere">
-		<template #label>{{ i18n.ts.hemisphere }}</template>
-		<option value="N">{{ i18n.ts._hemisphere.N }}</option>
-		<option value="S">{{ i18n.ts._hemisphere.S }}</option>
-		<template #caption>{{ i18n.ts._hemisphere.caption }}</template>
-	</MkRadios>
-
 	<MkRadios v-model="overridedDeviceKind">
 		<template #label>{{ i18n.ts.overridedDeviceKind }}</template>
 		<option :value="null">{{ i18n.ts.auto }}</option>
@@ -130,7 +123,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkSwitch v-model="useSystemFont">{{ i18n.ts.useSystemFont }}</MkSwitch>
 				<MkSwitch v-model="disableDrawer">{{ i18n.ts.disableDrawer }}</MkSwitch>
 				<MkSwitch v-model="forceShowAds">{{ i18n.ts.forceShowAds }}</MkSwitch>
-				<MkSwitch v-model="enableSeasonalScreenEffect">{{ i18n.ts.seasonalScreenEffect }}</MkSwitch>
 			</div>
 			<div>
 				<MkRadios v-model="emojiStyle">
@@ -264,7 +256,6 @@ async function reloadAsk() {
 	unisonReload();
 }
 
-const hemisphere = computed(defaultStore.makeGetterSetter('hemisphere'));
 const overridedDeviceKind = computed(defaultStore.makeGetterSetter('overridedDeviceKind'));
 const serverDisconnectedBehavior = computed(defaultStore.makeGetterSetter('serverDisconnectedBehavior'));
 const showNoteActionsOnlyHover = computed(defaultStore.makeGetterSetter('showNoteActionsOnlyHover'));
@@ -301,7 +292,6 @@ const notificationStackAxis = computed(defaultStore.makeGetterSetter('notificati
 const keepScreenOn = computed(defaultStore.makeGetterSetter('keepScreenOn'));
 const disableStreamingTimeline = computed(defaultStore.makeGetterSetter('disableStreamingTimeline'));
 const useGroupedNotifications = computed(defaultStore.makeGetterSetter('useGroupedNotifications'));
-const enableSeasonalScreenEffect = computed(defaultStore.makeGetterSetter('enableSeasonalScreenEffect'));
 const enableHorizontalSwipe = computed(defaultStore.makeGetterSetter('enableHorizontalSwipe'));
 
 watch(lang, () => {
@@ -327,7 +317,6 @@ watch(useSystemFont, () => {
 });
 
 watch([
-	hemisphere,
 	lang,
 	fontSize,
 	useSystemFont,
@@ -343,7 +332,6 @@ watch([
 	highlightSensitiveMedia,
 	keepScreenOn,
 	disableStreamingTimeline,
-	enableSeasonalScreenEffect,
 ], async () => {
 	await reloadAsk();
 });
