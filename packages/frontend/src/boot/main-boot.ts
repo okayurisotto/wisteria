@@ -33,21 +33,23 @@ export async function mainBoot() {
 	const stream = useStream();
 
 	let reloadDialogShowing = false;
-	stream.on('_disconnected_', async () => {
+	stream.on('_disconnected_', () => {
 		if (defaultStore.state.serverDisconnectedBehavior === 'reload') {
 			location.reload();
 		} else if (defaultStore.state.serverDisconnectedBehavior === 'dialog') {
 			if (reloadDialogShowing) return;
+
 			reloadDialogShowing = true;
-			const { canceled } = await confirm({
+			void confirm({
 				type: 'warning',
 				title: i18n.ts.disconnectedFromServer,
 				text: i18n.ts.reloadConfirm,
+			}).then(({ canceled }) => {
+				reloadDialogShowing = false;
+				if (!canceled) {
+					location.reload();
+				}
 			});
-			reloadDialogShowing = false;
-			if (!canceled) {
-				location.reload();
-			}
 		}
 	});
 
