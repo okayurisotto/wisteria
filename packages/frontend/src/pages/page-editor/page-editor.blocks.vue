@@ -39,7 +39,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'update:modelValue', value: Misskey.entities.Page['content']): void;
+	'update:modelValue': [value: Misskey.entities.Page['content']];
 }>();
 
 function updateItem(v) {

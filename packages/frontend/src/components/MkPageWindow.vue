@@ -48,7 +48,7 @@ const props = defineProps<{
 }>();
 
 defineEmits<{
-	(ev: 'closed'): void;
+	closed: [];
 }>();
 
 const routerFactory = useRouterFactory();

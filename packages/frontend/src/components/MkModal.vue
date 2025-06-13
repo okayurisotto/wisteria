@@ -91,12 +91,12 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'opening'): void;
-	(ev: 'opened'): void;
-	(ev: 'click'): void;
-	(ev: 'esc'): void;
-	(ev: 'close'): void;
-	(ev: 'closed'): void;
+	opening: [];
+	opened: [];
+	click: [];
+	esc: [];
+	close: [];
+	closed: [];
 }>();
 
 provide('modal', true);

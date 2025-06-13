@@ -34,9 +34,9 @@ withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'done', v: any): void;
-	(ev: 'closed'): void;
-	(ev: 'cancelled'): void;
+	done: [v: any];
+	closed: [];
+	cancelled: [];
 }>();
 
 const dialog = shallowRef<InstanceType<typeof MkModalWindow>>();

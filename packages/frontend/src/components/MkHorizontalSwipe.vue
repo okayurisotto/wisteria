@@ -41,7 +41,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'swiped', newKey: string, direction: 'left' | 'right'): void;
+	swiped: [newKey: string, direction: 'left' | 'right'];
 }>();
 
 const shouldAnimate = computed(() => defaultStore.reactiveState.enableHorizontalSwipe.value || defaultStore.reactiveState.animation.value);

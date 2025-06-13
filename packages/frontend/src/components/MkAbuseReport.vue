@@ -54,7 +54,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'resolved', reportId: string): void;
+	resolved: [reportId: string];
 }>();
 
 const forward = ref(props.report.forwarded);

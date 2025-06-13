@@ -65,20 +65,20 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'closed'): void;
-	(ev: 'attach', payload: {
+	closed: [];
+	attach: [payload: {
 		angle: number;
 		flipH: boolean;
 		offsetX: number;
 		offsetY: number;
-	}): void;
-	(ev: 'update', payload: {
+	}];
+	update: [payload: {
 		angle: number;
 		flipH: boolean;
 		offsetX: number;
 		offsetY: number;
-	}): void;
-	(ev: 'detach'): void;
+	}];
+	detach: [];
 }>();
 
 const dialog = shallowRef<InstanceType<typeof MkModalWindow>>();

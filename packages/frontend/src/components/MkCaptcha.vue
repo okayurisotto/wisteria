@@ -47,7 +47,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'update:modelValue', v: string | null): void;
+	'update:modelValue': [v: string | null];
 }>();
 
 const available = ref(false);

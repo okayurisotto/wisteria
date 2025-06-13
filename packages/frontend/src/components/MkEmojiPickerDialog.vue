@@ -55,9 +55,9 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'done', v: any): void;
-	(ev: 'close'): void;
-	(ev: 'closed'): void;
+	done: [v: any];
+	close: [];
+	closed: [];
 }>();
 
 const modal = shallowRef<InstanceType<typeof MkModal>>();

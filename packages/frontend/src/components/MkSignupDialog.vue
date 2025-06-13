@@ -47,8 +47,8 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'done', res: Misskey.entities.SigninResponse): void;
-	(ev: 'closed'): void;
+	done: [res: Misskey.entities.SigninResponse];
+	closed: [];
 }>();
 
 const dialog = shallowRef<InstanceType<typeof MkModalWindow>>();

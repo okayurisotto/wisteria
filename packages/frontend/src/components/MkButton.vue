@@ -56,7 +56,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'click', payload: MouseEvent): void;
+	click: [payload: MouseEvent];
 }>();
 
 const el = shallowRef<HTMLElement | null>(null);

@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<{
 const mock = inject<boolean>('mock', false);
 
 const emit = defineEmits<{
-	(ev: 'mockUpdateMyReaction', emoji: string, delta: number): void;
+	mockUpdateMyReaction: [emoji: string, delta: number];
 }>();
 
 const initialReactions = new Set(Object.keys(props.note.reactions));

@@ -156,12 +156,12 @@ const props = withDefaults(defineProps<{
 provide('mock', props.mock);
 
 const emit = defineEmits<{
-	(ev: 'posted'): void;
-	(ev: 'cancel'): void;
-	(ev: 'esc'): void;
+	posted: [];
+	cancel: [];
+	esc: [];
 
 	// Mock用
-	(ev: 'fileChangeSensitive', fileId: string, to: boolean): void;
+	fileChangeSensitive: [fileId: string, to: boolean];
 }>();
 
 const textareaEl = shallowRef<HTMLTextAreaElement | null>(null);

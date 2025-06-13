@@ -20,7 +20,7 @@ import { defaultStore } from '@/store.js';
 import { serverErrorImageUrl } from '@/instance.js';
 
 const emit = defineEmits<{
-	(ev: 'retry'): void;
+	retry: [];
 }>();
 </script>
 

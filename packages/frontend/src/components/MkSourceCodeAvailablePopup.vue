@@ -48,7 +48,7 @@ import { miLocalStorage } from '@/local-storage.js';
 import * as os from '@/os.js';
 
 const emit = defineEmits<{
-	(ev: 'closed'): void;
+	closed: [];
 }>();
 
 const zIndex = os.claimZIndex('low');

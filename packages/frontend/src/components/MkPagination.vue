@@ -101,8 +101,8 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'queue', count: number): void;
-	(ev: 'status', error: boolean): void;
+	queue: [count: number];
+	status: [error: boolean];
 }>();
 
 const rootEl = shallowRef<HTMLElement>();

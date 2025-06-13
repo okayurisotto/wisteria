@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'end'): void;
+	end: [];
 }>();
 
 const up = ref(false);

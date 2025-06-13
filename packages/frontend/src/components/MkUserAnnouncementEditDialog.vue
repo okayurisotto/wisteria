@@ -75,8 +75,8 @@ const display = ref(props.announcement ? props.announcement.display : 'dialog');
 const needConfirmationToRead = ref(props.announcement ? props.announcement.needConfirmationToRead : false);
 
 const emit = defineEmits<{
-	(ev: 'done', v: { deleted?: boolean; updated?: any; created?: any }): void,
-	(ev: 'closed'): void
+	done: [v: { deleted?: boolean; updated?: any; created?: any }];
+	closed: [];
 }>();
 
 async function done() {

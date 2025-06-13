@@ -73,7 +73,7 @@ const props = defineProps<{
 	modelValue: PollEditorModelValue;
 }>();
 const emit = defineEmits<{
-	(ev: 'update:modelValue', v: PollEditorModelValue): void;
+	'update:modelValue': [v: PollEditorModelValue];
 }>();
 
 const choices = ref(props.modelValue.choices);

@@ -39,7 +39,7 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'update:modelValue', value: any): void;
+	'update:modelValue': [value: any];
 }>();
 
 const children = ref(deepClone(props.modelValue.children ?? []));

@@ -42,7 +42,7 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'closed'): void;
+	closed: [];
 }>();
 
 const preferedModalType = (deviceKind === 'desktop' && props.src != null) ? 'popup' :

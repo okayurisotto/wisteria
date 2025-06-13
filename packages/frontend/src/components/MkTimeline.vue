@@ -45,8 +45,8 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'note'): void;
-	(ev: 'queue', count: number): void;
+	note: [];
+	queue: [count: number];
 }>();
 
 provide('inTimeline', true);

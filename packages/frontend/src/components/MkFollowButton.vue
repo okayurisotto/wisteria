@@ -53,7 +53,7 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(_: 'update:user', value: Misskey.entities.UserDetailed): void
+	'update:user': [value: Misskey.entities.UserDetailed];
 }>();
 
 const isFollowing = ref(props.user.isFollowing);

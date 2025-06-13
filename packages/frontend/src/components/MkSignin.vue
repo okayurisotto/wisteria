@@ -74,7 +74,7 @@ const queryingKey = ref(false);
 const credentialRequest = ref<CredentialRequestOptions | null>(null);
 
 const emit = defineEmits<{
-	(ev: 'login', v: any): void;
+	login: [v: any];
 }>();
 
 const props = defineProps({

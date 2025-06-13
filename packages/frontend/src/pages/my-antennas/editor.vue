@@ -65,9 +65,9 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'created'): void,
-	(ev: 'updated'): void,
-	(ev: 'deleted'): void,
+	created: [];
+	updated: [];
+	deleted: [];
 }>();
 
 const name = ref<string>(props.antenna.name);

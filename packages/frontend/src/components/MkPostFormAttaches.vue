@@ -37,11 +37,11 @@ const props = defineProps<{
 const mock = inject<boolean>('mock', false);
 
 const emit = defineEmits<{
-	(ev: 'update:modelValue', value: any[]): void;
-	(ev: 'detach', id: string): void;
-	(ev: 'changeSensitive', file: Misskey.entities.DriveFile, isSensitive: boolean): void;
-	(ev: 'changeName', file: Misskey.entities.DriveFile, newName: string): void;
-	(ev: 'replaceFile', file: Misskey.entities.DriveFile, newFile: Misskey.entities.DriveFile): void;
+	'update:modelValue': [value: any[]];
+	detach: [id: string];
+	changeSensitive: [file: Misskey.entities.DriveFile, isSensitive: boolean];
+	changeName: [file: Misskey.entities.DriveFile, newName: string];
+	replaceFile: [file: Misskey.entities.DriveFile, newFile: Misskey.entities.DriveFile];
 }>();
 
 let menuShowing = false;

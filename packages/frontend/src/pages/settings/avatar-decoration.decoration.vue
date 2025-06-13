@@ -35,7 +35,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'click'): void;
+	click: [];
 }>();
 </script>
 

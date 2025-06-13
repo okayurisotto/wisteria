@@ -98,8 +98,8 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'signup', user: Misskey.entities.SignupResponse): void;
-	(ev: 'signupEmailPending'): void;
+	signup: [user: Misskey.entities.SignupResponse];
+	signupEmailPending: [];
 }>();
 
 const host = toUnicode(config.host);

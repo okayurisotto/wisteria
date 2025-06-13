@@ -23,7 +23,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'update:modelValue', v: boolean): void;
+	'update:modelValue': [v: boolean];
 }>();
 
 const label = computed(() => {

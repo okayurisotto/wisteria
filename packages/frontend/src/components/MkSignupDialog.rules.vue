@@ -84,8 +84,8 @@ const agreed = computed(() => {
 });
 
 const emit = defineEmits<{
-	(ev: 'cancel'): void;
-	(ev: 'done'): void;
+	cancel: [];
+	done: [];
 }>();
 
 const tosPrivacyPolicyLabel = computed(() => {

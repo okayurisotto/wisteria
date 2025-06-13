@@ -21,7 +21,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'close'): void;
+	close: [];
 }>();
 
 function close() {

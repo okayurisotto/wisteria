@@ -51,10 +51,10 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'change', _ev: KeyboardEvent): void;
-	(ev: 'keydown', _ev: KeyboardEvent): void;
-	(ev: 'enter'): void;
-	(ev: 'update:modelValue', value: string): void;
+	change: [_ev: KeyboardEvent];
+	keydown: [_ev: KeyboardEvent];
+	enter: [];
+	'update:modelValue': [value: string];
 }>();
 
 const { modelValue } = toRefs(props);

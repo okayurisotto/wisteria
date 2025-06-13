@@ -55,7 +55,7 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'refresh'): void;
+	refresh: [];
 }>();
 
 function getScreenY(event) {

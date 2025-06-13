@@ -27,7 +27,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'save', value: (string[] | string)[]): void;
+	save: [value: (string[] | string)[]];
 }>();
 
 const render = (mutedWords) => mutedWords.map(x => {

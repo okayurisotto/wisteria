@@ -44,7 +44,7 @@ const props = defineProps<{
 const mock = inject<boolean>('mock', false);
 
 const emit = defineEmits<{
-	(ev: 'reactionToggled', emoji: string, newCount: number): void;
+	reactionToggled: [emoji: string, newCount: number];
 }>();
 
 const buttonEl = shallowRef<HTMLElement>();

@@ -205,8 +205,8 @@ const props = withDefaults(defineProps<{
 provide('mock', props.mock);
 
 const emit = defineEmits<{
-	(ev: 'reaction', emoji: string): void;
-	(ev: 'removeReaction', emoji: string): void;
+	reaction: [emoji: string];
+	removeReaction: [emoji: string];
 }>();
 
 const inTimeline = inject<boolean>('inTimeline', false);

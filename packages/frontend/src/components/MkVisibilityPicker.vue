@@ -58,8 +58,8 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'changeVisibility', v: typeof Misskey.noteVisibilities[number]): void;
-	(ev: 'closed'): void;
+	changeVisibility: [v: typeof Misskey.noteVisibilities[number]];
+	closed: [];
 }>();
 
 const v = ref(props.currentVisibility);

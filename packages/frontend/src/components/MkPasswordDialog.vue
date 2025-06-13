@@ -46,9 +46,9 @@ import { signinRequired } from '@/account.js';
 const $i = signinRequired();
 
 const emit = defineEmits<{
-	(ev: 'done', v: { password: string; token: string | null; }): void;
-	(ev: 'closed'): void;
-	(ev: 'cancelled'): void;
+	done: [v: { password: string; token: string | null; }];
+	closed: [];
+	cancelled: [];
 }>();
 
 const dialog = shallowRef<InstanceType<typeof MkModalWindow>>();

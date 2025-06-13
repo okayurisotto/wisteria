@@ -25,7 +25,7 @@ withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-	(ev: 'dragEnded', value: number): void;
+	dragEnded: [value: number];
 }>();
 
 // eslint-disable-next-line no-undef

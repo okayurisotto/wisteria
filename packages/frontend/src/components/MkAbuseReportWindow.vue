@@ -44,7 +44,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'closed'): void;
+	closed: [];
 }>();
 
 const uiWindow = shallowRef<InstanceType<typeof MkWindow>>();

@@ -35,8 +35,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'closed'): void;
-	(ev: 'actioned'): void;
+	closed: [];
+	actioned: [];
 }>();
 
 const el = shallowRef<HTMLElement>();

@@ -116,8 +116,8 @@ watch(roleIdsThatCanBeUsedThisEmojiAsReaction, async () => {
 const imgUrl = computed(() => file.value ? file.value.url : props.emoji ? `/emoji/${props.emoji.name}.webp` : null);
 
 const emit = defineEmits<{
-	(ev: 'done', v: { deleted?: boolean; updated?: any; created?: any }): void,
-	(ev: 'closed'): void
+	done: [v: { deleted?: boolean; updated?: any; created?: any }];
+	closed: [];
 }>();
 
 async function changeImage(ev) {

@@ -44,7 +44,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'update', result: { type: SoundType; fileId?: string; fileUrl?: string; volume: number; }): void;
+	update: [result: { type: SoundType; fileId?: string; fileUrl?: string; volume: number; }];
 }>();
 
 const type = ref<SoundType>(props.type);

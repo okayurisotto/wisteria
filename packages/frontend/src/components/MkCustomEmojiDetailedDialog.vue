@@ -66,9 +66,9 @@ const props = defineProps<{
   emoji: Misskey.entities.EmojiDetailed,
 }>();
 const emit = defineEmits<{
-	(ev: 'ok', cropped: Misskey.entities.DriveFile): void;
-	(ev: 'cancel'): void;
-	(ev: 'closed'): void;
+	ok: [cropped: Misskey.entities.DriveFile];
+	cancel: [];
+	closed: [];
 }>();
 const dialogEl = shallowRef<InstanceType<typeof MkModalWindow>>();
 const cancel = () => {

@@ -53,8 +53,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'changeByUser', value: string | null): void;
-	(ev: 'update:modelValue', value: string | null): void;
+	changeByUser: [value: string | null];
+	'update:modelValue': [value: string | null];
 }>();
 
 const slots = useSlots();
