@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <MkStickyContainer>
 	<template #header><MkPageHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer v-if="instance" :contentMax="600" :marginMin="16" :marginMax="32">
+	<MkSpacer v-if="instance" :contentMax="600">
 		<MkHorizontalSwipe v-model:tab="tab" :tabs="headerTabs">
 			<div v-if="tab === 'overview'" key="overview" class="_gaps_m">
 				<div class="fnfelxur">

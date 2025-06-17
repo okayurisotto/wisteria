@@ -16,7 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<template v-else #header>New emoji</template>
 
 	<div>
-		<MkSpacer :marginMin="20" :marginMax="28">
+		<MkSpacer>
 			<div class="_gaps_m">
 				<div v-if="imgUrl != null" :class="$style.imgs">
 					<div style="background: #000;" :class="$style.imgContainer">

@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</MkSpacer>
 	<template v-if="$i" #footer>
 		<div :class="$style.footer">
-			<MkSpacer :contentMax="800" :marginMin="16" :marginMax="16">
+			<MkSpacer :contentMax="800">
 				<MkButton rounded primary :class="$style.button" @click="post()"><i class="ti ti-pencil"></i>{{ i18n.ts.postToHashtag }}</MkButton>
 			</MkSpacer>
 		</div>

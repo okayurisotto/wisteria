@@ -7,12 +7,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div>
 	<MkStickyContainer>
 		<template #header><XHeader :tabs="headerTabs"/></template>
-		<MkSpacer :contentMax="600" :marginMin="16" :marginMax="32">
+		<MkSpacer :contentMax="600">
 			<XEditor v-if="data" v-model="data"/>
 		</MkSpacer>
 		<template #footer>
 			<div :class="$style.footer">
-				<MkSpacer :contentMax="600" :marginMin="16" :marginMax="16">
+				<MkSpacer :contentMax="600">
 					<MkButton primary rounded @click="save"><i class="ti ti-check"></i> {{ i18n.ts.save }}</MkButton>
 				</MkSpacer>
 			</div>

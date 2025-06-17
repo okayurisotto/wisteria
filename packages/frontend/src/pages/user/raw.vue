@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkSpacer :contentMax="600" :marginMin="16" :marginMax="32">
+<MkSpacer :contentMax="600">
 	<div class="_gaps_m">
 		<div :class="$style.userMInfoRoot">
 			<MkAvatar :class="$style.userMInfoAvatar" :user="user" indicator link preview/>

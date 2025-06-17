@@ -38,7 +38,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			>
 				<KeepAlive>
 					<div v-show="opened">
-						<MkSpacer :marginMin="14" :marginMax="22">
+						<MkSpacer>
 							<slot></slot>
 						</MkSpacer>
 					</div>

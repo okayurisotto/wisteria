@@ -13,7 +13,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 >
 	<template #header>{{ i18n.ts.authentication }}</template>
 
-	<MkSpacer :marginMin="20" :marginMax="28">
+	<MkSpacer>
 		<div style="padding: 0 0 16px 0; text-align: center;">
 			<img src="/fluent-emoji/1f510.png" alt="🔐" style="display: block; margin: 0 auto; width: 48px;">
 			<div style="margin-top: 16px;">{{ i18n.ts.authenticationRequiredToContinue }}</div>

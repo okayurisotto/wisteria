@@ -8,7 +8,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<div :class="$style.banner">
 		<i class="ti ti-checklist"></i>
 	</div>
-	<MkSpacer :marginMin="20" :marginMax="28">
+	<MkSpacer>
 		<div class="_gaps_m">
 			<div v-if="instance.disableRegistration">
 				<MkInfo warn>{{ i18n.ts.invitationRequiredToRegister }}</MkInfo>

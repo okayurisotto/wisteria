@@ -14,7 +14,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<template v-else #header>New announcement</template>
 
 	<div>
-		<MkSpacer :marginMin="20" :marginMax="28">
+		<MkSpacer>
 			<div class="_gaps_m">
 				<MkInput v-model="title">
 					<template #label>{{ i18n.ts.title }}</template>

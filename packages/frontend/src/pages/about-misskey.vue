@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <MkStickyContainer>
 	<template #header><MkPageHeader/></template>
 	<div style="overflow: clip;">
-		<MkSpacer :contentMax="600" :marginMin="20">
+		<MkSpacer :contentMax="600">
 			<div class="_gaps_m znqjceqz">
 				<div v-panel class="about">
 					<div class="container">

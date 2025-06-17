@@ -13,7 +13,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 >
 	<template #header>{{ i18n.ts.login }}</template>
 
-	<MkSpacer :marginMin="20" :marginMax="28">
+	<MkSpacer>
 		<MkSignin :autoSet="autoSet" :message="message" @login="onLogin"/>
 	</MkSpacer>
 </MkModalWindow>

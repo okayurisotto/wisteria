@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div>
 	<MkStickyContainer>
 		<template #header><XHeader :tabs="headerTabs"/></template>
-		<MkSpacer :contentMax="700" :marginMin="16" :marginMax="32">
+		<MkSpacer :contentMax="700">
 			<FormSuspense :p="init">
 				<div class="_gaps_m">
 					<MkInput v-model="iconUrl" type="url">
@@ -94,7 +94,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</MkSpacer>
 		<template #footer>
 			<div :class="$style.footer">
-				<MkSpacer :contentMax="700" :marginMin="16" :marginMax="16">
+				<MkSpacer :contentMax="700">
 					<MkButton primary rounded @click="save"><i class="ti ti-check"></i> {{ i18n.ts.save }}</MkButton>
 				</MkSpacer>
 			</div>

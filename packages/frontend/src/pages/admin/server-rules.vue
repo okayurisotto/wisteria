@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div>
 	<MkStickyContainer>
 		<template #header><XHeader :tabs="headerTabs"/></template>
-		<MkSpacer :contentMax="700" :marginMin="16" :marginMax="32">
+		<MkSpacer :contentMax="700">
 			<div class="_gaps_m">
 				<div>{{ i18n.ts._serverRules.description }}</div>
 				<Sortable

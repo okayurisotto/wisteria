@@ -16,7 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 >
 	<template #header>{{ i18n.ts.notificationSetting }}</template>
 
-	<MkSpacer :marginMin="20" :marginMax="28">
+	<MkSpacer>
 		<div class="_gaps_m">
 			<MkInfo>{{ i18n.ts.notificationSettingDesc }}</MkInfo>
 			<div class="_buttons">

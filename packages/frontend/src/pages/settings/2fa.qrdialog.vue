@@ -23,7 +23,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		>
 			<template v-if="page === 0">
 				<div style="height: 100cqh; overflow: auto; text-align: center;">
-					<MkSpacer :marginMin="20" :marginMax="28">
+					<MkSpacer>
 						<div class="_gaps">
 							<I18n :src="i18n.ts._2fa.step1" tag="div">
 								<template #a>
@@ -49,7 +49,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</template>
 			<template v-else-if="page === 1">
 				<div style="height: 100cqh; overflow: auto;">
-					<MkSpacer :marginMin="20" :marginMax="28">
+					<MkSpacer>
 						<div class="_gaps">
 							<div>{{ i18n.ts._2fa.step3Title }}</div>
 							<MkInput v-model="token" autocomplete="one-time-code"></MkInput>
@@ -64,7 +64,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</template>
 			<template v-else-if="page === 2">
 				<div style="height: 100cqh; overflow: auto;">
-					<MkSpacer :marginMin="20" :marginMax="28">
+					<MkSpacer>
 						<div class="_gaps">
 							<div style="text-align: center;">{{ i18n.ts._2fa.setupCompleted }}🎉</div>
 							<div style="text-align: center;">{{ i18n.ts._2fa.step4 }}</div>

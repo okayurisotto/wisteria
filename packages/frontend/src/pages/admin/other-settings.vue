@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <MkStickyContainer>
 	<template #header><XHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="700" :marginMin="16" :marginMax="32">
+	<MkSpacer :contentMax="700">
 		<FormSuspense :p="init">
 			<div class="_gaps">
 				<div class="_panel" style="padding: 16px;">

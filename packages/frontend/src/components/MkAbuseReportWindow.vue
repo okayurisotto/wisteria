@@ -13,7 +13,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</template>
 		</I18n>
 	</template>
-	<MkSpacer :marginMin="20" :marginMax="28">
+	<MkSpacer>
 		<div class="_gaps_m" :class="$style.root">
 			<div class="">
 				<MkTextarea v-model="comment">
