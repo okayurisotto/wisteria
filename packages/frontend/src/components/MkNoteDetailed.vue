@@ -473,18 +473,16 @@ function loadConversation() {
 
 <style lang="scss" module>
 .root {
+	contain: inline-size layout style paint;
 	container-type: inline-size;
 
+	--avatar-size: 60px;
 	--margin: 24px;
 
 	@container (width < 500px) {
+		--avatar-size: 40px;
 		--margin: 16px;
 	}
-
-	position: relative;
-	transition: box-shadow 0.1s ease;
-	overflow: clip;
-	contain: content;
 }
 
 .replyTo {
@@ -540,22 +538,24 @@ function loadConversation() {
 }
 
 .note {
-	padding: var(--margin);
+	padding: var(--margin) var(--margin) calc(var(--margin) / 2) var(--margin);
 	font-size: 1.2em;
+	display: flex;
+	flex-direction: column;
+	row-gap: var(--margin);
 }
 
 .noteHeader {
-	display: flex;
-	position: relative;
-	margin-bottom: 16px;
-	align-items: center;
+	display: grid;
+	grid-template-columns: var(--avatar-size) 1fr;
+	column-gap: var(--margin);
 }
 
 .noteHeaderAvatar {
 	display: block;
-	flex-shrink: 0;
-	width: 58px;
-	height: 58px;
+	height: var(--avatar-size);
+	margin-inline: auto;
+	width: var(--avatar-size);
 }
 
 .noteHeaderBody {
@@ -563,7 +563,6 @@ function loadConversation() {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	padding-left: 16px;
 	font-size: 0.95em;
 }
 
@@ -644,7 +643,6 @@ function loadConversation() {
 }
 
 .noteFooterInfo {
-	margin: 16px 0;
 	opacity: 0.7;
 	font-size: 0.9em;
 }
@@ -656,8 +654,8 @@ function loadConversation() {
 
 .noteFooterButton {
 	display: block;
-	padding: 8px;
 	opacity: 0.7;
+	padding: 8px;
 
 	&:hover {
 		color: var(--fgHighlighted);
@@ -680,20 +678,19 @@ function loadConversation() {
 }
 
 .tabs {
-	border-top: solid 0.5px var(--divider);
-	border-bottom: solid 0.5px var(--divider);
-	display: flex;
+	border-block: solid 0.5px var(--divider);
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
 }
 
 .tab {
-	flex: 1;
-	padding: 12px 8px;
+	padding-block: 12px;
 	border-top: solid 2px transparent;
 	border-bottom: solid 2px transparent;
-}
 
-.tabActive {
-	border-bottom: solid 2px var(--accent);
+	&.tabActive {
+		border-bottom-color: var(--accent);
+	}
 }
 
 .tab_renotes {

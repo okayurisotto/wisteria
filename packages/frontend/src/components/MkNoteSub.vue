@@ -79,7 +79,15 @@ if (props.detail) {
 
 <style lang="scss" module>
 .root {
-	padding: 16px 32px;
+	--avatar-size: 60px;
+	--margin: 24px;
+
+	@container (width < 500px) {
+		--avatar-size: 40px;
+		--margin: 16px;
+	}
+
+	padding: var(--margin);
 	font-size: 0.9em;
 	position: relative;
 
@@ -90,7 +98,9 @@ if (props.detail) {
 }
 
 .main {
-	display: flex;
+	display: grid;
+	grid-template-columns: var(--avatar-size) 1fr;
+	column-gap: var(--margin);
 }
 
 .colorBar {
@@ -104,16 +114,14 @@ if (props.detail) {
 }
 
 .avatar {
-	flex-shrink: 0;
 	display: block;
-	margin: 0 8px 0 0;
 	width: 38px;
 	height: 38px;
 	border-radius: var(--rounded);
+	margin-inline: auto;
 }
 
 .body {
-	flex: 1;
 	min-width: 0;
 }
 

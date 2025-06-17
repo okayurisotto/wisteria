@@ -596,7 +596,7 @@ function emitUpdReaction(emoji: string, delta: number) {
 	position: relative;
 	display: flex;
 	align-items: center;
-	padding: var(--margin) var(--margin) var(--margin) var(--margin);
+	padding: var(--margin) var(--margin) calc(var(--margin) / 2) var(--margin);
 	line-height: 28px;
 	white-space: pre;
 	color: var(--renote);
