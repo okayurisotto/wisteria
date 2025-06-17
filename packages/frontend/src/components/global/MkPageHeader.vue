@@ -6,10 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div v-if="show" ref="el" :class="[$style.root]" :style="{ background: bg }">
 	<div :class="[$style.upper, { [$style.slim]: narrow, [$style.thin]: thin_ }]">
-		<div v-if="!thin_ && narrow && props.displayMyAvatar && $i" class="_button" :class="$style.buttonsLeft" @click="openAccountMenu">
-			<MkAvatar :class="$style.avatar" :user="$i"/>
-		</div>
-		<div v-else-if="!thin_ && narrow && !hideTitle" :class="$style.buttonsLeft"/>
+		<div v-if="!thin_ && narrow && !hideTitle" :class="$style.buttonsLeft"/>
 
 		<template v-if="pageMetadata">
 			<div v-if="!hideTitle" :class="$style.titleContainer" @click="top">
@@ -42,12 +39,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, inject, shallowRef, computed } from 'vue';
-import tinycolor from 'tinycolor2';
 import XTabs, { type Tab } from './MkPageHeader.tabs.vue';
 import { scrollToTop } from '@/scripts/scroll.js';
-import { globalEvents } from '@/events.js';
 import { injectReactiveMetadata } from '@/scripts/page-metadata.js';
-import { $i, openAccountMenu as openAccountMenu_ } from '@/account.js';
 import type { PageHeaderItem } from '@/types/page-header.js';
 
 const props = withDefaults(defineProps<{
@@ -55,7 +49,6 @@ const props = withDefaults(defineProps<{
 	tab?: string;
 	actions?: PageHeaderItem[] | null;
 	thin?: boolean;
-	displayMyAvatar?: boolean;
 }>(), {
 	tabs: () => ([] as Tab[]),
 });
@@ -87,12 +80,6 @@ const top = () => {
 		scrollToTop(el.value as HTMLElement, { behavior: 'smooth' });
 	}
 };
-
-function openAccountMenu(ev: MouseEvent) {
-	openAccountMenu_({
-		withExtraOperation: true,
-	}, ev);
-}
 
 function onTabClick(): void {
 	top();
@@ -192,15 +179,6 @@ onUnmounted(() => {
 .buttonsRight {
 	composes: buttons;
 	margin: 0 0 0 var(--margin);
-}
-
-.avatar {
-	$size: 32px;
-	display: inline-block;
-	width: $size;
-	height: $size;
-	vertical-align: bottom;
-	margin: 0 8px;
 }
 
 .button {
