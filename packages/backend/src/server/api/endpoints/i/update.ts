@@ -138,7 +138,7 @@ export const paramDef = z.object({
 		offsetY: z.number().max(0.25).min(-0.25).nullable().optional(),
 	}).array().max(16).optional(),
 	bannerId: IdSchema.nullable().optional(),
-	fields: z.object({ name: z.string(), value: z.string() }).array().min(0).max(16).array().optional(),
+	fields: z.object({ name: z.string(), value: z.string() }).array().min(0).max(16).optional(),
 	isLocked: z.boolean().optional(),
 	isExplorable: z.boolean().optional(),
 	hideOnlineStatus: z.boolean().optional(),
