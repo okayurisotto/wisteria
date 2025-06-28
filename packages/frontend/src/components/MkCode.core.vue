@@ -30,16 +30,29 @@ const [lightThemeName, darkThemeName] = await Promise.all([
 ]);
 
 const html = computedAsync(async () => {
-	return await codeToHtml(props.code, {
-		lang: codeLang.value,
-		themes: {
-			fallback: 'dark-plus',
-			light: lightThemeName,
-			dark: darkThemeName,
-		},
-		defaultColor: false,
-		cssVariablePrefix: '--shiki-',
-	});
+	try {
+		return await codeToHtml(props.code, {
+			lang: codeLang.value,
+			themes: {
+				fallback: 'dark-plus',
+				light: lightThemeName,
+				dark: darkThemeName,
+			},
+			defaultColor: false,
+			cssVariablePrefix: '--shiki-',
+		});
+	} catch {
+		return await codeToHtml(props.code, {
+			lang: 'text',
+			themes: {
+				fallback: 'dark-plus',
+				light: lightThemeName,
+				dark: darkThemeName,
+			},
+			defaultColor: false,
+			cssVariablePrefix: '--shiki-',
+		});
+	}
 });
 </script>
 
