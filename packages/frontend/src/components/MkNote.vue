@@ -528,7 +528,6 @@ function emitUpdReaction(emoji: string, delta: number) {
 	}
 
 	position: relative;
-	font-size: 1.05em;
 	contain: inline-size layout style paint;
 
 	&:focus-visible {

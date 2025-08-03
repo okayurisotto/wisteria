@@ -170,28 +170,29 @@ const rejectFollowRequest = () => {
 
 <style lang="scss" module>
 .root {
+	--margin: 24px;
+
 	position: relative;
 	box-sizing: border-box;
-	padding: 24px 32px;
-	font-size: 0.9em;
+	padding: var(--margin);
 	overflow-wrap: break-word;
 	display: flex;
 	contain: content;
+	gap: var(--margin);
+
+	@container (width < 500px) {
+		--margin: 16px;
+	}
 }
 
 .head {
-	position: sticky;
-	top: 0;
-	flex-shrink: 0;
-	width: 42px;
-	height: 42px;
-	margin-right: 8px;
+	position: relative;
 }
 
 .icon {
 	display: block;
-	width: 100%;
-	height: 100%;
+	width: 40px;
+	height: 40px;
 }
 
 .icon_reactionGroup,
@@ -367,19 +368,5 @@ const rejectFollowRequest = () => {
 	font-size: 11px;
 	text-align: center;
 	color: #fff;
-}
-
-@container (max-width: 600px) {
-	.root {
-		padding: 16px;
-		font-size: 0.9em;
-	}
-}
-
-@container (max-width: 500px) {
-	.root {
-		padding: 12px;
-		font-size: 0.85em;
-	}
 }
 </style>

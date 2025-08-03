@@ -104,5 +104,6 @@ defineExpose({
 <style lang="scss" module>
 .list {
 	background: var(--panel);
+	font-size: 0.9em;
 }
 </style>
