@@ -19,7 +19,7 @@
 		"clean": "node ./scripts/clean.mjs"
 	},
 	"devDependencies": {
-		"@tsconfig/node-lts": "^22.0.1",
+		"@tsconfig/node-lts": "^22.0.2",
 		"@tsconfig/strictest": "^2.0.5",
 		"@types/ignore-walk": "4.0.3",
 		"@types/js-yaml": "4.0.9",
