@@ -27,7 +27,6 @@ import { EmailVerificationServerService } from './EmailVerificationServerService
 import { StaticAssetsServerService } from './StaticAssetsServerService.js';
 import { UserFeedServerService } from './UserFeedServerService.js';
 import { EmojiServerService } from './EmojiServerService.js';
-import { BullDashboardServerService } from './BullDashboardServerService.js';
 import { FileProxyServerService } from './FileProxyServerService.js';
 import { MetricsServerService } from './MetricsServerService.js';
 
@@ -57,7 +56,6 @@ export class ServerService implements OnApplicationShutdown {
 		private readonly staticAssetsServerService: StaticAssetsServerService,
 		private readonly userFeedServerService: UserFeedServerService,
 		private readonly emojiServerService: EmojiServerService,
-		private readonly bullDashboardServerService: BullDashboardServerService,
 		private readonly fileProxyServerService: FileProxyServerService,
 		private readonly metricsServerService: MetricsServerService,
 	) {
@@ -85,7 +83,6 @@ export class ServerService implements OnApplicationShutdown {
 		hono.route('/metrics', this.metricsServerService.createServer());
 		hono.route('/nodeinfo', this.nodeinfoServerService.createServer());
 		hono.route('/proxy', this.fileProxyServerService.createServer());
-		hono.route('/queue', this.bullDashboardServerService.createServer());
 		hono.route('/verify-email', this.emailVerificationServerService.createServer());
 
 		hono.route('/', this.openApiServerService.createServer());

@@ -49,7 +49,6 @@ import { EmailVerificationServerService } from './EmailVerificationServerService
 import { StaticAssetsServerService } from './StaticAssetsServerService.js';
 import { UserFeedServerService } from './UserFeedServerService.js';
 import { EmojiServerService } from './EmojiServerService.js';
-import { BullDashboardServerService } from './BullDashboardServerService.js';
 import { IpAddressLoggingService } from './api/IpAddressLoggingService.js';
 import { FileProxyServerService } from './FileProxyServerService.js';
 import { MetricsServerService } from './MetricsServerService.js';
@@ -102,7 +101,6 @@ import { MetricsServerService } from './MetricsServerService.js';
 		StaticAssetsServerService,
 		UserFeedServerService,
 		EmojiServerService,
-		BullDashboardServerService,
 		IpAddressLoggingService,
 		FileProxyServerService,
 		MetricsServerService,
