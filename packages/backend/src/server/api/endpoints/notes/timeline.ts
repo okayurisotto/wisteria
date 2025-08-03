@@ -127,6 +127,10 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			qb
 				.where('note.replyId IS NULL') // 返信ではない
 				.orWhere(new Brackets((qb) => {
+					qb // 返信だけど自分の投稿
+						.where('note.userId = :meId', { meId: me.id })
+				}))
+				.orWhere(new Brackets((qb) => {
 					qb // 返信だけど自分への返信
 						.where('note.replyId IS NOT NULL')
 						.andWhere('note.replyUserId = :meId', { meId: me.id });
