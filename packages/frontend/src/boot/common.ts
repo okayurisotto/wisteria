@@ -31,9 +31,7 @@ export async function common(createVue: () => App<Element>) {
 
 		console.info(`vue ${vueVersion}`);
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(window as any).$i = $i;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(window as any).$store = defaultStore;
 
 		window.addEventListener('error', event => {

@@ -4,7 +4,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<!-- eslint-disable vue/no-mutating-props -->
 <XContainer :draggable="true" @remove="() => $emit('remove')">
 	<template #header><i class="ti ti-photo"></i> {{ i18n.ts._pages.blocks.image }}</template>
 	<template #func>
@@ -20,7 +19,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-/* eslint-disable vue/no-mutating-props */
 import { onMounted, ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import XContainer from '../page-editor.container.vue';

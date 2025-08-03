@@ -100,7 +100,6 @@ const props = defineProps<{
 	video: Misskey.entities.DriveFile;
 }>();
 
-// eslint-disable-next-line vue/no-setup-props-destructure
 const hide = ref((defaultStore.state.nsfw === 'force' || defaultStore.state.dataSaver.media) ? true : (props.video.isSensitive && defaultStore.state.nsfw !== 'ignore'));
 
 // Menu
@@ -213,12 +212,10 @@ function togglePlayPause() {
 function toggleFullscreen() {
 	if (isFullscreenNotSupported && videoEl.value) {
 		if (isFullscreen.value) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			//@ts-ignore
 			videoEl.value.webkitExitFullscreen();
 			isFullscreen.value = false;
 		} else {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			//@ts-ignore
 			videoEl.value.webkitEnterFullscreen();
 			isFullscreen.value = true;

@@ -151,7 +151,6 @@ function close(opts: { useSendAnimation?: boolean } = {}) {
 		useSendAnime.value = true;
 	}
 
-	// eslint-disable-next-line vue/no-mutating-props
 	if (props.src) props.src.style.pointerEvents = 'auto';
 	showing.value = false;
 	emit('close');
@@ -220,7 +219,6 @@ const onOpened = () => {
 onMounted(() => {
 	watch(() => props.src, async () => {
 		if (props.src) {
-			// eslint-disable-next-line vue/no-mutating-props
 			props.src.style.pointerEvents = 'none';
 		}
 		fixed.value = (type.value === 'drawer') || (getFixedContainer(props.src) != null);

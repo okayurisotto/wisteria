@@ -1,7 +1,6 @@
 {
 	"recommendations": [
 		"editorconfig.editorconfig",
-		"dbaeumer.vscode-eslint",
 		"Vue.volar",
 		"Vue.vscode-typescript-vue-plugin",
 		"Orta.vscode-jest",

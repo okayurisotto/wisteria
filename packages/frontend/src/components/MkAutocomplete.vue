@@ -24,7 +24,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<li v-for="emoji in emojis" :key="emoji.emoji" :class="$style.item" tabindex="-1" @click="complete(type, emoji.emoji)" @keydown="onKeydown">
 			<MkCustomEmoji v-if="'isCustomEmoji' in emoji && emoji.isCustomEmoji" :name="emoji.emoji" :class="$style.emoji"/>
 			<MkEmoji v-else :emoji="emoji.emoji" :class="$style.emoji"/>
-			<!-- eslint-disable-next-line vue/no-v-html -->
 			<span v-if="q" :class="$style.emojiName" v-html="sanitizeHtml(emoji.name.replace(q, `<b>${q}</b>`))"></span>
 			<span v-else v-text="emoji.name"></span>
 			<span v-if="emoji.aliasOf" :class="$style.emojiAlias">({{ emoji.aliasOf }})</span>

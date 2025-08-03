@@ -179,15 +179,10 @@ function saveFields() {
 function save() {
 	os.apiWithDialog('i/update', {
 		// 空文字列をnullにしたいので??は使うな
-		// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 		name: profile.name || null,
-		// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 		description: profile.description || null,
-		// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 		location: profile.location || null,
-		// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 		birthday: profile.birthday || null,
-		// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 		lang: profile.lang || null,
 		isBot: !!profile.isBot,
 		isCat: !!profile.isCat,

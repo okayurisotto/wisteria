@@ -28,7 +28,6 @@ const emit = defineEmits<{
 	dragEnded: [value: number];
 }>();
 
-// eslint-disable-next-line no-undef
 const model = defineModel({ required: true }) as ModelRef<string | number>;
 const modelValue = computed({
 	get: () => typeof model.value === 'number' ? model.value : parseFloat(model.value),

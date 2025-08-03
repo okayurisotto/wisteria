@@ -5,8 +5,7 @@
 		"watch": "tsup --watch",
 		"build": "tsup",
 		"typecheck": "tsc",
-		"eslint": "eslint --quiet src/**/*.ts",
-		"lint": "pnpm typecheck && pnpm eslint"
+		"lint": "pnpm typecheck"
 	},
 	"dependencies": {
 		"idb-keyval": "6.2.1",

@@ -4,7 +4,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<!-- eslint-disable vue/no-mutating-props -->
 <XContainer :draggable="true" @remove="() => $emit('remove')">
 	<template #header><i class="ti ti-note"></i> {{ props.modelValue.title }}</template>
 	<template #func>
@@ -21,7 +20,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-/* eslint-disable vue/no-mutating-props */
 import { defineAsyncComponent, inject, onMounted, watch, ref } from 'vue';
 import { v4 as uuid } from 'uuid';
 import XContainer from '../page-editor.container.vue';

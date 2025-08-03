@@ -9,7 +9,6 @@ import type { ParameterizedString } from '../../../../../locales/index.js';
 const props = withDefaults(defineProps<{
 	src: T;
 	tag?: string;
-	// eslint-disable-next-line vue/require-default-prop
 	textTag?: string;
 }>(), {
 	tag: 'span',
