@@ -48,7 +48,7 @@
 		"vuedraggable": "next"
 	},
 	"devDependencies": {
-		"@misskey-dev/summaly": "5.0.3",
+		"@misskey-dev/summaly": "5.2.3",
 		"@rollup/plugin-json": "6.1.0",
 		"@rollup/pluginutils": "5.1.0",
 		"@testing-library/vue": "8.0.2",

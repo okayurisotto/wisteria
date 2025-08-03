@@ -38,7 +38,7 @@
 		"@discordapp/twemoji": "15.0.2",
 		"@hono/node-server": "^1.13.2",
 		"@misskey-dev/sharp-read-bmp": "^1.2.0",
-		"@misskey-dev/summaly": "^5.1.0",
+		"@misskey-dev/summaly": "^5.2.3",
 		"@nestjs/common": "11.0.3",
 		"@nestjs/core": "11.0.3",
 		"@simplewebauthn/server": "9.0.2",
