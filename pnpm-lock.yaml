@@ -75,11 +75,11 @@ importers:
         specifier: ^5.2.3
         version: 5.2.3
       '@nestjs/common':
-        specifier: 11.0.3
-        version: 11.0.3(reflect-metadata@0.2.2)(rxjs@7.8.1)
+        specifier: 11.1.5
+        version: 11.1.5(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/core':
-        specifier: 11.0.3
-        version: 11.0.3(@nestjs/common@11.0.3(reflect-metadata@0.2.2)(rxjs@7.8.1))(reflect-metadata@0.2.2)(rxjs@7.8.1)
+        specifier: 11.1.5
+        version: 11.1.5(@nestjs/common@11.1.5(reflect-metadata@0.2.2)(rxjs@7.8.1))(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@simplewebauthn/server':
         specifier: 9.0.2
         version: 9.0.2(encoding@0.1.13)
@@ -1604,11 +1604,11 @@ packages:
     resolution: {integrity: sha512-XDeVEFbXfiiXeB9816rlbSZyOysJPaQTKYG7u/wL3GQhg4YznZkjq8vEsNvK6C+bJx29OV8INu9bmfXPaE4Drw==}
     engines: {node: '>= 10'}
 
-  '@nestjs/common@11.0.3':
-    resolution: {integrity: sha512-fTkJWQ20+jvPKfrv3A+T3wsPwwYSJyoJ+pcBzyKtv5fCpK/yX/rJalFUIpw1CDmarfqIaMX9SdkplNyxtvH6RA==}
+  '@nestjs/common@11.1.5':
+    resolution: {integrity: sha512-DQpWdr3ShO0BHWkHl3I4W/jR6R3pDtxyBlmrpTuZF+PXxQyBXNvsUne0Wyo6QHPEDi+pAz9XchBFoKbqOhcdTg==}
     peerDependencies:
-      class-transformer: '*'
-      class-validator: '*'
+      class-transformer: '>=0.4.1'
+      class-validator: '>=0.13.2'
       reflect-metadata: ^0.1.12 || ^0.2.0
       rxjs: ^7.1.0
     peerDependenciesMeta:
@@ -1617,8 +1617,8 @@ packages:
       class-validator:
         optional: true
 
-  '@nestjs/core@11.0.3':
-    resolution: {integrity: sha512-6UoVHpwa23HJxMNtuTXQCiqx/NHTG3lRBRgnZ8EDHTjgaNnR7P+xBS68zN3gLH7rBIrhhQ5Q1hVs7WswRxrw7Q==}
+  '@nestjs/core@11.1.5':
+    resolution: {integrity: sha512-Qr25MEY9t8VsMETy7eXQ0cNXqu0lzuFrrTr+f+1G57ABCtV5Pogm7n9bF71OU2bnkDD32Bi4hQLeFR90cku3Tw==}
     engines: {node: '>= 20'}
     peerDependencies:
       '@nestjs/common': ^11.0.0
@@ -2971,10 +2971,6 @@ packages:
   config-chain@1.1.13:
     resolution: {integrity: sha512-qj+f8APARXHrM0hraqXYb2/bOVSV4PvJQlNZ/DVj0QrmNM2q2euizkeuVckQ57J+W0mRH6Hvi+k50M4Jul2VRQ==}
 
-  consola@3.4.0:
-    resolution: {integrity: sha512-EiPU8G6dQG0GFHNR8ljnZFki/8a+cQwEQ+7wpxdChl02Q8HXlwEZWD5lqAF8vC2sEC3Tehr8hy7vErz88LHyUA==}
-    engines: {node: ^14.18.0 || >=16.10.0}
-
   consola@3.4.2:
     resolution: {integrity: sha512-5IKcdX0nnYavi6G7TtOhwkYzyjfJlatbjMjuLSfE2kYT5pMDOilZ4OvMhi637CcDICTmz3wARPoyhqyX1Y+XvA==}
     engines: {node: ^14.18.0 || >=16.10.0}
@@ -3967,6 +3963,10 @@ packages:
 
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
+
+  load-esm@1.0.2:
+    resolution: {integrity: sha512-nVAvWk/jeyrWyXEAs84mpQCYccxRqgKY4OznLuJhJCa0XsPSfdOIr2zvBZEj3IHEHbX97jjscKRRV539bW0Gpw==}
+    engines: {node: '>=13.2.0'}
 
   load-tsconfig@0.2.5:
     resolution: {integrity: sha512-IXO6OCs9yg8tMKzfPZ1YmheJbZCiEsnBdcB03l0OcfK9prKnJb96siuHCr5Fl37/yo9DnKU+TLpxzTUspw9shg==}
@@ -6153,7 +6153,7 @@ snapshots:
       '@smithy/util-defaults-mode-node': 2.3.1
       '@smithy/util-retry': 2.2.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.8.1
+      tslib: 2.8.0
     transitivePeerDependencies:
       - aws-crt
 
@@ -6412,7 +6412,7 @@ snapshots:
       '@smithy/util-defaults-mode-node': 2.3.1
       '@smithy/util-retry': 2.2.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.8.1
+      tslib: 2.8.0
     transitivePeerDependencies:
       - aws-crt
 
@@ -7042,17 +7042,21 @@ snapshots:
       '@napi-rs/canvas-linux-x64-musl': 0.1.58
       '@napi-rs/canvas-win32-x64-msvc': 0.1.58
 
-  '@nestjs/common@11.0.3(reflect-metadata@0.2.2)(rxjs@7.8.1)':
+  '@nestjs/common@11.1.5(reflect-metadata@0.2.2)(rxjs@7.8.1)':
     dependencies:
+      file-type: 21.0.0
       iterare: 1.2.1
+      load-esm: 1.0.2
       reflect-metadata: 0.2.2
       rxjs: 7.8.1
       tslib: 2.8.1
       uid: 2.0.2
+    transitivePeerDependencies:
+      - supports-color
 
-  '@nestjs/core@11.0.3(@nestjs/common@11.0.3(reflect-metadata@0.2.2)(rxjs@7.8.1))(reflect-metadata@0.2.2)(rxjs@7.8.1)':
+  '@nestjs/core@11.1.5(@nestjs/common@11.1.5(reflect-metadata@0.2.2)(rxjs@7.8.1))(reflect-metadata@0.2.2)(rxjs@7.8.1)':
     dependencies:
-      '@nestjs/common': 11.0.3(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/common': 11.1.5(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nuxt/opencollective': 0.4.1
       fast-safe-stringify: 2.1.1
       iterare: 1.2.1
@@ -7090,7 +7094,7 @@ snapshots:
 
   '@nuxt/opencollective@0.4.1':
     dependencies:
-      consola: 3.4.0
+      consola: 3.4.2
 
   '@one-ini/wasm@0.1.1': {}
 
@@ -7411,7 +7415,7 @@ snapshots:
       '@aws-crypto/crc32': 3.0.0
       '@smithy/types': 2.12.0
       '@smithy/util-hex-encoding': 2.2.0
-      tslib: 2.8.1
+      tslib: 2.8.0
 
   '@smithy/eventstream-serde-browser@2.2.0':
     dependencies:
@@ -8629,8 +8633,6 @@ snapshots:
       ini: 1.3.8
       proto-list: 1.2.4
 
-  consola@3.4.0: {}
-
   consola@3.4.2: {}
 
   constantinople@4.0.1:
@@ -9684,6 +9686,8 @@ snapshots:
   lilconfig@3.1.3: {}
 
   lines-and-columns@1.2.4: {}
+
+  load-esm@1.0.2: {}
 
   load-tsconfig@0.2.5: {}
 
