@@ -187,6 +187,7 @@ const rejectFollowRequest = () => {
 
 .head {
 	position: relative;
+	height: min-content;
 }
 
 .icon {
