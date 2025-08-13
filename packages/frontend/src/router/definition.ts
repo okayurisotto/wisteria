@@ -258,9 +258,6 @@ const routes: RouteDef[] = [{
 	component: page(() => import('@/pages/api-console.vue')),
 	loginRequired: true,
 }, {
-	path: parsePath('/scratchpad'),
-	component: page(() => import('@/pages/scratchpad.vue')),
-}, {
 	path: parsePath('/auth/:token'),
 	component: page(() => import('@/pages/auth.vue')),
 }, {
