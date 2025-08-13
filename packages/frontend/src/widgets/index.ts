@@ -25,9 +25,6 @@ export default function(app: App) {
 	app.component('WidgetOnlineUsers', defineAsyncComponent(() => import('./WidgetOnlineUsers.vue')));
 	app.component('WidgetJobQueue', defineAsyncComponent(() => import('./WidgetJobQueue.vue')));
 	app.component('WidgetInstanceCloud', defineAsyncComponent(() => import('./WidgetInstanceCloud.vue')));
-	app.component('WidgetButton', defineAsyncComponent(() => import('./WidgetButton.vue')));
-	app.component('WidgetAiscript', defineAsyncComponent(() => import('./WidgetAiscript.vue')));
-	app.component('WidgetAiscriptApp', defineAsyncComponent(() => import('./WidgetAiscriptApp.vue')));
 	app.component('WidgetAichan', defineAsyncComponent(() => import('./WidgetAichan.vue')));
 	app.component('WidgetUserList', defineAsyncComponent(() => import('./WidgetUserList.vue')));
 	app.component('WidgetBirthdayFollowings', defineAsyncComponent(() => import('./WidgetBirthdayFollowings.vue')));
@@ -54,9 +51,6 @@ export const widgets = [
 	'serverMetric',
 	'onlineUsers',
 	'jobQueue',
-	'button',
-	'aiscript',
-	'aiscriptApp',
 	'aichan',
 	'userList',
 	'birthdayFollowings',
