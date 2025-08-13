@@ -290,15 +290,6 @@ import * as ep___pages_like from './endpoints/pages/like.js';
 import * as ep___pages_show from './endpoints/pages/show.js';
 import * as ep___pages_unlike from './endpoints/pages/unlike.js';
 import * as ep___pages_update from './endpoints/pages/update.js';
-import * as ep___flash_create from './endpoints/flash/create.js';
-import * as ep___flash_delete from './endpoints/flash/delete.js';
-import * as ep___flash_featured from './endpoints/flash/featured.js';
-import * as ep___flash_like from './endpoints/flash/like.js';
-import * as ep___flash_show from './endpoints/flash/show.js';
-import * as ep___flash_unlike from './endpoints/flash/unlike.js';
-import * as ep___flash_update from './endpoints/flash/update.js';
-import * as ep___flash_my from './endpoints/flash/my.js';
-import * as ep___flash_myLikes from './endpoints/flash/my-likes.js';
 import * as ep___ping from './endpoints/ping.js';
 import * as ep___pinnedUsers from './endpoints/pinned-users.js';
 import * as ep___promo_read from './endpoints/promo/read.js';
@@ -338,7 +329,6 @@ import * as ep___users_lists_updateMembership from './endpoints/users/lists/upda
 import * as ep___users_lists_getMemberships from './endpoints/users/lists/get-memberships.js';
 import * as ep___users_notes from './endpoints/users/notes.js';
 import * as ep___users_pages from './endpoints/users/pages.js';
-import * as ep___users_flashs from './endpoints/users/flashs.js';
 import * as ep___users_reactions from './endpoints/users/reactions.js';
 import * as ep___users_recommendation from './endpoints/users/recommendation.js';
 import * as ep___users_relation from './endpoints/users/relation.js';
@@ -638,15 +628,6 @@ const $pages_like: Provider = { provide: 'ep:pages/like', useClass: ep___pages_l
 const $pages_show: Provider = { provide: 'ep:pages/show', useClass: ep___pages_show.default };
 const $pages_unlike: Provider = { provide: 'ep:pages/unlike', useClass: ep___pages_unlike.default };
 const $pages_update: Provider = { provide: 'ep:pages/update', useClass: ep___pages_update.default };
-const $flash_create: Provider = { provide: 'ep:flash/create', useClass: ep___flash_create.default };
-const $flash_delete: Provider = { provide: 'ep:flash/delete', useClass: ep___flash_delete.default };
-const $flash_featured: Provider = { provide: 'ep:flash/featured', useClass: ep___flash_featured.default };
-const $flash_like: Provider = { provide: 'ep:flash/like', useClass: ep___flash_like.default };
-const $flash_show: Provider = { provide: 'ep:flash/show', useClass: ep___flash_show.default };
-const $flash_unlike: Provider = { provide: 'ep:flash/unlike', useClass: ep___flash_unlike.default };
-const $flash_update: Provider = { provide: 'ep:flash/update', useClass: ep___flash_update.default };
-const $flash_my: Provider = { provide: 'ep:flash/my', useClass: ep___flash_my.default };
-const $flash_myLikes: Provider = { provide: 'ep:flash/my-likes', useClass: ep___flash_myLikes.default };
 const $ping: Provider = { provide: 'ep:ping', useClass: ep___ping.default };
 const $pinnedUsers: Provider = { provide: 'ep:pinned-users', useClass: ep___pinnedUsers.default };
 const $promo_read: Provider = { provide: 'ep:promo/read', useClass: ep___promo_read.default };
@@ -686,7 +667,6 @@ const $users_lists_updateMembership: Provider = { provide: 'ep:users/lists/updat
 const $users_lists_getMemberships: Provider = { provide: 'ep:users/lists/get-memberships', useClass: ep___users_lists_getMemberships.default };
 const $users_notes: Provider = { provide: 'ep:users/notes', useClass: ep___users_notes.default };
 const $users_pages: Provider = { provide: 'ep:users/pages', useClass: ep___users_pages.default };
-const $users_flashs: Provider = { provide: 'ep:users/flashs', useClass: ep___users_flashs.default };
 const $users_reactions: Provider = { provide: 'ep:users/reactions', useClass: ep___users_reactions.default };
 const $users_recommendation: Provider = { provide: 'ep:users/recommendation', useClass: ep___users_recommendation.default };
 const $users_relation: Provider = { provide: 'ep:users/relation', useClass: ep___users_relation.default };
@@ -990,15 +970,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$pages_show,
 		$pages_unlike,
 		$pages_update,
-		$flash_create,
-		$flash_delete,
-		$flash_featured,
-		$flash_like,
-		$flash_show,
-		$flash_unlike,
-		$flash_update,
-		$flash_my,
-		$flash_myLikes,
 		$ping,
 		$pinnedUsers,
 		$promo_read,
@@ -1038,7 +1009,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$users_lists_getMemberships,
 		$users_notes,
 		$users_pages,
-		$users_flashs,
 		$users_reactions,
 		$users_recommendation,
 		$users_relation,
@@ -1335,15 +1305,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$pages_show,
 		$pages_unlike,
 		$pages_update,
-		$flash_create,
-		$flash_delete,
-		$flash_featured,
-		$flash_like,
-		$flash_show,
-		$flash_unlike,
-		$flash_update,
-		$flash_my,
-		$flash_myLikes,
 		$ping,
 		$pinnedUsers,
 		$promo_read,
@@ -1381,7 +1342,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$users_lists_getMemberships,
 		$users_notes,
 		$users_pages,
-		$users_flashs,
 		$users_reactions,
 		$users_recommendation,
 		$users_relation,

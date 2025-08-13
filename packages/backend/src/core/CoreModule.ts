@@ -94,8 +94,6 @@ import { PageLikeEntityService } from './entities/PageLikeEntityService.js';
 import { SigninEntityService } from './entities/SigninEntityService.js';
 import { UserEntityService } from './entities/UserEntityService.js';
 import { UserListEntityService } from './entities/UserListEntityService.js';
-import { FlashEntityService } from './entities/FlashEntityService.js';
-import { FlashLikeEntityService } from './entities/FlashLikeEntityService.js';
 import { RoleEntityService } from './entities/RoleEntityService.js';
 
 import { ApAudienceService } from './activitypub/ApAudienceService.js';
@@ -247,8 +245,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		UserEntityService,
 		UserLiteEntityService,
 		UserListEntityService,
-		FlashEntityService,
-		FlashLikeEntityService,
 		RoleEntityService,
 		UserUriService,
 		RiverflowService,
@@ -383,8 +379,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		UserEntityService,
 		UserLiteEntityService,
 		UserListEntityService,
-		FlashEntityService,
-		FlashLikeEntityService,
 		RoleEntityService,
 		UserUriService,
 		RiverflowService,

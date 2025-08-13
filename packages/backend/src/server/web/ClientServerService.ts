@@ -18,8 +18,7 @@ import { PageEntityService } from '@/core/entities/PageEntityService.js';
 import { GalleryPostEntityService } from '@/core/entities/GalleryPostEntityService.js';
 import { ClipEntityService } from '@/core/entities/ClipEntityService.js';
 import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
-import type { ChannelsRepository, ClipsRepository, FlashsRepository, GalleryPostsRepository, MiMeta, NotesRepository, PagesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
-import { FlashEntityService } from '@/core/entities/FlashEntityService.js';
+import type { ChannelsRepository, ClipsRepository, GalleryPostsRepository, MiMeta, NotesRepository, PagesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
 import { ClientLoggerService } from './ClientLoggerService.js';
 import { PUG_DIR } from '@/path.js';
@@ -63,10 +62,6 @@ export class ClientServerService {
 		@Inject(DI.pagesRepository)
 		private readonly pagesRepository: PagesRepository,
 
-		@Inject(DI.flashsRepository)
-		private readonly flashsRepository: FlashsRepository,
-
-		private readonly flashEntityService: FlashEntityService,
 		private readonly noteEntityService: NoteEntityService,
 		private readonly pageEntityService: PageEntityService,
 		private readonly galleryPostEntityService: GalleryPostEntityService,
@@ -298,37 +293,6 @@ export class ClientServerService {
 				page: packedPage,
 				profile,
 				avatarUrl: packedPage.user.avatarUrl,
-			});
-		});
-
-		// Flash
-		hono.get('/play/:id', noIframe, usePug, async (c, next) => {
-			const flash = await this.flashsRepository.findOneBy({
-				id: c.req.param('id'),
-			});
-
-			if (flash === null) {
-				await next();
-				return;
-			}
-
-			c.header('Cache-Control', 'public, max-age=15');
-
-			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: flash.userId });
-			if (profile.preventAiLearning) {
-				c.header('X-Robots-Tag', 'noimageai');
-				c.header('X-Robots-Tag', 'noai');
-			}
-
-			const packedFlash = await this.flashEntityService.pack(flash);
-			const meta = await this.metaService.fetch();
-			return await c.render('flash', {
-				...this.generateCommonPugData(meta),
-				version: this.config.version,
-				config: this.config,
-				flash: packedFlash,
-				profile,
-				avatarUrl: packedFlash.user.avatarUrl,
 			});
 		});
 

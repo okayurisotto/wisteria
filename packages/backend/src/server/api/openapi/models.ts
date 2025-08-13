@@ -12,7 +12,6 @@ import { DriveFolderSchema } from '@/models/zod/drive-folder.js';
 import { EmojiDetailedSchema } from '@/models/zod/emoji.js';
 import { EmojiSimpleSchema } from '@/models/zod/emoji.js';
 import { FederationInstanceSchema } from '@/models/zod/federation-instance.js';
-import { FlashSchema } from '@/models/zod/flash.js';
 import { FollowingSchema } from '@/models/zod/following.js';
 import { GalleryPostSchema } from '@/models/zod/gallery-post.js';
 import { HashtagSchema } from '@/models/zod/hashtag.js';
@@ -49,7 +48,6 @@ export const models = [
 	{ key: 'EmojiDetailed', schema: EmojiDetailedSchema },
 	{ key: 'EmojiSimple', schema: EmojiSimpleSchema },
 	{ key: 'FederationInstance', schema: FederationInstanceSchema },
-	{ key: 'Flash', schema: FlashSchema },
 	{ key: 'Following', schema: FollowingSchema },
 	{ key: 'GalleryPost', schema: GalleryPostSchema },
 	{ key: 'Hashtag', schema: HashtagSchema },
