@@ -204,6 +204,8 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				response.cacheRemoteSensitiveFiles = instance.cacheRemoteSensitiveFiles;
 				response.requireSetup = !await this.instanceActorService.realLocalUsersPresent();
 				response.features = {
+					localTimeline: false,
+					globalTimeline: false,
 					registration: !instance.disableRegistration,
 					emailRequiredForSignup: instance.emailRequiredForSignup,
 					hcaptcha: instance.enableHcaptcha,

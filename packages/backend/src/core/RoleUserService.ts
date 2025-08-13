@@ -46,8 +46,8 @@ export type RolePolicies = {
 };
 
 export const DEFAULT_POLICIES: RolePolicies = {
-	gtlAvailable: true,
-	ltlAvailable: true,
+	gtlAvailable: false,
+	ltlAvailable: false,
 	canPublicNote: true,
 	canInvite: false,
 	inviteLimit: 0,
@@ -242,8 +242,8 @@ export class RoleUserService {
 		};
 
 		return {
-			gtlAvailable: calc('gtlAvailable', vs => vs.some(v => v)),
-			ltlAvailable: calc('ltlAvailable', vs => vs.some(v => v)),
+			gtlAvailable: false,
+			ltlAvailable: false,
 			canPublicNote: calc('canPublicNote', vs => vs.some(v => v)),
 			canInvite: calc('canInvite', vs => vs.some(v => v)),
 			inviteLimit: calc('inviteLimit', vs => Math.max(...vs)),

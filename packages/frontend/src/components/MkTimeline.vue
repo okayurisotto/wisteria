@@ -29,7 +29,7 @@ import { defaultStore } from '@/store.js';
 import type { Paging } from '@/components/MkPagination.vue';
 
 const props = withDefaults(defineProps<{
-	src: 'home' | 'local' | 'social' | 'global' | 'mentions' | 'directs' | 'list' | 'antenna' | 'channel' | 'role';
+	src: 'home' | 'mentions' | 'directs' | 'list' | 'antenna' | 'channel' | 'role';
 	list?: string;
 	antenna?: string;
 	channel?: string;
@@ -104,23 +104,6 @@ function connectChannel() {
 			withFiles: props.onlyFiles ? true : undefined,
 		});
 		connection2 = stream.useChannel('main');
-	} else if (props.src === 'local') {
-		connection = stream.useChannel('localTimeline', {
-			withRenotes: props.withRenotes,
-			withReplies: props.withReplies,
-			withFiles: props.onlyFiles ? true : undefined,
-		});
-	} else if (props.src === 'social') {
-		connection = stream.useChannel('hybridTimeline', {
-			withRenotes: props.withRenotes,
-			withReplies: props.withReplies,
-			withFiles: props.onlyFiles ? true : undefined,
-		});
-	} else if (props.src === 'global') {
-		connection = stream.useChannel('globalTimeline', {
-			withRenotes: props.withRenotes,
-			withFiles: props.onlyFiles ? true : undefined,
-		});
 	} else if (props.src === 'mentions') {
 		connection = stream.useChannel('main');
 		connection.on('mention', prepend);
@@ -169,26 +152,6 @@ function updatePaginationQuery() {
 		};
 	} else if (props.src === 'home') {
 		endpoint = 'notes/timeline';
-		query = {
-			withRenotes: props.withRenotes,
-			withFiles: props.onlyFiles ? true : undefined,
-		};
-	} else if (props.src === 'local') {
-		endpoint = 'notes/local-timeline';
-		query = {
-			withRenotes: props.withRenotes,
-			withReplies: props.withReplies,
-			withFiles: props.onlyFiles ? true : undefined,
-		};
-	} else if (props.src === 'social') {
-		endpoint = 'notes/hybrid-timeline';
-		query = {
-			withRenotes: props.withRenotes,
-			withReplies: props.withReplies,
-			withFiles: props.onlyFiles ? true : undefined,
-		};
-	} else if (props.src === 'global') {
-		endpoint = 'notes/global-timeline';
 		query = {
 			withRenotes: props.withRenotes,
 			withFiles: props.onlyFiles ? true : undefined,

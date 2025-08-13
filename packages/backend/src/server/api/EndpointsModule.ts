@@ -258,9 +258,6 @@ import * as ep___notes_delete from './endpoints/notes/delete.js';
 import * as ep___notes_favorites_create from './endpoints/notes/favorites/create.js';
 import * as ep___notes_favorites_delete from './endpoints/notes/favorites/delete.js';
 import * as ep___notes_featured from './endpoints/notes/featured.js';
-import * as ep___notes_globalTimeline from './endpoints/notes/global-timeline.js';
-import * as ep___notes_hybridTimeline from './endpoints/notes/hybrid-timeline.js';
-import * as ep___notes_localTimeline from './endpoints/notes/local-timeline.js';
 import * as ep___notes_mentions from './endpoints/notes/mentions.js';
 import * as ep___notes_polls_recommendation from './endpoints/notes/polls/recommendation.js';
 import * as ep___notes_polls_vote from './endpoints/notes/polls/vote.js';
@@ -596,9 +593,6 @@ const $notes_delete: Provider = { provide: 'ep:notes/delete', useClass: ep___not
 const $notes_favorites_create: Provider = { provide: 'ep:notes/favorites/create', useClass: ep___notes_favorites_create.default };
 const $notes_favorites_delete: Provider = { provide: 'ep:notes/favorites/delete', useClass: ep___notes_favorites_delete.default };
 const $notes_featured: Provider = { provide: 'ep:notes/featured', useClass: ep___notes_featured.default };
-const $notes_globalTimeline: Provider = { provide: 'ep:notes/global-timeline', useClass: ep___notes_globalTimeline.default };
-const $notes_hybridTimeline: Provider = { provide: 'ep:notes/hybrid-timeline', useClass: ep___notes_hybridTimeline.default };
-const $notes_localTimeline: Provider = { provide: 'ep:notes/local-timeline', useClass: ep___notes_localTimeline.default };
 const $notes_mentions: Provider = { provide: 'ep:notes/mentions', useClass: ep___notes_mentions.default };
 const $notes_polls_recommendation: Provider = { provide: 'ep:notes/polls/recommendation', useClass: ep___notes_polls_recommendation.default };
 const $notes_polls_vote: Provider = { provide: 'ep:notes/polls/vote', useClass: ep___notes_polls_vote.default };
@@ -938,9 +932,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$notes_favorites_create,
 		$notes_favorites_delete,
 		$notes_featured,
-		$notes_globalTimeline,
-		$notes_hybridTimeline,
-		$notes_localTimeline,
 		$notes_mentions,
 		$notes_polls_recommendation,
 		$notes_polls_vote,
@@ -1274,9 +1265,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$notes_favorites_create,
 		$notes_favorites_delete,
 		$notes_featured,
-		$notes_globalTimeline,
-		$notes_hybridTimeline,
-		$notes_localTimeline,
 		$notes_mentions,
 		$notes_polls_recommendation,
 		$notes_polls_vote,

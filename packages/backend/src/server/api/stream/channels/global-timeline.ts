@@ -4,83 +4,17 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { isInstanceMuted } from '@/misc/is-instance-muted.js';
-import { isUserRelated } from '@/misc/is-user-related.js';
-import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { type MiChannelService, Channel } from '../channel.js';
-import { RoleUserService } from '@/core/RoleUserService.js';
-import type { z } from 'zod';
-import type { NoteSchema } from '@/models/zod/note.js';
 
 class GlobalTimelineChannel extends Channel {
 	public readonly chName = 'globalTimeline';
-	public static shouldShare = false;
-	public static requireCredential = false as const;
-	private withRenotes: boolean;
-	private withFiles: boolean;
+	public static override shouldShare = false;
+	public static override requireCredential = false as const;
 
-	constructor(
-		private readonly roleUserService: RoleUserService,
-		private readonly noteEntityService: NoteEntityService,
-
-		id: string,
-		connection: Channel['connection'],
-	) {
-		super(id, connection);
-		// this.onNote = this.onNote.bind(this);
+	public async init(_params: unknown) {
 	}
 
-	public async init(params: any) {
-		const policies = await this.roleUserService.getUserPolicies(this.user ? this.user.id : null);
-		if (!policies.gtlAvailable) return;
-
-		this.withRenotes = params.withRenotes ?? true;
-		this.withFiles = params.withFiles ?? false;
-
-		// Subscribe events
-		this.subscriber.on('notesStream', this.onNote);
-	}
-
-	private readonly onNote = async (note: z.infer<typeof NoteSchema>) => {
-		if (this.withFiles && (note.fileIds == null || note.fileIds.length === 0)) return;
-
-		if (note.visibility !== 'public') return;
-		if (note.channelId != null) return;
-
-		// 関係ない返信は除外
-		if (note.reply && !this.following[note.userId]?.withReplies) {
-			const reply = note.reply;
-			// 「チャンネル接続主への返信」でもなければ、「チャンネル接続主が行った返信」でもなければ、「投稿者の投稿者自身への返信」でもない場合
-			if (reply.userId !== this.user!.id && note.userId !== this.user!.id && reply.userId !== note.userId) return;
-		}
-
-		if (note.renote && note.text == null && (note.fileIds == null || note.fileIds.length === 0) && !this.withRenotes) return;
-
-		// Ignore notes from instances the user has muted
-		if (isInstanceMuted(note, new Set<string>(this.userProfile?.mutedInstances ?? []))) return;
-
-		// 流れてきたNoteがミュートしているユーザーが関わるものだったら無視する
-		if (isUserRelated(note, this.userIdsWhoMeMuting)) return;
-		// 流れてきたNoteがブロックされているユーザーが関わるものだったら無視する
-		if (isUserRelated(note, this.userIdsWhoBlockingMe)) return;
-
-		if (note.renote && !note.text && isUserRelated(note, this.userIdsWhoMeMutingRenotes)) return;
-
-		if (this.user && note.renoteId && !note.text) {
-			if (note.renote && Object.keys(note.renote.reactions).length > 0) {
-				const myRenoteReaction = await this.noteEntityService.populateMyReaction(note.renote, this.user.id);
-				note.renote.myReaction = myRenoteReaction;
-			}
-		}
-
-		this.connection.cacheNote(note);
-
-		this.send('note', note);
-	};
-
-	public dispose() {
-		// Unsubscribe events
-		this.subscriber.off('notesStream', this.onNote);
+	public override dispose() {
 	}
 }
 
@@ -90,17 +24,7 @@ export class GlobalTimelineChannelService implements MiChannelService<false> {
 	public readonly requireCredential = GlobalTimelineChannel.requireCredential;
 	public readonly kind = GlobalTimelineChannel.kind;
 
-	constructor(
-		private readonly roleUserService: RoleUserService,
-		private readonly noteEntityService: NoteEntityService,
-	) {}
-
 	public create(id: string, connection: Channel['connection']): GlobalTimelineChannel {
-		return new GlobalTimelineChannel(
-			this.roleUserService,
-			this.noteEntityService,
-			id,
-			connection,
-		);
+		return new GlobalTimelineChannel(id, connection);
 	}
 }

@@ -20,16 +20,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</button>
 	</template>
 
-	<div v-if="(((widgetProps.src === 'local' || widgetProps.src === 'social') && !isLocalTimelineAvailable) || (widgetProps.src === 'global' && !isGlobalTimelineAvailable))" :class="$style.disabled">
-		<p :class="$style.disabledTitle">
-			<i class="ti ti-minus"></i>
-			{{ i18n.ts._disabledTimeline.title }}
-		</p>
-		<p :class="$style.disabledDescription">{{ i18n.ts._disabledTimeline.description }}</p>
-	</div>
-	<div v-else>
-		<MkTimeline :key="widgetProps.src === 'list' ? `list:${widgetProps.list.id}` : widgetProps.src === 'antenna' ? `antenna:${widgetProps.antenna.id}` : widgetProps.src" :src="widgetProps.src" :list="widgetProps.list ? widgetProps.list.id : null" :antenna="widgetProps.antenna ? widgetProps.antenna.id : null"/>
-	</div>
+	<MkTimeline :key="widgetProps.src === 'list' ? `list:${widgetProps.list.id}` : widgetProps.src === 'antenna' ? `antenna:${widgetProps.antenna.id}` : widgetProps.src" :src="widgetProps.src" :list="widgetProps.list ? widgetProps.list.id : null" :antenna="widgetProps.antenna ? widgetProps.antenna.id : null"/>
 </MkContainer>
 </template>
 
@@ -42,12 +33,8 @@ import { misskeyApi } from '@/scripts/misskey-api.js';
 import MkContainer from '@/components/MkContainer.vue';
 import MkTimeline from '@/components/MkTimeline.vue';
 import { i18n } from '@/i18n.js';
-import { $i } from '@/account.js';
-import { instance } from '@/instance.js';
 
 const name = 'timeline';
-const isLocalTimelineAvailable = (($i == null && instance.policies.ltlAvailable) || ($i != null && $i.policies.ltlAvailable));
-const isGlobalTimelineAvailable = (($i == null && instance.policies.gtlAvailable) || ($i != null && $i.policies.gtlAvailable));
 
 const widgetPropsDef = {
 	showHeader: {
@@ -119,18 +106,6 @@ const choose = async (ev) => {
 		text: i18n.ts._timelines.home,
 		icon: 'ti ti-home',
 		action: () => { setSrc('home'); },
-	}, {
-		text: i18n.ts._timelines.local,
-		icon: 'ti ti-planet',
-		action: () => { setSrc('local'); },
-	}, {
-		text: i18n.ts._timelines.social,
-		icon: 'ti ti-universe',
-		action: () => { setSrc('social'); },
-	}, {
-		text: i18n.ts._timelines.global,
-		icon: 'ti ti-whirl',
-		action: () => { setSrc('global'); },
 	}, antennaItems.length > 0 ? { type: 'divider' } : undefined, ...antennaItems, listItems.length > 0 ? { type: 'divider' } : undefined, ...listItems], ev.currentTarget ?? ev.target).then(() => {
 		menuOpened.value = false;
 	});

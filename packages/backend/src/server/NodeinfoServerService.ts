@@ -8,7 +8,6 @@ import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
 import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
-import { DEFAULT_POLICIES } from '@/core/RoleService.js';
 import { Hono } from 'hono';
 import type { NotesRepository, UsersRepository } from '@/models/_.js';
 import { IsNull } from 'typeorm';
@@ -57,8 +56,6 @@ export class NodeinfoServerService {
 			? await this.userLiteEntityService.packLite(meta.proxyAccountId).catch(() => null)
 			: null;
 
-		const basePolicies = { ...DEFAULT_POLICIES, ...meta.policies };
-
 		return {
 			version,
 			software: {
@@ -97,8 +94,8 @@ export class NodeinfoServerService {
 				repositoryUrl: meta.repositoryUrl,
 				feedbackUrl: meta.feedbackUrl,
 				disableRegistration: meta.disableRegistration,
-				disableLocalTimeline: !basePolicies.ltlAvailable,
-				disableGlobalTimeline: !basePolicies.gtlAvailable,
+				disableLocalTimeline: true,
+				disableGlobalTimeline: true,
 				emailRequiredForSignup: meta.emailRequiredForSignup,
 				enableHcaptcha: meta.enableHcaptcha,
 				enableRecaptcha: meta.enableRecaptcha,

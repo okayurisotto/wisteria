@@ -4,107 +4,18 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { isUserRelated } from '@/misc/is-user-related.js';
-import { isInstanceMuted } from '@/misc/is-instance-muted.js';
-import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { type MiChannelService, Channel } from '../channel.js';
-import { RoleUserService } from '@/core/RoleUserService.js';
-import type { z } from 'zod';
-import type { NoteSchema } from '@/models/zod/note.js';
 
 class HybridTimelineChannel extends Channel {
 	public readonly chName = 'hybridTimeline';
-	public static shouldShare = false;
-	public static requireCredential = true as const;
-	public static kind = 'read:account';
-	private withRenotes: boolean;
-	private withReplies: boolean;
-	private withFiles: boolean;
+	public static override shouldShare = false;
+	public static override requireCredential = true as const;
+	public static override kind = 'read:account';
 
-	constructor(
-		private readonly roleUserService: RoleUserService,
-		private readonly noteEntityService: NoteEntityService,
-
-		id: string,
-		connection: Channel['connection'],
-	) {
-		super(id, connection);
-		// this.onNote = this.onNote.bind(this);
+	public async init(_params: unknown): Promise<void> {
 	}
 
-	public async init(params: any): Promise<void> {
-		const policies = await this.roleUserService.getUserPolicies(this.user ? this.user.id : null);
-		if (!policies.ltlAvailable) return;
-
-		this.withRenotes = params.withRenotes ?? true;
-		this.withReplies = params.withReplies ?? false;
-		this.withFiles = params.withFiles ?? false;
-
-		// Subscribe events
-		this.subscriber.on('notesStream', this.onNote);
-	}
-
-	private readonly onNote = async (note: z.infer<typeof NoteSchema>) => {
-		const isMe = this.user!.id === note.userId;
-
-		if (this.withFiles && (note.fileIds == null || note.fileIds.length === 0)) return;
-
-		// チャンネルの投稿ではなく、自分自身の投稿 または
-		// チャンネルの投稿ではなく、その投稿のユーザーをフォローしている または
-		// チャンネルの投稿ではなく、全体公開のローカルの投稿 または
-		// フォローしているチャンネルの投稿 の場合だけ
-		if (!(
-			(note.channelId == null && isMe) ||
-			(note.channelId == null && Object.hasOwn(this.following, note.userId)) ||
-			(note.channelId == null && (note.user.host == null && note.visibility === 'public')) ||
-			(note.channelId != null && this.followingChannels.has(note.channelId))
-		)) return;
-
-		if (note.visibility === 'followers') {
-			if (!isMe && !Object.hasOwn(this.following, note.userId)) return;
-		} else if (note.visibility === 'specified') {
-			if (!isMe && !note.visibleUserIds!.includes(this.user!.id)) return;
-		}
-
-		// Ignore notes from instances the user has muted
-		if (isInstanceMuted(note, new Set<string>(this.userProfile!.mutedInstances))) return;
-
-		if (note.reply) {
-			const reply = note.reply;
-			if ((this.following[note.userId]?.withReplies ?? false) || this.withReplies) {
-				// 自分のフォローしていないユーザーの visibility: followers な投稿への返信は弾く
-				if (reply.visibility === 'followers' && !Object.hasOwn(this.following, reply.userId)) return;
-			} else {
-				// 「チャンネル接続主への返信」でもなければ、「チャンネル接続主が行った返信」でもなければ、「投稿者の投稿者自身への返信」でもない場合
-				if (reply.userId !== this.user!.id && !isMe && reply.userId !== note.userId) return;
-			}
-		}
-
-		if (note.renote && note.text == null && (note.fileIds == null || note.fileIds.length === 0) && !this.withRenotes) return;
-
-		// 流れてきたNoteがミュートしているユーザーが関わるものだったら無視する
-		if (isUserRelated(note, this.userIdsWhoMeMuting)) return;
-		// 流れてきたNoteがブロックされているユーザーが関わるものだったら無視する
-		if (isUserRelated(note, this.userIdsWhoBlockingMe)) return;
-
-		if (note.renote && !note.text && isUserRelated(note, this.userIdsWhoMeMutingRenotes)) return;
-
-		if (this.user && note.renoteId && !note.text) {
-			if (note.renote && Object.keys(note.renote.reactions).length > 0) {
-				console.log(note.renote.reactionAndUserPairCache);
-				const myRenoteReaction = await this.noteEntityService.populateMyReaction(note.renote, this.user.id);
-				note.renote.myReaction = myRenoteReaction;
-			}
-		}
-
-		this.connection.cacheNote(note);
-
-		this.send('note', note);
-	};
-
-	public dispose(): void {
-		// Unsubscribe events
-		this.subscriber.off('notesStream', this.onNote);
+	public override dispose(): void {
 	}
 }
 
@@ -114,17 +25,7 @@ export class HybridTimelineChannelService implements MiChannelService<true> {
 	public readonly requireCredential = HybridTimelineChannel.requireCredential;
 	public readonly kind = HybridTimelineChannel.kind;
 
-	constructor(
-		private readonly roleUserService: RoleUserService,
-		private readonly noteEntityService: NoteEntityService,
-	) {}
-
 	public create(id: string, connection: Channel['connection']): HybridTimelineChannel {
-		return new HybridTimelineChannel(
-			this.roleUserService,
-			this.noteEntityService,
-			id,
-			connection,
-		);
+		return new HybridTimelineChannel(id, connection);
 	}
 }
