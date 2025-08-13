@@ -284,20 +284,6 @@ const routes: RouteDef[] = [{
 	path: parsePath('/pages'),
 	component: page(() => import('@/pages/pages.vue')),
 }, {
-	path: parsePath('/play/:id/edit'),
-	component: page(() => import('@/pages/flash/flash-edit.vue')),
-	loginRequired: true,
-}, {
-	path: parsePath('/play/new'),
-	component: page(() => import('@/pages/flash/flash-edit.vue')),
-	loginRequired: true,
-}, {
-	path: parsePath('/play/:id'),
-	component: page(() => import('@/pages/flash/flash.vue')),
-}, {
-	path: parsePath('/play'),
-	component: page(() => import('@/pages/flash/flash-index.vue')),
-}, {
 	path: parsePath('/custom-emojis-manager'),
 	component: page(() => import('@/pages/custom-emojis-manager.vue')),
 }, {

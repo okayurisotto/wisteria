@@ -54,7 +54,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkA to="/announcements" class="link" activeClass="active"><i class="ti ti-speakerphone icon"></i>{{ i18n.ts.announcements }}</MkA>
 			<div class="divider"></div>
 			<MkA to="/pages" class="link" activeClass="active"><i class="ti ti-news icon"></i>{{ i18n.ts.pages }}</MkA>
-			<MkA to="/play" class="link" activeClass="active"><i class="ti ti-player-play icon"></i>Play</MkA>
 			<div class="action">
 				<button class="_buttonPrimary" @click="signup()">{{ i18n.ts.signup }}</button>
 				<button class="_button" @click="signin()">{{ i18n.ts.login }}</button>
