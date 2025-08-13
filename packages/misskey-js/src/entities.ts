@@ -16,7 +16,6 @@ export type DriveFolder = components['schemas']['DriveFolder'];
 export type EmojiDetailed = components['schemas']['EmojiDetailed'];
 export type EmojiSimple = components['schemas']['EmojiSimple'];
 export type FederationInstance = components['schemas']['FederationInstance'];
-export type Flash = components['schemas']['Flash'];
 export type Following = components['schemas']['Following'];
 export type GalleryPost = components['schemas']['GalleryPost'];
 export type Hashtag = components['schemas']['Hashtag'];
