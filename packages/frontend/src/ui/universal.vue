@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div :class="$style.root">
-	<XSidebar v-if="!showHorizontalNavigation" :class="[$style.sidebar, { [$style.sidebarIconOnly]: iconOnly }]"/>
+	<XSidebar :class="[$style.sidebar, { [$style.sidebarIconOnly]: iconOnly }]"/>
 
 	<MkStickyContainer ref="contents" :class="$style.contents" style="container-type: inline-size;" @contextmenu.stop="onContextmenu">
 		<template #header>
@@ -18,13 +18,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div :class="$style.spacer"></div>
 	</MkStickyContainer>
 
-	<div v-if="showWidgets" :class="$style.widgets">
+	<div :class="$style.widgets">
 		<XWidgets/>
 	</div>
 
-	<button v-if="!showWidgets && !showHorizontalNavigation" :class="$style.widgetButton" class="_button" @click="widgetsShowing = true"><i class="ti ti-apps"></i></button>
+	<button :class="$style.widgetButton" class="_button" @click="widgetsShowing = true"><i class="ti ti-apps"></i></button>
 
-	<div v-if="showHorizontalNavigation" ref="navFooter" :class="$style.nav">
+	<div ref="navFooter" :class="$style.nav">
 		<button :class="[$style.navButton, { [$style.indicate]: menuIndicated }]" class="_button" @click="drawerMenuShowing = true">
 			<i :class="$style.navButtonIcon" class="ti ti-menu-2"></i>
 		</button>
@@ -100,9 +100,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, provide, onMounted, computed, ref, watch, shallowRef, type Ref, onBeforeUnmount } from 'vue';
-import { useWindowSize } from "@vueuse/core";
+import { provide, onMounted, computed, ref, watch, shallowRef, type Ref, onBeforeUnmount } from 'vue';
+import XWidgets from './universal.widgets.vue';
 import XCommon from './_common_/common.vue';
+import XSidebar from './_common_/navbar.vue';
+import XStatusBars from './_common_/statusbars.vue';
+import XAnnouncements from './_common_/announcements.vue';
 import type MkStickyContainer from '@/components/global/MkStickyContainer.vue';
 import { instanceName } from '@/config.js';
 import * as os from '@/os.js';
@@ -116,16 +119,7 @@ import { CURRENT_STICKY_BOTTOM } from '@/const.js';
 import { useScrollPositionManager } from '@/nirax.js';
 import { mainRouter } from '@/router/main.js';
 
-const XWidgets = defineAsyncComponent(() => import('./universal.widgets.vue'));
-const XSidebar = defineAsyncComponent(() => import('@/ui/_common_/navbar.vue'));
-const XStatusBars = defineAsyncComponent(() => import('@/ui/_common_/statusbars.vue'));
-const XAnnouncements = defineAsyncComponent(() => import('@/ui/_common_/announcements.vue'));
-
 const isRoot = computed(() => mainRouter.currentRoute.value.name === 'index');
-
-const { width: windowWidth } = useWindowSize();
-const showWidgets = computed(() => windowWidth.value >= 1100 && !pageMetadata.value?.needWideArea);
-const showHorizontalNavigation = computed(() => windowWidth.value <= 500);
 
 const pageMetadata = ref<null | PageMetadata>(null);
 const widgetsShowing = ref(false);
@@ -289,7 +283,6 @@ body {
 
 <style lang="scss" module>
 $ui-font-size: 1em; // TODO: どこかに集約したい
-$widgets-hide-threshold: 1090px;
 
 .transition_menuDrawerBg_enterActive,
 .transition_menuDrawerBg_leaveActive {
@@ -346,14 +339,8 @@ $widgets-hide-threshold: 1090px;
 .sidebar {
 	width: 250px;
 	border-right: solid 0.5px var(--divider);
-}
 
-.sidebarIconOnly {
-	width: 80px;
-}
-
-@media (width < 1280px) {
-	.sidebar {
+	&.sidebarIconOnly {
 		width: 80px;
 	}
 }
@@ -376,14 +363,11 @@ $widgets-hide-threshold: 1090px;
 	padding: var(--margin) var(--margin) calc(var(--margin) + env(safe-area-inset-bottom, 0px));
 	border-left: solid 0.5px var(--divider);
 	background: var(--bg);
-
-	@media (max-width: $widgets-hide-threshold) {
-		display: none;
-	}
 }
 
 .widgetButton {
-	display: block;
+	display: none; // block
+
 	position: fixed;
 	z-index: 1000;
 	bottom: 32px;
@@ -412,27 +396,24 @@ $widgets-hide-threshold: 1090px;
 	overflow: auto;
 	overscroll-behavior: contain;
 	background: var(--bg);
+	max-width: 100dvw;
 }
 
 .widgetsCloseButton {
+	display: none; // block
+
 	padding: 8px;
-	display: block;
 	margin: 0 auto;
 }
 
-@media (min-width: 370px) {
-	.widgetsCloseButton {
-		display: none;
-	}
-}
-
 .nav {
+	display: none; // flex
+
 	position: fixed;
 	z-index: 1000;
 	bottom: 0;
 	left: 0;
 	padding: var(--margin) var(--margin) max(var(--margin), env(safe-area-inset-bottom, 0px)) var(--margin);
-	display: flex;
 	justify-content: space-around;
 	gap: var(--margin);
 	width: 100%;
@@ -507,5 +488,45 @@ $widgets-hide-threshold: 1090px;
 
 .spacer {
 	height: calc(var(--minBottomSpacing));
+}
+
+@media (width < 1280px) {
+	.sidebar {
+		width: 80px;
+	}
+}
+
+@media (width < 1100px) {
+	.widgets {
+		display: none;
+	}
+
+	.widgetButton {
+		display: block;
+	}
+}
+
+@media (width < 500px) {
+	.root {
+		--sidebar-width: 0 !important;
+	}
+
+	.sidebar {
+		display: none;
+	}
+
+	.widgetButton {
+		display: none;
+	}
+
+	.nav {
+		display: flex;
+	}
+}
+
+@media (width < 370px) {
+	.widgetsCloseButton {
+		display: block;
+	}
 }
 </style>
