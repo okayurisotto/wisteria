@@ -114,7 +114,6 @@ import { navbarItemDef } from '@/navbar.js';
 import { i18n } from '@/i18n.js';
 import { $i } from '@/account.js';
 import { type PageMetadata, provideMetadataReceiver, provideReactiveMetadata } from '@/scripts/page-metadata.js';
-import { miLocalStorage } from '@/local-storage.js';
 import { CURRENT_STICKY_BOTTOM } from '@/const.js';
 import { useScrollPositionManager } from '@/nirax.js';
 import { mainRouter } from '@/router/main.js';
@@ -141,11 +140,9 @@ provideMetadataReceiver((metadataGetter) => {
 provideReactiveMetadata(pageMetadata);
 
 const menuIndicated = computed(() => {
-	for (const def in navbarItemDef) {
-		if (def === 'notifications') continue; // 通知は下にボタンとして表示されてるから
-		if (navbarItemDef[def].indicated) return true;
-	}
-	return false;
+	return Object.entries(navbarItemDef)
+		.filter(([def]) => def !== 'notifications') // 通知は下にボタンとして表示されているため無視
+		.some(([, item]) => 'indicated' in item && item.indicated)
 });
 
 const drawerMenuShowing = ref(false);
@@ -154,37 +151,28 @@ mainRouter.on('change', () => {
 	drawerMenuShowing.value = false;
 });
 
-if (window.innerWidth > 1024) {
-	const tempUI = miLocalStorage.getItem('ui_temp');
-	if (tempUI) {
-		miLocalStorage.setItem('ui', tempUI);
-		miLocalStorage.removeItem('ui_temp');
-		location.reload();
-	}
-}
-
 defaultStore.loaded.then(() => {
 	if (defaultStore.state.widgets.length === 0) {
-		defaultStore.set('widgets', [{
-			name: 'calendar',
-			id: 'a', place: 'right', data: {},
-		}, {
-			name: 'notifications',
-			id: 'b', place: 'right', data: {},
-		}]);
+		defaultStore.set('widgets', [
+			{
+				name: 'calendar',
+				id: 'a', place: 'right', data: {},
+			},
+			{
+				name: 'notifications',
+				id: 'b', place: 'right', data: {},
+			},
+		]);
 	}
 });
 
-const onContextmenu = (ev) => {
-	const isLink = (el: HTMLElement) => {
-		if (el.tagName === 'A') return true;
-		if (el.parentElement) {
-			return isLink(el.parentElement);
-		}
-	};
-	if (isLink(ev.target)) return;
-	if (['INPUT', 'TEXTAREA', 'IMG', 'VIDEO', 'CANVAS'].includes(ev.target.tagName) || ev.target.attributes['contenteditable']) return;
+const onContextmenu = (ev: MouseEvent) => {
+	if (!(ev.target instanceof HTMLElement)) return;
+	if (ev.target.closest('a') !== null) return;
+	if (['INPUT', 'TEXTAREA', 'IMG', 'VIDEO', 'CANVAS'].includes(ev.target.tagName)) return;
+	if (ev.target.hasAttribute('contenteditable')) return; // TODO: `false`や空文字列の扱いを考慮する
 	if (window.getSelection()?.toString() !== '') return;
+
 	const path = mainRouter.getCurrentPath();
 	os.contextMenu([{
 		type: 'label',
@@ -198,12 +186,12 @@ const onContextmenu = (ev) => {
 	}], ev);
 };
 
-function top() {
-	contents.value.rootEl.scrollTo({
+const top = () => {
+	contents.value?.rootEl?.scrollTo({
 		top: 0,
 		behavior: 'smooth',
 	});
-}
+};
 
 const navFooterHeight = ref(0);
 provide<Ref<number>>(CURRENT_STICKY_BOTTOM, navFooterHeight);
@@ -222,7 +210,7 @@ watch(navFooter, () => {
 	immediate: true,
 });
 
-useScrollPositionManager(() => contents.value.rootEl, mainRouter);
+useScrollPositionManager(() => contents.value?.rootEl ?? null, mainRouter);
 
 // #region iconOnly
 
