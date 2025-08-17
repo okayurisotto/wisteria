@@ -64,7 +64,7 @@ class MainRouterProxy implements IRouter {
 		return this.supplier().getCurrentKey();
 	}
 
-	getCurrentPath(): any {
+	getCurrentPath(): string {
 		return this.supplier().getCurrentPath();
 	}
 

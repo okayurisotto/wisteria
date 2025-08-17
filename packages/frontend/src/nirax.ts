@@ -84,7 +84,7 @@ export interface IRouter extends EventEmitter<RouterEvent> {
 
 	resolve(path: string): Resolved | null;
 
-	getCurrentPath(): unknown;
+	getCurrentPath(): string;
 
 	getCurrentKey(): string;
 
@@ -364,7 +364,7 @@ export class Router extends EventEmitter<RouterEvent> implements IRouter {
 		};
 	}
 
-	public getCurrentPath() {
+	public getCurrentPath(): string {
 		return this.currentPath;
 	}
 
