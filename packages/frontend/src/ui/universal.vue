@@ -4,22 +4,26 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="$style.root">
-	<XSidebar :class="[$style.sidebar, { [$style.sidebarIconOnly]: iconOnly }]"/>
+<div :class="[$style.root, { [$style.iconOnly]: iconOnly }]">
+	<XSidebar :class="$style.sidebar"/>
 
-	<MkStickyContainer ref="contents" :class="$style.contents" style="container-type: inline-size;" @contextmenu.stop="onContextmenu">
-		<template #header>
-			<div>
-				<XAnnouncements v-if="$i"/>
-				<XStatusBars :class="$style.statusbars"/>
+	<div :class="$style.main">
+		<MkStickyContainer ref="contents" :class="$style.contents" style="container-type: inline-size;" @contextmenu.stop="onContextmenu">
+			<template #header>
+				<div>
+					<XAnnouncements v-if="$i"/>
+					<XStatusBars :class="$style.statusbars"/>
+				</div>
+			</template>
+			<RouterView/>
+			<div :class="$style.spacer"></div>
+		</MkStickyContainer>
+
+		<div :class="$style.widgetsContainer">
+			<div ref="widgets" :class="[$style.widgets, sticky === 'top' ? $style.stickyTop : sticky === 'bottom' ? $style.stickyBottom : $style.stickyNone]">
+				<XWidgets/>
 			</div>
-		</template>
-		<RouterView/>
-		<div :class="$style.spacer"></div>
-	</MkStickyContainer>
-
-	<div :class="$style.widgets">
-		<XWidgets/>
+		</div>
 	</div>
 
 	<button :class="$style.widgetButton" class="_button" @click="widgetsShowing = true"><i class="ti ti-apps"></i></button>
@@ -100,7 +104,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { provide, onMounted, computed, ref, watch, shallowRef, type Ref, onBeforeUnmount } from 'vue';
+import { provide, onMounted, computed, ref, watch, shallowRef, type Ref, onBeforeUnmount, useTemplateRef, watchEffect } from 'vue';
 import XWidgets from './universal.widgets.vue';
 import XCommon from './_common_/common.vue';
 import XSidebar from './_common_/navbar.vue';
@@ -117,6 +121,7 @@ import { type PageMetadata, provideMetadataReceiver, provideReactiveMetadata } f
 import { CURRENT_STICKY_BOTTOM } from '@/const.js';
 import { useScrollPositionManager } from '@/nirax.js';
 import { mainRouter } from '@/router/main.js';
+import { useElementSize, useWindowScroll, useWindowSize } from '@vueuse/core';
 
 const isRoot = computed(() => mainRouter.currentRoute.value.name === 'index');
 
@@ -212,6 +217,56 @@ watch(navFooter, () => {
 
 useScrollPositionManager(() => contents.value?.rootEl ?? null, mainRouter);
 
+//#region Widgets Scroll
+
+const widgets = useTemplateRef('widgets');
+const widgetsSize = useElementSize(widgets, undefined, { box: 'border-box' }); // `padding`の分も含めるために`border-box`を指定する。
+const windowSize = useWindowSize();
+const windowScroll = useWindowScroll(); // すでに軽量化策は講じてあるため`throttle`は設定しない。
+const marginTop = ref(0);
+
+// `margin-top`の実際の変更を最小限にすることでレンダリングを軽量化する。
+// ウィジェット要素の上端をビューポート上端に貼り付けたい場合には`'top'`にする。
+// ウィジェット要素の下端をビューポート下端に貼り付けたい場合には`'bottom'`にする。
+const sticky = ref<'none' | 'top' | 'bottom'>('none');
+
+watchEffect(() => {
+	if (windowSize.height.value > widgetsSize.height.value) {
+		// そもそもウィジェット要素をスクロールする必要がないほどビューポートが長い場合：`stickyTop`を`true`にする。
+		marginTop.value = windowScroll.y.value;
+		sticky.value = 'top';
+	} else {
+		if (windowScroll.directions.bottom) {
+			// スクロールダウンした場合：
+			const newValue = windowScroll.y.value + windowSize.height.value - widgetsSize.height.value;
+			if (marginTop.value < newValue) {
+				// すでにウィジェット要素の下端が見えている場合：`marginTop`を更新しつつ、`sticky`を設定する。
+				marginTop.value = newValue;
+				sticky.value = 'bottom';
+			} else {
+				// まだウィジェット要素の下端が見えていない場合：`marginTop`を保持することでウィジェット要素の下の方を表示できるようにする。
+				sticky.value = 'none';
+			}
+		} else {
+			// スクロールアップした場合：
+			if (marginTop.value > windowScroll.y.value) {
+				// すでにウィジェット要素の上端が見えている場合：`marginTop`を更新しつつ、`sticky`を設定する。
+				marginTop.value = windowScroll.y.value;
+				sticky.value = 'top';
+			} else {
+				// まだウィジェット要素の上端が見えていない場合：`marginTop`を保持することでウィジェット要素の上の方を表示できるようにする。
+				sticky.value = 'none';
+			}
+		}
+	}
+});
+
+watchEffect(() => {
+	widgets.value?.style.setProperty('--widgets-margin-top', `${Math.floor(marginTop.value)}px`); // CSS変数の変更のみであればパフォーマンスは良好
+});
+
+//#endregion
+
 // #region iconOnly
 
 const iconOnly = ref(false);
@@ -250,19 +305,14 @@ onBeforeUnmount(() => {
 <style>
 html,
 body {
-	width: 100%;
-	height: 100%;
-	overflow: clip;
-	position: fixed;
-	top: 0;
-	left: 0;
+	min-width: 100%;
+	min-height: 100%;
 	overscroll-behavior: none;
 }
 
 #misskey_app {
 	width: 100%;
 	height: 100%;
-	overflow: clip;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -271,6 +321,8 @@ body {
 
 <style lang="scss" module>
 $ui-font-size: 1em; // TODO: どこかに集約したい
+
+//#region Transitions
 
 .transition_menuDrawerBg_enterActive,
 .transition_menuDrawerBg_leaveActive {
@@ -316,56 +368,78 @@ $ui-font-size: 1em; // TODO: どこかに集約したい
 	transform: translateX(240px);
 }
 
+//#endregion
+
 .root {
-	height: 100dvh;
-	overflow: clip;
-	contain: strict;
+	--sidebar-width: 250px;
+	--widgets-width: 350px;
+
 	box-sizing: border-box;
 	display: flex;
-}
 
-.sidebar {
-	width: 250px;
-	border-right: solid 0.5px var(--divider);
-
-	&.sidebarIconOnly {
-		width: 80px;
+	&.iconOnly {
+		--sidebar-width: 80px;
 	}
 }
 
-.contents {
+.sidebar {
+	left: 0;
+	position: fixed;
+	top: 0;
+	width: var(--sidebar-width);
+}
+
+.main {
+	display: flex;
 	flex: 1;
-	height: 100%;
-	min-width: 0;
-	overflow: auto;
-	overflow-y: scroll;
+}
+
+.contents {
+	border-right: solid 0.5px var(--divider);
+	flex: 1;
+	margin-left: var(--sidebar-width);
+	min-height: 100dvh;
 	overscroll-behavior: contain;
-	background: var(--bg);
+}
+
+.widgetsContainer {
+	width: var(--widgets-width);
 }
 
 .widgets {
-	width: 350px;
-	height: 100%;
 	box-sizing: border-box;
-	overflow: auto;
 	padding: var(--margin) var(--margin) calc(var(--margin) + env(safe-area-inset-bottom, 0px));
-	border-left: solid 0.5px var(--divider);
-	background: var(--bg);
+	width: var(--widgets-width);
+
+	&.stickyNone {
+		margin-top: var(--widgets-margin-top);
+	}
+
+	&.stickyTop {
+		position: sticky;
+		top: 0;
+	}
+
+	&.stickyBottom {
+		// `.stickyBottom`とは言っているものの、`position: sticky`ではできないので`fixed`で実現する。
+		position: fixed;
+		bottom: 0;
+	}
 }
 
 .widgetButton {
 	display: none; // block
 
-	position: fixed;
-	z-index: 1000;
-	bottom: 32px;
-	right: 32px;
-	width: 64px;
-	height: 64px;
+	background: var(--panel);
 	border-radius: var(--rounded-full);
+	bottom: 32px;
 	box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
 	font-size: 22px;
-	background: var(--panel);
+	height: 64px;
+	position: fixed;
+	right: 32px;
+	width: 64px;
+	z-index: 1000;
 }
 
 .widgetsDrawerBg {
@@ -479,12 +553,16 @@ $ui-font-size: 1em; // TODO: どこかに集約したい
 }
 
 @media (width < 1280px) {
-	.sidebar {
-		width: 80px;
+	.root {
+		--sidebar-width: 80px;
 	}
 }
 
 @media (width < 1100px) {
+	.root {
+		--widgets-width: 0;
+	}
+
 	.widgets {
 		display: none;
 	}
