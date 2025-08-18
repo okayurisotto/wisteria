@@ -37,7 +37,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div
 			ref="content"
 			class="_shadow"
-			:class="[$style.content, { [$style.fixed]: fixed }]"
+			:class="$style.content"
 			:style="{
 				zIndex,
 				left: align?.left.value + 'px',
@@ -61,16 +61,6 @@ import { isTouchUsing } from '@/scripts/touch.js';
 import { defaultStore } from '@/store.js';
 import { deviceKind } from '@/scripts/device-kind.js';
 import { getFloatingPosition } from '@/scripts/getFloatingPosition.js';
-
-function getFixedContainer(el: Element | null): Element | null {
-	if (el == null || el.tagName === 'BODY') return null;
-	const position = window.getComputedStyle(el).getPropertyValue('position');
-	if (position === 'fixed') {
-		return el;
-	} else {
-		return getFixedContainer(el.parentElement);
-	}
-}
 
 type ModalTypes = 'popup' | 'dialog' | 'drawer';
 
@@ -102,7 +92,6 @@ const emit = defineEmits<{
 provide('modal', true);
 
 const maxHeight = ref<number>();
-const fixed = ref(false);
 const transformOrigin = ref('center');
 const showing = ref(true);
 const content = shallowRef<HTMLElement>();
@@ -221,7 +210,6 @@ onMounted(() => {
 		if (props.src) {
 			props.src.style.pointerEvents = 'none';
 		}
-		fixed.value = (type.value === 'drawer') || (getFixedContainer(props.src) != null);
 
 		await nextTick();
 	}, { immediate: true });
@@ -358,11 +346,7 @@ defineExpose({
 
 	&.popup {
 		> .content {
-			position: absolute;
-
-			&.fixed {
-				position: fixed;
-			}
+			position: fixed;
 		}
 	}
 
