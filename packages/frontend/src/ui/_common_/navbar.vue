@@ -51,9 +51,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<button v-tooltip.noDelay.right="i18n.ts.note" class="_button" :class="[$style.post]" @click="os.post">
 				<i class="ti ti-pencil ti-fw" :class="$style.postIcon"></i><span :class="$style.postText">{{ i18n.ts.note }}</span>
 			</button>
-			<button v-tooltip.noDelay.right="`${i18n.ts.account}: @${$i.username}`" class="_button" :class="[$style.account]" @click="openAccountMenu">
+			<MkA v-if="$i" :class="$style.account" :to="`/@${$i.username}`">
 				<MkAvatar :user="$i" :class="$style.avatar"/><MkAcct class="_nowrap" :class="$style.acct" :user="$i"/>
-			</button>
+			</MkA>
 		</div>
 	</div>
 </div>
@@ -64,7 +64,7 @@ import { computed, defineAsyncComponent } from 'vue';
 import { openInstanceMenu } from './common.js';
 import * as os from '@/os.js';
 import { navbarItemDef } from '@/navbar.js';
-import { $i, openAccountMenu as openAccountMenu_ } from '@/account.js';
+import { $i } from '@/account.js';
 import { defaultStore } from '@/store.js';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
@@ -77,12 +77,6 @@ const otherMenuItemIndicated = computed(() => {
 	}
 	return false;
 });
-
-function openAccountMenu(ev: MouseEvent) {
-	openAccountMenu_({
-		withExtraOperation: true,
-	}, ev);
-}
 
 function more(ev: MouseEvent) {
 	os.popup(defineAsyncComponent(() => import('@/components/MkLaunchPad.vue')), {
