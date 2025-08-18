@@ -8,11 +8,9 @@ import * as Misskey from 'misskey-js';
 import { showSuspendedDialog } from '@/scripts/show-suspended-dialog.js';
 import { i18n } from '@/i18n.js';
 import { miLocalStorage } from '@/local-storage.js';
-import type { MenuButton } from '@/types/menu.js';
 import { del, get, set } from '@/scripts/idb-proxy.js';
 import { apiUrl } from '@/config.js';
-import { waiting, popup, popupMenu, success, alert } from '@/os.js';
-import { misskeyApi } from '@/scripts/misskey-api.js';
+import { waiting, popup, alert } from '@/os.js';
 import { unisonReload, reloadChannel } from '@/scripts/unison-reload.js';
 
 // TODO: 他のタブと永続化されたstateを同期
@@ -219,108 +217,6 @@ export async function login(token: Account['token'], redirect?: string) {
 	}
 
 	unisonReload();
-}
-
-export async function openAccountMenu(opts: {
-	includeCurrentAccount?: boolean;
-	withExtraOperation: boolean;
-	active?: Misskey.entities.UserDetailed['id'];
-	onChoose?: (account: Misskey.entities.UserDetailed) => void;
-}, ev: MouseEvent) {
-	if (!$i) return;
-
-	function showSigninDialog() {
-		popup(defineAsyncComponent(() => import('@/components/MkSigninDialog.vue')), {}, {
-			done: res => {
-				addAccount(res.id, res.i);
-				success();
-			},
-		}, 'closed');
-	}
-
-	function createAccount() {
-		popup(defineAsyncComponent(() => import('@/components/MkSignupDialog.vue')), {}, {
-			done: res => {
-				addAccount(res.id, res.i);
-				switchAccountWithToken(res.i);
-			},
-		}, 'closed');
-	}
-
-	async function switchAccount(account: Misskey.entities.UserDetailed) {
-		const storedAccounts = await getAccounts();
-		const found = storedAccounts.find(x => x.id === account.id);
-		if (found == null) return;
-		switchAccountWithToken(found.token);
-	}
-
-	function switchAccountWithToken(token: string) {
-		login(token);
-	}
-
-	const storedAccounts = await getAccounts().then(accounts => accounts.filter(x => x.id !== $i.id));
-	const accountsPromise = misskeyApi('users/show', { userIds: storedAccounts.map(x => x.id) });
-
-	function createItem(account: Misskey.entities.UserDetailed) {
-		return {
-			type: 'user' as const,
-			user: account,
-			active: opts.active != null ? opts.active === account.id : false,
-			action: () => {
-				if (opts.onChoose) {
-					opts.onChoose(account);
-				} else {
-					switchAccount(account);
-				}
-			},
-		};
-	}
-
-	const accountItemPromises = storedAccounts.map(a => new Promise<ReturnType<typeof createItem> | MenuButton>(res => {
-		accountsPromise.then(accounts => {
-			const account = accounts.find(x => x.id === a.id);
-			if (account == null) return res({
-				type: 'button' as const,
-				text: a.id,
-				action: () => {
-					switchAccountWithToken(a.token);
-				},
-			});
-
-			res(createItem(account));
-		});
-	}));
-
-	if (opts.withExtraOperation) {
-		popupMenu([...[{
-			type: 'link' as const,
-			text: i18n.ts.profile,
-			to: `/@${ $i.username }`,
-			avatar: $i,
-		}, { type: 'divider' }, ...(opts.includeCurrentAccount ? [createItem($i)] : []), ...accountItemPromises, {
-			type: 'parent' as const,
-			icon: 'ti ti-plus',
-			text: i18n.ts.addAccount,
-			children: [{
-				text: i18n.ts.existingAccount,
-				action: () => { showSigninDialog(); },
-			}, {
-				text: i18n.ts.createAccount,
-				action: () => { createAccount(); },
-			}],
-		}, {
-			type: 'link' as const,
-			icon: 'ti ti-users',
-			text: i18n.ts.manageAccounts,
-			to: '/settings/accounts',
-		}]], ev.currentTarget ?? ev.target, {
-			align: 'left',
-		});
-	} else {
-		popupMenu([...(opts.includeCurrentAccount ? [createItem($i)] : []), ...accountItemPromises], ev.currentTarget ?? ev.target, {
-			align: 'left',
-		});
-	}
 }
 
 if (_DEV_) {

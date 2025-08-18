@@ -14,9 +14,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<header :class="$style.header">
 		<div :class="$style.headerLeft">
 			<button v-if="!fixed" :class="$style.cancel" class="_button" @click="cancel"><i class="ti ti-x"></i></button>
-			<button v-click-anime v-tooltip="i18n.ts.switchAccount" :class="$style.account" class="_button" @click="openAccountMenu">
-				<MkAvatar :user="postAccount ?? $i" :class="$style.avatar"/>
-			</button>
 		</div>
 		<div :class="$style.headerRight">
 			<template v-if="!(channel != null && fixed)">
@@ -72,7 +69,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<input v-show="withHashtags" ref="hashtagsInputEl" v-model="hashtags" :class="$style.hashtags" :placeholder="i18n.ts.hashtags" list="hashtags">
 	<XPostFormAttaches v-model="files" @detach="detachFile" @changeSensitive="updateFileSensitive" @changeName="updateFileName" @replaceFile="replaceFile"/>
 	<MkPollEditor v-if="poll" v-model="poll" @destroyed="poll = null"/>
-	<MkNotePreview v-if="showPreview" :class="$style.preview" :text="text" :files="files" :poll="poll ?? undefined" :useCw="useCw" :cw="cw" :user="postAccount ?? $i"/>
+	<MkNotePreview v-if="showPreview" :class="$style.preview" :text="text" :files="files" :poll="poll ?? undefined" :useCw="useCw" :cw="cw" :user="$i"/>
 	<div v-if="showingOptions" style="padding: 8px 16px;">
 	</div>
 	<footer :class="$style.footer">
@@ -118,7 +115,7 @@ import { defaultStore } from '@/store.js';
 import MkInfo from '@/components/MkInfo.vue';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
-import { signinRequired, incNotesCount, getAccounts, openAccountMenu as openAccountMenu_ } from '@/account.js';
+import { signinRequired, incNotesCount } from '@/account.js';
 import { uploadFile } from '@/scripts/upload.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { miLocalStorage } from '@/local-storage.js';
@@ -763,15 +760,8 @@ async function post(ev?: MouseEvent) {
 		}
 	}
 
-	let token: string | undefined = undefined;
-
-	if (postAccount.value) {
-		const storedAccounts = await getAccounts();
-		token = storedAccounts.find(x => x.id === postAccount.value?.id)?.token;
-	}
-
 	posting.value = true;
-	misskeyApi('notes/create', postData, token).then(() => {
+	misskeyApi('notes/create', postData).then(() => {
 		if (props.freezeAfterPosted) {
 			posted.value = true;
 		} else {
@@ -786,7 +776,6 @@ async function post(ev?: MouseEvent) {
 				miLocalStorage.setItem('hashtags', JSON.stringify(unique(hashtags_.concat(history))));
 			}
 			posting.value = false;
-			postAccount.value = null;
 
 			incNotesCount();
 		});
@@ -832,25 +821,6 @@ async function insertMfmFunction(ev: MouseEvent) {
 		textareaEl.value,
 		text,
 	);
-}
-
-const postAccount = ref<Misskey.entities.UserDetailed | null>(null);
-
-function openAccountMenu(ev: MouseEvent) {
-	if (props.mock) return;
-
-	openAccountMenu_({
-		withExtraOperation: false,
-		includeCurrentAccount: true,
-		active: postAccount.value != null ? postAccount.value.id : $i.id,
-		onChoose: (account) => {
-			if (account.id === $i.id) {
-				postAccount.value = null;
-			} else {
-				postAccount.value = account;
-			}
-		},
-	}, ev);
 }
 
 onMounted(() => {
