@@ -6,7 +6,7 @@
 type ScrollBehavior = 'auto' | 'smooth' | 'instant';
 
 export function getScrollContainer(el: HTMLElement | null): HTMLElement | null {
-	if (el == null || el.tagName === 'HTML') return null;
+	if (el == null || el.tagName === 'HTML') return el;
 	const overflow = window.getComputedStyle(el).getPropertyValue('overflow-y');
 	if (overflow === 'scroll' || overflow === 'auto') {
 		return el;
