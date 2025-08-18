@@ -201,6 +201,7 @@ const top = () => {
 const navFooterHeight = ref(0);
 provide<Ref<number>>(CURRENT_STICKY_BOTTOM, navFooterHeight);
 
+// TODO: なおす
 watch(navFooter, () => {
 	if (navFooter.value) {
 		navFooterHeight.value = navFooter.value.offsetHeight;
@@ -302,26 +303,7 @@ onBeforeUnmount(() => {
 //#endregion
 </script>
 
-<style>
-html,
-body {
-	min-width: 100%;
-	min-height: 100%;
-	overscroll-behavior: none;
-}
-
-#misskey_app {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	top: 0;
-	left: 0;
-}
-</style>
-
 <style lang="scss" module>
-$ui-font-size: 1em; // TODO: どこかに集約したい
-
 //#region Transitions
 
 .transition_menuDrawerBg_enterActive,
