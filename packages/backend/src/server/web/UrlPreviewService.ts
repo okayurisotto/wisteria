@@ -15,6 +15,8 @@ import { LoggerService } from '@/core/LoggerService.js';
 import { ApiError } from '@/server/api/error.js';
 import type { Context } from 'hono';
 
+const SUPPORTED_SCHEMAS = ['http:', 'https:'];
+
 @Injectable()
 export class UrlPreviewService {
 	private readonly logger: Logger;
@@ -30,15 +32,15 @@ export class UrlPreviewService {
 		this.logger = this.loggerService.getLogger('url-preview');
 	}
 
-	private wrap(url?: string | null): string | null {
-		return url != null
-			? url.match(/^https?:\/\//)
-				? `${this.config.mediaProxy}/preview.webp?${query({
-					url,
-					preview: '1',
-				})}`
-				: url
-			: null;
+	private wrap(url: string | null): string | null {
+		if (url === null) return null;
+		if (!SUPPORTED_SCHEMAS.includes(new URL(url).protocol))  throw new Error('unsupported schema included');
+
+		const proxiedUrl = new URL(`${this.config.mediaProxy}/preview.webp`);
+		proxiedUrl.searchParams.set('url', url);
+		proxiedUrl.searchParams.set('preview', '1');
+
+		return proxiedUrl.href;
 	}
 
 	public async handle(c: Context): Promise<Response> {
@@ -72,11 +74,11 @@ export class UrlPreviewService {
 
 			this.logger.succ(`Got preview of ${url}: ${summary.title}`);
 
-			if (!(summary.url.startsWith('http://') || summary.url.startsWith('https://'))) {
+			if (!SUPPORTED_SCHEMAS.includes(new URL(summary.url).protocol)) {
 				throw new Error('unsupported schema included');
 			}
 
-			if (summary.player.url && !(summary.player.url.startsWith('http://') || summary.player.url.startsWith('https://'))) {
+			if (summary.player.url !== null && !SUPPORTED_SCHEMAS.includes(new URL(summary.player.url).protocol)) {
 				throw new Error('unsupported schema included');
 			}
 
