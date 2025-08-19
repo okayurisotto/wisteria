@@ -233,10 +233,6 @@ const routes: RouteDef[] = [{
 	path: parsePath('/user-tags/:tag'),
 	component: page(() => import('@/pages/user-tag.vue')),
 }, {
-	path: parsePath('/explore'),
-	component: page(() => import('@/pages/explore.vue')),
-	hash: 'initialTab',
-}, {
 	path: parsePath('/search'),
 	component: page(() => import('@/pages/search.vue')),
 	query: {

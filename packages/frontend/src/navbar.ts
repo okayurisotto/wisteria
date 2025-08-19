@@ -40,11 +40,6 @@ export const navbarItemDef = reactive({
 		indicated: computed(() => $i != null && $i.hasPendingReceivedFollowRequest),
 		to: '/my/follow-requests',
 	},
-	explore: {
-		title: i18n.ts.explore,
-		icon: 'ti ti-hash',
-		to: '/explore',
-	},
 	announcements: {
 		title: i18n.ts.announcements,
 		icon: 'ti ti-speakerphone',
