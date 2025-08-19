@@ -10,7 +10,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<button class="_buttonPrimary" :class="$style.newButton" @click="scrollToTop">{{ i18n.ts.newNoteRecived }}</button>
 		</div>
 		<MkPullToRefresh :refresher="reloadTimeline">
-			<div :class="$style.timeline">
+			<div ref="timeline" :class="$style.timeline">
 				<div ref="timelineTopMarker"></div>
 				<MkNote :class="$style.timelineItem" v-for="note of notes" :key="note.id" :note="note" :withHardMute="true"/>
 				<div ref="timelineBottomMarker"></div>
@@ -40,8 +40,9 @@ const queue = ref(0);
 const notes = ref<MisskeyJS.entities.Note[]>([]);
 const oldestNoteId = computed(() => notes.value[notes.value.length - 1]?.id);
 const isTop = ref(true);
-const timelineTopMarker = useTemplateRef("timelineTopMarker");
-const timelineBottomMarker = useTemplateRef("timelineBottomMarker");
+const timeline = useTemplateRef('timeline');
+const timelineTopMarker = useTemplateRef('timelineTopMarker');
+const timelineBottomMarker = useTemplateRef('timelineBottomMarker');
 
 const scrollToTop = (): void => {
 	window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -65,13 +66,24 @@ onMounted(async () => {
 		notes.value.unshift(note);
 
 		if (isTop.value) {
-			nextTick(() => {
-				const topNote = timelineTopMarker.value?.nextElementSibling;
-				if (topNote != null) {
-					scrollBy({ top: topNote.getBoundingClientRect().height, behavior: 'instant' }); // 一度下にスクロールしてから、
-					scrollToTop(); // スムーズに上にスクロール
-				}
-			});
+			if (defaultStore.state.animation) {
+				nextTick(() => {
+					if (timeline.value === null) return;
+
+					const topNote = timelineTopMarker.value?.nextElementSibling;
+					if (topNote == null) return;
+
+					const topNoteHeight = Math.round(topNote.getBoundingClientRect().height);
+
+					timeline.value.animate(
+						[
+							{ translate: `0 ${-topNoteHeight}px` },
+							{ translate: '0 0' },
+						],
+						{ easing: 'cubic-bezier(0.23, 1, 0.32, 1)', duration: 700 },
+					);
+				});
+			}
 		} else {
 			queue.value++;
 		}
@@ -142,11 +154,6 @@ onUnmounted(() => {
 	display: flex;
 	flex-direction: column;
 	overflow: clip;
-
-	&.moving {
-		transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
-		transform: translateY(-64px);
-	}
 }
 
 .timelineItem:not(:last-of-type) {
