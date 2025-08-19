@@ -24,7 +24,7 @@ export const CONFIG_FILE = envOption.MISSKEY_CONFIG_YML
 /** `/built` */
 const BUILT_DIR = path.join(ROOT_DIR, 'built');
 
-/** `/built/package.json` */
+/** `/package.json` */
 export const PACKAGE_JSON_FILE = path.join(ROOT_DIR, 'package.json');
 
 /** `/packages/locales/built` */
