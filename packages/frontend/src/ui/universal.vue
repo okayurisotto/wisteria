@@ -7,24 +7,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div :class="[$style.root, { [$style.iconOnly]: iconOnly }]">
 	<XSidebar :class="$style.sidebar"/>
 
-	<div :class="$style.main">
-		<MkStickyContainer ref="contents" :class="$style.contents" style="container-type: inline-size;" @contextmenu.stop="onContextmenu">
-			<template #header>
-				<div>
-					<XAnnouncements v-if="$i"/>
-					<XStatusBars :class="$style.statusbars"/>
-				</div>
-			</template>
-			<RouterView/>
-			<div :class="$style.spacer"></div>
-		</MkStickyContainer>
-
-		<div :class="$style.widgetsContainer">
-			<div ref="widgets" :class="[$style.widgets, sticky === 'top' ? $style.stickyTop : sticky === 'bottom' ? $style.stickyBottom : $style.stickyNone]">
-				<XWidgets/>
+	<MkStickyContainer ref="contents" :class="$style.contents" style="container-type: inline-size;" @contextmenu.stop="onContextmenu">
+		<template #header>
+			<div>
+				<XAnnouncements v-if="$i"/>
+				<XStatusBars :class="$style.statusbars"/>
 			</div>
-		</div>
-	</div>
+		</template>
+		<RouterView/>
+		<div :class="$style.spacer"></div>
+	</MkStickyContainer>
+
+	<XWidgets :class="$style.widgets"/>
 
 	<button :class="$style.widgetButton" class="_button" @click="widgetsShowing = true"><i class="ti ti-apps"></i></button>
 
@@ -104,7 +98,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { provide, onMounted, computed, ref, watch, shallowRef, type Ref, onBeforeUnmount, useTemplateRef, watchEffect } from 'vue';
+import { provide, onMounted, computed, ref, watch, shallowRef, type Ref, onBeforeUnmount } from 'vue';
 import XWidgets from './universal.widgets.vue';
 import XCommon from './_common_/common.vue';
 import XSidebar from './_common_/navbar.vue';
@@ -121,7 +115,6 @@ import { type PageMetadata, provideMetadataReceiver, provideReactiveMetadata } f
 import { CURRENT_STICKY_BOTTOM } from '@/const.js';
 import { useScrollPositionManager } from '@/nirax.js';
 import { mainRouter } from '@/router/main.js';
-import { useElementSize, useWindowScroll, useWindowSize } from '@vueuse/core';
 
 const isRoot = computed(() => mainRouter.currentRoute.value.name === 'index');
 
@@ -218,56 +211,6 @@ watch(navFooter, () => {
 
 useScrollPositionManager(() => contents.value?.rootEl ?? null, mainRouter);
 
-//#region Widgets Scroll
-
-const widgets = useTemplateRef('widgets');
-const widgetsSize = useElementSize(widgets, undefined, { box: 'border-box' }); // `padding`の分も含めるために`border-box`を指定する。
-const windowSize = useWindowSize();
-const windowScroll = useWindowScroll(); // すでに軽量化策は講じてあるため`throttle`は設定しない。
-const marginTop = ref(0);
-
-// `margin-top`の実際の変更を最小限にすることでレンダリングを軽量化する。
-// ウィジェット要素の上端をビューポート上端に貼り付けたい場合には`'top'`にする。
-// ウィジェット要素の下端をビューポート下端に貼り付けたい場合には`'bottom'`にする。
-const sticky = ref<'none' | 'top' | 'bottom'>('none');
-
-watchEffect(() => {
-	if (windowSize.height.value > widgetsSize.height.value) {
-		// そもそもウィジェット要素をスクロールする必要がないほどビューポートが長い場合：`stickyTop`を`true`にする。
-		marginTop.value = windowScroll.y.value;
-		sticky.value = 'top';
-	} else {
-		if (windowScroll.directions.bottom) {
-			// スクロールダウンした場合：
-			const newValue = windowScroll.y.value + windowSize.height.value - widgetsSize.height.value;
-			if (marginTop.value < newValue) {
-				// すでにウィジェット要素の下端が見えている場合：`marginTop`を更新しつつ、`sticky`を設定する。
-				marginTop.value = newValue;
-				sticky.value = 'bottom';
-			} else {
-				// まだウィジェット要素の下端が見えていない場合：`marginTop`を保持することでウィジェット要素の下の方を表示できるようにする。
-				sticky.value = 'none';
-			}
-		} else {
-			// スクロールアップした場合：
-			if (marginTop.value > windowScroll.y.value) {
-				// すでにウィジェット要素の上端が見えている場合：`marginTop`を更新しつつ、`sticky`を設定する。
-				marginTop.value = windowScroll.y.value;
-				sticky.value = 'top';
-			} else {
-				// まだウィジェット要素の上端が見えていない場合：`marginTop`を保持することでウィジェット要素の上の方を表示できるようにする。
-				sticky.value = 'none';
-			}
-		}
-	}
-});
-
-watchEffect(() => {
-	widgets.value?.style.setProperty('--widgets-margin-top', `${Math.floor(marginTop.value)}px`); // CSS変数の変更のみであればパフォーマンスは良好
-});
-
-//#endregion
-
 // #region iconOnly
 
 const iconOnly = ref(false);
@@ -358,6 +301,7 @@ onBeforeUnmount(() => {
 
 	box-sizing: border-box;
 	display: flex;
+	max-height: 100dvh;
 
 	&.iconOnly {
 		--sidebar-width: 80px;
@@ -365,48 +309,20 @@ onBeforeUnmount(() => {
 }
 
 .sidebar {
-	left: 0;
-	position: fixed;
-	top: 0;
 	width: var(--sidebar-width);
-}
-
-.main {
-	display: flex;
-	flex: 1;
 }
 
 .contents {
 	border-right: solid 0.5px var(--divider);
 	flex: 1;
-	margin-left: var(--sidebar-width);
-	min-height: 100dvh;
-	overscroll-behavior: contain;
-}
-
-.widgetsContainer {
-	width: var(--widgets-width);
+	overflow-y: scroll;
 }
 
 .widgets {
 	box-sizing: border-box;
+	overflow-y: scroll;
 	padding: var(--margin) var(--margin) calc(var(--margin) + env(safe-area-inset-bottom, 0px));
 	width: var(--widgets-width);
-
-	&.stickyNone {
-		margin-top: var(--widgets-margin-top);
-	}
-
-	&.stickyTop {
-		position: sticky;
-		top: 0;
-	}
-
-	&.stickyBottom {
-		// `.stickyBottom`とは言っているものの、`position: sticky`ではできないので`fixed`で実現する。
-		position: fixed;
-		bottom: 0;
-	}
 }
 
 .widgetButton {
