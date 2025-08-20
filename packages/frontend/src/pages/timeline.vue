@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 	<div :class="$style.root">
 		<MkPostForm v-if="defaultStore.reactiveState.showFixedPostForm.value" :class="$style.postForm" class="post-form _panel" fixed style="margin-bottom: var(--margin);"/>
-		<div v-if="queue > 0" :class="$style.new">
+		<div v-if="queue.length > 0" :class="$style.new">
 			<button class="_buttonPrimary" :class="$style.newButton" @click="scrollToTop">{{ i18n.ts.newNoteRecived }}</button>
 		</div>
 		<MkPullToRefresh :refresher="reloadTimeline">
@@ -36,8 +36,8 @@ definePageMetadata(() => ({
 	icon: 'ti ti-home',
 }));
 
-const queue = ref(0);
 const notes = ref<MisskeyJS.entities.Note[]>([]);
+const queue = ref<MisskeyJS.entities.Note[]>([]);
 const oldestNoteId = computed(() => notes.value[notes.value.length - 1]?.id);
 const isTop = ref(true);
 const timeline = useTemplateRef('timeline');
@@ -83,9 +83,9 @@ onMounted(async () => {
 	const connection = stream.useChannel('homeTimeline');
 
 	connection.on('note', (note) => {
-		notes.value.unshift(note);
-
 		if (isTop.value) {
+			notes.value.unshift(note);
+
 			if (defaultStore.state.animation) {
 				nextTick(() => {
 					if (timeline.value === null) return;
@@ -105,7 +105,7 @@ onMounted(async () => {
 				});
 			}
 		} else {
-			queue.value++;
+			queue.value.unshift(note);
 		}
 	});
 
@@ -113,7 +113,11 @@ onMounted(async () => {
 		for (const entry of entries) {
 			if (entry.target === timelineTopMarker.value) {
 				isTop.value = entry.isIntersecting;
-				queue.value = 0;
+
+				if (queue.value.length !== 0) {
+					notes.value = [...queue.value, ...notes.value];
+					queue.value = [];
+				}
 			}
 
 			if (entry.target === timelineBottomMarker.value) {
