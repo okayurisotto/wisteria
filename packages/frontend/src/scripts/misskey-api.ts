@@ -6,12 +6,10 @@
 import * as Misskey from 'misskey-js';
 import { ref } from 'vue';
 import { apiUrl } from '@/config.js';
-import { $i } from '@/account.js';
 export const pendingApiRequestsCount = ref(0);
 
 const apiClient = new Misskey.api.APIClient({
 	origin: new URL(apiUrl).origin,
-	credential: $i?.token,
 	fetch: (...args) => {
 		pendingApiRequestsCount.value++
 		return fetch(...args).finally(() => {

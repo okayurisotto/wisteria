@@ -63,19 +63,15 @@ export class APIClient {
 	>(
 		endpoint: Endpoint,
 		params: Params = {} as Params,
-		credential?: string | null,
 	) {
 		return new Promise<Response>((resolve, reject) => {
 			this.fetch(`${this.origin}/api/${endpoint}`, {
 				method: 'POST',
-				body: JSON.stringify({
-					...params,
-					i: credential !== undefined ? credential : this.credential,
-				}),
+				body: JSON.stringify(params),
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				credentials: 'omit',
+				credentials: 'include',
 				cache: 'no-cache',
 			}).then(async (res) => {
 				const body = res.status === 204 ? null : await res.json();
