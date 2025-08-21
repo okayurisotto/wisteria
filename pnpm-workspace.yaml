@@ -1,11 +1,25 @@
 packages:
-  - 'packages/backend'
-  - 'packages/frontend'
-  - 'packages/hono-serve-static'
-  - 'packages/http-signature'
-  - 'packages/identicon-generator'
-  - 'packages/locales'
-  - 'packages/misskey-js'
-  - 'packages/parcom'
-  - 'packages/sw'
-  - 'packages/zod2spec'
+  - packages/backend
+  - packages/frontend
+  - packages/hono-serve-static
+  - packages/http-signature
+  - packages/identicon-generator
+  - packages/locales
+  - packages/misskey-js
+  - packages/parcom
+  - packages/sw
+  - packages/zod2spec
+
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@parcel/watcher'
+  - '@swc/core'
+  - bufferutil
+  - cbor-extract
+  - esbuild
+  - msgpackr-extract
+  - re2
+  - sharp
+  - utf-8-validate
+  - v-code-diff
+  - vue-demi
