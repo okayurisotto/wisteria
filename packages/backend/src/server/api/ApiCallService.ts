@@ -22,6 +22,7 @@ import { LiteResponse } from '@/misc/LiteResponse.js';
 import type { ExecMethodType } from './AbstractEndpoint.js';
 import { Stream } from 'node:stream';
 import type { Context } from 'hono';
+import { getCookie } from 'hono/cookie';
 import { getConnInfo } from '@hono/node-server/conninfo';
 import { z } from 'zod';
 
@@ -99,11 +100,7 @@ export class ApiCallService {
 			}
 		}
 
-		const authHeaderValue = c.req.header('authorization');
-		const token = authHeaderValue?.startsWith('Bearer ')
-			? authHeaderValue.slice(7)
-			: z.object({ i: z.string().nullish() }).safeParse(body).data?.i;
-
+		const token = getCookie(c, 'token');
 		const remoteAddress = getConnInfo(c).remote.address;
 
 		try {

@@ -66,17 +66,10 @@ export class StreamingApiServerService {
 				return;
 			}
 
-			const q = new URL(request.url, `http://${request.headers.host}`).searchParams;
-
 			let user: MiLocalUser | null = null;
 			let app: MiAccessToken | null = null;
 
-			// https://datatracker.ietf.org/doc/html/rfc6750.html#section-2.1
-			// Note that the standard WHATWG WebSocket API does not support setting any headers,
-			// but non-browser apps may still be able to set it.
-			const token = request.headers.authorization?.startsWith('Bearer ')
-				? request.headers.authorization.slice(7)
-				: q.get('i');
+			const token = request.headers.cookie?.match(/(?:^|; )token=(\w{16})(?:$|; )/)?.[1];
 
 			try {
 				[user, app] = await this.authenticateService.authenticate(token);

@@ -12,6 +12,7 @@ import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { SigninEntityService } from '@/core/entities/SigninEntityService.js';
 import type { Context } from 'hono';
 import { getConnInfo } from '@hono/node-server/conninfo';
+import { deleteCookie, setCookie } from 'hono/cookie';
 
 @Injectable()
 export class SigninService {
@@ -41,6 +42,10 @@ export class SigninService {
 			})();
 		});
 
+		if (user.token) {
+			deleteCookie(c, 'token');
+			setCookie(c, 'token', user.token, { httpOnly: true, secure: true, maxAge: 90 * 24 * 60 * 60 }); // 90 days
+		}
 		return c.json({ id: user.id, i: user.token }, 200);
 	}
 }
