@@ -14,7 +14,7 @@ RUN corepack enable
 
 WORKDIR /misskey
 
-COPY ./package.json ./pnpm-lock.yaml ./
+COPY ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml ./
 
 RUN pnpm fetch --prod
 
@@ -57,7 +57,6 @@ COPY --link ./packages/misskey-js/package.json          ./packages/misskey-js/pa
 COPY --link ./packages/parcom/package.json              ./packages/parcom/package.json
 COPY --link ./packages/sw/package.json                  ./packages/sw/package.json
 COPY --link ./packages/zod2spec/package.json            ./packages/zod2spec/package.json
-COPY --link ./pnpm-workspace.yaml                       ./pnpm-workspace.yaml
 
 RUN pnpm install --prod --offline --frozen-lockfile
 
