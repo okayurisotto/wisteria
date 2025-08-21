@@ -44,8 +44,28 @@ const timeline = useTemplateRef('timeline');
 const timelineTopMarker = useTemplateRef('timelineTopMarker');
 const timelineBottomMarker = useTemplateRef('timelineBottomMarker');
 
+const isScrollContainer = (e: Element): boolean => {
+	const style = getComputedStyle(e);
+
+	const canScrollX = (style.overflowX === 'auto' || style.overflowX === 'scroll') && e.scrollWidth > e.clientWidth;
+	const canScrollY = (style.overflowY === 'auto' || style.overflowY === 'scroll') && e.scrollHeight > e.clientHeight;
+
+	return canScrollX || canScrollY;
+};
+
+const getScrollContainer = (e: Element): Element | null => {
+	if (isScrollContainer(e)) return e;
+	if (e.parentElement === null) return null;
+	return getScrollContainer(e.parentElement);
+};
+
+const scrollContainer = computed(() => timeline.value !== null ? getScrollContainer(timeline.value) : null);
+
 const scrollToTop = (): void => {
-	window.scrollTo({ top: 0, behavior: 'smooth' });
+	scrollContainer.value?.scrollTo({
+		top: 0,
+		behavior: defaultStore.state.animation ? 'smooth' : 'instant',
+	});
 };
 
 const reloadTimeline = async () => {
