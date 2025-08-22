@@ -208,7 +208,6 @@ export async function login(token: Account['token'], redirect?: string) {
 			throw reason;
 		});
 	miLocalStorage.setItem('account', JSON.stringify(me));
-	document.cookie = `token=${token}; path=/; max-age=31536000`; // bull dashboardの認証とかで使う
 	await addAccount(me.id, token);
 
 	if (redirect) {
