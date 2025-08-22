@@ -21,15 +21,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import * as MisskeyJS from 'misskey-js';
 import MkPostForm from '@/components/MkPostForm.vue';
 import MkPullToRefresh from '@/components/MkPullToRefresh.vue';
 import MkNote from '@/components/MkNote.vue';
 import { defaultStore } from '@/store.js';
 import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { useStream } from '@/stream';
-import * as MisskeyJS from 'misskey-js';
+import { $i } from '@/account';
 import { misskeyApi } from '@/scripts/misskey-api';
+import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { playMisskeySfx } from '@/scripts/sound';
 
 definePageMetadata(() => ({
 	title: i18n.ts.timeline,
@@ -83,6 +85,8 @@ onMounted(async () => {
 	const connection = stream.useChannel('homeTimeline');
 
 	connection.on('note', (note) => {
+		playMisskeySfx($i !== null && note.userId === $i.id ? 'noteMy' : 'note');
+
 		if (isTop.value) {
 			notes.value.unshift(note);
 
