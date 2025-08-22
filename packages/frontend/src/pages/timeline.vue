@@ -184,7 +184,7 @@ onUnmounted(() => {
 	overflow: clip;
 }
 
-.timelineItem:not(:last-of-type) {
+.timelineItem:not(:nth-last-child(2)) {
 	border-bottom: 1px solid var(--divider);
 }
 </style>
