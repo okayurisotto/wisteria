@@ -16,8 +16,7 @@ import { MetaService } from '@/core/MetaService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { PageEntityService } from '@/core/entities/PageEntityService.js';
 import { ClipEntityService } from '@/core/entities/ClipEntityService.js';
-import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
-import type { ChannelsRepository, ClipsRepository, MiMeta, NotesRepository, PagesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import type { ClipsRepository, MiMeta, NotesRepository, PagesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
 import { ClientLoggerService } from './ClientLoggerService.js';
 import { PUG_DIR } from '@/path.js';
@@ -28,7 +27,7 @@ import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService.js'
 declare module 'hono' {
 	interface ContextRenderer {
 		(
-			name: 'base' | 'bios' | 'channel' | 'cli' | 'clip' | 'error' | 'flush' | 'note' | 'page' | 'user',
+			name: 'base' | 'bios' | 'cli' | 'clip' | 'error' | 'flush' | 'note' | 'page' | 'user',
 			locals: Record<string, unknown>
 		): Response | Promise<Response>;
 	}
@@ -49,9 +48,6 @@ export class ClientServerService {
 		@Inject(DI.notesRepository)
 		private readonly notesRepository: NotesRepository,
 
-		@Inject(DI.channelsRepository)
-		private readonly channelsRepository: ChannelsRepository,
-
 		@Inject(DI.clipsRepository)
 		private readonly clipsRepository: ClipsRepository,
 
@@ -61,7 +57,6 @@ export class ClientServerService {
 		private readonly noteEntityService: NoteEntityService,
 		private readonly pageEntityService: PageEntityService,
 		private readonly clipEntityService: ClipEntityService,
-		private readonly channelEntityService: ChannelEntityService,
 		private readonly metaService: MetaService,
 		private readonly urlPreviewService: UrlPreviewService,
 		private readonly clientLoggerService: ClientLoggerService,
@@ -320,29 +315,6 @@ export class ClientServerService {
 				clip: packedClip,
 				profile,
 				avatarUrl: packedClip.user.avatarUrl,
-			});
-		});
-
-		// Channel
-		hono.get('/channels/:channel', noIframe, usePug, async (c, next) => {
-			const channel = await this.channelsRepository.findOneBy({
-				id: c.req.param('channel'),
-			});
-
-			if (channel === null) {
-				await next();
-				return;
-			}
-
-			c.header('Cache-Control', 'public, max-age=15');
-
-			const packedChannel = await this.channelEntityService.pack(channel);
-			const meta = await this.metaService.fetch();
-			return await c.render('channel', {
-				...this.generateCommonPugData(meta),
-				version: this.config.version,
-				config: this.config,
-				channel: packedChannel,
 			});
 		});
 
