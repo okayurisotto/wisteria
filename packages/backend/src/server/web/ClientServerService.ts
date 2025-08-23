@@ -29,7 +29,7 @@ import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService.js'
 declare module 'hono' {
 	interface ContextRenderer {
 		(
-			name: 'base' | 'bios' | 'channel' | 'cli' | 'clip' | 'error' | 'flash' | 'flush' | 'gallery-post' | 'note' | 'page' | 'user',
+			name: 'base' | 'bios' | 'channel' | 'cli' | 'clip' | 'error' | 'flush' | 'gallery-post' | 'note' | 'page' | 'user',
 			locals: Record<string, unknown>
 		): Response | Promise<Response>;
 	}
