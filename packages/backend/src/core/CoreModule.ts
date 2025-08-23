@@ -77,8 +77,6 @@ import { DriveFolderEntityService } from './entities/DriveFolderEntityService.js
 import { EmojiEntityService } from './entities/EmojiEntityService.js';
 import { FollowingEntityService } from './entities/FollowingEntityService.js';
 import { FollowRequestEntityService } from './entities/FollowRequestEntityService.js';
-import { GalleryLikeEntityService } from './entities/GalleryLikeEntityService.js';
-import { GalleryPostEntityService } from './entities/GalleryPostEntityService.js';
 import { HashtagEntityService } from './entities/HashtagEntityService.js';
 import { InstanceEntityService } from './entities/InstanceEntityService.js';
 import { InviteCodeEntityService } from './entities/InviteCodeEntityService.js';
@@ -227,8 +225,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		EmojiEntityService,
 		FollowingEntityService,
 		FollowRequestEntityService,
-		GalleryLikeEntityService,
-		GalleryPostEntityService,
 		HashtagEntityService,
 		InstanceEntityService,
 		InviteCodeEntityService,
@@ -361,8 +357,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		EmojiEntityService,
 		FollowingEntityService,
 		FollowRequestEntityService,
-		GalleryLikeEntityService,
-		GalleryPostEntityService,
 		HashtagEntityService,
 		InstanceEntityService,
 		InviteCodeEntityService,
