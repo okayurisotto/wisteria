@@ -17,7 +17,6 @@ export type EmojiDetailed = components['schemas']['EmojiDetailed'];
 export type EmojiSimple = components['schemas']['EmojiSimple'];
 export type FederationInstance = components['schemas']['FederationInstance'];
 export type Following = components['schemas']['Following'];
-export type GalleryPost = components['schemas']['GalleryPost'];
 export type Hashtag = components['schemas']['Hashtag'];
 export type Id = components['schemas']['Id'];
 export type InviteCode = components['schemas']['InviteCode'];
