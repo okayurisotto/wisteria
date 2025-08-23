@@ -15,10 +15,9 @@ import { AcctEntity } from '@/misc/AcctEntity.js';
 import { MetaService } from '@/core/MetaService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { PageEntityService } from '@/core/entities/PageEntityService.js';
-import { GalleryPostEntityService } from '@/core/entities/GalleryPostEntityService.js';
 import { ClipEntityService } from '@/core/entities/ClipEntityService.js';
 import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
-import type { ChannelsRepository, ClipsRepository, GalleryPostsRepository, MiMeta, NotesRepository, PagesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import type { ChannelsRepository, ClipsRepository, MiMeta, NotesRepository, PagesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
 import { ClientLoggerService } from './ClientLoggerService.js';
 import { PUG_DIR } from '@/path.js';
@@ -29,7 +28,7 @@ import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService.js'
 declare module 'hono' {
 	interface ContextRenderer {
 		(
-			name: 'base' | 'bios' | 'channel' | 'cli' | 'clip' | 'error' | 'flush' | 'gallery-post' | 'note' | 'page' | 'user',
+			name: 'base' | 'bios' | 'channel' | 'cli' | 'clip' | 'error' | 'flush' | 'note' | 'page' | 'user',
 			locals: Record<string, unknown>
 		): Response | Promise<Response>;
 	}
@@ -50,9 +49,6 @@ export class ClientServerService {
 		@Inject(DI.notesRepository)
 		private readonly notesRepository: NotesRepository,
 
-		@Inject(DI.galleryPostsRepository)
-		private readonly galleryPostsRepository: GalleryPostsRepository,
-
 		@Inject(DI.channelsRepository)
 		private readonly channelsRepository: ChannelsRepository,
 
@@ -64,7 +60,6 @@ export class ClientServerService {
 
 		private readonly noteEntityService: NoteEntityService,
 		private readonly pageEntityService: PageEntityService,
-		private readonly galleryPostEntityService: GalleryPostEntityService,
 		private readonly clipEntityService: ClipEntityService,
 		private readonly channelEntityService: ChannelEntityService,
 		private readonly metaService: MetaService,
@@ -325,37 +320,6 @@ export class ClientServerService {
 				clip: packedClip,
 				profile,
 				avatarUrl: packedClip.user.avatarUrl,
-			});
-		});
-
-		// Gallery post
-		hono.get('/gallery/:post', noIframe, usePug, async (c, next) => {
-			const post = await this.galleryPostsRepository.findOneBy({
-				id: c.req.param('post'),
-			});
-
-			if (post === null) {
-				await next();
-				return;
-			}
-
-			c.header('Cache-Control', 'public, max-age=15');
-
-			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: post.userId });
-			if (profile.preventAiLearning) {
-				c.header('X-Robots-Tag', 'noimageai');
-				c.header('X-Robots-Tag', 'noai');
-			}
-
-			const packedPost = await this.galleryPostEntityService.pack(post);
-			const meta = await this.metaService.fetch();
-			return await c.render('gallery-post', {
-				...this.generateCommonPugData(meta),
-				version: this.config.version,
-				config: this.config,
-				post: packedPost,
-				profile,
-				avatarUrl: packedPost.user.avatarUrl,
 			});
 		});
 
