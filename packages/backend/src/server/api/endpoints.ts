@@ -100,19 +100,9 @@ import * as ep___auth_session_userkey from './endpoints/auth/session/userkey.js'
 import * as ep___blocking_create from './endpoints/blocking/create.js';
 import * as ep___blocking_delete from './endpoints/blocking/delete.js';
 import * as ep___blocking_list from './endpoints/blocking/list.js';
-import * as ep___channels_create from './endpoints/channels/create.js';
-import * as ep___channels_featured from './endpoints/channels/featured.js';
-import * as ep___channels_follow from './endpoints/channels/follow.js';
-import * as ep___channels_followed from './endpoints/channels/followed.js';
-import * as ep___channels_owned from './endpoints/channels/owned.js';
 import * as ep___channels_show from './endpoints/channels/show.js';
 import * as ep___channels_timeline from './endpoints/channels/timeline.js';
-import * as ep___channels_unfollow from './endpoints/channels/unfollow.js';
 import * as ep___channels_update from './endpoints/channels/update.js';
-import * as ep___channels_favorite from './endpoints/channels/favorite.js';
-import * as ep___channels_unfavorite from './endpoints/channels/unfavorite.js';
-import * as ep___channels_myFavorites from './endpoints/channels/my-favorites.js';
-import * as ep___channels_search from './endpoints/channels/search.js';
 import * as ep___clips_addNote from './endpoints/clips/add-note.js';
 import * as ep___clips_removeNote from './endpoints/clips/remove-note.js';
 import * as ep___clips_create from './endpoints/clips/create.js';
@@ -423,19 +413,9 @@ const eps = [
 	['blocking/create', ep___blocking_create],
 	['blocking/delete', ep___blocking_delete],
 	['blocking/list', ep___blocking_list],
-	['channels/create', ep___channels_create],
-	['channels/featured', ep___channels_featured],
-	['channels/follow', ep___channels_follow],
-	['channels/followed', ep___channels_followed],
-	['channels/owned', ep___channels_owned],
 	['channels/show', ep___channels_show],
 	['channels/timeline', ep___channels_timeline],
-	['channels/unfollow', ep___channels_unfollow],
 	['channels/update', ep___channels_update],
-	['channels/favorite', ep___channels_favorite],
-	['channels/unfavorite', ep___channels_unfavorite],
-	['channels/my-favorites', ep___channels_myFavorites],
-	['channels/search', ep___channels_search],
 	['clips/add-note', ep___clips_addNote],
 	['clips/remove-note', ep___clips_removeNote],
 	['clips/create', ep___clips_create],
