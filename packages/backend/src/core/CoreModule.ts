@@ -62,7 +62,6 @@ import { FileInfoService } from './FileInfoService.js';
 import { SearchService } from './SearchService.js';
 import { ClipService } from './ClipService.js';
 import { FeaturedService } from './FeaturedService.js';
-import { ChannelFollowingService } from './ChannelFollowingService.js';
 import { RegistryApiService } from './RegistryApiService.js';
 
 import { AbuseUserReportEntityService } from './entities/AbuseUserReportEntityService.js';
@@ -206,7 +205,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		SearchService,
 		ClipService,
 		FeaturedService,
-		ChannelFollowingService,
 		RegistryApiService,
 		AlsoKnownAsValidateService,
 		FeedService,
@@ -338,7 +336,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		SearchService,
 		ClipService,
 		FeaturedService,
-		ChannelFollowingService,
 		RegistryApiService,
 		AlsoKnownAsValidateService,
 		FeedService,
