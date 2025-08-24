@@ -45,8 +45,8 @@ importers:
         specifier: ^7.4.3
         version: 7.4.3
       terser:
-        specifier: 5.27.0
-        version: 5.27.0
+        specifier: 5.43.1
+        version: 5.43.1
       turbo:
         specifier: ^2.5.5
         version: 2.5.5
@@ -583,7 +583,7 @@ importers:
         version: 10.0.0
       '@vitejs/plugin-vue':
         specifier: 6.0.1
-        version: 6.0.1(vite@7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1))(vue@3.5.12(typescript@5.9.2))
+        version: 6.0.1(vite@7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1))(vue@3.5.12(typescript@5.9.2))
       '@vue/runtime-core':
         specifier: 3.4.18
         version: 3.4.18
@@ -616,10 +616,10 @@ importers:
         version: 5.9.2
       vite:
         specifier: ^7.1.2
-        version: 7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
+        version: 7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/node@22.17.2)(happy-dom@15.10.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
+        version: 3.2.4(@types/node@22.17.2)(happy-dom@15.10.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
       vue-component-type-helpers:
         specifier: 1.8.27
         version: 1.8.27
@@ -663,7 +663,7 @@ importers:
         version: 8.5.0(@microsoft/api-extractor@7.47.3(@types/node@22.17.2))(@swc/core@1.13.3)(postcss@8.5.6)(typescript@5.9.2)(yaml@2.8.1)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/node@22.17.2)(happy-dom@15.10.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
+        version: 3.2.4(@types/node@22.17.2)(happy-dom@15.10.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
 
   packages/identicon-generator:
     dependencies:
@@ -724,7 +724,7 @@ importers:
         version: 5.9.2
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/node@22.17.2)(happy-dom@15.10.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
+        version: 3.2.4(@types/node@22.17.2)(happy-dom@15.10.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
 
   packages/sw:
     dependencies:
@@ -759,7 +759,7 @@ importers:
         version: 8.5.0(@microsoft/api-extractor@7.47.3(@types/node@24.3.0))(@swc/core@1.13.3)(postcss@8.5.6)(typescript@5.9.2)(yaml@2.8.1)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/node@24.3.0)(happy-dom@15.10.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
+        version: 3.2.4(@types/node@24.3.0)(happy-dom@15.10.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
 
 packages:
 
@@ -5199,8 +5199,8 @@ packages:
   tdigest@0.1.2:
     resolution: {integrity: sha512-+G0LLgjjo9BZX2MfdvPfH+MKLCrxlXSYec5DaPYP1fe6Iyhf0/fSmJ0bFiZ1F8BT6cGXl2LpltQptzjXKWEkKA==}
 
-  terser@5.27.0:
-    resolution: {integrity: sha512-bi1HRwVRskAjheeYl291n3JC4GgO/Ty4z1nVs5AAsmonJulGxpSektecnNedrwK9C7vpvVtcX3cw00VSLt7U2A==}
+  terser@5.43.1:
+    resolution: {integrity: sha512-+6erLbBm0+LROX2sPXlUYx/ux5PyE9K/a92Wrt6oA+WDAoFTdpHE5tCYCI5PNzq2y8df4rA+QgHLJuR4jNymsg==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -7727,10 +7727,10 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@vitejs/plugin-vue@6.0.1(vite@7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1))(vue@3.5.12(typescript@5.9.2))':
+  '@vitejs/plugin-vue@6.0.1(vite@7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1))(vue@3.5.12(typescript@5.9.2))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-beta.29
-      vite: 7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
+      vite: 7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
       vue: 3.5.12(typescript@5.9.2)
 
   '@vitest/expect@3.2.4':
@@ -7741,21 +7741,21 @@ snapshots:
       chai: 5.2.1
       tinyrainbow: 2.0.0
 
-  '@vitest/mocker@3.2.4(vite@7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1))':
+  '@vitest/mocker@3.2.4(vite@7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1))':
     dependencies:
       '@vitest/spy': 3.2.4
       estree-walker: 3.0.3
       magic-string: 0.30.17
     optionalDependencies:
-      vite: 7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
+      vite: 7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
 
-  '@vitest/mocker@3.2.4(vite@7.1.2(@types/node@24.3.0)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1))':
+  '@vitest/mocker@3.2.4(vite@7.1.2(@types/node@24.3.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1))':
     dependencies:
       '@vitest/spy': 3.2.4
       estree-walker: 3.0.3
       magic-string: 0.30.17
     optionalDependencies:
-      vite: 7.1.2(@types/node@24.3.0)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
+      vite: 7.1.2(@types/node@24.3.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
 
   '@vitest/pretty-format@3.2.4':
     dependencies:
@@ -10841,7 +10841,7 @@ snapshots:
     dependencies:
       bintrees: 1.0.2
 
-  terser@5.27.0:
+  terser@5.43.1:
     dependencies:
       '@jridgewell/source-map': 0.3.11
       acorn: 8.15.0
@@ -11154,13 +11154,13 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vite-node@3.2.4(@types/node@22.17.2)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1):
+  vite-node@3.2.4(@types/node@22.17.2)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1):
     dependencies:
       cac: 6.7.14
       debug: 4.4.1
       es-module-lexer: 1.7.0
       pathe: 2.0.3
-      vite: 7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
+      vite: 7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -11175,13 +11175,13 @@ snapshots:
       - tsx
       - yaml
 
-  vite-node@3.2.4(@types/node@24.3.0)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1):
+  vite-node@3.2.4(@types/node@24.3.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1):
     dependencies:
       cac: 6.7.14
       debug: 4.4.1
       es-module-lexer: 1.7.0
       pathe: 2.0.3
-      vite: 7.1.2(@types/node@24.3.0)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
+      vite: 7.1.2(@types/node@24.3.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -11196,7 +11196,7 @@ snapshots:
       - tsx
       - yaml
 
-  vite@7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1):
+  vite@7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1):
     dependencies:
       esbuild: 0.25.9
       fdir: 6.4.6(picomatch@4.0.3)
@@ -11208,10 +11208,10 @@ snapshots:
       '@types/node': 22.17.2
       fsevents: 2.3.3
       sass: 1.90.0
-      terser: 5.27.0
+      terser: 5.43.1
       yaml: 2.8.1
 
-  vite@7.1.2(@types/node@24.3.0)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1):
+  vite@7.1.2(@types/node@24.3.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1):
     dependencies:
       esbuild: 0.25.9
       fdir: 6.4.6(picomatch@4.0.3)
@@ -11223,14 +11223,14 @@ snapshots:
       '@types/node': 24.3.0
       fsevents: 2.3.3
       sass: 1.90.0
-      terser: 5.27.0
+      terser: 5.43.1
       yaml: 2.8.1
 
-  vitest@3.2.4(@types/node@22.17.2)(happy-dom@15.10.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1):
+  vitest@3.2.4(@types/node@22.17.2)(happy-dom@15.10.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1):
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4
-      '@vitest/mocker': 3.2.4(vite@7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1))
+      '@vitest/mocker': 3.2.4(vite@7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1))
       '@vitest/pretty-format': 3.2.4
       '@vitest/runner': 3.2.4
       '@vitest/snapshot': 3.2.4
@@ -11248,8 +11248,8 @@ snapshots:
       tinyglobby: 0.2.14
       tinypool: 1.1.1
       tinyrainbow: 2.0.0
-      vite: 7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
-      vite-node: 3.2.4(@types/node@22.17.2)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
+      vite: 7.1.2(@types/node@22.17.2)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
+      vite-node: 3.2.4(@types/node@22.17.2)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.17.2
@@ -11269,11 +11269,11 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@3.2.4(@types/node@24.3.0)(happy-dom@15.10.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1):
+  vitest@3.2.4(@types/node@24.3.0)(happy-dom@15.10.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1):
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4
-      '@vitest/mocker': 3.2.4(vite@7.1.2(@types/node@24.3.0)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1))
+      '@vitest/mocker': 3.2.4(vite@7.1.2(@types/node@24.3.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1))
       '@vitest/pretty-format': 3.2.4
       '@vitest/runner': 3.2.4
       '@vitest/snapshot': 3.2.4
@@ -11291,8 +11291,8 @@ snapshots:
       tinyglobby: 0.2.14
       tinypool: 1.1.1
       tinyrainbow: 2.0.0
-      vite: 7.1.2(@types/node@24.3.0)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
-      vite-node: 3.2.4(@types/node@24.3.0)(sass@1.90.0)(terser@5.27.0)(yaml@2.8.1)
+      vite: 7.1.2(@types/node@24.3.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
+      vite-node: 3.2.4(@types/node@24.3.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.3.0
