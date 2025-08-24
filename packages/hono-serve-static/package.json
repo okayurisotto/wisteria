@@ -10,7 +10,7 @@
 		"types": "./built/index.d.ts"
 	},
 	"devDependencies": {
-		"@types/node": "^22.17.1",
+		"@types/node": "^22.17.2",
 		"tsup": "^8.5.0"
 	},
 	"dependencies": {
