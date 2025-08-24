@@ -26,7 +26,7 @@
 		"@types/tar": "6.1.13",
 		"cssnano": "6.0.3",
 		"fast-glob": "3.3.2",
-		"ignore-walk": "6.0.4",
+		"ignore-walk": "8.0.0",
 		"js-yaml": "4.1.0",
 		"ncp": "2.0.0",
 		"postcss": "8.4.33",
