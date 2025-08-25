@@ -44,29 +44,6 @@ async function main() {
 	localStorage.setItem('localeVersion', _VERSION_);
 	//#endregion
 
-	//#region Theme
-	const theme = localStorage.getItem('theme');
-	if (theme) {
-		for (const [k, v] of Object.entries(JSON.parse(theme))) {
-			document.documentElement.style.setProperty(`--${k}`, v.toString());
-
-			// HTMLの theme-color 適用
-			if (k === 'htmlThemeColor') {
-				for (const tag of document.head.children) {
-					if (tag.tagName === 'META' && tag.getAttribute('name') === 'theme-color') {
-						tag.setAttribute('content', v);
-						break;
-					}
-				}
-			}
-		}
-	}
-	const colorScheme = localStorage.getItem('colorScheme');
-	if (colorScheme) {
-		document.documentElement.style.setProperty('color-scheme', colorScheme);
-	}
-	//#endregion
-
 	const fontSize = localStorage.getItem('fontSize');
 	if (fontSize) {
 		document.documentElement.classList.add('f-' + fontSize);

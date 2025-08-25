@@ -2,12 +2,12 @@ import { bundledThemesInfo } from 'shiki';
 import darkPlus from 'shiki/themes/dark-plus.mjs';
 import { deepClone } from './clone.js';
 import type { ThemeRegistration } from 'shiki';
-import { ColdDeviceStorage } from '@/store.js';
-import lightTheme from '@/themes/_light.json';
-import darkTheme from '@/themes/_dark.json';
+import lightTheme from '@/themes/base/_light.json';
+import darkTheme from '@/themes/base/_dark.json';
+import { primaryDarkTheme, primaryLightTheme } from '../themes/theme.js';
 
 export async function getTheme(mode: 'light' | 'dark'): Promise<string> {
-	const theme = deepClone(ColdDeviceStorage.get(mode === 'light' ? 'lightTheme' : 'darkTheme'));
+	const theme = deepClone(mode === 'light' ? primaryLightTheme.value : primaryDarkTheme.value);
 
 	if (theme.base) {
 		const base = [lightTheme, darkTheme].find(x => x.id === theme.base);

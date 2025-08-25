@@ -20,7 +20,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { ref, computed } from 'vue';
 import MkCodeEditor from '@/components/MkCodeEditor.vue';
 import MkButton from '@/components/MkButton.vue';
-import { parseThemeCode, previewTheme, installTheme } from '@/scripts/install-theme.js';
+import { installTheme } from '@/themes/installTheme';
+import { previewTheme } from '@/themes/previewTheme';
+import { parseThemeCode } from '@/themes/parseThemeCode';
 import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';

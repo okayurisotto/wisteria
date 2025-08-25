@@ -44,7 +44,7 @@ import MkButton from '@/components/MkButton.vue';
 import MkInfo from '@/components/MkInfo.vue';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
-import { ColdDeviceStorage, defaultStore } from '@/store.js';
+import { defaultStore } from '@/store.js';
 import { unisonReload } from '@/scripts/unison-reload.js';
 import { useStream } from '@/stream.js';
 import { $i } from '@/account.js';
@@ -115,11 +115,6 @@ const defaultStoreSaveKeys: (keyof typeof defaultStore['state'])[] = [
 	'sound_antenna',
 	'sound_channel',
 ];
-const coldDeviceStorageSaveKeys: (keyof typeof ColdDeviceStorage.default)[] = [
-	'lightTheme',
-	'darkTheme',
-	'syncDeviceDarkMode',
-];
 
 const scope = ['clientPreferencesProfiles'];
 
@@ -133,7 +128,7 @@ type Profile = {
 	host: string;
 	settings: {
 		hot: Record<keyof typeof defaultStoreSaveKeys, unknown>;
-		cold: Record<keyof typeof coldDeviceStorageSaveKeys, unknown>;
+		cold: {};
 		fontSize: string | null;
 		useSystemFont: 't' | null;
 		wallpaper: string | null;
@@ -183,14 +178,9 @@ function getSettings(): Profile['settings'] {
 		hot[key] = defaultStore.state[key];
 	}
 
-	const cold = {} as Record<keyof typeof coldDeviceStorageSaveKeys, unknown>;
-	for (const key of coldDeviceStorageSaveKeys) {
-		cold[key] = ColdDeviceStorage.get(key);
-	}
-
 	return {
 		hot,
-		cold,
+		cold: {},
 		fontSize: miLocalStorage.getItem('fontSize'),
 		useSystemFont: miLocalStorage.getItem('useSystemFont') as 't' | null,
 		wallpaper: miLocalStorage.getItem('wallpaper'),
@@ -288,13 +278,6 @@ async function applyProfile(id: string): Promise<void> {
 	for (const key of defaultStoreSaveKeys) {
 		if (settings.hot[key] !== undefined) {
 			defaultStore.set(key, settings.hot[key]);
-		}
-	}
-
-	// coldDeviceStorage
-	for (const key of coldDeviceStorageSaveKeys) {
-		if (settings.cold[key] !== undefined) {
-			ColdDeviceStorage.set(key, settings.cold[key]);
 		}
 	}
 

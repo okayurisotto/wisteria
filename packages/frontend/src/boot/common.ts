@@ -3,17 +3,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { computed, watch, version as vueVersion, type App } from 'vue';
+import { watch, version as vueVersion, type App } from 'vue';
 import { compareVersions } from 'compare-versions';
 import widgets from '@/widgets/index.js';
 import directives from '@/directives/index.js';
 import components from '@/components/index.js';
 import { version, lang, updateLocale, locale } from '@/config.js';
-import { applyTheme } from '@/scripts/theme.js';
-import { isDeviceDarkmode } from '@/scripts/is-device-darkmode.js';
+import { useTheme } from '@/themes/theme.js';
+import { useColorScheme } from '@/themes/colorScheme.js';
 import { updateI18n } from '@/i18n.js';
 import { $i, refreshAccount, login } from '@/account.js';
-import { defaultStore, ColdDeviceStorage } from '@/store.js';
+import { defaultStore } from '@/store.js';
 import { fetchInstance, instance } from '@/instance.js';
 import { deviceKind } from '@/scripts/device-kind.js';
 import { reloadChannel } from '@/scripts/unison-reload.js';
@@ -138,51 +138,8 @@ export async function common(createVue: () => App<Element>) {
 	}
 	//#endregion
 
-	// NOTE: この処理は必ずクライアント更新チェック処理より後に来ること(テーマ再構築のため)
-	watch(defaultStore.reactiveState.darkMode, (darkMode) => {
-		applyTheme(darkMode ? ColdDeviceStorage.get('darkTheme') : ColdDeviceStorage.get('lightTheme'));
-	}, { immediate: miLocalStorage.getItem('theme') == null });
-
-	const darkTheme = computed(ColdDeviceStorage.makeGetterSetter('darkTheme'));
-	const lightTheme = computed(ColdDeviceStorage.makeGetterSetter('lightTheme'));
-
-	watch(darkTheme, (theme) => {
-		if (defaultStore.state.darkMode) {
-			applyTheme(theme);
-		}
-	});
-
-	watch(lightTheme, (theme) => {
-		if (!defaultStore.state.darkMode) {
-			applyTheme(theme);
-		}
-	});
-
-	//#region Sync dark mode
-	if (ColdDeviceStorage.get('syncDeviceDarkMode')) {
-		defaultStore.set('darkMode', isDeviceDarkmode());
-	}
-
-	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (mql) => {
-		if (ColdDeviceStorage.get('syncDeviceDarkMode')) {
-			defaultStore.set('darkMode', mql.matches);
-		}
-	});
-	//#endregion
-
-	fetchInstanceMetaPromise.then(() => {
-		if (defaultStore.state.themeInitial) {
-			if (instance.defaultLightTheme != null) ColdDeviceStorage.set('lightTheme', JSON.parse(instance.defaultLightTheme));
-			if (instance.defaultDarkTheme != null) ColdDeviceStorage.set('darkTheme', JSON.parse(instance.defaultDarkTheme));
-			defaultStore.set('themeInitial', false);
-		} else {
-			if (defaultStore.state.darkMode) {
-				applyTheme(darkTheme.value);
-			} else {
-				applyTheme(lightTheme.value);
-			}
-		}
-	});
+	useColorScheme();
+	useTheme();
 
 	watch(defaultStore.reactiveState.useBlurEffectForModal, v => {
 		document.documentElement.style.setProperty('--modalBgFilter', v ? 'blur(4px)' : 'none');

@@ -25,7 +25,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<template #label>{{ i18n.ts._theme.code }}</template>
 			<template #caption><button class="_textButton" @click="copyThemeCode()">{{ i18n.ts.copy }}</button></template>
 		</MkTextarea>
-		<MkButton v-if="!builtinThemes.some(t => t.id == selectedTheme.id)" danger @click="uninstall()"><i class="ti ti-trash"></i> {{ i18n.ts.uninstall }}</MkButton>
+		<MkButton v-if="installedThemes.some(t => t.id == selectedThemeId)" danger @click="uninstall()"><i class="ti ti-trash"></i> {{ i18n.ts.uninstall }}</MkButton>
 	</template>
 </div>
 </template>
@@ -37,22 +37,18 @@ import MkTextarea from '@/components/MkTextarea.vue';
 import MkSelect from '@/components/MkSelect.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkButton from '@/components/MkButton.vue';
-import { type Theme, getBuiltinThemesRef } from '@/scripts/theme.js';
+import { type Theme, allThemes, builtinThemes, installedThemes } from '@/themes/theme.js';
 import { copyToClipboard } from '@/scripts/copy-to-clipboard.js';
 import * as os from '@/os.js';
-import { getThemes, removeTheme } from '@/theme-store.js';
+import { removeTheme } from '@/themes/store.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 
-const installedThemes = ref(getThemes());
-const builtinThemes = getBuiltinThemesRef();
 const selectedThemeId = ref<string | null>(null);
-
-const themes = computed(() => [...installedThemes.value, ...builtinThemes.value]);
 
 const selectedTheme = computed(() => {
 	if (selectedThemeId.value == null) return null;
-	return themes.value.find(x => x.id === selectedThemeId.value);
+	return allThemes.value.find(x => x.id === selectedThemeId.value);
 });
 
 const selectedThemeCode = computed(() => {
@@ -71,10 +67,6 @@ function uninstall() {
 	selectedThemeId.value = null;
 	os.success();
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts._theme.manage,

@@ -3,9 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { markRaw, ref } from 'vue';
+import { markRaw } from 'vue';
 import * as Misskey from 'misskey-js';
-import { miLocalStorage } from './local-storage.js';
 import type { SoundType } from '@/scripts/sound.js';
 import { Storage } from '@/pizzax.js';
 
@@ -431,88 +430,3 @@ export const defaultStore = markRaw(new Storage('base', {
 		default: { type: 'syuilo/bubble2', volume: 1 } as SoundStore,
 	},
 }));
-
-// TODO: 他のタブと永続化されたstateを同期
-
-const PREFIX = 'miux:' as const;
-
-interface Watcher {
-	key: string;
-	callback: (value: unknown) => void;
-}
-
-/**
- * 常にメモリにロードしておく必要がないような設定情報を保管するストレージ(非リアクティブ)
- */
-import lightTheme from '@/themes/l-light.json';
-import darkTheme from '@/themes/d-green-lime.json';
-
-export class ColdDeviceStorage {
-	public static default = {
-		lightTheme,
-		darkTheme,
-		syncDeviceDarkMode: true,
-	};
-
-	public static watchers: Watcher[] = [];
-
-	public static get<T extends keyof typeof ColdDeviceStorage.default>(key: T): typeof ColdDeviceStorage.default[T] {
-		// TODO: indexedDBにする
-		//       ただしその際はnullチェックではなくキー存在チェックにしないとダメ
-		//       (indexedDBはnullを保存できるため、ユーザーが意図してnullを格納した可能性がある)
-		const value = miLocalStorage.getItem(`${PREFIX}${key}`);
-		if (value == null) {
-			return ColdDeviceStorage.default[key];
-		} else {
-			return JSON.parse(value);
-		}
-	}
-
-	public static set<T extends keyof typeof ColdDeviceStorage.default>(key: T, value: typeof ColdDeviceStorage.default[T]): void {
-		// 呼び出し側のバグ等で undefined が来ることがある
-		// undefined を文字列として miLocalStorage に入れると参照する際の JSON.parse でコケて不具合の元になるため無視
-		if (value === undefined) {
-			console.error(`attempt to store undefined value for key '${key}'`);
-			return;
-		}
-
-		miLocalStorage.setItem(`${PREFIX}${key}`, JSON.stringify(value));
-
-		for (const watcher of this.watchers) {
-			if (watcher.key === key) watcher.callback(value);
-		}
-	}
-
-	static #watch(key, callback) {
-		this.watchers.push({ key, callback });
-	}
-
-	// TODO: VueのcustomRef使うと良い感じになるかも
-	public static ref<T extends keyof typeof ColdDeviceStorage.default>(key: T) {
-		const v = ColdDeviceStorage.get(key);
-		const r = ref(v);
-		// TODO: このままではwatcherがリークするので開放する方法を考える
-		this.#watch(key, v => {
-			r.value = v;
-		});
-		return r;
-	}
-
-	/**
-	 * 特定のキーの、簡易的なgetter/setterを作ります
-	 * 主にvue場で設定コントロールのmodelとして使う用
-	 */
-	public static makeGetterSetter<K extends keyof typeof ColdDeviceStorage.default>(key: K) {
-		// TODO: VueのcustomRef使うと良い感じになるかも
-		const valueRef = ColdDeviceStorage.ref(key);
-		return {
-			get: () => {
-				return valueRef.value;
-			},
-			set: (value: unknown) => {
-				const val = value;
-				ColdDeviceStorage.set(key, val);
-			},
-		};
-	}
-}

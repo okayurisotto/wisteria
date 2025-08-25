@@ -85,16 +85,16 @@ import MkTextarea from '@/components/MkTextarea.vue';
 import MkFolder from '@/components/MkFolder.vue';
 
 import { $i } from '@/account.js';
-import { type Theme, applyTheme } from '@/scripts/theme.js';
-import lightTheme from '@/themes/_light.json';
-import darkTheme from '@/themes/_dark.json';
+import { applyTheme, selectedDarkThemeId, selectedLightThemeId, type Theme } from '@/themes/theme.js';
+import lightTheme from '@/themes/base/_light.json';
+import darkTheme from '@/themes/base/_dark.json';
 import { host } from '@/config.js';
 import * as os from '@/os.js';
-import { ColdDeviceStorage, defaultStore } from '@/store.js';
-import { addTheme } from '@/theme-store.js';
+import { addTheme } from '@/themes/store.js';
 import { i18n } from '@/i18n.js';
 import { useLeaveGuard } from '@/scripts/use-leave-guard.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { colorScheme } from '@/themes/colorScheme';
 
 const bgColors = [
 	{ color: '#f5f5f5', kind: 'light', forPreview: '#f5f5f5' },
@@ -167,7 +167,7 @@ function setFgColor(color) {
 
 function apply() {
 	themeCode.value = JSON5.stringify(theme.value, null, '\t');
-	applyTheme(theme.value, false);
+	applyTheme(theme.value);
 	changed.value = true;
 }
 
@@ -200,10 +200,10 @@ async function saveAs() {
 	if (description.value) theme.value.desc = description.value;
 	await addTheme(theme.value);
 	applyTheme(theme.value);
-	if (defaultStore.state.darkMode) {
-		ColdDeviceStorage.set('darkTheme', theme.value);
-	} else {
-		ColdDeviceStorage.set('lightTheme', theme.value);
+	if (colorScheme.value === 'light') {
+		selectedLightThemeId.value = theme.value.id;
+	} else if (colorScheme.value === 'dark') {
+		selectedDarkThemeId.value = theme.value.id;
 	}
 	changed.value = false;
 	os.alert({

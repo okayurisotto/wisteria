@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { type Theme, getBuiltinThemes } from '@/scripts/theme.js';
+import { $i } from '@/account.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
-import { $i } from '@/account.js';
+import { type Theme, builtinThemes } from './theme.js';
 
 const lsCacheKey = $i ? `themes:${$i.id}` as const : null;
 
@@ -29,8 +29,7 @@ export async function fetchThemes(): Promise<void> {
 
 export async function addTheme(theme: Theme): Promise<void> {
 	if ($i == null) return;
-	const builtinThemes = await getBuiltinThemes();
-	if (builtinThemes.some(t => t.id === theme.id)) {
+	if (builtinThemes.value.some(t => t.id === theme.id)) {
 		throw new Error('builtin theme');
 	}
 	await fetchThemes();
