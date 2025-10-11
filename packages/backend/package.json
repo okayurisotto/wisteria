@@ -78,7 +78,7 @@
 		"ms": "3.0.0-canary.1",
 		"nanoid": "5.0.9",
 		"node-fetch": "3.3.2",
-		"nodemailer": "6.9.16",
+		"nodemailer": "7.0.7",
 		"os-utils": "0.0.14",
 		"otpauth": "9.2.2",
 		"parse5": "7.1.2",
