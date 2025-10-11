@@ -19,8 +19,8 @@
 		"clean": "node ./scripts/clean.mjs"
 	},
 	"devDependencies": {
-		"@tsconfig/node-lts": "^22.0.2",
-		"@tsconfig/strictest": "^2.0.5",
+		"@tsconfig/node-lts": "22.0.2",
+		"@tsconfig/strictest": "2.0.5",
 		"@types/ignore-walk": "4.0.3",
 		"@types/js-yaml": "4.0.9",
 		"@types/tar": "6.1.13",
@@ -30,9 +30,9 @@
 		"js-yaml": "4.1.0",
 		"ncp": "2.0.0",
 		"postcss": "8.5.6",
-		"tar": "^7.4.3",
+		"tar": "7.4.3",
 		"terser": "5.43.1",
-		"turbo": "^2.5.6",
-		"typescript": "^5.9.2"
+		"turbo": "2.5.6",
+		"typescript": "5.9.2"
 	}
 }
