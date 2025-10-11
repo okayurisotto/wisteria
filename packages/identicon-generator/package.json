@@ -18,7 +18,7 @@
 		"@types/node": "22.17.2",
 		"@types/random-seed": "0.3.5",
 		"tsup": "8.5.0",
-		"typescript": "5.9.2"
+		"typescript": "5.9.3"
 	},
 	"dependencies": {
 		"@napi-rs/canvas": "0.1.77",
