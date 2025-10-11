@@ -63,7 +63,7 @@
 		"acorn": "8.11.3",
 		"astring": "1.8.6",
 		"estree-walker": "3.0.3",
-		"happy-dom": "15.10.2",
+		"happy-dom": "20.0.0",
 		"intersection-observer": "0.12.2",
 		"prettier": "3.2.5",
 		"rollup": "4.46.2",
