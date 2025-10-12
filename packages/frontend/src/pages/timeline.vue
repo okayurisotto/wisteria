@@ -32,6 +32,7 @@ import { $i } from '@/account';
 import { misskeyApi } from '@/scripts/misskey-api';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { playMisskeySfx } from '@/scripts/sound';
+import { checkWordMute } from '@/scripts/check-word-mute';
 
 definePageMetadata(() => ({
 	title: i18n.ts.timeline,
@@ -71,7 +72,8 @@ const scrollToTop = (): void => {
 };
 
 const reloadTimeline = async () => {
-	notes.value = await misskeyApi('notes/timeline', { limit: 10 });
+	notes.value = (await misskeyApi('notes/timeline', { limit: 10 }))
+		.filter((note) => !checkMute(note, $i?.hardMutedWords));
 };
 
 let stream: MisskeyJS.Stream;
@@ -94,8 +96,19 @@ const smoothUnshift = () => {
 	);
 };
 
+const checkMute = (note: MisskeyJS.entities.Note, mutedWords: Array<string | string[]> | undefined | null): boolean => {
+	if (mutedWords == null) return false;
+
+	if (checkWordMute(note, $i, mutedWords)) return true;
+	if (note.reply && checkWordMute(note.reply, $i, mutedWords)) return true;
+	if (note.renote && checkWordMute(note.renote, $i, mutedWords)) return true;
+
+	return false;
+};
+
 onMounted(async () => {
-	notes.value = await misskeyApi('notes/timeline', { limit: 10 });
+	notes.value = (await misskeyApi('notes/timeline', { limit: 10 }))
+		.filter((note) => !checkMute(note, $i?.hardMutedWords));
 
 	stream = useStream();
 
@@ -111,6 +124,9 @@ onMounted(async () => {
 	const connection = stream.useChannel('homeTimeline');
 
 	connection.on('note', (note) => {
+		const hardMuted = checkMute(note, $i?.hardMutedWords);
+		if (hardMuted) return;
+
 		if ($i?.id === note.userId) {
 			playMisskeySfx('noteMy');
 		} else {
@@ -143,10 +159,11 @@ onMounted(async () => {
 
 			if (entry.target === timelineBottomMarker.value) {
 				if (entry.isIntersecting) {
-					notes.value.push(...await misskeyApi('notes/timeline', {
-						limit: 10,
-						...(oldestNoteId.value !== undefined ? { untilId: oldestNoteId.value } : {}),
-					}));
+					if (oldestNoteId.value !== undefined) {
+						const prevNotes = (await misskeyApi('notes/timeline', { limit: 10, untilId: oldestNoteId.value, }))
+							.filter((note) => !checkMute(note, $i?.hardMutedWords));
+						notes.value = [...notes.value, ...prevNotes];
+					}
 				}
 			}
 		}
