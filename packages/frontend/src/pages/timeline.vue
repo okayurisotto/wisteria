@@ -77,6 +77,23 @@ const reloadTimeline = async () => {
 let stream: MisskeyJS.Stream;
 let iObserver: IntersectionObserver;
 
+const smoothUnshift = () => {
+	if (timeline.value === null) return;
+
+	const topNote = timelineTopMarker.value?.nextElementSibling;
+	if (topNote == null) return;
+
+	const topNoteHeight = Math.round(topNote.getBoundingClientRect().height);
+
+	timeline.value.animate(
+		[
+			{ translate: `0 ${-topNoteHeight}px` },
+			{ translate: '0 0' },
+		],
+		{ easing: 'cubic-bezier(0.23, 1, 0.32, 1)', duration: 700 }
+	);
+};
+
 onMounted(async () => {
 	notes.value = await misskeyApi('notes/timeline', { limit: 10 });
 
@@ -94,29 +111,18 @@ onMounted(async () => {
 	const connection = stream.useChannel('homeTimeline');
 
 	connection.on('note', (note) => {
-		playMisskeySfx($i !== null && note.userId === $i.id ? 'noteMy' : 'note');
+		if ($i?.id === note.userId) {
+			playMisskeySfx('noteMy');
+		} else {
+			playMisskeySfx('note');
+		}
 
 		if (isTop.value) {
 			notes.value.unshift(note);
 			stream.send('sr', { id: note.id });
 
 			if (defaultStore.state.animation) {
-				nextTick(() => {
-					if (timeline.value === null) return;
-
-					const topNote = timelineTopMarker.value?.nextElementSibling;
-					if (topNote == null) return;
-
-					const topNoteHeight = Math.round(topNote.getBoundingClientRect().height);
-
-					timeline.value.animate(
-						[
-							{ translate: `0 ${-topNoteHeight}px` },
-							{ translate: '0 0' },
-						],
-						{ easing: 'cubic-bezier(0.23, 1, 0.32, 1)', duration: 700 },
-					);
-				});
+				nextTick(smoothUnshift);
 			}
 		} else {
 			queue.value.unshift(note);
