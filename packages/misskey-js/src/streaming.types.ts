@@ -182,6 +182,7 @@ export type NoteUpdatedEvent = {
 	};
 } | {
 	type: 'deleted';
+	id: string;
 	body: {
 		deletedAt: string;
 	};
