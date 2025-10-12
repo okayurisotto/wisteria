@@ -115,6 +115,7 @@ import { type PageMetadata, provideMetadataReceiver, provideReactiveMetadata } f
 import { CURRENT_STICKY_BOTTOM } from '@/const.js';
 import { useScrollPositionManager } from '@/nirax.js';
 import { mainRouter } from '@/router/main.js';
+import { useMediaQuery } from '@vueuse/core';
 
 const isRoot = computed(() => mainRouter.currentRoute.value.name === 'index');
 
@@ -194,9 +195,12 @@ const top = () => {
 const navFooterHeight = ref(0);
 provide<Ref<number>>(CURRENT_STICKY_BOTTOM, navFooterHeight);
 
-// TODO: なおす
-watch(navFooter, () => {
-	if (navFooter.value) {
+const isNavFooterVisible = useMediaQuery('(width < 500px)');
+
+watch([navFooter, isNavFooterVisible], () => {
+	if (navFooter.value === undefined) return;
+
+	if (isNavFooterVisible.value) {
 		navFooterHeight.value = navFooter.value.offsetHeight;
 		document.body.style.setProperty('--stickyBottom', `${navFooterHeight.value}px`);
 		document.body.style.setProperty('--minBottomSpacing', 'var(--minBottomSpacingMobile)');
@@ -205,8 +209,6 @@ watch(navFooter, () => {
 		document.body.style.setProperty('--stickyBottom', '0px');
 		document.body.style.setProperty('--minBottomSpacing', '0px');
 	}
-}, {
-	immediate: true,
 });
 
 useScrollPositionManager(() => contents.value?.rootEl ?? null, mainRouter);
@@ -447,7 +449,7 @@ onBeforeUnmount(() => {
 }
 
 .spacer {
-	height: calc(var(--minBottomSpacing));
+	height: var(--minBottomSpacing);
 }
 
 @media (width < 1280px) {
