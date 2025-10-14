@@ -5,18 +5,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div ref="root" :class="[$style.root, { [$style.cover]: cover }]" :title="title ?? ''">
-	<TransitionGroup
-		:duration="defaultStore.state.animation && props.transition?.duration || undefined"
-		:enterActiveClass="defaultStore.state.animation && props.transition?.enterActiveClass || undefined"
-		:leaveActiveClass="defaultStore.state.animation && (props.transition?.leaveActiveClass ?? $style.transition_leaveActive) || undefined"
-		:enterFromClass="defaultStore.state.animation && props.transition?.enterFromClass || undefined"
-		:leaveToClass="defaultStore.state.animation && props.transition?.leaveToClass || undefined"
-		:enterToClass="defaultStore.state.animation && props.transition?.enterToClass || undefined"
-		:leaveFromClass="defaultStore.state.animation && props.transition?.leaveFromClass || undefined"
-	>
-		<img v-show="hide" key="blurimg" ref="blurimg" :class="$style.img" :width="imgWidth" :height="imgHeight" :title="title ?? undefined"/>
-		<img v-show="!hide" key="img" ref="img" :height="imgHeight" :width="imgWidth" :class="$style.img" :src="src ?? undefined" :title="title ?? undefined" :alt="alt ?? undefined" loading="eager" decoding="async"/>
-	</TransitionGroup>
+	<img v-show="hide" key="blurimg" ref="blurimg" :class="$style.img" :width="imgWidth" :height="imgHeight" :title="title ?? undefined"/>
+	<img v-show="!hide" key="img" ref="img" :height="imgHeight" :width="imgWidth" :class="$style.img" :src="src ?? undefined" :title="title ?? undefined" :alt="alt ?? undefined" loading="eager" decoding="async"/>
 </div>
 </template>
 
@@ -60,15 +50,6 @@ import { render } from 'buraha';
 import { defaultStore } from '@/store.js';
 
 const props = withDefaults(defineProps<{
-	transition?: {
-		duration?: number | { enter: number; leave: number; };
-		enterActiveClass?: string;
-		leaveActiveClass?: string;
-		enterFromClass?: string;
-		leaveToClass?: string;
-		enterToClass?: string;
-		leaveFromClass?: string;
-	} | null;
 	src?: string | null;
 	hash?: string | null;
 	alt?: string | null;
@@ -79,7 +60,6 @@ const props = withDefaults(defineProps<{
 	forceBlurhash?: boolean;
 	onlyAvgColor?: boolean; // 軽量化のためにBlurhashを使わずに平均色だけを描画
 }>(), {
-	transition: null,
 	src: null,
 	alt: '',
 	title: null,
@@ -227,11 +207,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" module>
-.transition_leaveActive {
-	position: absolute;
-	top: 0;
-	left: 0;
-}
 .root {
 	position: relative;
 	width: 100%;
