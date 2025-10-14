@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div ref="rootEl" :class="$style.root">
-	<header :class="$style.header" class="_button" :style="{ background: bg }" @click="showBody = !showBody">
+	<header :class="$style.header" class="_button" @click="showBody = !showBody">
 		<div :class="$style.title"><div><slot name="header"></slot></div></div>
 		<div :class="$style.divider"></div>
 		<button class="_button" :class="$style.button">
@@ -31,8 +31,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, shallowRef, watch } from 'vue';
-import tinycolor from 'tinycolor2';
+import { ref, shallowRef, watch } from 'vue';
 import { miLocalStorage } from '@/local-storage.js';
 import { defaultStore } from '@/store.js';
 
@@ -80,23 +79,6 @@ function afterLeave(element: Element) {
 	const el = element as HTMLElement;
 	el.style.height = 'unset';
 }
-
-onMounted(() => {
-	function getParentBg(el?: HTMLElement | null): string {
-		if (el == null || el.tagName === 'BODY') return 'var(--bg)';
-		const background = el.style.background || el.style.backgroundColor;
-		if (background) {
-			return background;
-		} else {
-			return getParentBg(el.parentElement);
-		}
-	}
-
-	const rawBg = getParentBg(rootEl.value);
-	const _bg = tinycolor(rawBg.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(rawBg.slice(4, -1)) : rawBg);
-	_bg.setAlpha(0.85);
-	bg.value = _bg.toRgbString();
-});
 </script>
 
 <style lang="scss" module>
