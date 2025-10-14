@@ -16,6 +16,7 @@ import { makeHotkey } from '@/scripts/hotkey.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { initializeSw } from '@/scripts/initialize-sw.js';
 import { mainRouter } from '@/router/main.js';
+import { colorScheme, selectedColorScheme } from '@/themes/colorScheme.js';
 
 export async function mainBoot() {
 	const { isClientUpdated } = await common(() => createApp(
@@ -55,7 +56,11 @@ export async function mainBoot() {
 
 	const hotkeys = {
 		'd': (): void => {
-			defaultStore.set('darkMode', !defaultStore.state.darkMode);
+			if (colorScheme.value === 'dark') {
+				selectedColorScheme.value = 'light';
+			} else if (colorScheme.value === 'light') {
+				selectedColorScheme.value = 'dark';
+			}
 		},
 		's': (): void => {
 			mainRouter.push('/search');

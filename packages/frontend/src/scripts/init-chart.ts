@@ -24,8 +24,8 @@ import {
 import gradient from 'chartjs-plugin-gradient';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import { MatrixController, MatrixElement } from 'chartjs-chart-matrix';
-import { defaultStore } from '@/store.js';
 import 'chartjs-adapter-date-fns';
+import { colorScheme } from '@/themes/colorScheme';
 
 export function initChart() {
 	Chart.register(
@@ -52,7 +52,7 @@ export function initChart() {
 	// フォントカラー
 	Chart.defaults.color = getComputedStyle(document.documentElement).getPropertyValue('--fg');
 
-	Chart.defaults.borderColor = defaultStore.state.darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+	Chart.defaults.borderColor = colorScheme.value === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
 
 	Chart.defaults.animation = false;
 }

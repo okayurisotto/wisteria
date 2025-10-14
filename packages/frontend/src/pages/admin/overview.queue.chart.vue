@@ -8,13 +8,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, shallowRef } from 'vue';
+import { computed, onMounted, shallowRef } from 'vue';
 import { Chart } from 'chart.js';
-import { defaultStore } from '@/store.js';
 import { useChartTooltip } from '@/scripts/use-chart-tooltip.js';
 import { chartVLine } from '@/scripts/chart-vline.js';
 import { alpha } from '@/scripts/color.js';
 import { initChart } from '@/scripts/init-chart.js';
+import { colorScheme } from '@/themes/colorScheme';
 
 initChart();
 
@@ -66,9 +66,13 @@ const color =
 	props.type === 'waiting' ? '#FFB300' :
 	'?' as never;
 
-onMounted(() => {
-	const vLineColor = defaultStore.state.darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)';
+const vLineColor = computed(() => {
+	return colorScheme.value === 'dark'
+		? 'rgba(255, 255, 255, 0.2)'
+		: 'rgba(0, 0, 0, 0.2)';
+});
 
+onMounted(() => {
 	chartInstance = new Chart(chartEl.value, {
 		type: 'line',
 		data: {
@@ -128,7 +132,7 @@ onMounted(() => {
 				},
 			},
 		},
-		plugins: [chartVLine(vLineColor)],
+		plugins: [chartVLine(vLineColor.value)],
 	});
 });
 

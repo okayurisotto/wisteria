@@ -11,8 +11,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { computed } from 'vue';
 import { codeToHtml } from 'shiki';
 import { getTheme } from '@/scripts/code-highlighter.js';
-import { defaultStore } from '@/store.js';
 import { computedAsync } from '@vueuse/core';
+import { colorScheme } from '@/themes/colorScheme';
 
 const props = defineProps<{
 	code: string;
@@ -20,7 +20,7 @@ const props = defineProps<{
 	codeEditor?: boolean;
 }>();
 
-const darkMode = defaultStore.reactiveState.darkMode;
+const darkMode = computed(() => colorScheme.value === 'dark');
 const codeLang = computed(() => props.lang ?? 'text');
 
 const [lightThemeName, darkThemeName] = await Promise.all([

@@ -60,6 +60,7 @@ import { defaultStore } from '@/store.js';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
 import { iAmModerator } from '@/account.js';
+import { colorScheme } from '@/themes/colorScheme';
 
 const props = withDefaults(defineProps<{
 	image: Misskey.entities.DriveFile;
@@ -74,7 +75,7 @@ const props = withDefaults(defineProps<{
 });
 
 const hide = ref(true);
-const darkMode = ref<boolean>(defaultStore.state.darkMode);
+const darkMode = computed(() => colorScheme.value === 'dark');
 
 const url = computed(() => (props.raw || defaultStore.state.loadRawImages)
 	? props.image.url

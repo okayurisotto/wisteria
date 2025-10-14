@@ -16,7 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { ref, shallowRef, computed, onMounted, onBeforeUnmount, watch, onUnmounted } from 'vue';
-import { defaultStore } from '@/store.js';
+import { colorScheme } from '@/themes/colorScheme';
 
 // APIs provided by Captcha services
 export type Captcha = {
@@ -97,7 +97,7 @@ async function requestRender() {
 	if (captcha.value.render && captchaEl.value instanceof Element) {
 		captcha.value.render(captchaEl.value, {
 			sitekey: props.sitekey,
-			theme: defaultStore.state.darkMode ? 'dark' : 'light',
+			theme: colorScheme.value,
 			callback: callback,
 			'expired-callback': callback,
 			'error-callback': callback,
