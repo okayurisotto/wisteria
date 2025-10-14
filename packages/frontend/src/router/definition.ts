@@ -108,10 +108,6 @@ const routes: RouteDef[] = [{
 		name: 'drive',
 		component: page(() => import('@/pages/settings/drive.vue')),
 	}, {
-		path: parsePath('/drive/cleaner'),
-		name: 'drive',
-		component: page(() => import('@/pages/settings/drive-cleaner.vue')),
-	}, {
 		path: parsePath('/notifications'),
 		name: 'notifications',
 		component: page(() => import('@/pages/settings/notifications.vue')),
