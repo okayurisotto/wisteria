@@ -4,19 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="[hide ? $style.hidden : $style.visible, (image.isSensitive && defaultStore.state.highlightSensitiveMedia) && $style.sensitive]" :style="darkMode ? '--c: rgb(255 255 255 / 2%);' : '--c: rgb(0 0 0 / 2%);'" @click="onclick">
-	<component
-		:is="disableImageLink ? 'div' : 'a'"
-		v-bind="disableImageLink ? {
-			title: image.name,
-			class: $style.imageContainer,
-		} : {
-			title: image.name,
-			class: $style.imageContainer,
-			href: image.url,
-			style: 'cursor: zoom-in;'
-		}"
-	>
+	<div :class="$style.root" @click="manuallyHide = 'visible'">
 		<ImgWithBlurhash
 			:hash="image.blurhash"
 			:src="(defaultStore.state.dataSaver.media && hide) ? null : url"
@@ -26,32 +14,28 @@ SPDX-License-Identifier: AGPL-3.0-only
 			:title="image.comment || image.name"
 			:width="image.properties.width"
 			:height="image.properties.height"
-			:style="hide ? 'filter: brightness(0.7);' : null"
 		/>
-	</component>
-	<template v-if="hide">
-		<div :class="$style.hiddenText">
-			<div :class="$style.hiddenTextWrapper">
-				<b v-if="image.isSensitive" style="display: block;"><i class="ti ti-eye-exclamation"></i> {{ i18n.ts.sensitive }}{{ defaultStore.state.dataSaver.media ? ` (${i18n.ts.image}${image.size ? ' ' + bytes(image.size) : ''})` : '' }}</b>
-				<b v-else style="display: block;"><i class="ti ti-photo"></i> {{ defaultStore.state.dataSaver.media && image.size ? bytes(image.size) : i18n.ts.image }}</b>
-				<span v-if="controls" style="display: block;">{{ i18n.ts.clickToShow }}</span>
-			</div>
-		</div>
-	</template>
-	<template v-else-if="controls">
 		<div :class="$style.indicators">
 			<div v-if="['image/gif', 'image/apng'].includes(image.type)" :class="$style.indicator">GIF</div>
 			<div v-if="image.comment" :class="$style.indicator">ALT</div>
-			<div v-if="image.isSensitive" :class="$style.indicator" style="color: var(--warn);" :title="i18n.ts.sensitive"><i class="ti ti-eye-exclamation"></i></div>
+			<div v-if="image.isSensitive" :class="$style.indicator" style="color: var(--warn)" :title="i18n.ts.sensitive"><i class="ti ti-eye-exclamation"></i></div>
 		</div>
-		<button :class="$style.menu" class="_button" @click.stop="showMenu"><i class="ti ti-dots" style="vertical-align: middle;"></i></button>
-		<i class="ti ti-eye-off" :class="$style.hide" @click.stop="hide = true"></i>
-	</template>
-</div>
+		<div v-if="hide" :class="$style.hiddenText">
+			<div :class="$style.hiddenTextWrapper">
+				<i class="ti ti-photo"></i>
+				<span v-if="defaultStore.state.dataSaver.media && image.size">{{ bytes(image.size) }}</span>
+				<span>{{ i18n.ts.clickToShow }}</span>
+			</div>
+		</div>
+		<div v-else>
+			<button class="_button" :class="$style.menu" @click.stop="showMenu"><i class="ti ti-dots"></i></button>
+			<button class="_button" :class="$style.hide" @click.stop="manuallyHide = 'hidden'"><i class="ti ti-eye-off"></i></button>
+		</div>
+	</div>
 </template>
 
 <script lang="ts" setup>
-import { watch, ref, computed } from 'vue';
+import { ref, computed } from 'vue';
 import * as Misskey from 'misskey-js';
 import { getStaticImageUrl } from '@/scripts/media-proxy.js';
 import bytes from '@/filters/bytes.js';
@@ -60,143 +44,125 @@ import { defaultStore } from '@/store.js';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
 import { iAmModerator } from '@/account.js';
-import { colorScheme } from '@/themes/colorScheme';
 
 const props = withDefaults(defineProps<{
 	image: Misskey.entities.DriveFile;
 	raw?: boolean;
 	cover?: boolean;
 	disableImageLink?: boolean;
-	controls?: boolean;
 }>(), {
 	cover: false,
 	disableImageLink: false,
-	controls: true,
 });
 
-const hide = ref(true);
-const darkMode = computed(() => colorScheme.value === 'dark');
-
-const url = computed(() => (props.raw || defaultStore.state.loadRawImages)
-	? props.image.url
-	: defaultStore.state.disableShowingAnimatedImages
-		? getStaticImageUrl(props.image.url)
-		: props.image.thumbnailUrl,
-);
-
-function onclick() {
-	if (!props.controls) {
-		return;
-	}
-	if (hide.value) {
-		hide.value = false;
-	}
-}
-
-watch(() => props.image, () => {
-	hide.value = (defaultStore.state.nsfw === 'force' || defaultStore.state.dataSaver.media) ? true : (props.image.isSensitive && defaultStore.state.nsfw !== 'ignore');
-}, {
-	deep: true,
-	immediate: true,
+const autoHide = computed(() => {
+	if (defaultStore.state.nsfw === 'force') return true;
+	if (defaultStore.state.dataSaver.media) return true;
+	if (props.image.isSensitive && defaultStore.state.nsfw !== 'ignore') return true;
+	return false;
 });
 
-function showMenu(ev: MouseEvent) {
-	os.popupMenu([{
-		text: i18n.ts.hide,
-		icon: 'ti ti-eye-off',
-		action: () => {
-			hide.value = true;
-		},
-	}, ...(iAmModerator ? [{
-		text: i18n.ts.markAsSensitive,
-		icon: 'ti ti-eye-exclamation',
-		danger: true,
-		action: () => {
-			os.apiWithDialog('drive/files/update', { fileId: props.image.id, isSensitive: true });
-		},
-	}] : [])], ev.currentTarget ?? ev.target);
-}
+const manuallyHide = ref<'auto' | 'visible' | 'hidden'>('auto');
 
+const hide = computed(() => {
+	switch (manuallyHide.value) {
+		case 'auto': return autoHide.value;
+		case 'visible': return false;
+		case 'hidden': return true;
+	}
+});
+
+const url = computed(() => {
+	if (props.raw || defaultStore.state.loadRawImages) return props.image.url;
+	if (defaultStore.state.disableShowingAnimatedImages) return getStaticImageUrl(props.image.url);
+	return props.image.thumbnailUrl;
+});
+
+const showMenu = async (ev: MouseEvent) => {
+	await os.popupMenu([
+		{
+			text: i18n.ts.hide,
+			icon: 'ti ti-eye-off',
+			action: () => {
+				manuallyHide.value = 'hidden';
+			},
+		},
+		...(iAmModerator ? [{
+			text: i18n.ts.markAsSensitive,
+			icon: 'ti ti-eye-exclamation',
+			danger: true,
+			action: () => {
+				os.apiWithDialog('drive/files/update', { fileId: props.image.id, isSensitive: true });
+			},
+		}] : []),
+	], ev.currentTarget ?? ev.target);
+};
 </script>
 
 <style lang="scss" module>
-.hidden {
-	position: relative;
-}
+.root {
+	--a: var(--bg);
+	--b: var(--panel);
+	--ratio: 35%;
 
-.sensitive {
 	position: relative;
-
-	&::after {
-		content: "";
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		pointer-events: none;
-		border-radius: inherit;
-		box-shadow: inset 0 0 0 4px var(--warn);
-	}
+	background: var(--a);
+	background-image: linear-gradient(-45deg,
+		var(--b) calc(  0%                   ), var(--b) calc(  0% + var(--ratio) / 4),
+		var(--a) calc(  0% + var(--ratio) / 4), var(--a) calc( 50% - var(--ratio) / 4),
+		var(--b) calc( 50% - var(--ratio) / 4), var(--b) calc( 50% + var(--ratio) / 4),
+		var(--a) calc( 50% + var(--ratio) / 4), var(--a) calc(100% - var(--ratio) / 4),
+		var(--b) calc(100% - var(--ratio) / 4), var(--b) calc(100%                   ),
+	);
+	background-size: 24px 24px;
 }
 
 .hiddenText {
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 1;
-	display: flex;
-	justify-content: center;
 	align-items: center;
 	cursor: pointer;
-}
-
-.hide {
-	display: block;
+	display: flex;
+	inset: 0;
+	justify-content: center;
 	position: absolute;
-	border-radius: var(--rounded);
-	background-color: var(--fg);
-	color: var(--accentLighten);
-	font-size: 12px;
-	opacity: .5;
-	padding: 5px 8px;
-	text-align: center;
-	cursor: pointer;
-	top: 12px;
-	right: 12px;
 }
 
 .hiddenTextWrapper {
-	display: table-cell;
-	text-align: center;
+	align-items: center;
+	background-color: var(--panel);
+	border-radius: var(--rounded);
+	color: var(--fg);
+	display: flex;
 	font-size: 0.8em;
-	color: #fff;
+	gap: calc(var(--marginHalf) / 2);
+	padding: var(--marginHalf);
+	text-align: center;
 }
 
-.visible {
-	position: relative;
-	//box-shadow: 0 0 0 1px var(--divider) inset;
-	background: var(--bg);
-	background-image: linear-gradient(45deg, var(--c) 16.67%, var(--bg) 16.67%, var(--bg) 50%, var(--c) 50%, var(--c) 66.67%, var(--bg) 66.67%, var(--bg) 100%);
-	background-size: 16px 16px;
+.hide,
+.menu {
+	--size: 28px;
+
+	align-items: center;
+	background-color: var(--panel);
+	border-radius: var(--rounded-full);
+	color: var(--fg);
+	display: flex;
+	font-size: calc(var(--size) / 5 * 2);
+	height: var(--size);
+	justify-content: center;
+	padding: var(--marginHalf);
+	position: absolute;
+	width: var(--size);
+}
+
+.hide {
+	right: var(--marginHalf);
+	top: var(--marginHalf);
 }
 
 .menu {
-	display: block;
-	position: absolute;
-	border-radius: var(--rounded-full);
-	background-color: rgba(0, 0, 0, 0.3);
-	-webkit-backdrop-filter: var(--blur, blur(15px));
-	backdrop-filter: var(--blur, blur(15px));
-	color: #fff;
-	font-size: 0.8em;
-	width: 28px;
-	height: 28px;
-	text-align: center;
-	bottom: 10px;
-	right: 10px;
+	bottom: var(--marginHalf);
+	right: var(--marginHalf);
 }
 
 .imageContainer {
@@ -210,23 +176,19 @@ function showMenu(ev: MouseEvent) {
 }
 
 .indicators {
-	display: inline-flex;
+	display: flex;
+	gap: calc(var(--marginHalf) / 2);
+	left: var(--marginHalf);
 	position: absolute;
-	top: 10px;
-	left: 10px;
-	pointer-events: none;
-	opacity: .5;
-	gap: 6px;
+	top: var(--marginHalf);
 }
 
 .indicator {
-	/* Hardcode to black because either --bg or --fg makes it hard to read in dark/light mode */
-	background-color: black;
+	background-color: var(--panel);
 	border-radius: var(--rounded);
-	color: var(--accentLighten);
-	display: inline-block;
-	font-weight: bold;
+	color: var(--fg);
 	font-size: 0.8em;
+	font-weight: bold;
 	padding: 2px 5px;
 }
 </style>
