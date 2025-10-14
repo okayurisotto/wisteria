@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			:cx="5 + (Math.sin(2 * Math.PI * turn) * (5 - graduationsPadding))"
 			:cy="5 - (Math.cos(2 * Math.PI * turn) * (5 - graduationsPadding))"
 			:r="0.125"
-			:fill="(props.twentyfour ? h : h % 12) === i ? nowColor : majorGraduationColor"
+			:fill="(props.twentyfour ? h : h % 12) === i ? nowColor : gradient"
 			:opacity="!props.fadeGraduations || (props.twentyfour ? h : h % 12) === i ? 1 : Math.max(0, 1 - 2 * turnDiff(hTurn, turn) - numbersOpacityFactor)"
 		/>
 	</template>
@@ -72,8 +72,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
-import tinycolor from 'tinycolor2';
-import { globalEvents } from '@/events.js';
+import { colorScheme } from '@/themes/colorScheme';
 
 // https://stackoverflow.com/questions/1878907/how-can-i-find-the-difference-between-two-angles
 const turnDiff = (a: number, b: number) => {
@@ -122,12 +121,11 @@ const texts = computed(() => {
 	});
 });
 
-const majorGraduationColor = ref<string>();
-//let minorGraduationColor = $ref<string>();
-const sHandColor = ref<string>();
-const mHandColor = ref<string>();
-const hHandColor = ref<string>();
-const nowColor = ref<string>();
+const gradient = computed(() => colorScheme.value === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)');
+const sHandColor = computed(() => colorScheme.value === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.3)');
+const mHandColor = computed(() => 'var(--fg)');
+const hHandColor = computed(() => 'var(--accent)');
+const nowColor = computed(() => 'var(--accent)');
 const h = ref<number>(0);
 const hTurn = ref<number>(0);
 const mTurn = ref<number>(0);
@@ -160,7 +158,7 @@ function tick() {
 	const now = props.now();
 	now.setMinutes(now.getMinutes() + now.getTimezoneOffset() + props.offset);
 
-	const elapsedSeconds = (now.getTime() - base.getTime()) / 1000;
+	const elapsedSeconds = Math.round((now.getTime() - base.getTime()) / 1000);
 
 	h.value = now.getHours();
 
@@ -169,30 +167,13 @@ function tick() {
 	hTurn.value = (base.getHours() + mTurn.value) / (props.twentyfour ? 24 : 12);
 }
 
-tick();
-
-function calcColors() {
-	const computedStyle = getComputedStyle(document.documentElement);
-	const dark = tinycolor(computedStyle.getPropertyValue('--bg')).isDark();
-	const accent = tinycolor(computedStyle.getPropertyValue('--accent')).toHexString();
-	majorGraduationColor.value = dark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)';
-	//minorGraduationColor = dark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)';
-	sHandColor.value = dark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.3)';
-	mHandColor.value = tinycolor(computedStyle.getPropertyValue('--fg')).toHexString();
-	hHandColor.value = accent;
-	nowColor.value = accent;
-}
-
-calcColors();
-
 onMounted(() => {
+	tick();
 	timer = setInterval(tick, 1000);
-	globalEvents.on('themeChanged', calcColors);
 });
 
 onBeforeUnmount(() => {
 	if (timer !== null) clearInterval(timer);
-	globalEvents.off('themeChanged', calcColors);
 });
 </script>
 
