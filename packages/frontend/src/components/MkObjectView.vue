@@ -4,14 +4,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div>
-	<XValue :value="value" :collapsed="false"/>
-</div>
+	<MkCode lang="json" :code="JSON.stringify(props.value, undefined, 2)" />
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
-import XValue from './MkObjectView.value.vue';
+import MkCode from './MkCode.vue';
 
 const props = defineProps<{
 	value: Record<string, unknown>;
