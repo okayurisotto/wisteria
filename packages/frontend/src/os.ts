@@ -488,23 +488,6 @@ export async function pickEmoji(src: HTMLElement | null, opts) {
 	});
 }
 
-export async function cropImage(image: Misskey.entities.DriveFile, options: {
-	aspectRatio: number;
-	uploadFolder?: string | null;
-}): Promise<Misskey.entities.DriveFile> {
-	return new Promise((resolve, reject) => {
-		popup(defineAsyncComponent(() => import('@/components/MkCropperDialog.vue')), {
-			file: image,
-			aspectRatio: options.aspectRatio,
-			uploadFolder: options.uploadFolder,
-		}, {
-			ok: x => {
-				resolve(x);
-			},
-		}, 'closed');
-	});
-}
-
 type AwaitType<T> =
 	T extends Promise<infer U> ? U :
 	T extends (...args: any[]) => Promise<infer V> ? V :

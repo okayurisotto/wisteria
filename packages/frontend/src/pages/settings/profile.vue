@@ -192,23 +192,8 @@ function save() {
 
 function changeAvatar(ev) {
 	selectFile(ev.currentTarget ?? ev.target, i18n.ts.avatar).then(async (file) => {
-		let originalOrCropped = file;
-
-		const { canceled } = await os.confirm({
-			type: 'question',
-			text: i18n.ts.cropImageAsk,
-			okText: i18n.ts.cropYes,
-			cancelText: i18n.ts.cropNo,
-		});
-
-		if (!canceled) {
-			originalOrCropped = await os.cropImage(file, {
-				aspectRatio: 1,
-			});
-		}
-
 		const i = await os.apiWithDialog('i/update', {
-			avatarId: originalOrCropped.id,
+			avatarId: file.id,
 		});
 		$i.avatarId = i.avatarId;
 		$i.avatarUrl = i.avatarUrl;
@@ -218,23 +203,8 @@ function changeAvatar(ev) {
 
 function changeBanner(ev) {
 	selectFile(ev.currentTarget ?? ev.target, i18n.ts.banner).then(async (file) => {
-		let originalOrCropped = file;
-
-		const { canceled } = await os.confirm({
-			type: 'question',
-			text: i18n.ts.cropImageAsk,
-			okText: i18n.ts.cropYes,
-			cancelText: i18n.ts.cropNo,
-		});
-
-		if (!canceled) {
-			originalOrCropped = await os.cropImage(file, {
-				aspectRatio: 2,
-			});
-		}
-
 		const i = await os.apiWithDialog('i/update', {
-			bannerId: originalOrCropped.id,
+			bannerId: file.id,
 		});
 		$i.bannerId = i.bannerId;
 		$i.bannerUrl = i.bannerUrl;

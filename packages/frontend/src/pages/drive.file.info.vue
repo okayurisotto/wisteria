@@ -20,9 +20,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<button v-tooltip="i18n.ts.createNoteFromTheFile" class="_button" :class="$style.fileQuickActionsOthersButton" @click="postThis()">
 					<i class="ti ti-pencil"></i>
 				</button>
-				<button v-if="isImage" v-tooltip="i18n.ts.cropImage" class="_button" :class="$style.fileQuickActionsOthersButton" @click="crop()">
-					<i class="ti ti-crop"></i>
-				</button>
 				<button v-if="file.isSensitive" v-tooltip="i18n.ts.unmarkAsSensitive" class="_button" :class="$style.fileQuickActionsOthersButton" @click="toggleSensitive()">
 					<i class="ti ti-eye"></i>
 				</button>
@@ -70,7 +67,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineAsyncComponent, onMounted } from 'vue';
+import { ref, defineAsyncComponent, onMounted } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkInfo from '@/components/MkInfo.vue';
 import MkMediaList from '@/components/MkMediaList.vue';
@@ -90,7 +87,6 @@ const props = defineProps<{
 
 const fetching = ref(true);
 const file = ref<Misskey.entities.DriveFile>();
-const isImage = computed(() => file.value?.type.startsWith('image/'));
 
 async function fetch() {
 	fetching.value = true;
@@ -113,14 +109,6 @@ function postThis() {
 	});
 }
 
-function crop() {
-	if (!file.value) return;
-
-	os.cropImage(file.value, {
-		aspectRatio: NaN,
-		uploadFolder: file.value.folderId ?? null,
-	});
-}
 
 function toggleSensitive() {
 	if (!file.value) return;

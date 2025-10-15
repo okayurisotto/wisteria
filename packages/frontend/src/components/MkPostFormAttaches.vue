@@ -124,17 +124,10 @@ async function describe(file) {
 	}, 'closed');
 }
 
-async function crop(file: Misskey.entities.DriveFile): Promise<void> {
-	if (mock) return;
-
-	const newFile = await os.cropImage(file, { aspectRatio: NaN });
-	emit('replaceFile', file, newFile);
-}
 
 function showFileMenu(file: Misskey.entities.DriveFile, ev: MouseEvent): void {
 	if (menuShowing) return;
 
-	const isImage = file.type.startsWith('image/');
 	os.popupMenu([{
 		text: i18n.ts.renameFile,
 		icon: 'ti ti-forms',
@@ -147,11 +140,7 @@ function showFileMenu(file: Misskey.entities.DriveFile, ev: MouseEvent): void {
 		text: i18n.ts.describeFile,
 		icon: 'ti ti-text-caption',
 		action: () => { describe(file); },
-	}, ...isImage ? [{
-		text: i18n.ts.cropImage,
-		icon: 'ti ti-crop',
-		action: () : void => { crop(file); },
-	}] : [], {
+	}, {
 		text: i18n.ts.attachCancel,
 		icon: 'ti ti-circle-x',
 		action: () => { detachMedia(file.id); },
