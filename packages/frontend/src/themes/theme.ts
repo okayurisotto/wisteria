@@ -10,24 +10,7 @@ import _light from './base/_light.json';
 import _dark from './base/_dark.json';
 
 import lLight from './builtin/l-light.json';
-import lCoffee from './builtin/l-coffee.json';
-import lApricot from './builtin/l-apricot.json';
-import lRainy from './builtin/l-rainy.json';
-import lBotanical from './builtin/l-botanical.json';
-import lVivid from './builtin/l-vivid.json';
-import lCherry from './builtin/l-cherry.json';
-import lSushi from './builtin/l-sushi.json';
-import lU0 from './builtin/l-u0.json';
 import dDark from './builtin/d-dark.json';
-import dPersimmon from './builtin/d-persimmon.json';
-import dAstro from './builtin/d-astro.json';
-import dFuture from './builtin/d-future.json';
-import dBotanical from './builtin/d-botanical.json';
-import dGreenLime from './builtin/d-green-lime.json';
-import dGreenOrange from './builtin/d-green-orange.json';
-import dCherry from './builtin/d-cherry.json';
-import dIce from './builtin/d-ice.json';
-import dU0 from './builtin/d-u0.json';
 
 export type Theme = {
 	id: string;
@@ -44,8 +27,8 @@ export type Theme = {
 const SELECTED_LIGHT_THEME_ID = 'SELECTED_LIGHT_THEME_ID' as const;
 const SELECTED_DARK_THEME_ID = 'SELECTED_DARK_THEME_ID' as const;
 
-export const builtinLightThemes = ref<Theme[]>([lLight, lCoffee, lApricot, lRainy, lBotanical, lVivid, lCherry, lSushi, lU0]);
-export const builtinDarkThemes = ref<Theme[]>([dDark, dPersimmon, dAstro, dFuture, dBotanical, dGreenLime, dGreenOrange, dCherry, dIce, dU0]);
+export const builtinLightThemes = ref<Theme[]>([lLight]);
+export const builtinDarkThemes = ref<Theme[]>([dDark]);
 export const builtinThemes = computed<Theme[]>(() => [...builtinLightThemes.value, ...builtinDarkThemes.value]);
 
 export const installedThemes = ref<Theme[]>(getThemes());

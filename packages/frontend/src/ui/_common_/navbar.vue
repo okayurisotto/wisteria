@@ -113,7 +113,7 @@ function more(ev: MouseEvent) {
 	--divider-height: var(--item-height);
 	--divider-margin-inline: calc((100% - var(--item-width)) / 2 + var(--item-padding-inline));
 
-	background: var(--navBg);
+	background: var(--panel);
 	box-sizing: border-box;
 	contain: strict;
 	display: flex;
@@ -129,7 +129,7 @@ function more(ev: MouseEvent) {
 .top {
 	-webkit-backdrop-filter: var(--blur, blur(8px));
 	backdrop-filter: var(--blur, blur(8px));
-	background: var(--X14);
+	background: var(--panel);
 	padding-block: var(--navbar-padding-block) var(--navbar-children-gap);
 	position: sticky;
 	top: 0;
@@ -165,7 +165,7 @@ function more(ev: MouseEvent) {
 	-webkit-backdrop-filter: var(--blur, blur(8px));
 	align-items: center;
 	backdrop-filter: var(--blur, blur(8px));
-	background: var(--X14);
+	background: var(--panel);
 	bottom: 0;
 	display: flex;
 	flex-direction: column;
@@ -176,7 +176,7 @@ function more(ev: MouseEvent) {
 
 .post {
 	align-items: center;
-	background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
+	background: linear-gradient(90deg, var(--buttonGradientA), var(--buttonGradientB));
 	border-radius: var(--rounded-full);
 	color: var(--fgOnAccent);
 	display: flex;
@@ -240,7 +240,7 @@ function more(ev: MouseEvent) {
 	align-items: center;
 	border-radius: var(--rounded-full);
 	box-sizing: border-box;
-	color: var(--navFg);
+	color: var(--fg);
 	display: flex;
 	gap: var(--item-children-gap);
 	height: var(--item-height);

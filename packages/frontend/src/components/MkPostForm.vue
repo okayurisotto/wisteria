@@ -945,7 +945,7 @@ defineExpose({
 .submit {
 	--submit-height: calc(var(--size) - 8px * 2);
 	align-items: center;
-	background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
+	background: linear-gradient(90deg, var(--buttonGradientA), var(--buttonGradientB));
 	border-radius: var(--rounded-full);
 	color: var(--fgOnAccent);
 	column-gap: 8px;

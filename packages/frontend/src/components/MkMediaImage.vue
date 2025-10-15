@@ -133,8 +133,8 @@ const showMenu = async (ev: MouseEvent) => {
 	color: var(--fg);
 	display: flex;
 	font-size: 0.8em;
-	gap: calc(var(--marginHalf) / 2);
-	padding: var(--marginHalf);
+	gap: calc(var(--margin-half) / 2);
+	padding: var(--margin-half);
 	text-align: center;
 }
 
@@ -150,19 +150,19 @@ const showMenu = async (ev: MouseEvent) => {
 	font-size: calc(var(--size) / 5 * 2);
 	height: var(--size);
 	justify-content: center;
-	padding: var(--marginHalf);
+	padding: var(--margin-half);
 	position: absolute;
 	width: var(--size);
 }
 
 .hide {
-	right: var(--marginHalf);
-	top: var(--marginHalf);
+	right: var(--margin-half);
+	top: var(--margin-half);
 }
 
 .menu {
-	bottom: var(--marginHalf);
-	right: var(--marginHalf);
+	bottom: var(--margin-half);
+	right: var(--margin-half);
 }
 
 .imageContainer {
@@ -177,10 +177,10 @@ const showMenu = async (ev: MouseEvent) => {
 
 .indicators {
 	display: flex;
-	gap: calc(var(--marginHalf) / 2);
-	left: var(--marginHalf);
+	gap: calc(var(--margin-half) / 2);
+	left: var(--margin-half);
 	position: absolute;
-	top: var(--marginHalf);
+	top: var(--margin-half);
 }
 
 .indicator {

@@ -177,6 +177,6 @@ defineExpose({
 	min-height: 100%;
 	background: var(--bg);
 
-	--margin: var(--marginHalf);
+	--margin: var(--margin-half);
 }
 </style>

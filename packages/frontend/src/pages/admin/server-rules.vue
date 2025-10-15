@@ -76,7 +76,7 @@ definePageMetadata(() => ({
 <style lang="scss" module>
 .item {
 	display: block;
-	color: var(--navFg);
+	color: var(--fg);
 }
 
 .itemHeader {

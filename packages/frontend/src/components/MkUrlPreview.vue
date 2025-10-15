@@ -140,7 +140,7 @@ onMounted(async () => {
 	flex-direction: column;
 	flex: 1;
 	overflow-x: hidden;
-	padding: var(--marginHalf);
+	padding: var(--margin-half);
 	row-gap: 8px;
 }
 

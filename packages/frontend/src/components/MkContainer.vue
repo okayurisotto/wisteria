@@ -167,9 +167,9 @@ onUnmounted(() => {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	color: var(--panelHeaderFg);
-	background: var(--panelHeaderBg);
-	border-bottom: solid 0.5px var(--panelHeaderDivider);
+	color: var(--fg);
+	background: var(--panel);
+	border-bottom: 1px solid var(--divider);
 	z-index: 2;
 	line-height: 1.4em;
 }

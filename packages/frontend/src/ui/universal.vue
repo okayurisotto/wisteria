@@ -439,7 +439,7 @@ onBeforeUnmount(() => {
 	contain: strict;
 	overflow: auto;
 	overscroll-behavior: contain;
-	background: var(--navBg);
+	background: var(--panel);
 }
 
 .statusbars {
