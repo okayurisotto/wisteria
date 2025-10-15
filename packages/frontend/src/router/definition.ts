@@ -219,10 +219,6 @@ const routes: RouteDef[] = [{
 	path: parsePath('/ads'),
 	component: page(() => import('@/pages/ads.vue')),
 }, {
-	path: parsePath('/theme-editor'),
-	component: page(() => import('@/pages/theme-editor.vue')),
-	loginRequired: true,
-}, {
 	path: parsePath('/roles/:role'),
 	component: page(() => import('@/pages/role.vue')),
 }, {
