@@ -54,7 +54,12 @@ function submit() {
 	misskeyApi('admin/accounts/create', {
 		username: username.value,
 		password: password.value,
-	}).then(res => {
+	}).then(async (res) => {
+		await misskeyApi('signin', {
+			username: username.value,
+			password: password.value,
+		});
+
 		return login(res.token);
 	}).catch(() => {
 		submitting.value = false;
