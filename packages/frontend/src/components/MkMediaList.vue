@@ -218,29 +218,21 @@ const previewable = (file: Misskey.entities.DriveFile): boolean => {
 	&.n1 {
 		grid-template-rows: 1fr;
 
-		// default but fallback (expand)
-		min-height: 64px;
-		max-height: clamp(
-			64px,
-			50cqh,
-			min(360px, 50vh)
-		);
+		min-height: calc(var(--margin-half) * 3 + 28px * 2);
+		max-height: 360px;
 
 		&.n116_9 {
-			min-height: initial;
-			max-height: initial;
+			height: initial;
 			aspect-ratio: 16 / 9; // fallback
 		}
 
 		&.n11_1{
-			min-height: initial;
-			max-height: initial;
+			height: initial;
 			aspect-ratio: 1 / 1; // fallback
 		}
 
 		&.n12_3 {
-			min-height: initial;
-			max-height: initial;
+			height: initial;
 			aspect-ratio: 2 / 3; // fallback
 		}
 	}
