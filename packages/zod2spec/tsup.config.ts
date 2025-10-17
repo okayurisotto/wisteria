@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-	dts: process.env['NODE_ENV'] !== 'production',
+	tsconfig: "tsconfig.app.json",
 	entry: ['./src/index.ts'],
 	format: 'esm',
 	outDir: 'built',

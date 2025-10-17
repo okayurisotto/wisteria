@@ -1,5 +1,11 @@
 {
-	"compilerOptions": {},
-	"extends": ["../../tsconfig.json", "@tsconfig/node-lts/tsconfig.json"],
-	"include": ["src", "test"]
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
+		},
+		{
+			"path": "./tsconfig.dev.json"
+		}
+	]
 }

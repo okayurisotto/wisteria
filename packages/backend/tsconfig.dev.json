@@ -1,0 +1,7 @@
+{
+	"compilerOptions": {
+		"composite": true
+	},
+	"extends": ["@tsconfig/node-lts/tsconfig.json", "../../tsconfig.base.json"],
+	"files": ["tsup.config.ts", "generate_api_json.js"]
+}

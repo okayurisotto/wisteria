@@ -1,14 +1,14 @@
 {
 	"compilerOptions": {
 		"allowImportingTsExtensions": true,
-		"module": "ESNext",
+		"module": "preserve",
 		"moduleDetection": "force",
 		"moduleResolution": "bundler",
 		"noEmit": true,
 		"resolveJsonModule": true,
+		"target": "es2022",
 		"useDefineForClassFields": true,
 		"verbatimModuleSyntax": true
 	},
-	"exclude": ["built"],
-	"extends": ["@tsconfig/strictest/tsconfig.json"]
+	"extends": "@tsconfig/strictest/tsconfig.json"
 }

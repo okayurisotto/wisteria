@@ -1,11 +1,11 @@
 {
-	"compilerOptions": {
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"paths": {
-			"@/*": ["./src/*"]
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
+		},
+		{
+			"path": "./tsconfig.dev.json"
 		}
-	},
-	"extends": ["@tsconfig/node-lts/tsconfig.json", "../../tsconfig.json"],
-	"include": ["src"]
+	]
 }

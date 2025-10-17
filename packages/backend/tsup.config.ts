@@ -1,6 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
+	tsconfig: "tsconfig.app.json",
 	entry: [
 		'./src/**/*.test.ts',
 		'./src/boot/entry.ts',

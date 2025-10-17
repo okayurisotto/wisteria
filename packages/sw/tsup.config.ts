@@ -2,6 +2,7 @@ import { defineConfig } from 'tsup';
 import meta from '../../package.json' assert { type: 'json' };
 
 export default defineConfig({
+	tsconfig: "tsconfig.app.json",
 	bundle: true,
 	entry: ['./src/sw.ts'],
 	format: 'iife',

@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"composite": true
+	},
+	"extends": ["@tsconfig/node-lts/tsconfig.json", "../../tsconfig.base.json"],
+	"files": [
+		"lib/rollup-plugin-unwind-css-module-class-name.test.ts",
+		"lib/rollup-plugin-unwind-css-module-class-name.ts",
+		"vite.config.local-dev.ts",
+		"vite.config.ts"
+	]
+}

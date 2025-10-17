@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"composite": true,
+		"lib": ["ESNext", "WebWorker"],
+		"paths": {
+			"@/*": ["./src/*"]
+		}
+	},
+	"extends": "../../tsconfig.base.json",
+	"include": ["src"]
+}

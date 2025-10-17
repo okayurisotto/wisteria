@@ -1,7 +1,11 @@
 {
-	"compilerOptions": {
-		"lib": ["ES2023", "DOM"]
-	},
-	"extends": ["../../tsconfig.json", "@tsconfig/node-lts/tsconfig.json"],
-	"include": ["src"]
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
+		},
+		{
+			"path": "./tsconfig.dev.json"
+		}
+	]
 }

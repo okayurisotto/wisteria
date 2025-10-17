@@ -1,11 +1,11 @@
 {
-	"compilerOptions": {
-		"lib": ["ESNext", "WebWorker"],
-		"paths": {
-			"@/*": ["./src/*"]
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
 		},
-		"target": "ES2022"
-	},
-	"extends": ["../../tsconfig.json"],
-	"include": ["src"]
+		{
+			"path": "./tsconfig.dev.json"
+		}
+	]
 }

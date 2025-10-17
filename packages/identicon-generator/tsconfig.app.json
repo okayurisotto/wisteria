@@ -1,4 +1,7 @@
 {
+	"compilerOptions": {
+		"composite": true
+	},
 	"extends": ["@tsconfig/node-lts/tsconfig.json", "../../tsconfig.base.json"],
-	"files": ["index.js", "build.mjs"]
+	"include": ["src"]
 }

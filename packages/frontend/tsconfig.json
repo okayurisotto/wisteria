@@ -1,18 +1,11 @@
 {
-	"compilerOptions": {
-		"lib": ["ESNext", "DOM", "DOM.Iterable"],
-		"paths": {
-			"@/*": ["./src/*"]
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
 		},
-		"target": "ES2022",
-		"typeRoots": [
-			"./@types",
-			"./node_modules/@types",
-			"./node_modules/@vue-macros",
-			"./node_modules"
-		],
-		"types": ["vite/client", "vitest/importMeta"]
-	},
-	"extends": ["../../tsconfig.json"],
-	"include": ["./**/*.ts", "./**/*.vue"]
+		{
+			"path": "./tsconfig.dev.json"
+		}
+	]
 }

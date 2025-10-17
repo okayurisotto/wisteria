@@ -5,11 +5,11 @@
 	"exports": {
 		"./node": {
 			"import": "./built/node.js",
-			"types": "./built/node.d.ts"
+			"types": "./src/node.ts"
 		},
 		"./web": {
 			"import": "./built/web.js",
-			"types": "./built/web.d.ts"
+			"types": "./src/web.ts"
 		}
 	},
 	"scripts": {

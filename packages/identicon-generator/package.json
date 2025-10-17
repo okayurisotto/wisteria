@@ -6,10 +6,8 @@
 		"./built"
 	],
 	"exports": {
-		".": {
-			"import": "./built/index.js",
-			"types": "./built/index.d.ts"
-		}
+		"import": "./built/index.js",
+		"types": "./src/index.ts"
 	},
 	"scripts": {
 		"build": "tsup"
