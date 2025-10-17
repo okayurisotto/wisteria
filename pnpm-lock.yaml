@@ -143,8 +143,8 @@ importers:
         specifier: 14.1.0
         version: 14.1.0
       happy-dom:
-        specifier: 20.0.0
-        version: 20.0.0
+        specifier: 20.0.2
+        version: 20.0.2
       hono:
         specifier: 4.9.10
         version: 4.9.10
@@ -596,8 +596,8 @@ importers:
         specifier: 3.0.3
         version: 3.0.3
       happy-dom:
-        specifier: 20.0.0
-        version: 20.0.0
+        specifier: 20.0.2
+        version: 20.0.2
       intersection-observer:
         specifier: 0.12.2
         version: 0.12.2
@@ -618,7 +618,7 @@ importers:
         version: 7.1.9(@types/node@22.17.2)(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
       vitest:
         specifier: 3.2.4
-        version: 3.2.4(@types/node@22.17.2)(happy-dom@20.0.0)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
+        version: 3.2.4(@types/node@22.17.2)(happy-dom@20.0.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
       vue-component-type-helpers:
         specifier: 1.8.27
         version: 1.8.27
@@ -662,7 +662,7 @@ importers:
         version: 8.5.0(@microsoft/api-extractor@7.47.3(@types/node@22.17.2))(@swc/core@1.13.3)(postcss@8.5.6)(typescript@5.9.3)(yaml@2.8.1)
       vitest:
         specifier: 3.2.4
-        version: 3.2.4(@types/node@22.17.2)(happy-dom@20.0.0)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
+        version: 3.2.4(@types/node@22.17.2)(happy-dom@20.0.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
 
   packages/identicon-generator:
     dependencies:
@@ -723,7 +723,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 3.2.4
-        version: 3.2.4(@types/node@22.17.2)(happy-dom@20.0.0)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
+        version: 3.2.4(@types/node@22.17.2)(happy-dom@20.0.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
 
   packages/sw:
     dependencies:
@@ -758,7 +758,7 @@ importers:
         version: 8.5.0(@microsoft/api-extractor@7.47.3(@types/node@24.3.0))(@swc/core@1.13.3)(postcss@8.5.6)(typescript@5.9.3)(yaml@2.8.1)
       vitest:
         specifier: 3.2.4
-        version: 3.2.4(@types/node@24.3.0)(happy-dom@20.0.0)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
+        version: 3.2.4(@types/node@24.3.0)(happy-dom@20.0.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1)
 
 packages:
 
@@ -2200,8 +2200,8 @@ packages:
   '@types/ms@0.7.34':
     resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
 
-  '@types/node@20.19.20':
-    resolution: {integrity: sha512-2Q7WS25j4pS1cS8yw3d6buNCVJukOTeQ39bAnwR6sOJbaxvyCGebzTMypDFN82CxBLnl+lSWVdCCWbRY6y9yZQ==}
+  '@types/node@20.19.22':
+    resolution: {integrity: sha512-hRnu+5qggKDSyWHlnmThnUqg62l29Aj/6vcYgUaSFL9oc7DVjeWEQN3PRgdSc6F8d9QRMWkf36CLMch1Do/+RQ==}
 
   '@types/node@22.17.2':
     resolution: {integrity: sha512-gL6z5N9Jm9mhY+U2KXZpteb+09zyffliRkZyZOHODGATyC5B1Jt/7TzuuiLkFsSUMLbS1OLmlj/E+/3KF4Q/4w==}
@@ -3408,8 +3408,8 @@ packages:
     resolution: {integrity: sha512-tSQXBXS/MWQOn/RKckawJ61vvsDpCom87JgxiYdGwHdOa0ht0vzUWDlfioofFCRU0L+6NGDt6XzbgoJvZkMeRQ==}
     engines: {node: '>=0.8.0'}
 
-  happy-dom@20.0.0:
-    resolution: {integrity: sha512-GkWnwIFxVGCf2raNrxImLo397RdGhLapj5cT3R2PT7FwL62Ze1DROhzmYW7+J3p9105DYMVenEejEbnq5wA37w==}
+  happy-dom@20.0.2:
+    resolution: {integrity: sha512-pYOyu624+6HDbY+qkjILpQGnpvZOusItCk+rvF5/V+6NkcgTKnbOldpIy22tBnxoaLtlM9nXgoqAcW29/B7CIw==}
     engines: {node: '>=20.0.0'}
 
   has-bigints@1.1.0:
@@ -7581,7 +7581,7 @@ snapshots:
 
   '@types/ms@0.7.34': {}
 
-  '@types/node@20.19.20':
+  '@types/node@20.19.22':
     dependencies:
       undici-types: 6.21.0
 
@@ -8966,9 +8966,9 @@ snapshots:
 
   hammerjs@2.0.8: {}
 
-  happy-dom@20.0.0:
+  happy-dom@20.0.2:
     dependencies:
-      '@types/node': 20.19.20
+      '@types/node': 20.19.22
       '@types/whatwg-mimetype': 3.0.2
       whatwg-mimetype: 3.0.0
 
@@ -11189,7 +11189,7 @@ snapshots:
       terser: 5.43.1
       yaml: 2.8.1
 
-  vitest@3.2.4(@types/node@22.17.2)(happy-dom@20.0.0)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1):
+  vitest@3.2.4(@types/node@22.17.2)(happy-dom@20.0.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1):
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4
@@ -11216,7 +11216,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.17.2
-      happy-dom: 20.0.0
+      happy-dom: 20.0.2
       jsdom: 26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
     transitivePeerDependencies:
       - jiti
@@ -11232,7 +11232,7 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@3.2.4(@types/node@24.3.0)(happy-dom@20.0.0)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1):
+  vitest@3.2.4(@types/node@24.3.0)(happy-dom@20.0.2)(jsdom@26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.90.0)(terser@5.43.1)(yaml@2.8.1):
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4
@@ -11259,7 +11259,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.3.0
-      happy-dom: 20.0.0
+      happy-dom: 20.0.2
       jsdom: 26.1.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
     transitivePeerDependencies:
       - jiti
