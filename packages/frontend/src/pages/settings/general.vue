@@ -73,14 +73,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<option value="ignore">{{ i18n.ts._displayOfSensitiveMedia.ignore }}</option>
 				<option value="force">{{ i18n.ts._displayOfSensitiveMedia.force }}</option>
 			</MkSelect>
-
-			<MkRadios v-model="mediaListWithOneImageAppearance">
-				<template #label>{{ i18n.ts.mediaListWithOneImageAppearance }}</template>
-				<option value="expand">{{ i18n.ts.default }}</option>
-				<option value="16_9">{{ i18n.tsx.limitTo({ x: '16:9' }) }}</option>
-				<option value="1_1">{{ i18n.tsx.limitTo({ x: '1:1' }) }}</option>
-				<option value="2_3">{{ i18n.tsx.limitTo({ x: '2:3' }) }}</option>
-			</MkRadios>
 		</div>
 	</FormSection>
 
@@ -286,7 +278,6 @@ const enableInfiniteScroll = computed(defaultStore.makeGetterSetter('enableInfin
 const useReactionPickerForContextMenu = computed(defaultStore.makeGetterSetter('useReactionPickerForContextMenu'));
 const squareAvatars = computed(defaultStore.makeGetterSetter('squareAvatars'));
 const showAvatarDecorations = computed(defaultStore.makeGetterSetter('showAvatarDecorations'));
-const mediaListWithOneImageAppearance = computed(defaultStore.makeGetterSetter('mediaListWithOneImageAppearance'));
 const notificationPosition = computed(defaultStore.makeGetterSetter('notificationPosition'));
 const notificationStackAxis = computed(defaultStore.makeGetterSetter('notificationStackAxis'));
 const keepScreenOn = computed(defaultStore.makeGetterSetter('keepScreenOn'));
@@ -326,7 +317,6 @@ watch([
 	showGapBetweenNotesInTimeline,
 	instanceTicker,
 	overridedDeviceKind,
-	mediaListWithOneImageAppearance,
 	reactionsDisplaySize,
 	limitWidthOfReaction,
 	highlightSensitiveMedia,

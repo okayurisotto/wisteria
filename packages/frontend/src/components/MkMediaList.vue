@@ -11,11 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			ref="gallery"
 			:class="[
 				$style.medias,
-				count === 1 ? [$style.n1, {
-					[$style.n116_9]: defaultStore.reactiveState.mediaListWithOneImageAppearance.value === '16_9',
-					[$style.n11_1]: defaultStore.reactiveState.mediaListWithOneImageAppearance.value === '1_1',
-					[$style.n12_3]: defaultStore.reactiveState.mediaListWithOneImageAppearance.value === '2_3',
-				}] : count === 2 ? $style.n2 : count === 3 ? $style.n3 : count === 4 ? $style.n4 : $style.nMany,
+				count === 1 ? $style.n1 : count === 2 ? $style.n2 : count === 3 ? $style.n3 : count === 4 ? $style.n4 : $style.nMany,
 			]"
 		>
 			<template v-for="media in mediaList.filter(media => previewable(media))">
@@ -28,7 +24,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
+import { computed, onMounted, onUnmounted, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import PhotoSwipe from 'photoswipe';
@@ -38,14 +34,13 @@ import XImage from '@/components/MkMediaImage.vue';
 import XVideo from '@/components/MkMediaVideo.vue';
 import * as os from '@/os.js';
 import { FILE_TYPE_BROWSERSAFE } from '@/const.js';
-import { defaultStore } from '@/store.js';
 
 const props = defineProps<{
 	mediaList: Misskey.entities.DriveFile[];
 	raw?: boolean;
 }>();
 
-const gallery = shallowRef<HTMLDivElement>();
+const gallery = useTemplateRef('gallery');
 const pswpZIndex = os.claimZIndex('middle');
 document.documentElement.style.setProperty('--mk-pswp-root-z-index', pswpZIndex.toString());
 const count = computed(() => props.mediaList.filter(media => previewable(media)).length);
@@ -57,40 +52,7 @@ const popstateHandler = (): void => {
 	}
 };
 
-async function calcAspectRatio() {
-	if (!gallery.value) return;
-
-	let img = props.mediaList[0];
-
-	if (props.mediaList.length !== 1 || !(img.properties.width && img.properties.height)) {
-		gallery.value.style.aspectRatio = '';
-		return;
-	}
-
-	const ratioMax = (ratio: number) => {
-		if (img.properties.width == null || img.properties.height == null) return '';
-		return `${Math.max(ratio, img.properties.width / img.properties.height).toString()} / 1`;
-	};
-
-	switch (defaultStore.state.mediaListWithOneImageAppearance) {
-		case '16_9':
-			gallery.value.style.aspectRatio = ratioMax(16 / 9);
-			break;
-		case '1_1':
-			gallery.value.style.aspectRatio = ratioMax(1 / 1);
-			break;
-		case '2_3':
-			gallery.value.style.aspectRatio = ratioMax(2 / 3);
-			break;
-		default:
-			gallery.value.style.aspectRatio = '';
-			break;
-	}
-}
-
 onMounted(() => {
-	calcAspectRatio();
-
 	lightbox = new PhotoSwipeLightbox({
 		dataSource: props.mediaList
 			.filter(media => {
@@ -203,6 +165,7 @@ const previewable = (file: Misskey.entities.DriveFile): boolean => {
 
 <style lang="scss" module>
 .container {
+	container-type: inline-size;
 	position: relative;
 	width: 100%;
 	margin-top: 4px;
@@ -211,41 +174,20 @@ const previewable = (file: Misskey.entities.DriveFile): boolean => {
 .medias {
 	display: grid;
 	grid-gap: 8px;
-
-	height: 100%;
-	width: 100%;
+	height: calc(100cqw / 16 * 9);
+	width: 100cqw;
 
 	&.n1 {
 		grid-template-rows: 1fr;
-
-		min-height: calc(var(--margin-half) * 3 + 28px * 2);
-		max-height: 360px;
-
-		&.n116_9 {
-			height: initial;
-			aspect-ratio: 16 / 9; // fallback
-		}
-
-		&.n11_1{
-			height: initial;
-			aspect-ratio: 1 / 1; // fallback
-		}
-
-		&.n12_3 {
-			height: initial;
-			aspect-ratio: 2 / 3; // fallback
-		}
 	}
 
 	&.n2 {
-		aspect-ratio: 16/9;
 		grid-template-columns: 1fr 1fr;
 		grid-template-rows: 1fr;
 	}
 
 	&.n3 {
-		aspect-ratio: 16/9;
-		grid-template-columns: 1fr 0.5fr;
+		grid-template-columns: 2fr 1fr;
 		grid-template-rows: 1fr 1fr;
 
 		> .media:nth-child(1) {
@@ -259,7 +201,6 @@ const previewable = (file: Misskey.entities.DriveFile): boolean => {
 	}
 
 	&.n4 {
-		aspect-ratio: 16/9;
 		grid-template-columns: 1fr 1fr;
 		grid-template-rows: 1fr 1fr;
 	}
