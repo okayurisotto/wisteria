@@ -416,7 +416,7 @@ onBeforeUnmount(() => {
 }
 
 .postButton {
-	background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
+	background: linear-gradient(90deg, var(--buttonGradientA), var(--buttonGradientB));
 	color: var(--fgOnAccent);
 }
 
