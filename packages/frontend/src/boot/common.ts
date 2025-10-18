@@ -22,6 +22,7 @@ import { getAccountFromId } from '@/scripts/get-account-from-id.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { fetchCustomEmojis } from '@/custom-emojis.js';
 import { setupRouter } from '@/router/definition.js';
+import { locales } from 'locales';
 
 export async function common(createVue: () => App<Element>) {
 	console.info(`Misskey v${version}`);
@@ -79,15 +80,14 @@ export async function common(createVue: () => App<Element>) {
 	const localeVersion = miLocalStorage.getItem('localeVersion');
 	const localeOutdated = (localeVersion == null || localeVersion !== version || locale == null);
 	if (localeOutdated) {
-		const res = await window.fetch(`/assets/locales/${lang}.${version}.json`);
-		if (res.status === 200) {
-			const newLocale = await res.text();
-			const parsedNewLocale = JSON.parse(newLocale);
+		try {
+			const parsedNewLocale = await locales[lang]();
+			const newLocale = JSON.stringify(parsedNewLocale);
 			miLocalStorage.setItem('locale', newLocale);
 			miLocalStorage.setItem('localeVersion', version);
 			updateLocale(parsedNewLocale);
 			updateI18n(parsedNewLocale);
-		}
+		} catch { /* nop */ }
 	}
 	//#endregion
 

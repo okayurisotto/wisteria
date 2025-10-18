@@ -9,7 +9,7 @@ import cssnano from 'cssnano';
 import postcss from 'postcss';
 import * as terser from 'terser';
 import { loadConfig } from '../packages/backend/built/config.js';
-import { build as buildLocales } from '../packages/locales/index.js';
+import { languages } from '../packages/locales/built/index.js';
 import { build as buildTarball } from './tarball.mjs';
 
 async function copyBackendViews() {
@@ -21,7 +21,6 @@ async function copyBackendAssets() {
 }
 
 async function buildBackendScript() {
-	const locales = buildLocales();
 	await fs.mkdir('./packages/backend/built/server/web', { recursive: true });
 
 	for (const file of [
@@ -30,7 +29,7 @@ async function buildBackendScript() {
 		'./packages/backend/src/server/web/cli.js',
 	]) {
 		let source = await fs.readFile(file, { encoding: 'utf-8' });
-		source = source.replaceAll('LANGS', JSON.stringify(Object.keys(locales)));
+		source = source.replaceAll('LANGS', JSON.stringify(Object.keys(languages)));
 		const { code } = await terser.minify(source, { toplevel: true });
 		await fs.writeFile(`./packages/backend/built/server/web/${path.basename(file)}`, code);
 	}

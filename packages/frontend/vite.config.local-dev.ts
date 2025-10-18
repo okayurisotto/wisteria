@@ -2,7 +2,6 @@ import { readFile } from 'node:fs/promises';
 import dns from 'node:dns';
 import { defineConfig } from 'vite';
 import * as yaml from 'js-yaml';
-import locales from 'locales';
 import { baseConfig } from './vite.config.js';
 
 dns.setDefaultResultOrder('ipv4first');
@@ -54,9 +53,5 @@ export default defineConfig({
 			...baseConfig.build?.rollupOptions,
 			input: 'index.html',
 		},
-	},
-	define: {
-		...baseConfig.define,
-		_LANGS_FULL_: JSON.stringify(Object.entries(locales)),
 	},
 });

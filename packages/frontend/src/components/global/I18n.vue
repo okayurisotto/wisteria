@@ -2,9 +2,9 @@
 <render/>
 </template>
 
-<script setup lang="ts" generic="T extends string | ParameterizedString">
+<script setup lang="ts" generic="T extends string | unknown">
 import { computed, h } from 'vue';
-import type { ParameterizedString } from '../../../../../locales/index.js';
+import type { ParameterizedString } from 'locales';
 
 const props = withDefaults(defineProps<{
 	src: T;

@@ -686,7 +686,11 @@ importers:
         specifier: 5.9.3
         version: 5.9.3
 
-  packages/locales: {}
+  packages/locales:
+    devDependencies:
+      tsup:
+        specifier: 8.5.0
+        version: 8.5.0(@microsoft/api-extractor@7.47.3(@types/node@24.3.0))(@swc/core@1.13.3)(postcss@8.5.6)(typescript@5.9.3)(yaml@2.8.1)
 
   packages/misskey-js:
     dependencies:
@@ -10912,7 +10916,7 @@ snapshots:
       source-map: 0.8.0-beta.0
       sucrase: 3.35.0
       tinyexec: 0.3.2
-      tinyglobby: 0.2.14
+      tinyglobby: 0.2.15
       tree-kill: 1.2.2
     optionalDependencies:
       '@microsoft/api-extractor': 7.47.3(@types/node@22.17.2)
@@ -10942,7 +10946,7 @@ snapshots:
       source-map: 0.8.0-beta.0
       sucrase: 3.35.0
       tinyexec: 0.3.2
-      tinyglobby: 0.2.14
+      tinyglobby: 0.2.15
       tree-kill: 1.2.2
     optionalDependencies:
       '@microsoft/api-extractor': 7.47.3(@types/node@24.3.0)

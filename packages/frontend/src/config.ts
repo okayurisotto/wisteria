@@ -4,6 +4,7 @@
  */
 
 import { miLocalStorage } from '@/local-storage.js';
+import { languages } from 'locales';
 
 const address = new URL(document.querySelector<HTMLMetaElement>('meta[property="instance_url"]')?.content || location.href);
 const siteName = document.querySelector<HTMLMetaElement>('meta[property="og:site_name"]')?.content;
@@ -13,7 +14,9 @@ export const hostname = address.hostname;
 export const url = address.origin;
 export const apiUrl = location.origin + '/api';
 export const wsOrigin = location.origin;
-export const lang = miLocalStorage.getItem('lang') ?? 'en-US';
+export const lang = miLocalStorage.getItem('lang') ??
+	Object.keys(languages).find((lang) => lang === navigator.language || lang.startsWith(navigator.language + '-')) ??
+	'en-US';
 export const langs = _LANGS_;
 const preParseLocale = miLocalStorage.getItem('locale');
 export let locale = preParseLocale ? JSON.parse(preParseLocale) : null;

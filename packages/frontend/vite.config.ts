@@ -3,7 +3,7 @@ import path from 'node:path';
 import pluginVue from '@vitejs/plugin-vue';
 import { type UserConfig, defineConfig } from 'vite';
 
-import locales from 'locales';
+import { languages } from 'locales';
 import meta from '../../package.json';
 import pluginUnwindCssModuleClassName from './lib/rollup-plugin-unwind-css-module-class-name.js';
 
@@ -76,7 +76,7 @@ export const baseConfig: UserConfig = {
 
 	define: {
 		_VERSION_: JSON.stringify(meta.version),
-		_LANGS_: JSON.stringify(Object.entries(locales).map(([k, v]) => [k, v._lang_])),
+		_LANGS_: JSON.stringify(Object.entries(languages)),
 		_DEV_: process.env['NODE_ENV'] !== 'production',
 		_DATA_TRANSFER_DRIVE_FILE_: JSON.stringify('mk_drive_file'),
 		_DATA_TRANSFER_DRIVE_FOLDER_: JSON.stringify('mk_drive_folder'),

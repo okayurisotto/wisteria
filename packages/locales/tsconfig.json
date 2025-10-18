@@ -1,4 +1,11 @@
 {
-	"extends": ["@tsconfig/node-lts/tsconfig.json", "../../tsconfig.base.json"],
-	"files": ["index.js", "build.mjs"]
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
+		},
+		{
+			"path": "./tsconfig.dev.json"
+		}
+	]
 }

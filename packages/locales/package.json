@@ -2,9 +2,13 @@
 	"name": "locales",
 	"type": "module",
 	"scripts": {
-		"build": "node ./build.mjs"
+		"build": "tsup"
 	},
 	"exports": {
-		"import": "./index.js"
+		"import": "./built/index.js",
+		"types": "./src/index.ts"
+	},
+	"devDependencies": {
+		"tsup": "8.5.0"
 	}
 }
