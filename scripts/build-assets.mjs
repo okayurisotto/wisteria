@@ -7,9 +7,7 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import cssnano from 'cssnano';
 import postcss from 'postcss';
-import * as terser from 'terser';
 import { loadConfig } from '../packages/backend/built/config.js';
-import { languages } from '../packages/locales/built/index.js';
 import { build as buildTarball } from './tarball.mjs';
 
 const root = path.join(import.meta.dirname, '..');
