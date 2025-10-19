@@ -37,7 +37,6 @@ async function buildBackendStyle() {
 	);
 
 	for (const file of [
-		path.join(root, './packages/backend/src/server/web/style.css'),
 		path.join(root, './packages/backend/src/server/web/error.css'),
 	]) {
 		const source = await fs.readFile(file, { encoding: 'utf-8' });
