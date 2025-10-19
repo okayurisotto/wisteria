@@ -30,25 +30,6 @@ async function copyBackendAssets() {
 	);
 }
 
-async function buildBackendScript() {
-	await fs.mkdir(
-		path.join(root, './packages/backend/built/server/web'),
-		{ recursive: true },
-	);
-
-	for (const file of [
-		path.join(root, './packages/backend/src/server/web/cli.js'),
-	]) {
-		let source = await fs.readFile(file, { encoding: 'utf-8' });
-		source = source.replaceAll('LANGS', JSON.stringify(Object.keys(languages)));
-		const { code } = await terser.minify(source, { toplevel: true });
-		await fs.writeFile(
-			path.join(root, './packages/backend/built/server/web/', path.basename(file)),
-			code,
-		);
-	}
-}
-
 async function buildBackendStyle() {
 	await fs.mkdir(
 		path.join(root, './packages/backend/built/server/web'),
@@ -57,7 +38,6 @@ async function buildBackendStyle() {
 
 	for (const file of [
 		path.join(root, './packages/backend/src/server/web/style.css'),
-		path.join(root, './packages/backend/src/server/web/cli.css'),
 		path.join(root, './packages/backend/src/server/web/error.css'),
 	]) {
 		const source = await fs.readFile(file, { encoding: 'utf-8' });
@@ -73,7 +53,6 @@ async function build() {
 	await Promise.all([
 		copyBackendViews(),
 		copyBackendAssets(),
-		buildBackendScript(),
 		buildBackendStyle(),
 		(async () => {
 			try {

@@ -27,7 +27,7 @@ import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService.js'
 declare module 'hono' {
 	interface ContextRenderer {
 		(
-			name: 'base' | 'cli' | 'clip' | 'error' | 'flush' | 'note' | 'page' | 'user',
+			name: 'base' | 'clip' | 'error' | 'flush' | 'note' | 'page' | 'user',
 			locals: Record<string, unknown>
 		): Response | Promise<Response>;
 	}
@@ -319,14 +319,6 @@ export class ClientServerService {
 		});
 
 		// #endregion
-
-		// CLI
-		hono.get('/cli', noIframe, usePug, async (c) => {
-			return c.render('cli', {
-				version: this.config.version,
-				config: this.config,
-			});
-		});
 
 		// Flush
 		hono.get('/flush', noIframe, usePug, async (c) => {
