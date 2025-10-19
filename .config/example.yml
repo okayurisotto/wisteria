@@ -196,8 +196,8 @@ id: 'aidx'
 
 #prometheus:
 #  basicAuth:
-#    username: wisteria-example-user
-#    password: wisteria-example-pass
+#    username: example-wisteria-user
+#    password: example-wisteria-pass
 
 #   ┌─────────────────────┐
 #───┘ Other configuration └─────────────────────────────────────
