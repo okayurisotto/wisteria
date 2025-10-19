@@ -3,7 +3,9 @@
 	"type": "module",
 	"license": "MIT",
 	"scripts": {
-		"build": "tsup"
+		"build": "tsup",
+		"typecheck": "tsc",
+		"watch": "tsup --watch"
 	},
 	"exports": {
 		"import": "./built/index.js",

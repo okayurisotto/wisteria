@@ -2,13 +2,15 @@
 	"name": "parcom",
 	"type": "module",
 	"license": "MIT",
-	"scripts": {
-		"build": "tsup",
-		"test": "vitest"
-	},
 	"exports": {
 		"import": "./built/index.js",
 		"types": "./src/index.ts"
+	},
+	"scripts": {
+		"build": "tsup",
+		"test": "vitest run",
+		"typecheck": "tsc",
+		"watch": "tsup --watch"
 	},
 	"devDependencies": {
 		"@types/node": "22.17.2",

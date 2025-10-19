@@ -8,8 +8,9 @@
 	},
 	"scripts": {
 		"build": "tsup",
-		"watch": "tsup --watch",
-		"generate": "openapi-typescript ../backend/built/api.json -o ./src/autogen.ts"
+		"generate": "openapi-typescript ../backend/built/api.json -o ./src/autogen.ts",
+		"typecheck": "tsc",
+		"watch": "tsup --watch"
 	},
 	"devDependencies": {
 		"@types/node": "22.17.2",

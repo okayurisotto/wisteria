@@ -14,7 +14,9 @@
 	},
 	"scripts": {
 		"build": "tsup",
-		"test": "vitest"
+		"test": "vitest run",
+		"typecheck": "tsc",
+		"watch": "tsup --watch"
 	},
 	"dependencies": {
 		"parcom": "workspace:*",

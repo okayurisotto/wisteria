@@ -2,10 +2,9 @@
 	"name": "sw",
 	"private": true,
 	"scripts": {
-		"watch": "tsup --watch",
 		"build": "tsup",
 		"typecheck": "tsc",
-		"lint": "pnpm typecheck"
+		"watch": "tsup --watch"
 	},
 	"dependencies": {
 		"idb-keyval": "6.2.1",

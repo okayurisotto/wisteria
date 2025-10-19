@@ -1,12 +1,14 @@
 {
 	"name": "locales",
 	"type": "module",
-	"scripts": {
-		"build": "tsup"
-	},
 	"exports": {
 		"import": "./built/index.js",
 		"types": "./src/index.ts"
+	},
+	"scripts": {
+		"build": "tsup",
+		"typecheck": "tsc",
+		"watch": "tsup --watch"
 	},
 	"devDependencies": {
 		"tsup": "8.5.0"

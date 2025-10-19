@@ -3,11 +3,11 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"watch": "vite",
-		"dev": "vite --config vite.config.local-dev.ts --debug hmr",
 		"build": "vite build",
+		"dev": "vite --config vite.config.local-dev.ts --debug hmr",
 		"test": "vitest --run --globals",
-		"typecheck": "vue-tsc --noEmit"
+		"typecheck": "vue-tsc --noEmit",
+		"watch": "vite"
 	},
 	"dependencies": {
 		"@github/webauthn-json": "2.1.1",

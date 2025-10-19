@@ -10,7 +10,9 @@
 		"types": "./src/index.ts"
 	},
 	"scripts": {
-		"build": "tsup"
+		"build": "tsup",
+		"typecheck": "tsc",
+		"watch": "tsup --watch"
 	},
 	"devDependencies": {
 		"@types/node": "22.17.2",

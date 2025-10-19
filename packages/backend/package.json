@@ -3,15 +3,14 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"start": "node ./built/boot/entry.js",
+		"build": "tsup",
+		"generate-api-json": "node ./generate_api_json.js",
 		"migrate": "pnpm typeorm migration:run -d ormconfig.js",
 		"revert": "pnpm typeorm migration:revert -d ormconfig.js",
-		"build": "tsup",
-		"watch": "tsup --watch",
-		"restart": "pnpm build && pnpm start",
+		"start": "node ./built/boot/entry.js",
+		"test": "node --test ./built/**/*.test.js",
 		"typecheck": "tsc",
-		"generate-api-json": "pnpm build && node ./generate_api_json.js",
-		"test": "node --test ./built/**/*.test.js"
+		"watch": "tsup --watch"
 	},
 	"optionalDependencies": {
 		"bufferutil": "4.0.7",
