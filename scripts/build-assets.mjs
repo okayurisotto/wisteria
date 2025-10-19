@@ -37,7 +37,6 @@ async function buildBackendScript() {
 	);
 
 	for (const file of [
-		path.join(root, './packages/backend/src/server/web/bios.js'),
 		path.join(root, './packages/backend/src/server/web/cli.js'),
 	]) {
 		let source = await fs.readFile(file, { encoding: 'utf-8' });
@@ -58,7 +57,6 @@ async function buildBackendStyle() {
 
 	for (const file of [
 		path.join(root, './packages/backend/src/server/web/style.css'),
-		path.join(root, './packages/backend/src/server/web/bios.css'),
 		path.join(root, './packages/backend/src/server/web/cli.css'),
 		path.join(root, './packages/backend/src/server/web/error.css'),
 	]) {
