@@ -8,10 +8,9 @@ import { compareVersions } from 'compare-versions';
 import widgets from '@/widgets/index.js';
 import directives from '@/directives/index.js';
 import components from '@/components/index.js';
-import { version, lang, updateLocale, locale } from '@/config.js';
+import { version, lang } from '@/config.js';
 import { useTheme } from '@/themes/theme.js';
 import { useColorScheme } from '@/themes/colorScheme.js';
-import { updateI18n } from '@/i18n.js';
 import { $i, refreshAccount, login } from '@/account.js';
 import { defaultStore } from '@/store.js';
 import { fetchInstance, instance } from '@/instance.js';
@@ -22,7 +21,6 @@ import { getAccountFromId } from '@/scripts/get-account-from-id.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { fetchCustomEmojis } from '@/custom-emojis.js';
 import { setupRouter } from '@/router/definition.js';
-import { locales } from 'locales';
 
 export async function common(createVue: () => App<Element>) {
 	console.info(`Misskey v${version}`);
@@ -88,21 +86,6 @@ export async function common(createVue: () => App<Element>) {
 				isClientUpdated = true;
 			}
 		} catch (err) { /* empty */ }
-	}
-	//#endregion
-
-	//#region Detect language & fetch translations
-	const localeVersion = miLocalStorage.getItem('localeVersion');
-	const localeOutdated = (localeVersion == null || localeVersion !== version || locale == null);
-	if (localeOutdated) {
-		try {
-			const parsedNewLocale = await locales[lang]();
-			const newLocale = JSON.stringify(parsedNewLocale);
-			miLocalStorage.setItem('locale', newLocale);
-			miLocalStorage.setItem('localeVersion', version);
-			updateLocale(parsedNewLocale);
-			updateI18n(parsedNewLocale);
-		} catch { /* nop */ }
 	}
 	//#endregion
 
