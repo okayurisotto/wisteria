@@ -1,4 +1,4 @@
-export const languages = _LANGUAGES_;
+export const languages = _LANGUAGES_ as Record<string, string>;
 export * from './locales.js';
 
 declare const kParameters: unique symbol;

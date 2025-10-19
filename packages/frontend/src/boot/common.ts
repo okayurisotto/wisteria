@@ -58,6 +58,21 @@ export async function common(createVue: () => App<Element>) {
 		});
 	}
 
+	const fontSize = localStorage.getItem('fontSize');
+	if (fontSize !== null) {
+		document.documentElement.classList.add('f-' + fontSize);
+	}
+
+	const useSystemFont = localStorage.getItem('useSystemFont');
+	if (useSystemFont !== null) {
+		document.documentElement.classList.add('useSystemFont');
+	}
+
+	const wallpaper = localStorage.getItem('wallpaper');
+	if (wallpaper !== null) {
+		document.documentElement.style.backgroundImage = `url(${wallpaper})`;
+	}
+
 	let isClientUpdated = false;
 
 	//#region クライアントが更新されたかチェック
@@ -218,10 +233,6 @@ export async function common(createVue: () => App<Element>) {
 	})();
 
 	app.mount(rootEl);
-
-	// boot.jsのやつを解除
-	window.onerror = null;
-	window.onunhandledrejection = null;
 
 	removeSplash();
 

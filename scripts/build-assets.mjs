@@ -37,7 +37,6 @@ async function buildBackendScript() {
 	);
 
 	for (const file of [
-		path.join(root, './packages/backend/src/server/web/boot.js'),
 		path.join(root, './packages/backend/src/server/web/bios.js'),
 		path.join(root, './packages/backend/src/server/web/cli.js'),
 	]) {

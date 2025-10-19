@@ -26,7 +26,7 @@ html
 		link(rel='prefetch' href=notFoundImageUrl)
 		//- https://github.com/misskey-dev/misskey/issues/9842
 		link(rel='stylesheet' href='/assets/tabler-icons/tabler-icons.min.css?v2.44.0')
-		link(rel='modulepreload' href=`/vite/${clientEntry.file}`)
+		script(type='module' src=`/vite/${clientEntry.file}`)
 
 		if Array.isArray(clientEntry.css)
 			each href in clientEntry.css
@@ -49,13 +49,6 @@ html
 
 		style
 			include ../style.css
-
-		script.
-			var VERSION = "#{version}";
-			var CLIENT_ENTRY = "#{clientEntry.file}";
-
-		script
-			include ../boot.js
 
 	body
 		noscript: p
