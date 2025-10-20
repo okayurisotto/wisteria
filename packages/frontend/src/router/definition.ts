@@ -366,10 +366,6 @@ const routes: RouteDef[] = [{
 		name: 'moderation',
 		component: page(() => import('@/pages/admin/moderation.vue')),
 	}, {
-		path: parsePath('/email-settings'),
-		name: 'email-settings',
-		component: page(() => import('@/pages/admin/email-settings.vue')),
-	}, {
 		path: parsePath('/object-storage'),
 		name: 'object-storage',
 		component: page(() => import('@/pages/admin/object-storage.vue')),

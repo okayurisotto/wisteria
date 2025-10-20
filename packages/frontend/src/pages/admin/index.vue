@@ -15,7 +15,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkInfo v-if="thereIsUnresolvedAbuseReport" warn class="info">{{ i18n.ts.thereIsUnresolvedAbuseReportWarning }} <MkA to="/admin/abuses" class="_link">{{ i18n.ts.check }}</MkA></MkInfo>
 				<MkInfo v-if="noMaintainerInformation" warn class="info">{{ i18n.ts.noMaintainerInformationWarning }} <MkA to="/admin/settings" class="_link">{{ i18n.ts.configure }}</MkA></MkInfo>
 				<MkInfo v-if="noBotProtection" warn class="info">{{ i18n.ts.noBotProtectionWarning }} <MkA to="/admin/security" class="_link">{{ i18n.ts.configure }}</MkA></MkInfo>
-				<MkInfo v-if="noEmailServer" warn class="info">{{ i18n.ts.noEmailServerWarning }} <MkA to="/admin/email-settings" class="_link">{{ i18n.ts.configure }}</MkA></MkInfo>
 
 				<MkSuperMenu :def="menuDef" :grid="narrow"></MkSuperMenu>
 			</div>
@@ -54,12 +53,9 @@ provide('shouldOmitHeaderTitle', false);
 const INFO = ref(indexInfo);
 const childInfo = ref<null | PageMetadata>(null);
 const narrow = ref(false);
-const view = ref(null);
 const el = ref<HTMLDivElement | null>(null);
-const pageProps = ref({});
 let noMaintainerInformation = isEmpty(instance.maintainerName) || isEmpty(instance.maintainerEmail);
 let noBotProtection = !instance.disableRegistration && !instance.enableHcaptcha && !instance.enableRecaptcha && !instance.enableTurnstile;
-let noEmailServer = !instance.enableEmail;
 const thereIsUnresolvedAbuseReport = ref(false);
 const currentPage = computed(() => router.currentRef.value.child);
 
@@ -71,7 +67,7 @@ misskeyApi('admin/abuse-user-reports', {
 });
 
 const NARROW_THRESHOLD = 600;
-const ro = new ResizeObserver((entries, observer) => {
+const ro = new ResizeObserver((entries) => {
 	if (entries.length === 0) return;
 	narrow.value = entries[0].borderBoxSize[0].inlineSize < NARROW_THRESHOLD;
 });
@@ -174,11 +170,6 @@ const menuDef = computed(() => [{
 		text: i18n.ts.moderation,
 		to: '/admin/moderation',
 		active: currentPage.value?.route.name === 'moderation',
-	}, {
-		icon: 'ti ti-mail',
-		text: i18n.ts.emailServer,
-		to: '/admin/email-settings',
-		active: currentPage.value?.route.name === 'email-settings',
 	}, {
 		icon: 'ti ti-cloud',
 		text: i18n.ts.objectStorage,
@@ -315,10 +306,6 @@ function lookup(ev: MouseEvent) {
 		},
 	}], ev.currentTarget ?? ev.target);
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => INFO.value);
 
