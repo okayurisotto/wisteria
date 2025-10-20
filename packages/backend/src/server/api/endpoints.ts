@@ -271,7 +271,6 @@ import * as ep___roles_list from './endpoints/roles/list.js';
 import * as ep___roles_show from './endpoints/roles/show.js';
 import * as ep___roles_users from './endpoints/roles/users.js';
 import * as ep___roles_notes from './endpoints/roles/notes.js';
-import * as ep___requestResetPassword from './endpoints/request-reset-password.js';
 import * as ep___resetDb from './endpoints/reset-db.js';
 import * as ep___resetPassword from './endpoints/reset-password.js';
 import * as ep___serverInfo from './endpoints/server-info.js';
@@ -582,7 +581,6 @@ const eps = [
 	['roles/show', ep___roles_show],
 	['roles/users', ep___roles_users],
 	['roles/notes', ep___roles_notes],
-	['request-reset-password', ep___requestResetPassword],
 	['reset-db', ep___resetDb],
 	['reset-password', ep___resetPassword],
 	['server-info', ep___serverInfo],

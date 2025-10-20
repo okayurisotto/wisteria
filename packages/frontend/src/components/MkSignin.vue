@@ -17,7 +17,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</MkInput>
 			<MkInput v-if="!user || user && !user.usePasswordLessLogin" v-model="password" :placeholder="i18n.ts.password" type="password" autocomplete="current-password webauthn" :withPasswordToggle="true" required>
 				<template #prefix><i class="ti ti-lock"></i></template>
-				<template #caption><button class="_textButton" type="button" @click="resetPassword">{{ i18n.ts.forgotPassword }}</button></template>
 			</MkInput>
 			<MkButton type="submit" large primary rounded :disabled="signing" style="margin: 0 auto;">{{ signing ? i18n.ts.loggingIn : i18n.ts.login }}</MkButton>
 		</div>
@@ -49,7 +48,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, ref } from 'vue';
+import { ref } from 'vue';
 import { toUnicode } from 'punycode/';
 import * as Misskey from 'misskey-js';
 import { supported as webAuthnSupported, get as webAuthnRequest, parseRequestOptionsFromJSON } from '@github/webauthn-json/browser-ponyfill';
@@ -214,11 +213,6 @@ function loginFailed(err: any): void {
 
 	totpLogin.value = false;
 	signing.value = false;
-}
-
-function resetPassword(): void {
-	os.popup(defineAsyncComponent(() => import('@/components/MkForgotPassword.vue')), {}, {
-	}, 'closed');
 }
 </script>
 

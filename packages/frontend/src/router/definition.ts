@@ -192,9 +192,6 @@ const routes: RouteDef[] = [{
 		component: page(() => import('@/pages/_empty_.vue')),
 	}],
 }, {
-	path: parsePath('/reset-password/:token?'),
-	component: page(() => import('@/pages/reset-password.vue')),
-}, {
 	path: parsePath('/signup-complete/:code'),
 	component: page(() => import('@/pages/signup-complete.vue')),
 }, {

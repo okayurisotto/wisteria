@@ -2481,15 +2481,6 @@ export interface paths {
      */
     post: operations["roles/notes"];
   };
-  "/request-reset-password": {
-    /**
-     * request-reset-password
-     * @description Request a users password to be reset.
-     *
-     * **Credential required**: *No*
-     */
-    post: operations["request-reset-password"];
-  };
   "/reset-db": {
     /**
      * reset-db
@@ -19750,65 +19741,6 @@ export interface operations {
       };
       /** @description I'm Ai */
       418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
-   * request-reset-password
-   * @description Request a users password to be reset.
-   *
-   * **Credential required**: *No*
-   */
-  "request-reset-password": {
-    requestBody: {
-      content: {
-        "application/json": {
-          username: string;
-          email: string;
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (without any results) */
-      204: {
-        content: never;
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description To many requests */
-      429: {
         content: {
           "application/json": components["schemas"]["Error"];
         };
