@@ -112,10 +112,6 @@ const routes: RouteDef[] = [{
 		name: 'notifications',
 		component: page(() => import('@/pages/settings/notifications.vue')),
 	}, {
-		path: parsePath('/email'),
-		name: 'email',
-		component: page(() => import('@/pages/settings/email.vue')),
-	}, {
 		path: parsePath('/security'),
 		name: 'security',
 		component: page(() => import('@/pages/settings/security.vue')),

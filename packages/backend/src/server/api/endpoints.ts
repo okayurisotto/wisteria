@@ -205,7 +205,6 @@ import * as ep___i_registry_set from './endpoints/i/registry/set.js';
 import * as ep___i_revokeToken from './endpoints/i/revoke-token.js';
 import * as ep___i_signinHistory from './endpoints/i/signin-history.js';
 import * as ep___i_unpin from './endpoints/i/unpin.js';
-import * as ep___i_updateEmail from './endpoints/i/update-email.js';
 import * as ep___i_update from './endpoints/i/update.js';
 import * as ep___i_move from './endpoints/i/move.js';
 import * as ep___i_webhooks_create from './endpoints/i/webhooks/create.js';
@@ -518,7 +517,6 @@ const eps = [
 	['i/revoke-token', ep___i_revokeToken],
 	['i/signin-history', ep___i_signinHistory],
 	['i/unpin', ep___i_unpin],
-	['i/update-email', ep___i_updateEmail],
 	['i/update', ep___i_update],
 	['i/move', ep___i_move],
 	['i/webhooks/create', ep___i_webhooks_create],

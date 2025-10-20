@@ -205,7 +205,6 @@ import * as ep___i_registry_set from './endpoints/i/registry/set.js';
 import * as ep___i_revokeToken from './endpoints/i/revoke-token.js';
 import * as ep___i_signinHistory from './endpoints/i/signin-history.js';
 import * as ep___i_unpin from './endpoints/i/unpin.js';
-import * as ep___i_updateEmail from './endpoints/i/update-email.js';
 import * as ep___i_update from './endpoints/i/update.js';
 import * as ep___i_move from './endpoints/i/move.js';
 import * as ep___i_webhooks_create from './endpoints/i/webhooks/create.js';
@@ -518,7 +517,6 @@ const $i_registry_set: Provider = { provide: 'ep:i/registry/set', useClass: ep__
 const $i_revokeToken: Provider = { provide: 'ep:i/revoke-token', useClass: ep___i_revokeToken.default };
 const $i_signinHistory: Provider = { provide: 'ep:i/signin-history', useClass: ep___i_signinHistory.default };
 const $i_unpin: Provider = { provide: 'ep:i/unpin', useClass: ep___i_unpin.default };
-const $i_updateEmail: Provider = { provide: 'ep:i/update-email', useClass: ep___i_updateEmail.default };
 const $i_update: Provider = { provide: 'ep:i/update', useClass: ep___i_update.default };
 const $i_move: Provider = { provide: 'ep:i/move', useClass: ep___i_move.default };
 const $i_webhooks_create: Provider = { provide: 'ep:i/webhooks/create', useClass: ep___i_webhooks_create.default };
@@ -835,7 +833,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$i_revokeToken,
 		$i_signinHistory,
 		$i_unpin,
-		$i_updateEmail,
 		$i_update,
 		$i_move,
 		$i_webhooks_create,
@@ -1146,7 +1143,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$i_revokeToken,
 		$i_signinHistory,
 		$i_unpin,
-		$i_updateEmail,
 		$i_update,
 		$i_move,
 		$i_webhooks_create,

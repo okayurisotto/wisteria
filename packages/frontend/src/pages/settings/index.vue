@@ -11,7 +11,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div class="body">
 				<div v-if="!narrow || currentPage?.route.name == null" class="nav">
 					<div class="baaadecd">
-						<MkInfo v-if="emailNotConfigured" warn class="info">{{ i18n.ts.emailNotConfiguredWarning }} <MkA to="/settings/email" class="_link">{{ i18n.ts.configure }}</MkA></MkInfo>
 						<MkSuperMenu :def="menuDef" :grid="narrow"></MkSuperMenu>
 					</div>
 				</div>
@@ -86,11 +85,6 @@ const menuDef = computed(() => [{
 		text: i18n.ts.notifications,
 		to: '/settings/notifications',
 		active: currentPage.value?.route.name === 'notifications',
-	}, {
-		icon: 'ti ti-mail',
-		text: i18n.ts.email,
-		to: '/settings/email',
-		active: currentPage.value?.route.name === 'email',
 	}, {
 		icon: 'ti ti-lock',
 		text: i18n.ts.security,
