@@ -55,7 +55,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkSpacer :contentMax="700">
 				<div class="_buttons">
 					<MkButton primary rounded @click="save"><i class="ti ti-check"></i> {{ i18n.ts.save }}</MkButton>
-					<MkButton rounded @click="testEmail"><i class="ti ti-send"></i> {{ i18n.ts.testEmail }}</MkButton>
 				</div>
 			</MkSpacer>
 		</div>
@@ -74,7 +73,7 @@ import FormSplit from '@/components/form/split.vue';
 import FormSection from '@/components/form/section.vue';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
-import { fetchInstance, instance } from '@/instance.js';
+import { fetchInstance } from '@/instance.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkButton from '@/components/MkButton.vue';
@@ -96,22 +95,6 @@ async function init() {
 	smtpPort.value = meta.smtpPort;
 	smtpUser.value = meta.smtpUser;
 	smtpPass.value = meta.smtpPass;
-}
-
-async function testEmail() {
-	const { canceled, result: destination } = await os.inputText({
-		title: i18n.ts.destination,
-		type: 'email',
-		default: instance.maintainerEmail ?? '',
-		placeholder: 'test@example.com',
-		minLength: 1,
-	});
-	if (canceled) return;
-	os.apiWithDialog('admin/send-email', {
-		to: destination,
-		subject: 'Test email',
-		text: 'Yo',
-	});
 }
 
 function save() {
