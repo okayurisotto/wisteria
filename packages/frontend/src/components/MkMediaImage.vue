@@ -140,7 +140,7 @@ const showMenu = async (ev: MouseEvent) => {
 
 .hide,
 .menu {
-	--size: 28px;
+	--size: 32px;
 
 	align-items: center;
 	background-color: var(--panel);
