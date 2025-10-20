@@ -3,14 +3,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import sanitizeHtml from 'sanitize-html';
 import { Inject, Injectable } from '@nestjs/common';
 import type { AbuseUserReportsRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
-import { MetaService } from '@/core/MetaService.js';
-import { EmailService } from '@/core/EmailService.js';
 import { DI } from '@/di-symbols.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { RoleService } from '@/core/RoleService.js';
@@ -60,8 +57,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly abuseUserReportsRepository: AbuseUserReportsRepository,
 
 		private readonly idService: IdService,
-		private readonly metaService: MetaService,
-		private readonly emailService: EmailService,
 		private readonly getterService: GetterService,
 		private readonly roleService: RoleService,
 		private readonly globalEventService: GlobalEventService,
@@ -102,13 +97,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 						reporterId: report.reporterId,
 						comment: report.comment,
 					});
-				}
-
-				const meta = await this.metaService.fetch();
-				if (meta.email) {
-					this.emailService.sendEmail(meta.email, 'New abuse report',
-						sanitizeHtml(ps.comment),
-						sanitizeHtml(ps.comment));
 				}
 			});
 		});

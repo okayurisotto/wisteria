@@ -6,13 +6,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { MoreThan } from 'typeorm';
 import { DI } from '@/di-symbols.js';
-import type { DriveFilesRepository, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import type { DriveFilesRepository, NotesRepository, UsersRepository } from '@/models/_.js';
 import type { Logger } from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiNote } from '@/models/Note.js';
-import { EmailService } from '@/core/EmailService.js';
-import { SearchService } from '@/core/SearchService.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbUserDeleteJobData } from '../types.js';
@@ -25,9 +23,6 @@ export class DeleteAccountProcessorService {
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,
 
-		@Inject(DI.userProfilesRepository)
-		private readonly userProfilesRepository: UserProfilesRepository,
-
 		@Inject(DI.notesRepository)
 		private readonly notesRepository: NotesRepository,
 
@@ -35,9 +30,7 @@ export class DeleteAccountProcessorService {
 		private readonly driveFilesRepository: DriveFilesRepository,
 
 		private readonly driveService: DriveService,
-		private readonly emailService: EmailService,
 		private readonly queueLoggerService: QueueLoggerService,
-		private readonly searchService: SearchService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('delete-account');
 	}
@@ -104,15 +97,6 @@ export class DeleteAccountProcessorService {
 			}
 
 			this.logger.succ('All of files deleted');
-		}
-
-		{ // Send email notification
-			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
-			if (profile.email && profile.emailVerified) {
-				this.emailService.sendEmail(profile.email, 'Account deleted',
-					'Your account has been deleted.',
-					'Your account has been deleted.');
-			}
 		}
 
 		// soft指定されている場合は物理削除しない

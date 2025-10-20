@@ -9,9 +9,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { PasswordResetRequestsRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { IdService } from '@/core/IdService.js';
-import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
-import { EmailService } from '@/core/EmailService.js';
 import { L_CHARS, secureRndstr } from '@/misc/secure-rndstr.js';
 import { z } from 'zod';
 
@@ -40,9 +38,6 @@ export const paramDef = z.object({
 @Injectable()
 export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
-		@Inject(DI.config)
-		private readonly config: Config,
-
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,
 
@@ -53,7 +48,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly passwordResetRequestsRepository: PasswordResetRequestsRepository,
 
 		private readonly idService: IdService,
-		private readonly emailService: EmailService,
 	) {
 		super(meta, paramDef, async (ps) => {
 			const user = await this.usersRepository.findOneBy({
@@ -85,12 +79,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				userId: profile.userId,
 				token,
 			});
-
-			const link = `${this.config.url}/reset-password/${token}`;
-
-			this.emailService.sendEmail(ps.email, 'Password reset requested',
-				`To reset password, please click this link:<br><a href="${link}">${link}</a>`,
-				`To reset password, please click this link: ${link}`);
 		});
 	}
 }

@@ -182,7 +182,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 					dayOfWeek: ad.dayOfWeek,
 				})),
 				notesPerOneAd: instance.notesPerOneAd,
-				enableEmail: instance.enableEmail,
+				enableEmail: false,
 				enableServiceWorker: instance.enableServiceWorker,
 
 				translatorAvailable: instance.deeplAuthKey != null,

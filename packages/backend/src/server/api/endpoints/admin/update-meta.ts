@@ -315,10 +315,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				set.summalyProxy = ps.summalyProxy;
 			}
 
-			if (ps.enableEmail !== undefined) {
-				set.enableEmail = ps.enableEmail;
-			}
-
 			if (ps.email !== undefined) {
 				set.email = ps.email;
 			}

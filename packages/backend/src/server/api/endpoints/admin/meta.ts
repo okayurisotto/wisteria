@@ -169,7 +169,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				logoImageUrl: instance.logoImageUrl,
 				defaultLightTheme: instance.defaultLightTheme,
 				defaultDarkTheme: instance.defaultDarkTheme,
-				enableEmail: instance.enableEmail,
+				enableEmail: false,
 				enableServiceWorker: instance.enableServiceWorker,
 				translatorAvailable: instance.deeplAuthKey != null,
 				cacheRemoteFiles: instance.cacheRemoteFiles,
