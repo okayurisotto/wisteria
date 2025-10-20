@@ -131,7 +131,6 @@ import * as ep___drive_folders_find from './endpoints/drive/folders/find.js';
 import * as ep___drive_folders_show from './endpoints/drive/folders/show.js';
 import * as ep___drive_folders_update from './endpoints/drive/folders/update.js';
 import * as ep___drive_stream from './endpoints/drive/stream.js';
-import * as ep___emailAddress_available from './endpoints/email-address/available.js';
 import * as ep___endpoint from './endpoints/endpoint.js';
 import * as ep___endpoints from './endpoints/endpoints.js';
 import * as ep___exportCustomEmojis from './endpoints/export-custom-emojis.js';
@@ -441,7 +440,6 @@ const $drive_folders_find: Provider = { provide: 'ep:drive/folders/find', useCla
 const $drive_folders_show: Provider = { provide: 'ep:drive/folders/show', useClass: ep___drive_folders_show.default };
 const $drive_folders_update: Provider = { provide: 'ep:drive/folders/update', useClass: ep___drive_folders_update.default };
 const $drive_stream: Provider = { provide: 'ep:drive/stream', useClass: ep___drive_stream.default };
-const $emailAddress_available: Provider = { provide: 'ep:email-address/available', useClass: ep___emailAddress_available.default };
 const $endpoint: Provider = { provide: 'ep:endpoint', useClass: ep___endpoint.default };
 const $endpoints: Provider = { provide: 'ep:endpoints', useClass: ep___endpoints.default };
 const $exportCustomEmojis: Provider = { provide: 'ep:export-custom-emojis', useClass: ep___exportCustomEmojis.default };
@@ -755,7 +753,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$drive_folders_show,
 		$drive_folders_update,
 		$drive_stream,
-		$emailAddress_available,
 		$endpoint,
 		$endpoints,
 		$exportCustomEmojis,
@@ -1063,7 +1060,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$drive_folders_show,
 		$drive_folders_update,
 		$drive_stream,
-		$emailAddress_available,
 		$endpoint,
 		$endpoints,
 		$exportCustomEmojis,

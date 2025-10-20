@@ -29,22 +29,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span v-else-if="usernameState === 'max-range'" style="color: var(--error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts.tooLong }}</span>
 				</template>
 			</MkInput>
-			<MkInput v-if="instance.emailRequiredForSignup" v-model="email" :debounce="true" type="email" :spellcheck="false" required @update:modelValue="onChangeEmail">
-				<template #label>{{ i18n.ts.emailAddress }} <div v-tooltip:dialog="i18n.ts._signup.emailAddressInfo" class="_button _help"><i class="ti ti-help-circle"></i></div></template>
-				<template #prefix><i class="ti ti-mail"></i></template>
-				<template #caption>
-					<span v-if="emailState === 'wait'" style="color:#999"><MkLoading :em="true"/> {{ i18n.ts.checking }}</span>
-					<span v-else-if="emailState === 'ok'" style="color: var(--success)"><i class="ti ti-check ti-fw"></i> {{ i18n.ts.available }}</span>
-					<span v-else-if="emailState === 'unavailable:used'" style="color: var(--error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts._emailUnavailable.used }}</span>
-					<span v-else-if="emailState === 'unavailable:format'" style="color: var(--error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts._emailUnavailable.format }}</span>
-					<span v-else-if="emailState === 'unavailable:disposable'" style="color: var(--error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts._emailUnavailable.disposable }}</span>
-					<span v-else-if="emailState === 'unavailable:banned'" style="color: var(--error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts._emailUnavailable.banned }}</span>
-					<span v-else-if="emailState === 'unavailable:mx'" style="color: var(--error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts._emailUnavailable.mx }}</span>
-					<span v-else-if="emailState === 'unavailable:smtp'" style="color: var(--error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts._emailUnavailable.smtp }}</span>
-					<span v-else-if="emailState === 'unavailable'" style="color: var(--error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts.unavailable }}</span>
-					<span v-else-if="emailState === 'error'" style="color: var(--error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts.error }}</span>
-				</template>
-			</MkInput>
 			<MkInput v-model="password" type="password" autocomplete="new-password" required @update:modelValue="onChangePassword">
 				<template #label>{{ i18n.ts.password }}</template>
 				<template #prefix><i class="ti ti-lock"></i></template>
@@ -99,7 +83,6 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
 	signup: [user: Misskey.entities.SignupResponse];
-	signupEmailPending: [];
 }>();
 
 const host = toUnicode(config.host);
@@ -112,9 +95,7 @@ const username = ref<string>('');
 const password = ref<string>('');
 const retypedPassword = ref<string>('');
 const invitationCode = ref<string>('');
-const email = ref('');
 const usernameState = ref<null | 'wait' | 'ok' | 'unavailable' | 'error' | 'invalid-format' | 'min-range' | 'max-range'>(null);
-const emailState = ref<null | 'wait' | 'ok' | 'unavailable:used' | 'unavailable:format' | 'unavailable:disposable' | 'unavailable:banned' | 'unavailable:mx' | 'unavailable:smtp' | 'unavailable' | 'error'>(null);
 const passwordStrength = ref<'' | 'low' | 'medium' | 'high'>('');
 const passwordRetypeState = ref<null | 'match' | 'not-match'>(null);
 const submitting = ref<boolean>(false);
@@ -123,7 +104,6 @@ const mCaptchaResponse = ref<string | null>(null);
 const reCaptchaResponse = ref<string | null>(null);
 const turnstileResponse = ref<string | null>(null);
 const usernameAbortController = ref<null | AbortController>(null);
-const emailAbortController = ref<null | AbortController>(null);
 
 const shouldDisableSubmitting = computed((): boolean => {
 	return submitting.value ||
@@ -131,7 +111,6 @@ const shouldDisableSubmitting = computed((): boolean => {
 		instance.enableMcaptcha && !mCaptchaResponse.value ||
 		instance.enableRecaptcha && !reCaptchaResponse.value ||
 		instance.enableTurnstile && !turnstileResponse.value ||
-		instance.emailRequiredForSignup && emailState.value !== 'ok' ||
 		usernameState.value !== 'ok' ||
 		passwordRetypeState.value !== 'match';
 });
@@ -196,36 +175,6 @@ function onChangeUsername(): void {
 	});
 }
 
-function onChangeEmail(): void {
-	if (email.value === '') {
-		emailState.value = null;
-		return;
-	}
-
-	if (emailAbortController.value != null) {
-		emailAbortController.value.abort();
-	}
-	emailState.value = 'wait';
-	emailAbortController.value = new AbortController();
-
-	misskeyApi('email-address/available', {
-		emailAddress: email.value,
-	}, undefined, emailAbortController.value.signal).then(result => {
-		emailState.value = result.available ? 'ok' :
-			result.reason === 'used' ? 'unavailable:used' :
-			result.reason === 'format' ? 'unavailable:format' :
-			result.reason === 'disposable' ? 'unavailable:disposable' :
-			result.reason === 'banned' ? 'unavailable:banned' :
-			result.reason === 'mx' ? 'unavailable:mx' :
-			result.reason === 'smtp' ? 'unavailable:smtp' :
-			'unavailable';
-	}).catch((err) => {
-		if (err.name !== 'AbortError') {
-			emailState.value = 'error';
-		}
-	});
-}
-
 function onChangePassword(): void {
 	if (password.value === '') {
 		passwordStrength.value = '';
@@ -253,21 +202,13 @@ async function onSubmit(): Promise<void> {
 		await misskeyApi('signup', {
 			username: username.value,
 			password: password.value,
-			emailAddress: email.value,
 			invitationCode: invitationCode.value,
 			'hcaptcha-response': hCaptchaResponse.value,
 			'm-captcha-response': mCaptchaResponse.value,
 			'g-recaptcha-response': reCaptchaResponse.value,
 			'turnstile-response': turnstileResponse.value,
 		});
-		if (instance.emailRequiredForSignup) {
-			os.alert({
-				type: 'success',
-				title: i18n.ts._signup.almostThere,
-				text: i18n.tsx._signup.emailSent({ email: email.value }),
-			});
-			emit('signupEmailPending');
-		} else {
+		{
 			const res = await misskeyApi('signin', {
 				username: username.value,
 				password: password.value,

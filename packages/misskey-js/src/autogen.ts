@@ -1132,15 +1132,6 @@ export interface paths {
      */
     post: operations["drive/stream"];
   };
-  "/email-address/available": {
-    /**
-     * email-address/available
-     * @description No description provided.
-     *
-     * **Credential required**: *No*
-     */
-    post: operations["email-address/available"];
-  };
   "/endpoint": {
     /**
      * endpoint
@@ -11368,64 +11359,6 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["DriveFile"][];
-        };
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
-   * email-address/available
-   * @description No description provided.
-   *
-   * **Credential required**: *No*
-   */
-  "email-address/available": {
-    requestBody: {
-      content: {
-        "application/json": {
-          emailAddress: string;
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (with results) */
-      200: {
-        content: {
-          "application/json": {
-            available?: boolean;
-            reason?: string | null;
-            [key: string]: unknown;
-          };
         };
       };
       /** @description Client error */

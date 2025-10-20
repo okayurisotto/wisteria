@@ -16,7 +16,6 @@ import { CustomEmojiService } from './CustomEmojiService.js';
 import { DeleteAccountService } from './DeleteAccountService.js';
 import { DownloadService } from './DownloadService.js';
 import { DriveService } from './DriveService.js';
-import { EmailService } from './EmailService.js';
 import { FederatedInstanceService } from './FederatedInstanceService.js';
 import { FetchInstanceMetadataService } from './FetchInstanceMetadataService.js';
 import { GlobalEventService } from './GlobalEventService.js';
@@ -155,7 +154,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		DeleteAccountService,
 		DownloadService,
 		DriveService,
-		EmailService,
 		FederatedInstanceService,
 		FetchInstanceMetadataService,
 		GlobalEventService,
@@ -286,7 +284,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		DeleteAccountService,
 		DownloadService,
 		DriveService,
-		EmailService,
 		FederatedInstanceService,
 		FetchInstanceMetadataService,
 		GlobalEventService,

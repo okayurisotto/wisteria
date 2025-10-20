@@ -131,7 +131,6 @@ import * as ep___drive_folders_find from './endpoints/drive/folders/find.js';
 import * as ep___drive_folders_show from './endpoints/drive/folders/show.js';
 import * as ep___drive_folders_update from './endpoints/drive/folders/update.js';
 import * as ep___drive_stream from './endpoints/drive/stream.js';
-import * as ep___emailAddress_available from './endpoints/email-address/available.js';
 import * as ep___endpoint from './endpoints/endpoint.js';
 import * as ep___endpoints from './endpoints/endpoints.js';
 import * as ep___exportCustomEmojis from './endpoints/export-custom-emojis.js';
@@ -441,7 +440,6 @@ const eps = [
 	['drive/folders/show', ep___drive_folders_show],
 	['drive/folders/update', ep___drive_folders_update],
 	['drive/stream', ep___drive_stream],
-	['email-address/available', ep___emailAddress_available],
 	['endpoint', ep___endpoint],
 	['endpoints', ep___endpoints],
 	['export-custom-emojis', ep___exportCustomEmojis],
