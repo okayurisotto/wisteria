@@ -145,7 +145,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				impressumUrl: instance.impressumUrl,
 				privacyPolicyUrl: instance.privacyPolicyUrl,
 				disableRegistration: instance.disableRegistration,
-				emailRequiredForSignup: instance.emailRequiredForSignup,
+				emailRequiredForSignup: false,
 				enableHcaptcha: instance.enableHcaptcha,
 				hcaptchaSiteKey: instance.hcaptchaSiteKey,
 				enableMcaptcha: instance.enableMcaptcha,

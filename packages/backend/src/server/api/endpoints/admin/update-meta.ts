@@ -227,10 +227,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				set.cacheRemoteSensitiveFiles = ps.cacheRemoteSensitiveFiles;
 			}
 
-			if (ps.emailRequiredForSignup !== undefined) {
-				set.emailRequiredForSignup = ps.emailRequiredForSignup;
-			}
-
 			if (ps.enableHcaptcha !== undefined) {
 				set.enableHcaptcha = ps.enableHcaptcha;
 			}

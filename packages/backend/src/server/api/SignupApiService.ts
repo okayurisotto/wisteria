@@ -4,19 +4,14 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import bcrypt from 'bcryptjs';
-import { IsNull } from 'typeorm';
 import { DI } from '@/di-symbols.js';
-import type { RegistrationTicketsRepository, UsedUsernamesRepository, UserPendingsRepository, UserProfilesRepository, UsersRepository, MiRegistrationTicket } from '@/models/_.js';
-import type { Config } from '@/config.js';
+import type { RegistrationTicketsRepository, UserPendingsRepository, UserProfilesRepository, MiRegistrationTicket } from '@/models/_.js';
 import { MetaService } from '@/core/MetaService.js';
 import { CaptchaService } from '@/core/CaptchaService.js';
 import { IdService } from '@/core/IdService.js';
 import { SignupService } from '@/core/SignupService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { EmailService } from '@/core/EmailService.js';
 import type { MiLocalUser } from '@/models/User.js';
-import { L_CHARS, secureRndstr } from '@/misc/secure-rndstr.js';
 import { SigninService } from './SigninService.js';
 import { envOption } from '@/env.js';
 import type { Context } from 'hono';
@@ -25,20 +20,11 @@ import { z } from 'zod';
 @Injectable()
 export class SignupApiService {
 	constructor(
-		@Inject(DI.config)
-		private readonly config: Config,
-
-		@Inject(DI.usersRepository)
-		private readonly usersRepository: UsersRepository,
-
 		@Inject(DI.userProfilesRepository)
 		private readonly userProfilesRepository: UserProfilesRepository,
 
 		@Inject(DI.userPendingsRepository)
 		private readonly userPendingsRepository: UserPendingsRepository,
-
-		@Inject(DI.usedUsernamesRepository)
-		private readonly usedUsernamesRepository: UsedUsernamesRepository,
 
 		@Inject(DI.registrationTicketsRepository)
 		private readonly registrationTicketsRepository: RegistrationTicketsRepository,
@@ -49,7 +35,6 @@ export class SignupApiService {
 		private readonly captchaService: CaptchaService,
 		private readonly signupService: SignupService,
 		private readonly signinService: SigninService,
-		private readonly emailService: EmailService,
 	) {}
 
 	public async signup(c: Context): Promise<Response> {
@@ -58,7 +43,6 @@ export class SignupApiService {
 			'password': z.string(),
 			'host': z.string().nullish(),
 			'invitationCode': z.string().nullish(),
-			'emailAddress': z.string().nullish(),
 			'hcaptcha-response': z.string().nullish(),
 			'm-captcha-response': z.string().nullish(),
 			'g-recaptcha-response': z.string().nullish(),
@@ -103,18 +87,6 @@ export class SignupApiService {
 		const password = body['password'];
 		const host: string | null = envOption.isTest ? (body['host'] ?? null) : null;
 		const invitationCode = body['invitationCode'];
-		const emailAddress = body['emailAddress'];
-
-		if (instance.emailRequiredForSignup) {
-			if (emailAddress == null) {
-				return c.text('UNKNOWN_ERROR', 400);
-			}
-
-			const res = await this.emailService.validateEmailForAccount(emailAddress);
-			if (!res.available) {
-				return c.text('UNKNOWN_ERROR', 400);
-			}
-		}
 
 		let ticket: MiRegistrationTicket | null = null;
 
@@ -135,66 +107,12 @@ export class SignupApiService {
 				return c.text('UNKNOWN_ERROR', 400);
 			}
 
-			// メアド認証が有効の場合
-			if (instance.emailRequiredForSignup) {
-				// メアド認証済みならエラー
-				if (ticket.usedBy) {
-					return c.text('UNKNOWN_ERROR', 400);
-				}
-
-				// 認証しておらず、メール送信から30分以内ならエラー
-				if (ticket.usedAt && ticket.usedAt.getTime() + (1000 * 60 * 30) > Date.now()) {
-					return c.text('UNKNOWN_ERROR', 400);
-				}
-			} else if (ticket.usedAt) {
+			if (ticket.usedAt) {
 				return c.text('UNKNOWN_ERROR', 400);
 			}
 		}
 
-		if (instance.emailRequiredForSignup) {
-			if (await this.usersRepository.exists({ where: { usernameLower: username.toLowerCase(), host: IsNull() } })) {
-				return c.text('DUPLICATED_USERNAME', 400);
-			}
-
-			// Check deleted username duplication
-			if (await this.usedUsernamesRepository.exists({ where: { username: username.toLowerCase() } })) {
-				return c.text('USED_USERNAME', 400);
-			}
-
-			const isPreserved = instance.preservedUsernames.map(x => x.toLowerCase()).includes(username.toLowerCase());
-			if (isPreserved) {
-				return c.text('DENIED_USERNAME', 400);
-			}
-
-			const code = secureRndstr(16, { chars: L_CHARS });
-
-			// Generate hash of password
-			const salt = await bcrypt.genSalt(8);
-			const hash = await bcrypt.hash(password, salt);
-
-			const pendingUser = await this.userPendingsRepository.insert({
-				id: this.idService.gen(),
-				code,
-				email: emailAddress,
-				username: username,
-				password: hash,
-			}).then(x => this.userPendingsRepository.findOneByOrFail(x.identifiers[0]));
-
-			const link = `${this.config.url}/signup-complete/${code}`;
-
-			this.emailService.sendEmail(emailAddress!, 'Signup',
-				`To complete signup, please click this link:<br><a href="${link}">${link}</a>`,
-				`To complete signup, please click this link: ${link}`);
-
-			if (ticket) {
-				await this.registrationTicketsRepository.update(ticket.id, {
-					usedAt: new Date(),
-					pendingUserId: pendingUser.id,
-				});
-			}
-
-			return c.body(null, 204);
-		} else {
+		{
 			try {
 				const { account, secret } = await this.signupService.signup({
 					username, password, host,
