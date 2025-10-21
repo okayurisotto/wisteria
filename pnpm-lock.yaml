@@ -65,8 +65,8 @@ importers:
         specifier: 3.412.0
         version: 3.412.0(@aws-sdk/client-s3@3.412.0)
       '@discordapp/twemoji':
-        specifier: 15.0.2
-        version: 15.0.2
+        specifier: 16.0.1
+        version: 16.0.1
       '@hono/node-server':
         specifier: 1.18.2
         version: 1.18.2(hono@4.9.10)
@@ -1067,8 +1067,8 @@ packages:
     resolution: {integrity: sha512-Ahk1N+s7urkgj7WvvUND5f8GiWEPfUw0D41hdElaqLgu8wZScI8gdI0q+qWw5N1d35x7GCRH2uk9mi+Uzo9M3g==}
     engines: {node: '>=14.0'}
 
-  '@discordapp/twemoji@15.0.2':
-    resolution: {integrity: sha512-SrWKcv3SrGfrLQ/vfUnA+bAG73Q6Yjys01UuoY5SzUlc9iS03amQ6DxLhzVsjW/aTdgiMQdUatLidD+YPfYMCw==}
+  '@discordapp/twemoji@16.0.1':
+    resolution: {integrity: sha512-figLiBWzjS5cyrAjLaGjM8AAaowO3qvK8rg5bA2dElB4qsaPMvBVlFDMO2d3x+nC1igt7kgWH4dvNmvvUHUF8w==}
 
   '@emnapi/runtime@1.4.5':
     resolution: {integrity: sha512-++LApOtY0pEEz1zrd9vy1/zXVaVJJ/EbAF3u0fXIzPJEDtnITsBGbbK0EkM72amhl/R5b+5xx0Y/QhcVOpuulg==}
@@ -6458,9 +6458,9 @@ snapshots:
     transitivePeerDependencies:
       - web-streams-polyfill
 
-  '@discordapp/twemoji@15.0.2':
+  '@discordapp/twemoji@16.0.1':
     dependencies:
-      '@twemoji/parser': 15.0.0
+      '@twemoji/parser': 16.0.0
       fs-extra: 8.1.0
       jsonfile: 5.0.0
       universalify: 0.1.2
