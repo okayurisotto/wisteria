@@ -140,7 +140,7 @@
 		"@types/web-push": "3.6.3",
 		"@types/ws": "8.18.1",
 		"tsup": "8.5.0",
-		"type-fest": "4.41.0",
+		"type-fest": "5.1.0",
 		"typescript": "5.9.3"
 	}
 }
