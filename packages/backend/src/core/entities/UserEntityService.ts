@@ -9,7 +9,7 @@ import { DI } from '@/di-symbols.js';
 import type { Promiseable } from '@/misc/prelude/await-all.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiUser } from '@/models/User.js';
-import { birthdaySchema, descriptionSchema, localUsernameSchema, locationSchema, nameSchema, passwordSchema } from '@/models/User.js';
+import { localUsernameSchema, passwordSchema } from '@/models/User.js';
 import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, NoteUnreadsRepository, UserNotePiningsRepository, UserProfilesRepository, MiUserProfile, RenoteMutingsRepository, UserMemoRepository, InstancesRepository } from '@/models/_.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
 import { IdService } from '@/core/IdService.js';
@@ -88,10 +88,6 @@ export class UserEntityService {
 	// #region Validators
 	public validateLocalUsername = (v: unknown) => localUsernameSchema.safeParse(v).success;
 	public validatePassword = (v: unknown) => passwordSchema.safeParse(v).success;
-	public validateName = (v: unknown) => nameSchema.safeParse(v).success;
-	public validateDescription = (v: unknown) => descriptionSchema.safeParse(v).success;
-	public validateLocation = (v: unknown) => locationSchema.safeParse(v).success;
-	public validateBirthday = (v: unknown) => birthdaySchema.safeParse(v).success;
 	// #endregion
 
 	public async getRelation(me: MiUser['id'], target: MiUser['id']) {
@@ -167,22 +163,6 @@ export class UserEntityService {
 		};
 	}
 
-	private async getHasUnreadAntenna(userId: MiUser['id']): Promise<boolean> {
-		/*
-		const myAntennas = (await this.antennaService.getAntennas()).filter(a => a.userId === userId);
-
-		const isUnread = (myAntennas.length > 0 ? await this.antennaNotesRepository.exists({
-			where: {
-				antennaId: In(myAntennas.map(x => x.id)),
-				read: false,
-			},
-		}) : false);
-
-		return isUnread;
-		*/
-		return false; // TODO
-	}
-
 	private async getNotificationsInfo(userId: MiUser['id']): Promise<{
 		hasUnread: boolean;
 		unreadCount: number;
@@ -237,26 +217,23 @@ export class UserEntityService {
 
 		const user = typeof src === 'object' ? src : await this.usersRepository.findOneByOrFail({ id: src });
 
-		const isDetailed = opts.schema !== 'UserLite';
 		const meId = me ? me.id : null;
 		const isMe = meId === user.id;
 		const iAmModerator = me ? await this.roleUserService.isModerator(me as MiUser) : false;
 
-		const relation = meId && !isMe && isDetailed ? await this.getRelation(meId, user.id) : null;
-		const pins = isDetailed
-			? await this.userNotePiningsRepository.createQueryBuilder('pin')
-				.where('pin.userId = :userId', { userId: user.id })
-				.innerJoinAndSelect('pin.note', 'note')
-				.orderBy('pin.id', 'DESC')
-				.getMany()
-			: [];
-		const profile = isDetailed ? (opts.userProfile ?? await this.userProfilesRepository.findOneByOrFail({ userId: user.id })) : null;
+		const relation = meId && !isMe && true ? await this.getRelation(meId, user.id) : null;
+		const pins = await this.userNotePiningsRepository.createQueryBuilder('pin')
+			.where('pin.userId = :userId', { userId: user.id })
+			.innerJoinAndSelect('pin.note', 'note')
+			.orderBy('pin.id', 'DESC')
+			.getMany();
+		const profile = opts.userProfile ?? await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
 
 		const followingCount = profile == null
 			? null
 			: (profile.followingVisibility === 'public') || isMe
 					? user.followingCount
-					: (profile.followingVisibility === 'followers') && (relation && relation.isFollowing)
+					: profile.followingVisibility === 'followers' && relation?.isFollowing
 							? user.followingCount
 							: null;
 
@@ -264,20 +241,20 @@ export class UserEntityService {
 			? null
 			: (profile.followersVisibility === 'public') || isMe
 					? user.followersCount
-					: (profile.followersVisibility === 'followers') && (relation && relation.isFollowing)
+					: profile.followersVisibility === 'followers' && relation?.isFollowing
 							? user.followersCount
 							: null;
 
-		const isModerator = isMe && isDetailed ? this.roleUserService.isModerator(user) : null;
-		const isAdmin = isMe && isDetailed ? this.roleUserService.isAdministrator(user) : null;
-		const unreadAnnouncements = isMe && isDetailed
+		const isModerator = isMe ? this.roleUserService.isModerator(user) : null;
+		const isAdmin = isMe ? this.roleUserService.isAdministrator(user) : null;
+		const unreadAnnouncements = isMe
 			? (await this.announcementService.getUnreadAnnouncements(user)).map(announcement => ({
 					createdAt: this.idService.parse(announcement.id).date.toISOString(),
 					...announcement,
 				}))
 			: null;
 
-		const notificationsInfo = isMe && isDetailed ? await this.getNotificationsInfo(user.id) : null;
+		const notificationsInfo = isMe ? await this.getNotificationsInfo(user.id) : null;
 
 		const packed = {
 			id: user.id,
@@ -320,80 +297,75 @@ export class UserEntityService {
 					displayOrder: r.displayOrder,
 				})))
 				: undefined,
+			url: profile.url,
+			uri: user.uri,
+			movedTo: user.movedToUri ? this.apPersonService.resolvePerson(user.movedToUri).then(user => user.id).catch(() => null) : null,
+			alsoKnownAs: user.alsoKnownAs
+				? Promise.all(user.alsoKnownAs.map(uri => this.apPersonService.fetchPerson(uri).then(user => user?.id).catch(() => null)))
+					.then(xs => xs.length === 0 ? null : xs.filter(x => x != null))
+				: null,
+			createdAt: this.idService.parse(user.id).date.toISOString(),
+			updatedAt: user.updatedAt ? user.updatedAt.toISOString() : null,
+			lastFetchedAt: user.lastFetchedAt ? user.lastFetchedAt.toISOString() : null,
+			bannerUrl: user.bannerUrl,
+			bannerBlurhash: user.bannerBlurhash,
+			isLocked: user.isLocked,
+			isSilenced: this.roleUserService.getUserPolicies(user.id).then(r => !r.canPublicNote),
+			isSuspended: user.isSuspended,
+			description: profile.description,
+			location: profile.location,
+			birthday: profile.birthday,
+			lang: profile.lang,
+			fields: profile.fields,
+			verifiedLinks: profile.verifiedLinks,
+			followersCount: followersCount ?? 0,
+			followingCount: followingCount ?? 0,
+			notesCount: user.notesCount,
+			pinnedNoteIds: pins.map(pin => pin.noteId),
+			pinnedNotes: this.noteEntityService.packMany(pins.map(pin => pin.note!), me, { detail: true }),
+			pinnedPageId: profile.pinnedPageId,
+			pinnedPage: profile.pinnedPageId ? this.pageEntityService.pack(profile.pinnedPageId, me) : null,
+			publicReactions: isLocalUser(user) ? profile.publicReactions : false, // https://github.com/misskey-dev/misskey/issues/12964
+			followersVisibility: profile.followersVisibility,
+			followingVisibility: profile.followingVisibility,
+			twoFactorEnabled: profile.twoFactorEnabled,
+			usePasswordLessLogin: profile.usePasswordLessLogin,
+			securityKeys: profile.twoFactorEnabled
+				? this.userSecurityKeysRepository.countBy({
+					userId: user.id,
+				}).then(result => result >= 1)
+				: false,
+			roles: this.roleUserService.getUserRoles(user.id).then(roles => roles.filter(role => role.isPublic).sort((a, b) => b.displayOrder - a.displayOrder).map(role => ({
+				id: role.id,
+				name: role.name,
+				color: role.color,
+				iconUrl: role.iconUrl,
+				description: role.description,
+				isModerator: role.isModerator,
+				isAdministrator: role.isAdministrator,
+				displayOrder: role.displayOrder,
+			}))),
+			memo: meId == null
+				? null
+				: await this.userMemosRepository.findOneBy({
+					userId: meId,
+					targetUserId: user.id,
+				}).then(row => row?.memo ?? null),
+			moderationNote: iAmModerator ? (profile.moderationNote ?? '') : undefined,
 
-			...(isDetailed ? {
-				url: profile!.url,
-				uri: user.uri,
-				movedTo: user.movedToUri ? this.apPersonService.resolvePerson(user.movedToUri).then(user => user.id).catch(() => null) : null,
-				alsoKnownAs: user.alsoKnownAs
-					? Promise.all(user.alsoKnownAs.map(uri => this.apPersonService.fetchPerson(uri).then(user => user?.id).catch(() => null)))
-						.then(xs => xs.length === 0 ? null : xs.filter(x => x != null))
-					: null,
-				createdAt: this.idService.parse(user.id).date.toISOString(),
-				updatedAt: user.updatedAt ? user.updatedAt.toISOString() : null,
-				lastFetchedAt: user.lastFetchedAt ? user.lastFetchedAt.toISOString() : null,
-				bannerUrl: user.bannerUrl,
-				bannerBlurhash: user.bannerBlurhash,
-				isLocked: user.isLocked,
-				isSilenced: this.roleUserService.getUserPolicies(user.id).then(r => !r.canPublicNote),
-				isSuspended: user.isSuspended,
-				description: profile!.description,
-				location: profile!.location,
-				birthday: profile!.birthday,
-				lang: profile!.lang,
-				fields: profile!.fields,
-				verifiedLinks: profile!.verifiedLinks,
-				followersCount: followersCount ?? 0,
-				followingCount: followingCount ?? 0,
-				notesCount: user.notesCount,
-				pinnedNoteIds: pins.map(pin => pin.noteId),
-				pinnedNotes: this.noteEntityService.packMany(pins.map(pin => pin.note!), me, {
-					detail: true,
-				}),
-				pinnedPageId: profile!.pinnedPageId,
-				pinnedPage: profile!.pinnedPageId ? this.pageEntityService.pack(profile!.pinnedPageId, me) : null,
-				publicReactions: isLocalUser(user) ? profile!.publicReactions : false, // https://github.com/misskey-dev/misskey/issues/12964
-				followersVisibility: profile!.followersVisibility,
-				followingVisibility: profile!.followingVisibility,
-				twoFactorEnabled: profile!.twoFactorEnabled,
-				usePasswordLessLogin: profile!.usePasswordLessLogin,
-				securityKeys: profile!.twoFactorEnabled
-					? this.userSecurityKeysRepository.countBy({
-						userId: user.id,
-					}).then(result => result >= 1)
-					: false,
-				roles: this.roleUserService.getUserRoles(user.id).then(roles => roles.filter(role => role.isPublic).sort((a, b) => b.displayOrder - a.displayOrder).map(role => ({
-					id: role.id,
-					name: role.name,
-					color: role.color,
-					iconUrl: role.iconUrl,
-					description: role.description,
-					isModerator: role.isModerator,
-					isAdministrator: role.isAdministrator,
-					displayOrder: role.displayOrder,
-				}))),
-				memo: meId == null
-					? null
-					: await this.userMemosRepository.findOneBy({
-						userId: meId,
-						targetUserId: user.id,
-					}).then(row => row?.memo ?? null),
-				moderationNote: iAmModerator ? (profile!.moderationNote ?? '') : undefined,
-			} : {}),
-
-			...(isDetailed && isMe ? {
+			...(isMe ? {
 				avatarId: user.avatarId,
 				bannerId: user.bannerId,
 				isModerator: isModerator,
 				isAdmin: isAdmin,
-				injectFeaturedNote: profile!.injectFeaturedNote,
-				receiveAnnouncementEmail: profile!.receiveAnnouncementEmail,
-				alwaysMarkNsfw: profile!.alwaysMarkNsfw,
-				autoSensitive: profile!.autoSensitive,
-				carefulBot: profile!.carefulBot,
-				autoAcceptFollowed: profile!.autoAcceptFollowed,
-				noCrawle: profile!.noCrawle,
-				preventAiLearning: profile!.preventAiLearning,
+				injectFeaturedNote: profile.injectFeaturedNote,
+				receiveAnnouncementEmail: profile.receiveAnnouncementEmail,
+				alwaysMarkNsfw: profile.alwaysMarkNsfw,
+				autoSensitive: profile.autoSensitive,
+				carefulBot: profile.carefulBot,
+				autoAcceptFollowed: profile.autoAcceptFollowed,
+				noCrawle: profile.noCrawle,
+				preventAiLearning: profile.preventAiLearning,
 				isExplorable: user.isExplorable,
 				isDeleted: user.isDeleted,
 				twoFactorBackupCodesStock: profile?.twoFactorBackupSecret?.length === 5 ? 'full' : (profile?.twoFactorBackupSecret?.length ?? 0) > 0 ? 'partial' : 'none',
@@ -408,26 +380,26 @@ export class UserEntityService {
 				}).then(count => count > 0),
 				hasUnreadAnnouncement: unreadAnnouncements!.length > 0,
 				unreadAnnouncements,
-				hasUnreadAntenna: this.getHasUnreadAntenna(user.id),
+				hasUnreadAntenna: false,
 				hasUnreadChannel: false, // 後方互換性のため
 				hasUnreadNotification: notificationsInfo?.hasUnread, // 後方互換性のため
 				hasPendingReceivedFollowRequest: this.getHasPendingReceivedFollowRequest(user.id),
 				unreadNotificationsCount: notificationsInfo?.unreadCount,
-				mutedWords: profile!.mutedWords,
-				hardMutedWords: profile!.hardMutedWords,
-				mutedInstances: profile!.mutedInstances,
+				mutedWords: profile.mutedWords,
+				hardMutedWords: profile.hardMutedWords,
+				mutedInstances: profile.mutedInstances,
 				mutingNotificationTypes: [], // 後方互換性のため
-				notificationRecieveConfig: profile!.notificationRecieveConfig,
-				emailNotificationTypes: profile!.emailNotificationTypes,
-				loggedInDays: profile!.loggedInDates.length,
+				notificationRecieveConfig: profile.notificationRecieveConfig,
+				emailNotificationTypes: profile.emailNotificationTypes,
+				loggedInDays: profile.loggedInDates.length,
 				policies: this.roleUserService.getUserPolicies(user.id),
 			} : {}),
 
 			...(opts.includeSecrets
 				? {
-						email: profile!.email,
-						emailVerified: profile!.emailVerified,
-						securityKeysList: profile!.twoFactorEnabled
+						email: profile.email,
+						emailVerified: profile.emailVerified,
+						securityKeysList: profile.twoFactorEnabled
 							? this.userSecurityKeysRepository.find({
 								where: {
 									userId: user.id,

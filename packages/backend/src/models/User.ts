@@ -288,7 +288,3 @@ export type MiPartialRemoteUser = Partial<MiUser> & {
 
 export const localUsernameSchema = z.string().regex(/^\w{1,20}$/);
 export const passwordSchema = z.string().min(1);
-export const nameSchema = z.string().min(1).max(50);
-export const descriptionSchema = z.string().min(1).max(1500);
-export const locationSchema = z.string().min(1).max(50);
-export const birthdaySchema = z.string().regex(/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/);
