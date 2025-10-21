@@ -74,7 +74,7 @@
 		"mime-types": "3.0.1",
 		"misskey-js": "workspace:*",
 		"ms": "3.0.0-canary.1",
-		"nanoid": "5.0.9",
+		"nanoid": "5.1.6",
 		"node-fetch": "3.3.2",
 		"os-utils": "0.0.14",
 		"otpauth": "9.2.2",
