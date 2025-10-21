@@ -7,8 +7,8 @@
 import pg from 'pg';
 pg.types.setTypeParser(20, Number);
 
-import { DataSource, type Logger } from 'typeorm';
-import * as highlight from 'cli-highlight';
+import { DataSource, type Logger, type QueryRunner } from 'typeorm';
+import { highlight } from 'sql-highlight';
 import { entities as charts } from '@/core/chart/entities.js';
 
 import { MiAbuseUserReport } from '@/models/AbuseUserReport.js';
@@ -89,22 +89,16 @@ export const dbLogger = new MisskeyLogger('db');
 const sqlLogger = dbLogger.createSubLogger('sql', 'gray');
 
 class MyCustomLogger implements Logger {
-	private highlight(sql: string) {
-		return highlight.highlight(sql, {
-			language: 'sql', ignoreIllegals: true,
-		});
+	logQuery(query: string, parameters?: any[], queryRunner?: QueryRunner) {
+		sqlLogger.info(highlight(query).substring(0, 100));
 	}
 
-	public logQuery(query: string, parameters?: any[]) {
-		sqlLogger.info(this.highlight(query).substring(0, 100));
+	logQueryError(error: string | Error, query: string, parameters?: any[], queryRunner?: QueryRunner) {
+		sqlLogger.error(highlight(query));
 	}
 
-	public logQueryError(error: string, query: string, parameters?: any[]) {
-		sqlLogger.error(this.highlight(query));
-	}
-
-	public logQuerySlow(time: number, query: string, parameters?: any[]) {
-		sqlLogger.warn(this.highlight(query));
+	logQuerySlow(time: number, query: string, parameters?: any[], queryRunner?: QueryRunner) {
+		sqlLogger.warn(highlight(query));
 	}
 
 	public logSchemaBuild(message: string) {
