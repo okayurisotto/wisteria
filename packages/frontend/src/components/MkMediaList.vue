@@ -206,6 +206,7 @@ const previewable = (file: Misskey.entities.DriveFile): boolean => {
 	}
 
 	&.nMany {
+		height: unset;
 		grid-template-columns: 1fr 1fr;
 
 		> .media {
