@@ -27,7 +27,7 @@ export async function mainBoot() {
 				: defineAsyncComponent(() => import('@/ui/universal.vue')),
 	));
 
-	if (isClientUpdated && $i) {
+	if (isClientUpdated && $i !== null) {
 		popup(defineAsyncComponent(() => import('@/components/MkUpdated.vue')), {}, {}, 'closed');
 	}
 

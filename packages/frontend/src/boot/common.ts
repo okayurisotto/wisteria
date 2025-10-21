@@ -4,7 +4,6 @@
  */
 
 import { watch, version as vueVersion, type App } from 'vue';
-import { compareVersions } from 'compare-versions';
 import widgets from '@/widgets/index.js';
 import directives from '@/directives/index.js';
 import components from '@/components/index.js';
@@ -22,7 +21,7 @@ import { miLocalStorage } from '@/local-storage.js';
 import { fetchCustomEmojis } from '@/custom-emojis.js';
 import { setupRouter } from '@/router/definition.js';
 
-export async function common(createVue: () => App<Element>) {
+export async function common(createVue: () => App<Element>): Promise<{ isClientUpdated: boolean; app: App<Element> }> {
 	console.info(`Misskey v${version}`);
 
 	if (_DEV_) {
@@ -71,23 +70,18 @@ export async function common(createVue: () => App<Element>) {
 		document.documentElement.style.backgroundImage = `url(${wallpaper})`;
 	}
 
-	let isClientUpdated = false;
 
-	//#region クライアントが更新されたかチェック
+	// #region クライアントが更新されたかチェック
+
 	const lastVersion = miLocalStorage.getItem('lastVersion');
+	const isClientUpdated = lastVersion !== null && lastVersion !== version;
+
 	if (lastVersion !== version) {
 		miLocalStorage.setItem('lastVersion', version);
-
-		// テーマリビルドするため
-		miLocalStorage.removeItem('theme');
-
-		try { // 変なバージョン文字列来るとcompareVersionsでエラーになるため
-			if (lastVersion != null && compareVersions(version, lastVersion) === 1) {
-				isClientUpdated = true;
-			}
-		} catch (err) { /* empty */ }
+		miLocalStorage.removeItem('theme'); // テーマをリビルドするため
 	}
-	//#endregion
+
+	// #endregion
 
 	// タッチデバイスでCSSの:hoverを機能させる
 	document.addEventListener('touchend', () => {}, { passive: true });

@@ -7,7 +7,7 @@ import { createApp, defineAsyncComponent } from 'vue';
 import { common } from './common.js';
 
 export async function subBoot() {
-	const { isClientUpdated } = await common(() => createApp(
+	await common(() => createApp(
 		defineAsyncComponent(() => import('@/ui/minimum.vue')),
 	));
 }
