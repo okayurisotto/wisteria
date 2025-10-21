@@ -30,7 +30,7 @@ export const defineOpenApiSpec = <T extends z.ZodTypeAny | z.ZodRecord>(
 	return schema;
 };
 
-const ZodType = z.discriminatedUnion('typeName', [
+const ZodType = z.discriminatedUnion('type', [
 	ZodAny,
 	ZodArray,
 	ZodBoolean,
@@ -71,53 +71,55 @@ export const generateOpenApiSpec = (
 		}
 
 		const recursive = generateOpenApiSpec(components);
-		const result = ZodType.safeParse(schema._def);
+		const result = ZodType.safeParse(schema.def);
 
 		if (!result.success) {
 			throw new Error(JSON.stringify({ schema, issues: result.error.issues }, undefined, 2));
 		}
 
-		switch (result.data.typeName) {
-			case 'ZodAny':
-				return convertZodAny(result.data, recursive);
-			case 'ZodArray':
-				return convertZodArray(result.data, recursive);
-			case 'ZodBoolean':
-				return convertZodBoolean(result.data, recursive);
-			case 'ZodDefault':
-				return convertZodDefault(result.data, recursive);
-			case 'ZodEffects':
-				return convertZodEffects(result.data, recursive);
-			case 'ZodEnum':
-				return convertZodEnum(result.data, recursive);
-			case 'ZodLazy':
-				return convertZodLazy(result.data, recursive);
-			case 'ZodLiteral':
-				return convertZodLiteral(result.data, recursive);
-			case 'ZodNull':
-				return convertZodNull(result.data, recursive);
-			case 'ZodNullable':
-				return convertZodNullable(result.data, recursive);
-			case 'ZodNumber':
-				return convertZodNumber(result.data, recursive);
-			case 'ZodObject':
-				return convertZodObject(result.data, recursive);
-			case 'ZodOptional':
-				return convertZodOptional(result.data, recursive);
-			case 'ZodRecord':
-				return convertZodRecord(result.data, recursive);
-			case 'ZodString':
-				return convertZodString(result.data, recursive);
-			case 'ZodUnion':
-				return convertZodUnion(result.data, recursive);
-			case 'ZodDiscriminatedUnion':
-				return convertZodDiscriminatedUnion(result.data, recursive);
-			case 'ZodUnknown':
-				return convertZodUnknown(result.data, recursive);
-			case 'ZodNever':
-				return convertZodNever(result.data, recursive);
-			case 'ZodIntersection':
-				return convertZodIntersection(result.data, recursive);
+		const description = z.globalRegistry.get(schema)?.description;
+
+		switch (result.data.type) {
+			case 'any':
+				return convertZodAny(result.data, description, recursive);
+			case 'array':
+				return convertZodArray(result.data, description, recursive);
+			case 'boolean':
+				return convertZodBoolean(result.data, description, recursive);
+			case 'default':
+				return convertZodDefault(result.data, description, recursive);
+			case 'effects':
+				return convertZodEffects(result.data, description, recursive);
+			case 'enum':
+				return convertZodEnum(result.data, description, recursive);
+			case 'lazy':
+				return convertZodLazy(result.data, description, recursive);
+			case 'literal':
+				return convertZodLiteral(result.data, description, recursive);
+			case 'null':
+				return convertZodNull(result.data, description, recursive);
+			case 'nullable':
+				return convertZodNullable(result.data, description, recursive);
+			case 'number':
+				return convertZodNumber(result.data, description, recursive);
+			case 'object':
+				return convertZodObject(result.data, description, recursive);
+			case 'optional':
+				return convertZodOptional(result.data, description, recursive);
+			case 'record':
+				return convertZodRecord(result.data, description, recursive);
+			case 'string':
+				return convertZodString(result.data, description, recursive);
+			case 'union':
+				return convertZodUnion(result.data, description, recursive);
+			case 'discriminatedUnion':
+				return convertZodDiscriminatedUnion(result.data, description, recursive);
+			case 'unknown':
+				return convertZodUnknown(result.data, description, recursive);
+			case 'never':
+				return convertZodNever(result.data, description, recursive);
+			case 'intersection':
+				return convertZodIntersection(result.data, description, recursive);
 			default:
 				return result.data satisfies never;
 		}

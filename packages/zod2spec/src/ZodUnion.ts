@@ -2,16 +2,15 @@ import { z } from 'zod';
 import type { Converter } from './type.js';
 
 export const ZodUnion = z.object({
-	typeName: z.literal('ZodUnion'),
-	description: z.string().optional(),
+	type: z.literal('union'),
 	options: z.array(z.custom<z.ZodType>()),
 });
 
-export const convertZodUnion: Converter<typeof ZodUnion> = (result, recursive) => {
+export const convertZodUnion: Converter<typeof ZodUnion> = (result, description, recursive) => {
 	return {
 		anyOf: result.options.map(schema => recursive(schema)),
-		...(result.description !== undefined
-			? { description: result.description }
+		...(description !== undefined
+			? { description }
 			: {}),
 	};
 };

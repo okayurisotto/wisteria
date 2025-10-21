@@ -1,100 +1,62 @@
 import { z } from 'zod';
 import type { Converter } from './type.js';
 
-type Format = 'email' | 'url';
-const formatMap = new Map<Format, string>([
-	['email', 'email'],
-	['url', 'url'],
-]);
-
 export const ZodString = z.object({
-	typeName: z.literal('ZodString'),
-	description: z.string().optional(),
-	checks: z
-		.array(
-			z.union([
+	type: z.literal('string'),
+	check: z.literal('string_format').optional(),
+	format: z.enum(['email', 'url', 'datetime']).optional(),
+	checks: z.object({
+		_zod: z.object({
+			def: z.discriminatedUnion('check', [
 				z.object({
-					kind: z.literal('min'),
-					value: z.number().int().nonnegative(),
+					check: z.literal('min_length'),
+					minimum: z.number().int().nonnegative(),
 				}),
 				z.object({
-					kind: z.literal('max'),
-					value: z.number().int().nonnegative(),
+					check: z.literal('max_length'),
+					maximum: z.number().int().nonnegative(),
 				}),
 				z.object({
-					kind: z.literal('length'),
-					value: z.number().int().nonnegative(),
+					check: z.literal('length_equals'),
+					length: z.number().int().nonnegative(),
 				}),
 				z.object({
-					kind: z.literal('regex'),
-					regex: z.custom<RegExp>(v => v instanceof RegExp),
+					check: z.literal('string_format'),
+					format: z.literal('regex'),
+					pattern: z.custom<RegExp>(v => v instanceof RegExp),
 				}),
 				z.object({
-					kind: z.literal('datetime'),
-					precision: z.unknown(),
-					offset: z.unknown(),
-				}),
-				z.object({
-					kind: z.enum(['email', 'url'] as const satisfies readonly Format[]),
+					check: z.literal('custom'),
 				}),
 			]),
-		)
-		.optional(),
+		}),
+	}).array().optional(),
 });
 
-export const convertZodString: Converter<typeof ZodString> = (result) => {
-	const min = result.checks?.find(
-		(check): check is { kind: 'min'; value: number } => {
-			return check.kind === 'min';
-		},
-	);
-
-	const max = result.checks?.find(
-		(check): check is { kind: 'max'; value: number } => {
-			return check.kind === 'max';
-		},
-	);
-
-	const length = result.checks?.find(
-		(check): check is { kind: 'length'; value: number } => {
-			return check.kind === 'length';
-		},
-	);
-
-	const format = result.checks?.find(
-		(check): check is { kind: 'email' | 'url' } => {
-			if (check.kind === 'email') return true;
-			if (check.kind === 'url') return true;
-			return false;
-		},
-	);
-
-	const regex = result.checks?.find(
-		(check): check is { kind: 'regex'; regex: RegExp } => {
-			return check.kind === 'regex';
-		},
-	);
-
-	const datetime = result.checks?.find(
-		(
-			check,
-		): check is { kind: 'datetime'; precision: unknown; offset: unknown } => {
-			return check.kind === 'datetime';
-		},
-	);
-
+export const convertZodString: Converter<typeof ZodString> = (result, description) => {
 	return {
 		type: 'string',
-		...(result.description !== undefined
-			? { description: result.description }
+		...(description !== undefined
+			? { description }
 			: {}),
-		...(datetime !== undefined ? { format: 'date-time' } : {}),
-		...(format !== undefined ? { format: formatMap.get(format.kind)! } : {}),
-		...(max !== undefined ? { maxLength: max.value } : {}),
-		...(min !== undefined ? { minLength: min.value } : {}),
-		...(length !== undefined
-			? { maxLength: length.value, minLength: length.value }
-			: {}),
-		...(regex !== undefined ? { pattern: regex.regex.source } : {}),
+		...(
+			result.check === 'string_format'
+				? result.format === 'email'
+					? { format: 'email' }
+					: result.format === 'datetime'
+						? { format: 'date-time' }
+						: result.format === 'url'
+							? { format: 'url' }
+							: {}
+				: {}
+		),
+		...result.checks?.map(({ _zod: { def } }) => {
+			if (def.check === 'max_length') return { maxLength: def.maximum };
+			if (def.check === 'min_length') return { minLength: def.minimum };
+			if (def.check === 'length_equals') return { maxLength: def.length, minLength: def.length };
+			if (def.check === 'string_format') return { pattern: def.pattern.source };
+			if (def.check === 'custom') return {};
+			return def satisfies never;
+		}).reduce((prev, current) => ({ ...prev, ...current }), {}),
 	};
 };

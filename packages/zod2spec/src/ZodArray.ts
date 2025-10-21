@@ -2,41 +2,48 @@ import { z } from 'zod';
 import type { Converter } from './type.js';
 
 export const ZodArray = z.object({
-	typeName: z.literal('ZodArray'),
-	description: z.string().optional(),
-	minLength: z
-		.object({ value: z.number().int().nonnegative().nullable() })
-		.nullable(),
-	maxLength: z
-		.object({ value: z.number().int().nonnegative().nullable() })
-		.nullable(),
-	exactLength: z
-		.object({ value: z.number().int().nonnegative().nullable() })
-		.nullable(),
-	type: z.custom<z.ZodType>(),
+	type: z.literal('array'),
+	element: z.custom<z.ZodCustom>(),
+	checks: z.object({
+		_zod: z.object({
+			def: z.discriminatedUnion('check', [
+				z.object({
+					check: z.literal('min_length'),
+					minimum: z.number().int().nonnegative(),
+				}),
+				z.object({
+					check: z.literal('max_length'),
+					maximum: z.number().int().nonnegative(),
+				}),
+				z.object({
+					check: z.literal('length_equals'),
+					length: z.number().int().nonnegative(),
+				}),
+				z.object({
+					check: z.literal('custom'),
+				}),
+			]),
+		}),
+	}).array().optional(),
 });
 
 export const convertZodArray: Converter<typeof ZodArray> = (
 	result,
+	description,
 	recursive,
 ) => {
 	return {
 		type: 'array',
-		...(result.description !== undefined
-			? { description: result.description }
+		...(description !== undefined
+			? { description }
 			: {}),
-		items: recursive(result.type),
-		...(result.minLength?.value != null
-			? { minItems: result.minLength.value }
-			: {}),
-		...(result.maxLength?.value != null
-			? { maxItems: result.maxLength.value }
-			: {}),
-		...(result.exactLength?.value != null
-			? {
-					minItems: result.exactLength.value,
-					maxItems: result.exactLength.value,
-				}
-			: {}),
+		items: recursive(result.element),
+		...result.checks?.map(({ _zod: { def: def } }) => {
+			if (def.check === 'min_length') return { minItems: def.minimum };
+			if (def.check === 'max_length') return { maxItems: def.maximum };
+			if (def.check === 'length_equals') return { minItems: def.length, maxItems: def.length };
+			if (def.check === 'custom') return {};
+			return def satisfies never;
+		}).reduce((prev, current) => ({ ...prev, ...current }), {}),
 	};
 };

@@ -293,8 +293,8 @@ importers:
         specifier: 3.0.2
         version: 3.0.2
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.1.12
+        version: 4.1.12
       zod2spec:
         specifier: workspace:*
         version: link:../zod2spec
@@ -745,8 +745,8 @@ importers:
         specifier: 4.5.0
         version: 4.5.0
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.1.12
+        version: 4.1.12
     devDependencies:
       tsup:
         specifier: 8.5.0
@@ -5875,8 +5875,8 @@ packages:
     resolution: {integrity: sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA==}
     engines: {node: '>= 14'}
 
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+  zod@4.1.12:
+    resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -11579,6 +11579,6 @@ snapshots:
       compress-commons: 6.0.2
       readable-stream: 4.7.0
 
-  zod@3.25.76: {}
+  zod@4.1.12: {}
 
   zwitch@2.0.4: {}

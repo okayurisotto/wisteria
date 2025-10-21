@@ -2,34 +2,32 @@ import { z } from 'zod';
 import type { Converter } from './type.js';
 
 export const ZodObject = z.object({
-	typeName: z.literal('ZodObject'),
-	description: z.string().optional(),
-	unknownKeys: z.enum(['strip', 'strict']),
-	shape: z.custom<() => Record<string, z.ZodType>>(),
+	type: z.literal('object'),
+	shape: z.record(z.string(), z.custom<z.ZodType>()),
+	catchall: z.object({}).optional(),
 });
 
 export const convertZodObject: Converter<typeof ZodObject> = (
 	result,
+	description,
 	recursive,
 ) => {
-	const required = Object.entries(result.shape())
+	const required = Object.entries(result.shape)
 		.filter(([, v]) => !v.isOptional())
 		.map(([k]) => k);
 
 	return {
 		type: 'object',
-		...(result.description !== undefined
-			? { description: result.description }
+		...(description !== undefined
+			? { description }
 			: {}),
 		properties: Object.fromEntries(
-			Object.entries(result.shape()).map(([k, v]) => [k, recursive(v)]),
+			Object.entries(result.shape).map(([k, v]) => [k, recursive(v)]),
 		),
 		...(required.length > 0 ? { required } : {}),
 		additionalProperties:
-      result.unknownKeys === 'strict'
-      	? false
-      	: result.unknownKeys === 'strip'
-      		? true
-      		: (result.unknownKeys satisfies never),
+      result.catchall === undefined
+      	? true
+				: false,
 	};
 };

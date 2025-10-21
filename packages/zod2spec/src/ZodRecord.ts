@@ -2,17 +2,16 @@ import { z } from 'zod';
 import type { Converter } from './type.js';
 
 export const ZodRecord = z.object({
-	typeName: z.literal('ZodRecord'),
-	description: z.string().optional(),
+	type: z.literal('record'),
 	keyType: z.custom<z.ZodType>(),
 	valueType: z.custom<z.ZodType>(),
 });
 
-export const convertZodRecord: Converter<typeof ZodRecord> = (result, recursive) => {
+export const convertZodRecord: Converter<typeof ZodRecord> = (result, description, recursive) => {
 	return {
 		type: 'object',
-		...(result.description !== undefined
-			? { description: result.description }
+		...(description !== undefined
+			? { description }
 			: {}),
 		additionalProperties: recursive(result.valueType),
 	};

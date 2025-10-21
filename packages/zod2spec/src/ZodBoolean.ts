@@ -2,15 +2,14 @@ import { z } from 'zod';
 import type { Converter } from './type.js';
 
 export const ZodBoolean = z.object({
-	typeName: z.literal('ZodBoolean'),
-	description: z.string().optional(),
+	type: z.literal('boolean'),
 });
 
-export const convertZodBoolean: Converter<typeof ZodBoolean> = (result) => {
+export const convertZodBoolean: Converter<typeof ZodBoolean> = (result, description) => {
 	return {
 		type: 'boolean',
-		...(result.description !== undefined
-			? { description: result.description }
+		...(description !== undefined
+			? { description }
 			: {}),
 	};
 };

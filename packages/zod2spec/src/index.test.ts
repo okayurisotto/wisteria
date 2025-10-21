@@ -33,11 +33,11 @@ const entries = [
 	],
 	[
 		'string[datatime]',
-		z.string().datetime(),
+		z.iso.datetime(),
 		{ type: 'string', format: 'date-time' },
 	],
-	['string[email]', z.string().email(), { type: 'string', format: 'email' }],
-	['string[url]', z.string().url(), { type: 'string', format: 'url' }],
+	['string[email]', z.email(), { type: 'string', format: 'email' }],
+	['string[url]', z.url(), { type: 'string', format: 'url' }],
 	// number
 	['number', z.number(), { type: 'number' }],
 	['number[integer]', z.number().int(), { type: 'integer' }],

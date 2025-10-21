@@ -2,14 +2,13 @@ import { z } from 'zod';
 import type { Converter } from './type.js';
 
 export const ZodAny = z.object({
-	typeName: z.literal('ZodAny'),
-	description: z.string().optional(),
+	type: z.literal('any'),
 });
 
-export const convertZodAny: Converter<typeof ZodAny> = (result) => {
+export const convertZodAny: Converter<typeof ZodAny> = (result, description) => {
 	return {
-		...(result.description !== undefined
-			? { description: result.description }
+		...(description !== undefined
+			? { description }
 			: {}),
 	};
 };

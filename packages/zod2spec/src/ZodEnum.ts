@@ -2,17 +2,16 @@ import { z } from 'zod';
 import type { Converter } from './type.js';
 
 export const ZodEnum = z.object({
-	typeName: z.literal('ZodEnum'),
-	description: z.string().optional(),
-	values: z.array(z.string()),
+	type: z.literal('enum'),
+	entries: z.record(z.string(), z.string()),
 });
 
-export const convertZodEnum: Converter<typeof ZodEnum> = (result) => {
+export const convertZodEnum: Converter<typeof ZodEnum> = (result, description) => {
 	return {
 		type: 'string',
-		enum: result.values,
-		...(result.description !== undefined
-			? { description: result.description }
+		enum: Object.values(result.entries),
+		...(description !== undefined
+			? { description }
 			: {}),
 	};
 };

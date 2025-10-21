@@ -2,54 +2,48 @@ import { z } from 'zod';
 import type { Converter } from './type.js';
 
 export const ZodNumber = z.object({
-	typeName: z.literal('ZodNumber'),
-	description: z.string().optional(),
-	checks: z
-		.array(
-			z.union([
+	type: z.literal('number'),
+	checks: z.object({
+		_zod: z.object({
+			def: z.discriminatedUnion('check', [
 				z.object({
-					kind: z.literal('min'),
+					check: z.literal('greater_than'),
 					value: z.number(),
 					inclusive: z.boolean(),
 				}),
 				z.object({
-					kind: z.literal('max'),
+					check: z.literal('less_than'),
 					value: z.number(),
 					inclusive: z.boolean(),
 				}),
 				z.object({
-					kind: z.enum(['int']),
+					check: z.literal('number_format'),
+					format: z.enum(['safeint']),
+				}),
+				z.object({
+					check: z.literal('custom'),
 				}),
 			]),
-		)
-		.optional(),
+		}),
+	}).array().optional(),
 });
 
-export const convertZodNumber: Converter<typeof ZodNumber> = (result) => {
-	const isInt = result.checks?.some(({ kind }) => kind === 'int') ?? false;
-
-	const min = result.checks?.find(
-		(check): check is { kind: 'min'; value: number; inclusive: boolean } => {
-			return check.kind === 'min';
-		},
-	);
-
-	const max = result.checks?.find(
-		(check): check is { kind: 'max'; value: number; inclusive: boolean } => {
-			return check.kind === 'max';
-		},
-	);
+export const convertZodNumber: Converter<typeof ZodNumber> = (result, description) => {
+	const isInt = result.checks?.some(({ _zod: { def } }) => {
+		return def.check === 'number_format' && def.format === 'safeint';
+	}) ?? false;
 
 	return {
 		type: isInt ? 'integer' : 'number',
-		...(result.description !== undefined
-			? { description: result.description }
+		...(description !== undefined
+			? { description }
 			: {}),
-		...(min !== undefined
-			? { minimum: min.value, exclusiveMinimum: !min.inclusive }
-			: {}),
-		...(max !== undefined
-			? { maximum: max.value, exclusiveMaximum: !max.inclusive }
-			: {}),
+		...result.checks?.map(({ _zod: { def } }) => {
+			if (def.check === 'greater_than') return { minimum: def.value, exclusiveMinimum: !def.inclusive };
+			if (def.check === 'less_than') return { maximum: def.value, exclusiveMaximum: !def.inclusive };
+			if (def.check === 'number_format') return {};
+			if (def.check === 'custom') return {};
+			return def satisfies never;
+		}).reduce((prev, current) => ({ ...prev, ...current }), {}),
 	};
 };
