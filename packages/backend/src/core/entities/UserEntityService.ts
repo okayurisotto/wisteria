@@ -5,7 +5,6 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
-import Ajv from 'ajv';
 import { DI } from '@/di-symbols.js';
 import type { Promiseable } from '@/misc/prelude/await-all.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
@@ -25,8 +24,6 @@ import type { MeDetailedSchema, UserDetailedNotMeSchema, UserDetailedSchema } fr
 import type { UserLiteSchema } from '@/models/zod/user-lite.js';
 import type { z } from 'zod';
 import { UserLiteEntityService } from './UserLiteEntityService.js';
-
-const ajv = new Ajv();
 
 type Refs = {
 	MeDetailed: typeof MeDetailedSchema;
@@ -89,12 +86,12 @@ export class UserEntityService {
 	) {}
 
 	// #region Validators
-	public validateLocalUsername = ajv.compile(localUsernameSchema);
-	public validatePassword = ajv.compile(passwordSchema);
-	public validateName = ajv.compile(nameSchema);
-	public validateDescription = ajv.compile(descriptionSchema);
-	public validateLocation = ajv.compile(locationSchema);
-	public validateBirthday = ajv.compile(birthdaySchema);
+	public validateLocalUsername = (v: unknown) => localUsernameSchema.safeParse(v).success;
+	public validatePassword = (v: unknown) => passwordSchema.safeParse(v).success;
+	public validateName = (v: unknown) => nameSchema.safeParse(v).success;
+	public validateDescription = (v: unknown) => descriptionSchema.safeParse(v).success;
+	public validateLocation = (v: unknown) => locationSchema.safeParse(v).success;
+	public validateBirthday = (v: unknown) => birthdaySchema.safeParse(v).success;
 	// #endregion
 
 	public async getRelation(me: MiUser['id'], target: MiUser['id']) {

@@ -4,6 +4,7 @@
  */
 
 import { Entity, Column, Index, OneToOne, JoinColumn, PrimaryColumn } from 'typeorm';
+import z from 'zod';
 import { id } from './util/id.js';
 import { MiDriveFile } from './DriveFile.js';
 
@@ -285,9 +286,9 @@ export type MiPartialRemoteUser = Partial<MiUser> & {
 	uri: string;
 };
 
-export const localUsernameSchema = { type: 'string', pattern: /^\w{1,20}$/.toString().slice(1, -1) } as const;
-export const passwordSchema = { type: 'string', minLength: 1 } as const;
-export const nameSchema = { type: 'string', minLength: 1, maxLength: 50 } as const;
-export const descriptionSchema = { type: 'string', minLength: 1, maxLength: 1500 } as const;
-export const locationSchema = { type: 'string', minLength: 1, maxLength: 50 } as const;
-export const birthdaySchema = { type: 'string', pattern: /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/.toString().slice(1, -1) } as const;
+export const localUsernameSchema = z.string().regex(/^\w{1,20}$/);
+export const passwordSchema = z.string().min(1);
+export const nameSchema = z.string().min(1).max(50);
+export const descriptionSchema = z.string().min(1).max(1500);
+export const locationSchema = z.string().min(1).max(50);
+export const birthdaySchema = z.string().regex(/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/);
