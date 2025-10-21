@@ -109,7 +109,6 @@ import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
 import MkFolder from '@/components/MkFolder.vue';
 import MkInfo from '@/components/MkInfo.vue';
-import { confetti } from '@/scripts/confetti.js';
 import { signinRequired } from '@/account.js';
 
 const $i = signinRequired();
@@ -142,10 +141,6 @@ async function tokenDone() {
 	backupCodes.value = res.backupCodes;
 
 	page.value++;
-
-	confetti({
-		duration: 1000 * 3,
-	});
 }
 
 function downloadBackupCodes() {
