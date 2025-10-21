@@ -139,14 +139,16 @@ const compile = (props: Theme['props']): Record<string, string> => {
 
 let timeout: number | null = null;
 
-export const applyTheme = (theme: Theme) => {
+export const applyTheme = (theme: Theme, enableTransition: boolean) => {
 	if (timeout) window.clearTimeout(timeout);
 
-	document.documentElement.classList.add('_themeChanging_');
+	if (enableTransition) {
+		document.documentElement.classList.add('_themeChanging_');
 
-	timeout = window.setTimeout(() => {
-		document.documentElement.classList.remove('_themeChanging_');
-	}, 1000);
+		timeout = window.setTimeout(() => {
+			document.documentElement.classList.remove('_themeChanging_');
+		}, 1000);
+	}
 
 	const base = [_light, _dark].find(x => x.id === theme.base);
 	const compiledProps = compile({ ...base?.props, ...theme.props });
@@ -197,9 +199,9 @@ export const useTheme = () => {
     }
   });
 
+	applyTheme(primaryTheme.value, false);
+
   watch(primaryTheme, (value) => {
-    applyTheme(value);
-  }, {
-    immediate: true,
+    applyTheme(value, true);
   });
 };
