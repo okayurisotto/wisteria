@@ -46,7 +46,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly idService: IdService,
 		private readonly roleUserService: RoleUserService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (_ps, me) => {
 			const policies = await this.roleUserService.getUserPolicies(me.id);
 
 			if (policies.inviteLimit) {
@@ -68,7 +68,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				code: generateInviteCode(),
 			}).then(x => this.registrationTicketsRepository.findOneByOrFail(x.identifiers[0]));
 
-			return await this.inviteCodeEntityService.pack(ticket, me);
+			return await this.inviteCodeEntityService.pack(ticket);
 		});
 	}
 }

@@ -160,7 +160,7 @@ export class UserFollowingService {
 			if (followee.isLocked && !autoAccept) {
 				autoAccept = !!(await this.alsoKnownAsValidateService.validate(
 					follower,
-					(oldSrc, newSrc) => this.followingsRepository.exists({
+					(_oldSrc, newSrc) => this.followingsRepository.exists({
 						where: {
 							followeeId: followee.id,
 							followerId: newSrc.id,

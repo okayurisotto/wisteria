@@ -31,7 +31,7 @@ export class ServerStatsService implements OnApplicationShutdown {
 	public async start(): Promise<void> {
 		if (!(await this.metaService.fetch()).enableServerMachineStats) return;
 
-		const log = [] as any[];
+		const log = [] as unknown[];
 
 		ev.on('requestServerStatsLog', (x) => {
 			ev.emit(`serverStatsLog:${x.id}`, log.slice(0, x.length));
@@ -81,9 +81,9 @@ export class ServerStatsService implements OnApplicationShutdown {
 
 // CPU STAT
 function cpuUsage(): Promise<number> {
-	return new Promise((res, rej) => {
+	return new Promise((resolve) => {
 		osUtils.cpuUsage((cpuUsage) => {
-			res(cpuUsage);
+			resolve(cpuUsage);
 		});
 	});
 }

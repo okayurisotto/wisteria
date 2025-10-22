@@ -25,7 +25,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 	constructor(
 		private readonly queueService: QueueService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (_ps, me) => {
 			this.queueService.createExportBlockingJob(me);
 		});
 	}

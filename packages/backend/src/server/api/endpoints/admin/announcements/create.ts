@@ -44,7 +44,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly announcementService: AnnouncementService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const { raw, packed } = await this.announcementService.create({
+			const { packed } = await this.announcementService.create({
 				updatedAt: null,
 				title: ps.title,
 				text: ps.text,

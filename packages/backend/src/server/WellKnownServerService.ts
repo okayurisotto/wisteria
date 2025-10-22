@@ -49,7 +49,7 @@ export class WellKnownServerService {
 			})
 			.join('');
 
-		return XML_DECL + `<XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">${elementsStr}</XRD>`;
+		return `${XML_DECL}<XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">${elementsStr}</XRD>`;
 	};
 
 	private generateQueryFromId(id: MiUser['id']): FindOptionsWhere<MiUser> {

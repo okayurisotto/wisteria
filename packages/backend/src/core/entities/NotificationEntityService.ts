@@ -43,9 +43,6 @@ export class NotificationEntityService {
 	public async pack(
 		src: MiNotification,
 		meId: MiUser['id'],
-		options: {
-
-		},
 		hint?: {
 			packedNotes: Map<MiNote['id'], z.infer<typeof NoteSchema>>;
 			packedUsers: Map<MiUser['id'], z.infer<typeof UserLiteSchema>>;
@@ -137,7 +134,7 @@ export class NotificationEntityService {
 			validNotifications = validNotifications.filter(x => (x.type !== 'receiveFollowRequest') || reqs.some(r => r.followerId === x.notifierId));
 		}
 
-		return await Promise.all(validNotifications.map(x => this.pack(x, meId, {}, {
+		return await Promise.all(validNotifications.map(x => this.pack(x, meId, {
 			packedNotes,
 			packedUsers,
 		})));
@@ -146,9 +143,6 @@ export class NotificationEntityService {
 	public async packGrouped(
 		src: MiGroupedNotification,
 		meId: MiUser['id'],
-		options: {
-
-		},
 		hint?: {
 			packedNotes: Map<MiNote['id'], z.infer<typeof NoteSchema>>;
 			packedUsers: Map<MiUser['id'], z.infer<typeof UserLiteSchema>>;
@@ -281,7 +275,7 @@ export class NotificationEntityService {
 			validNotifications = validNotifications.filter(x => (x.type !== 'receiveFollowRequest') || reqs.some(r => r.followerId === x.notifierId));
 		}
 
-		return await Promise.all(validNotifications.map(x => this.packGrouped(x, meId, {}, {
+		return await Promise.all(validNotifications.map(x => this.packGrouped(x, meId, {
 			packedNotes,
 			packedUsers,
 		})));

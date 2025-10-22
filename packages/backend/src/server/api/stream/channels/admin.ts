@@ -8,13 +8,13 @@ import { type MiChannelService, Channel } from '../channel.js';
 
 class AdminChannel extends Channel {
 	public readonly chName = 'admin';
-	public static shouldShare = true;
-	public static requireCredential = true as const;
-	public static kind = 'read:admin:stream';
+	public static override shouldShare = true;
+	public static override requireCredential = true as const;
+	public static override kind = 'read:admin:stream';
 
-	public async init(params: any) {
+	public async init(_params: unknown) {
 		// Subscribe admin stream
-		this.subscriber.on(`adminStream:${this.user!.id}`, (data) => {
+		this.subscriber.on(`adminStream:${this.user?.id}`, (data: unknown) => {
 			this.send(data);
 		});
 	}

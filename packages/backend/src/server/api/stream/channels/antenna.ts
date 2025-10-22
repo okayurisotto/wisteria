@@ -11,10 +11,10 @@ import { type MiChannelService, Channel } from '../channel.js';
 
 class AntennaChannel extends Channel {
 	public readonly chName = 'antenna';
-	public static shouldShare = false;
-	public static requireCredential = true as const;
-	public static kind = 'read:account';
-	private antennaId: string;
+	public static override shouldShare = false;
+	public static override requireCredential = true as const;
+	public static override kind = 'read:account';
+	private antennaId: string | undefined;
 
 	constructor(
 		private readonly noteEntityService: NoteEntityService,
@@ -26,7 +26,7 @@ class AntennaChannel extends Channel {
 		// this.onEvent = this.onEvent.bind(this);
 	}
 
-	public async init(params: any) {
+	public async init(params: unknown) {
 		this.antennaId = params.antennaId as string;
 
 		// Subscribe stream
@@ -52,7 +52,7 @@ class AntennaChannel extends Channel {
 		}
 	};
 
-	public dispose() {
+	public override dispose() {
 		// Unsubscribe events
 		this.subscriber.off(`antennaStream:${this.antennaId}`, this.onEvent);
 	}

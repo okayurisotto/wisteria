@@ -50,7 +50,7 @@ type AddFileArgs = {
 	/** Comment */
 	comment?: string | null;
 	/** Folder ID */
-	folderId?: any;
+	folderId?: unknown;
 	/** If set to true, forcibly upload the file even if there is a file with the same hash. */
 	force?: boolean;
 	/** Do not save file to local */
@@ -214,8 +214,8 @@ export class DriveService {
 			return await this.driveFilesRepository.insert(file).then(x => this.driveFilesRepository.findOneByOrFail(x.identifiers[0]));
 		} else { // use internal storage
 			const accessKey = randomUUID();
-			const thumbnailAccessKey = 'thumbnail-' + randomUUID();
-			const webpublicAccessKey = 'webpublic-' + randomUUID();
+			const thumbnailAccessKey = `thumbnail-${randomUUID()}`;
+			const webpublicAccessKey = `webpublic-${randomUUID()}`;
 
 			const url = this.internalStorageService.saveFromPath(accessKey, path);
 
@@ -417,7 +417,7 @@ export class DriveService {
 		q.orderBy('file.id', 'ASC');
 
 		const fileList = await q.getRawMany();
-		const exceedFileIds = fileList.filter((x: any) => x.acc_usage > driveCapacity).map((x: any) => x.file_id);
+		const exceedFileIds = fileList.filter((x: unknown) => x.acc_usage > driveCapacity).map((x: unknown) => x.file_id);
 
 		for (const fileId of exceedFileIds) {
 			const file = await this.driveFilesRepository.findOneBy({ id: fileId });

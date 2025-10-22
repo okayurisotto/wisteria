@@ -11,18 +11,18 @@ const ev = new Xev();
 
 class QueueStatsChannel extends Channel {
 	public readonly chName = 'queueStats';
-	public static shouldShare = true;
-	public static requireCredential = false as const;
+	public static override shouldShare = true;
+	public static override requireCredential = false as const;
 
-	public async init(params: any) {
+	public async init() {
 		ev.addListener('queueStats', this.onStats);
 	}
 
-	private readonly onStats = (stats: any) => {
+	private readonly onStats = (stats: unknown) => {
 		this.send('stats', stats);
 	};
 
-	public onMessage(type: string, body: any) {
+	public override onMessage(type: string, body: unknown) {
 		switch (type) {
 			case 'requestLog':
 				ev.once(`queueStatsLog:${body.id}`, (statsLog) => {
@@ -36,7 +36,7 @@ class QueueStatsChannel extends Channel {
 		}
 	}
 
-	public dispose() {
+	public override dispose() {
 		ev.removeListener('queueStats', this.onStats);
 	}
 }

@@ -27,10 +27,8 @@ export const initialize = async () => {
 	const bootLogger = coreLogger.createSubLogger('boot', 'magenta');
 
 	// #region Boot Message
-	{
-		bootLogger.info('Welcome to Wisteria!');
-		bootLogger.info(`Wisteria v${meta.version}`, null, true);
-	}
+	bootLogger.info('Welcome to Wisteria!');
+	bootLogger.info(`Wisteria v${meta.version}`, null, true);
 	// #endregion
 
 	// #region NODE_ENV Log

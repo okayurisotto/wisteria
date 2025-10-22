@@ -11,7 +11,7 @@ import type { NotificationService } from '@/core/NotificationService.js';
 import type { BlockingsRepository, ChannelFollowingsRepository, FollowingsRepository, MiFollowing, MiUserProfile, MutingsRepository, RenoteMutingsRepository, UserProfilesRepository } from '@/models/_.js';
 import type { StreamEventEmitter, GlobalEvents } from '@/core/GlobalEventService.js';
 import type { ChannelsService } from './ChannelsService.js';
-import type { EventEmitter } from 'events';
+import type { EventEmitter } from 'node:events';
 import type { Channel } from './channel.js';
 import type { z } from 'zod';
 import type { NoteSchema } from '@/models/zod/note.js';
@@ -22,10 +22,10 @@ import type { NoteSchema } from '@/models/zod/note.js';
 export class Connection {
 	public readonly user?: MiUser;
 	public readonly token?: MiAccessToken;
-	private wsConnection: WebSocket.WebSocket;
+	private wsConnection: WebSocket.WebSocket | undefined;
 	public subscriber: StreamEventEmitter;
 	private channels: Channel[] = [];
-	private subscribingNotes: any = {};
+	private subscribingNotes: unknown = {};
 	private cachedNotes: z.infer<typeof NoteSchema>[] = [];
 	public userProfile: MiUserProfile | null = null;
 	public following: Record<string, Pick<MiFollowing, 'withReplies'> | undefined> = {};
@@ -108,7 +108,7 @@ export class Connection {
 		this.wsConnection = wsConnection;
 		this.wsConnection.on('message', this.onWsConnectionMessage);
 
-		this.subscriber.on('broadcast', (data) => {
+		this.subscriber.on('broadcast', (data: unknown) => {
 			this.onBroadcastMessage(data);
 		});
 	}
@@ -117,18 +117,18 @@ export class Connection {
 	 * クライアントからメッセージ受信時
 	 */
 	private readonly onWsConnectionMessage = (data: WebSocket.RawData) => {
-		let obj: Record<string, any>;
+		let obj: Record<string, unknown>;
 
 		try {
 			obj = JSON.parse(data.toString());
-		} catch (e) {
+		} catch {
 			return;
 		}
 
 		const { type, body } = obj;
 
 		switch (type) {
-			case 'readNotification': this.onReadNotification(body); break;
+			case 'readNotification': this.onReadNotification(); break;
 			case 'subNote': this.onSubscribeNote(body); break;
 			case 's': this.onSubscribeNote(body); break; // alias
 			case 'sr': this.onSubscribeNote(body); this.readNote(body); break;
@@ -164,7 +164,7 @@ export class Connection {
 		if (note.renote) add(note.renote);
 	}
 
-	private readNote(body: any) {
+	private readNote(body: unknown) {
 		const id = body.id;
 
 		const note = this.cachedNotes.find(n => n.id === id);
@@ -175,14 +175,14 @@ export class Connection {
 		}
 	}
 
-	private onReadNotification(payload: any) {
+	private onReadNotification() {
 		this.notificationService.readAllNotification(this.user!.id);
 	}
 
 	/**
 	 * 投稿購読要求時
 	 */
-	private onSubscribeNote(payload: any) {
+	private onSubscribeNote(payload: unknown) {
 		if (!payload.id) return;
 
 		if (this.subscribingNotes[payload.id] == null) {
@@ -199,7 +199,7 @@ export class Connection {
 	/**
 	 * 投稿購読解除要求時
 	 */
-	private onUnsubscribeNote(payload: any) {
+	private onUnsubscribeNote(payload: unknown) {
 		if (!payload.id) return;
 
 		this.subscribingNotes[payload.id]--;
@@ -220,7 +220,7 @@ export class Connection {
 	/**
 	 * チャンネル接続要求時
 	 */
-	private onChannelConnectRequested(payload: any) {
+	private onChannelConnectRequested(payload: unknown) {
 		const { channel, id, params, pong } = payload;
 		this.connectChannel(id, params, channel, pong);
 	}
@@ -228,7 +228,7 @@ export class Connection {
 	/**
 	 * チャンネル切断要求時
 	 */
-	private onChannelDisconnectRequested(payload: any) {
+	private onChannelDisconnectRequested(payload: unknown) {
 		const { id } = payload;
 		this.disconnectChannel(id);
 	}
@@ -246,7 +246,7 @@ export class Connection {
 	/**
 	 * チャンネルに接続
 	 */
-	public connectChannel(id: string, params: any, channel: string, pong = false) {
+	public connectChannel(id: string, params: unknown, channel: string, pong = false) {
 		const channelService = this.channelsService.getChannelService(channel);
 
 		if (channelService.requireCredential && this.user == null) {
@@ -291,7 +291,7 @@ export class Connection {
 	 * チャンネルへメッセージ送信要求時
 	 * @param data メッセージ
 	 */
-	private onChannelMessageRequested(data: any) {
+	private onChannelMessageRequested(data: unknown) {
 		const channel = this.channels.find(c => c.id === data.id);
 		if (channel != null && channel.onMessage != null) {
 			channel.onMessage(data.type, data.body);

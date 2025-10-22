@@ -31,7 +31,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly antennaEntityService: AntennaEntityService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (_ps, me) => {
 			const antennas = await this.antennasRepository.findBy({
 				userId: me.id,
 			});

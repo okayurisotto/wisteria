@@ -13,9 +13,9 @@ import type { NoteSchema } from '@/models/zod/note.js';
 
 class HashtagChannel extends Channel {
 	public readonly chName = 'hashtag';
-	public static shouldShare = false;
-	public static requireCredential = false as const;
-	private q: string[][];
+	public static override shouldShare = false;
+	public static override requireCredential = false as const;
+	private q: string[][] = [];
 
 	constructor(
 		private readonly noteEntityService: NoteEntityService,
@@ -27,7 +27,7 @@ class HashtagChannel extends Channel {
 		// this.onNote = this.onNote.bind(this);
 	}
 
-	public async init(params: any) {
+	public async init(params: unknown) {
 		this.q = params.q;
 
 		if (this.q == null) return;
@@ -60,7 +60,7 @@ class HashtagChannel extends Channel {
 		this.send('note', note);
 	};
 
-	public dispose() {
+	public override dispose() {
 		// Unsubscribe events
 		this.subscriber.off('notesStream', this.onNote);
 	}

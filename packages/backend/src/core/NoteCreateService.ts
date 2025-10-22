@@ -40,7 +40,6 @@ import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { DB_MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { RoleUserService } from './RoleUserService.js';
 import { MetaService } from '@/core/MetaService.js';
-import { SearchService } from '@/core/SearchService.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { UserBlockingCheckService } from './UserBlockingCheckService.js';
@@ -184,7 +183,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 		private readonly apRendererService: ApRendererService,
 		private readonly roleUserService: RoleUserService,
 		private readonly metaService: MetaService,
-		private readonly searchService: SearchService,
 		private readonly utilityService: UtilityService,
 		private readonly userBlockingCheckService: UserBlockingCheckService,
 	) {}
@@ -284,12 +282,12 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 
 		// ローカルのみをRenoteしたらローカルのみにする
-		if (data.renote && data.renote.localOnly && data.channel == null) {
+		if (data.renote?.localOnly && data.channel == null) {
 			data.localOnly = true;
 		}
 
 		// ローカルのみにリプライしたらローカルのみにする
-		if (data.reply && data.reply.localOnly && data.channel == null) {
+		if (data.reply?.localOnly && data.channel == null) {
 			data.localOnly = true;
 		}
 
@@ -313,7 +311,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		if (!tags || !emojis || !mentionedUsers) {
 			const tokens = (data.text ? mfm.parse(data.text) : []);
 			const cwTokens = data.cw ? mfm.parse(data.cw) : [];
-			const choiceTokens = data.poll && data.poll.choices
+			const choiceTokens = data.poll?.choices
 				? concat(data.poll.choices.map(choice => mfm.parse(choice)))
 				: [];
 
@@ -476,7 +474,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		this.antennaService.addNoteToAntennas(note, user);
 
 		if (data.reply) {
-			this.saveReply(data.reply, note);
+			this.saveReply(data.reply);
 		}
 
 		if (data.reply == null) {
@@ -500,7 +498,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			this.incRenoteCount(data.renote);
 		}
 
-		if (data.poll && data.poll.expiresAt) {
+		if (data.poll?.expiresAt) {
 			const delay = data.poll.expiresAt.getTime() - Date.now();
 			this.queueService.endedPollNotificationQueue.add(note.id, {
 				noteId: note.id,
@@ -660,9 +658,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 				}
 			});
 		}
-
-		// Register to search database
-		this.index(note);
 	}
 
 	private isQuote(note: Option): note is Option & { renote: MiNote } {
@@ -724,7 +719,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 	}
 
-	private saveReply(reply: MiNote, note: MiNote) {
+	private saveReply(reply: MiNote) {
 		this.notesRepository.increment({ id: reply.id }, 'repliesCount', 1);
 	}
 
@@ -736,10 +731,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 			: this.apRendererService.renderCreate(await this.apRendererService.renderNote(note, false), note);
 
 		return this.apRendererService.addContext(content);
-	}
-
-	private index(note: MiNote) {
-		return;
 	}
 
 	private incNotesCountOfUser(user: { id: MiUser['id'] }) {

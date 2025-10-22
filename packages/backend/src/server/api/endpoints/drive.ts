@@ -30,7 +30,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly driveFileEntityService: DriveFileEntityService,
 		private readonly roleUserService: RoleUserService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (_ps, me) => {
 			// Calculate drive usage
 			const usage = await this.driveFileEntityService.calcDriveUsageOf(me.id);
 

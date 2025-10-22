@@ -84,7 +84,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly roleUserService: RoleUserService,
 		private readonly apiLoggerService: ApiLoggerService,
 	) {
-		super(meta, paramDef, async (ps, me, _1, _2, _3, ip) => {
+		super(meta, paramDef, async (ps, me, _1, _2, _3) => {
 			let user;
 
 			const isModerator = await this.roleUserService.isModerator(me);

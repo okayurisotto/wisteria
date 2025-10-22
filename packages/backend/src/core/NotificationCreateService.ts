@@ -132,7 +132,7 @@ export class NotificationCreateService implements OnApplicationShutdown {
 			'*',
 			'data', JSON.stringify(notification));
 
-		const packed = await this.notificationEntityService.pack(notification, notifieeId, {});
+		const packed = await this.notificationEntityService.pack(notification, notifieeId);
 
 		// Publish notification event
 		this.globalEventService.publishMainStream(notifieeId, 'notification', packed);

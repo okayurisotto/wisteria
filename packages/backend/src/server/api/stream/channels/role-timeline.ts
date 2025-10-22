@@ -11,9 +11,9 @@ import { type MiChannelService, Channel } from '../channel.js';
 
 class RoleTimelineChannel extends Channel {
 	public readonly chName = 'roleTimeline';
-	public static shouldShare = false;
-	public static requireCredential = false as const;
-	private roleId: string;
+	public static override shouldShare = false;
+	public static override requireCredential = false as const;
+	private roleId: string | undefined;
 
 	constructor(
 		private readonly roleservice: RoleService,
@@ -25,7 +25,7 @@ class RoleTimelineChannel extends Channel {
 		// this.onNote = this.onNote.bind(this);
 	}
 
-	public async init(params: any) {
+	public async init(params: unknown) {
 		this.roleId = params.roleId as string;
 
 		this.subscriber.on(`roleTimelineStream:${this.roleId}`, this.onEvent);
@@ -53,7 +53,7 @@ class RoleTimelineChannel extends Channel {
 		}
 	};
 
-	public dispose() {
+	public override dispose() {
 		// Unsubscribe events
 		this.subscriber.off(`roleTimelineStream:${this.roleId}`, this.onEvent);
 	}

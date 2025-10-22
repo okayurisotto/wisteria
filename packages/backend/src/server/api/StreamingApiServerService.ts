@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import * as WebSocket from 'ws';
@@ -79,10 +79,10 @@ export class StreamingApiServerService {
 				}
 			} catch (e) {
 				if (e instanceof AuthenticationError) {
-					socket.write([
+					socket.write(`${[
 						'HTTP/1.1 401 Unauthorized',
 						'WWW-Authenticate: Bearer realm="Misskey", error="invalid_token", error_description="Failed to authenticate"',
-					].join('\r\n') + '\r\n\r\n');
+					].join('\r\n')}\r\n\r\n`);
 				} else {
 					socket.write('HTTP/1.1 500 Internal Server Error\r\n\r\n');
 				}
@@ -126,16 +126,16 @@ export class StreamingApiServerService {
 			globalEv.emit('message', parsed);
 		});
 
-		this.#wss.on('connection', async (connection: WebSocket.WebSocket, request: http.IncomingMessage, ctx: {
+		this.#wss.on('connection', async (connection: WebSocket.WebSocket, _request: http.IncomingMessage, ctx: {
 			stream: MainStreamConnection;
 			user: MiLocalUser | null;
 			app: MiAccessToken | null;
 		}) => {
-			const { stream, user, app } = ctx;
+			const { stream, user } = ctx;
 
 			const ev = new EventEmitter();
 
-			function onRedisMessage(data: any): void {
+			function onRedisMessage(data: unknown): void {
 				ev.emit(data.channel, data.message);
 			}
 

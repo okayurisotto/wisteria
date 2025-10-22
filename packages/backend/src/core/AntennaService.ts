@@ -149,7 +149,7 @@ export class AntennaService implements OnApplicationShutdown {
 		if (keywords.length > 0) {
 			if (note.text == null && note.cw == null) return false;
 
-			const _text = (note.text ?? '') + '\n' + (note.cw ?? '');
+			const _text = `${note.text ?? ''}\n${note.cw ?? ''}`;
 
 			const matched = keywords.some(and =>
 				and.every(keyword =>
@@ -169,7 +169,7 @@ export class AntennaService implements OnApplicationShutdown {
 		if (excludeKeywords.length > 0) {
 			if (note.text == null && note.cw == null) return false;
 
-			const _text = (note.text ?? '') + '\n' + (note.cw ?? '');
+			const _text = `${note.text ?? ''}\n${note.cw ?? ''}`;
 
 			const matched = excludeKeywords.some(and =>
 				and.every(keyword =>

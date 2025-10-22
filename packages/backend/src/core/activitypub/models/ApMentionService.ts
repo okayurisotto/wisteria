@@ -8,7 +8,7 @@ import promiseLimit from 'promise-limit';
 import type { MiUser } from '@/models/_.js';
 import { toArray, unique } from '@/misc/prelude/array.js';
 import { isMention } from '../type.js';
-import { Resolver } from '../ApResolverService.js';
+import type { Resolver } from '../ApResolverService.js';
 import { ApPersonService } from './ApPersonService.js';
 import type { IObject, IApMention } from '../type.js';
 

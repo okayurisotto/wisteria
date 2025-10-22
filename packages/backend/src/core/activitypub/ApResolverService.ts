@@ -13,8 +13,6 @@ import { MetaService } from '@/core/MetaService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { DI } from '@/di-symbols.js';
 import { UtilityService } from '@/core/UtilityService.js';
-import { LoggerService } from '@/core/LoggerService.js';
-import type { Logger } from '@/logger.js';
 import { isCollectionOrOrderedCollection } from './type.js';
 import { ApDbResolverService } from './ApDbResolverService.js';
 import { ApRendererService } from './ApRendererService.js';
@@ -24,7 +22,6 @@ import type { IObject, ICollection, IOrderedCollection } from './type.js';
 export class Resolver {
 	private readonly history: Set<string>;
 	private user?: MiLocalUser;
-	private readonly logger: Logger;
 
 	constructor(
 		private readonly config: Config,
@@ -40,11 +37,9 @@ export class Resolver {
 		private readonly httpRequestService: HttpRequestService,
 		private readonly apRendererService: ApRendererService,
 		private readonly apDbResolverService: ApDbResolverService,
-		private readonly loggerService: LoggerService,
 		private readonly recursionLimit = 100,
 	) {
 		this.history = new Set();
-		this.logger = this.loggerService.getLogger('ap-resolve');
 	}
 
 	public getHistory(): string[] {
@@ -195,7 +190,6 @@ export class ApResolverService {
 		private readonly httpRequestService: HttpRequestService,
 		private readonly apRendererService: ApRendererService,
 		private readonly apDbResolverService: ApDbResolverService,
-		private readonly loggerService: LoggerService,
 	) {}
 
 	public createResolver(): Resolver {
@@ -213,7 +207,6 @@ export class ApResolverService {
 			this.httpRequestService,
 			this.apRendererService,
 			this.apDbResolverService,
-			this.loggerService,
 		);
 	}
 }

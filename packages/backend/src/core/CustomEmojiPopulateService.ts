@@ -65,12 +65,17 @@ export class CustomEmojiPopulateService {
 	 */
 	public async populateEmojis(emojiNames: string[], noteUserHost: string | null): Promise<Record<string, string>> {
 		const emojis = await Promise.all(emojiNames.map(x => this.populateEmoji(x, noteUserHost)));
-		const res = {} as any;
-		for (let i = 0; i < emojiNames.length; i++) {
-			if (emojis[i] != null) {
-				res[emojiNames[i]] = emojis[i];
-			}
-		}
-		return res;
+
+		const fn = <T extends NonNullable<unknown>>(
+			entry: readonly [string, T | null | undefined],
+		): entry is [string, T] => {
+			return entry[1] != null;
+		};
+
+		return Object.fromEntries(
+			emojiNames
+				.map((emojiName, i) => [emojiName, emojis[i]] as const)
+				.filter(fn)
+		);
 	}
 }

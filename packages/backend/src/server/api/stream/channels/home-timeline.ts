@@ -13,11 +13,11 @@ import type { NoteSchema } from '@/models/zod/note.js';
 
 class HomeTimelineChannel extends Channel {
 	public readonly chName = 'homeTimeline';
-	public static shouldShare = false;
-	public static requireCredential = true as const;
-	public static kind = 'read:account';
-	private withRenotes: boolean;
-	private withFiles: boolean;
+	public static override shouldShare = false;
+	public static override requireCredential = true as const;
+	public static override kind = 'read:account';
+	private withRenotes: boolean | undefined;
+	private withFiles: boolean | undefined;
 
 	constructor(
 		private readonly noteEntityService: NoteEntityService,
@@ -29,7 +29,7 @@ class HomeTimelineChannel extends Channel {
 		// this.onNote = this.onNote.bind(this);
 	}
 
-	public async init(params: any) {
+	public async init(params: unknown) {
 		this.withRenotes = params.withRenotes ?? true;
 		this.withFiles = params.withFiles ?? false;
 
@@ -49,7 +49,7 @@ class HomeTimelineChannel extends Channel {
 		}
 
 		// Ignore notes from instances the user has muted
-		if (isInstanceMuted(note, new Set<string>(this.userProfile!.mutedInstances))) return;
+		if (isInstanceMuted(note, new Set(this.userProfile!.mutedInstances))) return;
 
 		if (note.visibility === 'followers') {
 			if (!isMe && !Object.hasOwn(this.following, note.userId)) return;
@@ -89,7 +89,7 @@ class HomeTimelineChannel extends Channel {
 		this.send('note', note);
 	};
 
-	public dispose() {
+	public override dispose() {
 		// Unsubscribe events
 		this.subscriber.off('notesStream', this.onNote);
 	}

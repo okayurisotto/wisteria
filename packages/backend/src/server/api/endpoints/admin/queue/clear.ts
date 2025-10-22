@@ -25,7 +25,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		private readonly moderationLogService: ModerationLogService,
 		private readonly queueService: QueueService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async (_ps, me) => {
 			this.queueService.destroy();
 
 			this.moderationLogService.log(me, 'clearQueue');

@@ -15,13 +15,13 @@ import type { NoteSchema } from '@/models/zod/note.js';
 
 class UserListChannel extends Channel {
 	public readonly chName = 'userList';
-	public static shouldShare = false;
-	public static requireCredential = false as const;
-	private listId: string;
+	public static override shouldShare = false;
+	public static override requireCredential = false as const;
+	private listId: string | undefined;
 	private membershipsMap: Record<string, Pick<MiUserListMembership, 'withReplies'> | undefined> = {};
-	private listUsersClock: NodeJS.Timeout;
-	private withFiles: boolean;
-	private withRenotes: boolean;
+	private listUsersClock: NodeJS.Timeout | undefined;
+	private withFiles: boolean | undefined;
+	private withRenotes: boolean | undefined;
 
 	constructor(
 		private readonly userListsRepository: UserListsRepository,
@@ -36,7 +36,7 @@ class UserListChannel extends Channel {
 		// this.onNote = this.onNote.bind(this);
 	}
 
-	public async init(params: any) {
+	public async init(params: unknown) {
 		this.listId = params.listId as string;
 		this.withFiles = params.withFiles ?? false;
 		this.withRenotes = params.withRenotes ?? true;
@@ -127,7 +127,7 @@ class UserListChannel extends Channel {
 		this.send('note', note);
 	};
 
-	public dispose() {
+	public override dispose() {
 		// Unsubscribe events
 		this.subscriber.off(`userListStream:${this.listId}`, this.send);
 		this.subscriber.off('notesStream', this.onNote);

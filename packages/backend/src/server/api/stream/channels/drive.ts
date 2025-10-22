@@ -8,13 +8,13 @@ import { type MiChannelService, Channel } from '../channel.js';
 
 class DriveChannel extends Channel {
 	public readonly chName = 'drive';
-	public static shouldShare = true;
-	public static requireCredential = true as const;
-	public static kind = 'read:account';
+	public static override shouldShare = true;
+	public static override requireCredential = true as const;
+	public static override kind = 'read:account';
 
-	public async init(params: any) {
+	public async init() {
 		// Subscribe drive stream
-		this.subscriber.on(`driveStream:${this.user!.id}`, (data) => {
+		this.subscriber.on(`driveStream:${this.user?.id}`, (data: unknown) => {
 			this.send(data);
 		});
 	}

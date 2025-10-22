@@ -36,7 +36,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 			const charts = ranking.length === 0 ? {} : await this.hashtagService.getCharts(ranking, 20);
 
-			const stats = ranking.map((tag, i) => ({
+			const stats = ranking.map((tag) => ({
 				tag,
 				chart: charts[tag],
 				usersCount: Math.max(...charts[tag]),

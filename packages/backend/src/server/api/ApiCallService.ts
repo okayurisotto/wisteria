@@ -116,7 +116,6 @@ export class ApiCallService {
 				token: app,
 				data: body,
 				file,
-				method: c.req.method,
 				ip: remoteAddress, // TODO
 				headers: c.req.header(),
 			});
@@ -156,7 +155,6 @@ export class ApiCallService {
 		token,
 		data,
 		file,
-		method,
 		ip,
 		headers,
 	}: CallInfo): Promise<Result<unknown, ApiError | AuthenticationError>> {

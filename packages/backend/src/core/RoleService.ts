@@ -168,12 +168,12 @@ export class RoleService {
 			}
 		}
 
-		const created = await this.roleAssignmentsRepository.insert({
+		await this.roleAssignmentsRepository.insert({
 			id: this.idService.gen(now),
 			expiresAt: expiresAt,
 			roleId: roleId,
 			userId: userId,
-		}).then(x => this.roleAssignmentsRepository.findOneByOrFail(x.identifiers[0]));
+		});
 
 		this.rolesRepository.update(roleId, {
 			lastUsedAt: new Date(),

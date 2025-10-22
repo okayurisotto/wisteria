@@ -40,7 +40,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 		private readonly userEntityService: UserEntityService,
 	) {
-		super(meta, paramDef, async (ps, user, token) => {
+		super(meta, paramDef, async (_ps, user, token) => {
 			const isSecure = token == null;
 
 			const now = new Date();

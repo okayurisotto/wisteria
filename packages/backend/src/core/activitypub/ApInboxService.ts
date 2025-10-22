@@ -370,13 +370,13 @@ export class ApInboxService {
 		});
 
 		if (isPost(object)) {
-			await this.createNote(resolver, actor, object, false, activity);
+			await this.createNote(resolver, actor, object);
 		} else {
 			this.logger.warn(`Unknown type: ${getApType(object)}`);
 		}
 	}
 
-	private async createNote(resolver: Resolver, actor: MiRemoteUser, note: IObject, silent = false, activity?: ICreate): Promise<string> {
+	private async createNote(resolver: Resolver, actor: MiRemoteUser, note: IObject): Promise<string> {
 		const uri = getApId(note);
 
 		if (typeof note === 'object') {
@@ -397,7 +397,7 @@ export class ApInboxService {
 			const exist = await this.apNoteService.fetchNote(note);
 			if (exist) return 'skip: note exists';
 
-			await this.apNoteService.createNote(note, resolver, silent);
+			await this.apNoteService.createNote(note, resolver, false);
 			return 'ok';
 		} catch (err) {
 			if (err instanceof StatusError && !err.isRetryable) {

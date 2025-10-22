@@ -116,7 +116,7 @@ export class FileProxyServerService {
 			.parse(c.req.param());
 
 		const opts = {
-			url: query.url ?? (params.url ? 'https://' + params.url : null),
+			url: query.url ?? (params.url ? `https://${params.url}` : null),
 			/** アバタークロップなど、どうしてもオリジンである必要がある場合 */
 			mustOrigin: query.origin !== undefined,
 			emoji: query.emoji !== undefined,

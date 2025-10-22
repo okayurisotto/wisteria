@@ -7,7 +7,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { RegistrationTicketsRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { MiUser } from '@/models/User.js';
 import type { MiRegistrationTicket } from '@/models/RegistrationTicket.js';
 import { IdService } from '@/core/IdService.js';
 import type { z } from 'zod';
@@ -26,7 +25,6 @@ export class InviteCodeEntityService {
 
 	public async pack(
 		src: MiRegistrationTicket['id'] | MiRegistrationTicket,
-		me?: { id: MiUser['id'] } | null | undefined,
 	): Promise<z.infer<typeof InviteCodeSchema>> {
 		const target = typeof src === 'object'
 			? src
@@ -50,9 +48,8 @@ export class InviteCodeEntityService {
 	}
 
 	public packMany(
-		targets: any[],
-		me: { id: MiUser['id'] },
+		targets: (MiRegistrationTicket['id'] | MiRegistrationTicket)[],
 	) {
-		return Promise.all(targets.map(x => this.pack(x, me)));
+		return Promise.all(targets.map(x => this.pack(x)));
 	}
 }

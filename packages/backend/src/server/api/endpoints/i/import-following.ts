@@ -73,7 +73,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 			const checkMoving = await this.alsoKnownAsValidateService.validate(
 				me,
-				(old, src) => !!src.movedAt && src.movedAt.getTime() + 1000 * 60 * 60 * 2 > (new Date()).getTime(),
+				(_old, src) => !!src.movedAt && src.movedAt.getTime() + 1000 * 60 * 60 * 2 > (new Date()).getTime(),
 				true,
 			);
 			if (checkMoving ? file.size > 32 * 1024 * 1024 : file.size > 64 * 1024) throw new ApiError(meta.errors.tooBigFile);

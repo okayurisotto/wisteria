@@ -10,9 +10,9 @@ import { type MiChannelService, Channel } from '../channel.js';
 
 class MainChannel extends Channel {
 	public readonly chName = 'main';
-	public static shouldShare = true;
-	public static requireCredential = true as const;
-	public static kind = 'read:account';
+	public static override shouldShare = true;
+	public static override requireCredential = true as const;
+	public static override kind = 'read:account';
 
 	constructor(
 		private readonly noteEntityService: NoteEntityService,
@@ -23,16 +23,16 @@ class MainChannel extends Channel {
 		super(id, connection);
 	}
 
-	public async init(params: any) {
+	public async init() {
 		// Subscribe main stream channel
-		this.subscriber.on(`mainStream:${this.user!.id}`, async (data) => {
+		this.subscriber.on(`mainStream:${this.user?.id}`, async (data: unknown) => {
 			switch (data.type) {
 				case 'notification': {
 					// Ignore notifications from instances the user has muted
 					if (isUserFromMutedInstance(data.body, new Set<string>(this.userProfile?.mutedInstances ?? []))) return;
 					if (data.body.userId && this.userIdsWhoMeMuting.has(data.body.userId)) return;
 
-					if (data.body.note && data.body.note.isHidden) {
+					if (data.body.note?.isHidden) {
 						const note = await this.noteEntityService.pack(data.body.note.id, this.user, {
 							detail: true,
 						});

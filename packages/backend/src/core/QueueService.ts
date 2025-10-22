@@ -419,14 +419,7 @@ export class QueueService {
 	}
 
 	public destroy() {
-		this.deliverQueue.once('cleaned', (jobs, status) => {
-			// deliverLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);
-		});
 		this.deliverQueue.clean(0, 0, 'delayed');
-
-		this.inboxQueue.once('cleaned', (jobs, status) => {
-			// inboxLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);
-		});
 		this.inboxQueue.clean(0, 0, 'delayed');
 	}
 }

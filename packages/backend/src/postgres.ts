@@ -89,15 +89,15 @@ export const dbLogger = new MisskeyLogger('db');
 const sqlLogger = dbLogger.createSubLogger('sql', 'gray');
 
 class MyCustomLogger implements Logger {
-	logQuery(query: string, parameters?: any[], queryRunner?: QueryRunner) {
+	logQuery(query: string, _parameters?: unknown[], _queryRunner?: QueryRunner) {
 		sqlLogger.info(highlight(query).substring(0, 100));
 	}
 
-	logQueryError(error: string | Error, query: string, parameters?: any[], queryRunner?: QueryRunner) {
+	logQueryError(_error: string | Error, query: string, _parameters?: unknown[], _queryRunner?: QueryRunner) {
 		sqlLogger.error(highlight(query));
 	}
 
-	logQuerySlow(time: number, query: string, parameters?: any[], queryRunner?: QueryRunner) {
+	logQuerySlow(_time: number, query: string, _parameters?: unknown[], _queryRunner?: QueryRunner) {
 		sqlLogger.warn(highlight(query));
 	}
 
