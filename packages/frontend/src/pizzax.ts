@@ -144,7 +144,7 @@ export class Storage<T extends StateDef> {
 	}
 
 	private load(): Promise<void> {
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve) => {
 			if ($i) {
 				// api関数と循環参照なので一応setTimeoutしておく
 				window.setTimeout(async () => {

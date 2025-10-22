@@ -103,7 +103,6 @@ import FormSection from '@/components/form/section.vue';
 
 const $i = signinRequired();
 
-const reportError = computed(defaultStore.makeGetterSetter('reportError'));
 const enableCondensedLineForAcct = computed(defaultStore.makeGetterSetter('enableCondensedLineForAcct'));
 const devMode = computed(defaultStore.makeGetterSetter('devMode'));
 const defaultWithReplies = computed(defaultStore.makeGetterSetter('defaultWithReplies'));
@@ -157,10 +156,6 @@ watch([
 ], async () => {
 	await reloadAsk();
 });
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.other,

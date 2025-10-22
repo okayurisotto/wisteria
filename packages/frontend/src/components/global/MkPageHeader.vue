@@ -27,10 +27,10 @@ SPDX-License-Identifier: AGPL-3.0-only
         </div>
         <XTabs v-if="!narrow || hideTitle" :class="$style.tabs" :tab="tab" :tabs="tabs" :root-el="el" @update:tab="key => emit('update:tab', key)" @tab-click="onTabClick" />
       </template>
-      <div v-if="(!thin_ && narrow && !hideTitle) || (actions && actions.length > 0)" :class="$style.buttonsRight">
+      <div v-if="(!thin_ && narrow && !hideTitle) || hasActions" :class="$style.buttonsRight">
         <template v-for="action in actions">
           <button v-tooltip.noDelay="action.text" class="_button" :class="[$style.button, { [$style.highlighted]: action.highlighted }]" @click.stop="action.handler" @touchstart="preventDrag">
-            <i :class="action.icon" />
+            <i :class="action.icon"></i>
           </button>
         </template>
       </div>

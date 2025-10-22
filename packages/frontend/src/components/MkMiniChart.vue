@@ -47,7 +47,6 @@ const polylinePoints = ref('');
 const polygonPoints = ref('');
 const headX = ref<number | null>(null);
 const headY = ref<number | null>(null);
-const clock = ref<number | null>(null);
 const accent = tinycolor(getComputedStyle(document.documentElement).getPropertyValue('--accent'));
 const color = accent.toRgbString();
 

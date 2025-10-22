@@ -29,8 +29,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
-
 defineProps<{
 	def: any[];
 	grid?: boolean;

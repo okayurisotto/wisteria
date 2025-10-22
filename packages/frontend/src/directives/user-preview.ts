@@ -9,12 +9,12 @@ import { popup } from '@/os.js';
 export class UserPreview {
 	private el;
 	private user;
-	private showTimer;
-	private hideTimer;
-	private checkTimer;
-	private promise;
+	private showTimer: number | undefined;
+	private hideTimer: number | undefined;
+	private checkTimer: number | undefined;
+	private promise: { cancel: unknown; } | null | undefined;
 
-	constructor(el, user) {
+	constructor(el: HTMLElement, user: any) {
 		this.el = el;
 		this.user = user;
 
@@ -104,7 +104,7 @@ export class UserPreview {
 }
 
 export default {
-	mounted(el: HTMLElement, binding, vn) {
+	mounted(el: HTMLElement, binding) {
 		if (binding.value == null) return;
 
 		// TODO: 新たにプロパティを作るのをやめMapを使う
@@ -114,7 +114,7 @@ export default {
 		self.preview = new UserPreview(el, binding.value);
 	},
 
-	unmounted(el, binding, vn) {
+	unmounted(el, binding) {
 		if (binding.value == null) return;
 
 		const self = el._userPreviewDirective_;

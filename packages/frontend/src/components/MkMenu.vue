@@ -20,7 +20,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<span v-else-if="item.type === 'pending'" role="menuitem" :tabindex="i" :class="[$style.pending, $style.item]">
 				<span><MkEllipsis/></span>
 			</span>
-			<MkA v-else-if="item.type === 'link'" role="menuitem" :to="item.to" :tabindex="i" class="_button" :class="$style.item" @click.passive="close(true)" @mouseenter.passive="onItemMouseEnter(item)" @mouseleave.passive="onItemMouseLeave(item)">
+			<MkA v-else-if="item.type === 'link'" role="menuitem" :to="item.to" :tabindex="i" class="_button" :class="$style.item" @click.passive="close(true)" @mouseenter.passive="onItemMouseEnter" @mouseleave.passive="onItemMouseLeave">
 				<i v-if="item.icon" class="ti-fw" :class="[$style.icon, item.icon]"></i>
 				<MkAvatar v-if="item.avatar" :user="item.avatar" :class="$style.avatar"/>
 				<div :class="$style.item_content">
@@ -28,20 +28,20 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span v-if="item.indicate" :class="$style.indicator"><i class="_indicatorCircle"></i></span>
 				</div>
 			</MkA>
-			<a v-else-if="item.type === 'a'" role="menuitem" :href="item.href" :target="item.target" :download="item.download" :tabindex="i" class="_button" :class="$style.item" @click="close(true)" @mouseenter.passive="onItemMouseEnter(item)" @mouseleave.passive="onItemMouseLeave(item)">
+			<a v-else-if="item.type === 'a'" role="menuitem" :href="item.href" :target="item.target" :download="item.download" :tabindex="i" class="_button" :class="$style.item" @click="close(true)" @mouseenter.passive="onItemMouseEnter" @mouseleave.passive="onItemMouseLeave">
 				<i v-if="item.icon" class="ti-fw" :class="[$style.icon, item.icon]"></i>
 				<div :class="$style.item_content">
 					<span :class="$style.item_content_text">{{ item.text }}</span>
 					<span v-if="item.indicate" :class="$style.indicator"><i class="_indicatorCircle"></i></span>
 				</div>
 			</a>
-			<button v-else-if="item.type === 'user'" role="menuitem" :tabindex="i" class="_button" :class="[$style.item, { [$style.active]: item.active }]" :disabled="item.active" @click="clicked(item.action, $event)" @mouseenter.passive="onItemMouseEnter(item)" @mouseleave.passive="onItemMouseLeave(item)">
+			<button v-else-if="item.type === 'user'" role="menuitem" :tabindex="i" class="_button" :class="[$style.item, { [$style.active]: item.active }]" :disabled="item.active" @click="clicked(item.action, $event)" @mouseenter.passive="onItemMouseEnter" @mouseleave.passive="onItemMouseLeave">
 				<MkAvatar :user="item.user" :class="$style.avatar"/><MkUserName :user="item.user"/>
 				<div v-if="item.indicate" :class="$style.item_content">
 					<span :class="$style.indicator"><i class="_indicatorCircle"></i></span>
 				</div>
 			</button>
-			<button v-else-if="item.type === 'switch'" role="menuitemcheckbox" :tabindex="i" class="_button" :class="[$style.item, $style.switch, { [$style.switchDisabled]: item.disabled } ]" @click="switchItem(item)" @mouseenter.passive="onItemMouseEnter(item)" @mouseleave.passive="onItemMouseLeave(item)">
+			<button v-else-if="item.type === 'switch'" role="menuitemcheckbox" :tabindex="i" class="_button" :class="[$style.item, $style.switch, { [$style.switchDisabled]: item.disabled } ]" @click="switchItem(item)" @mouseenter.passive="onItemMouseEnter" @mouseleave.passive="onItemMouseLeave">
 				<MkSwitchButton :class="$style.switchButton" :checked="item.ref" :disabled="item.disabled" @toggle="switchItem(item)"/>
 				<div :class="$style.item_content">
 					<span :class="[$style.item_content_text, $style.switchText]">{{ item.text }}</span>
@@ -54,7 +54,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.caret" style="pointer-events: none;"><i class="ti ti-chevron-right ti-fw"></i></span>
 				</div>
 			</button>
-			<button v-else :tabindex="i" class="_button" role="menuitem" :class="[$style.item, { [$style.danger]: item.danger, [$style.active]: getValue(item.active) }]" :disabled="getValue(item.active)" @click="clicked(item.action, $event)" @mouseenter.passive="onItemMouseEnter(item)" @mouseleave.passive="onItemMouseLeave(item)">
+			<button v-else :tabindex="i" class="_button" role="menuitem" :class="[$style.item, { [$style.danger]: item.danger, [$style.active]: getValue(item.active) }]" :disabled="getValue(item.active)" @click="clicked(item.action, $event)" @mouseenter.passive="onItemMouseEnter" @mouseleave.passive="onItemMouseLeave">
 				<i v-if="item.icon" class="ti-fw" :class="[$style.icon, item.icon]"></i>
 				<MkAvatar v-if="item.avatar" :user="item.avatar" :class="$style.avatar"/>
 				<div :class="$style.item_content">
@@ -123,7 +123,7 @@ watch(() => props.items, () => {
 	for (let i = 0; i < items.length; i++) {
 		const item = items[i];
 
-		if ('then' in item) { // if item is Promise
+		if (item !== undefined && 'then' in item) { // if item is Promise
 			items[i] = { type: 'pending' };
 			item.then(actualItem => {
 				if (items2.value?.[i]) items2.value[i] = actualItem;
@@ -157,13 +157,13 @@ const onGlobalMousedown = (event: MouseEvent) => {
 
 let childCloseTimer: null | number = null;
 
-function onItemMouseEnter(item) {
+function onItemMouseEnter() {
 	childCloseTimer = window.setTimeout(() => {
 		closeChild();
 	}, 300);
 }
 
-function onItemMouseLeave(item) {
+function onItemMouseLeave() {
 	if (childCloseTimer) window.clearTimeout(childCloseTimer);
 }
 

@@ -128,7 +128,7 @@ const toggleSelect = (emoji) => {
 	}
 };
 
-const add = async (ev: MouseEvent) => {
+const add = async () => {
 	os.popup(defineAsyncComponent(() => import('./emoji-edit-dialog.vue')), {
 	}, {
 		done: result => {

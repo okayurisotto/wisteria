@@ -126,10 +126,6 @@ function saveProfile() {
 	});
 }
 
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
-
 definePageMetadata(() => ({
 	title: i18n.ts.drive,
 	icon: 'ti ti-cloud',

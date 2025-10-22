@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div>
 	<MkStickyContainer>
-		<template #header><XHeader :tabs="headerTabs"/></template>
+		<template #header><XHeader/></template>
 		<MkSpacer :contentMax="700">
 			<div class="_gaps_m">
 				<div>{{ i18n.ts._serverRules.description }}</div>
@@ -19,7 +19,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					@start="e => e.item.classList.add('active')"
 					@end="e => e.item.classList.remove('active')"
 				>
-					<template #item="{element,index}">
+					<template #item="{index}">
 						<div :class="$style.item">
 							<div :class="$style.itemHeader">
 								<div :class="$style.itemNumber" v-text="String(index + 1)"/>
@@ -41,7 +41,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, ref, computed } from 'vue';
+import { defineAsyncComponent, ref } from 'vue';
 import XHeader from './_header_.vue';
 import * as os from '@/os.js';
 import { fetchInstance, instance } from '@/instance.js';
@@ -64,8 +64,6 @@ const save = async () => {
 const remove = (index: number): void => {
 	serverRules.value.splice(index, 1);
 };
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.serverRules,

@@ -43,7 +43,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, nextTick, ref, shallowRef, watch, computed, toRefs } from 'vue';
+import { onMounted, onUnmounted, nextTick, ref, shallowRef, watch, toRefs } from 'vue';
 import { debounce } from 'throttle-debounce';
 import MkButton from '@/components/MkButton.vue';
 import { useInterval } from '@/scripts/use-interval.js';
@@ -87,7 +87,6 @@ const id = Math.random().toString(); // TODO: uuid?
 const focused = ref(false);
 const changed = ref(false);
 const invalid = ref(false);
-const filled = computed(() => v.value !== '' && v.value != null);
 const inputEl = shallowRef<HTMLInputElement>();
 const prefixEl = shallowRef<HTMLElement>();
 const suffixEl = shallowRef<HTMLElement>();

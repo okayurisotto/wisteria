@@ -38,8 +38,8 @@ function calc(src: Element) {
 }
 
 export default {
-	mounted(src, binding, vn) {
-		const resize = new ResizeObserver((entries, observer) => {
+	mounted(src, binding) {
+		const resize = new ResizeObserver(() => {
 			calc(src);
 		});
 		resize.observe(src);
@@ -48,7 +48,7 @@ export default {
 		calc(src);
 	},
 
-	unmounted(src, binding, vn) {
+	unmounted(src, binding) {
 		binding.value(0, 0);
 		const info = mountings.get(src);
 		if (!info) return;

@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><XHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><XHeader :actions="headerActions"/></template>
 	<MkSpacer :contentMax="700">
 		<FormSuspense :p="init">
 			<div class="_gaps">
@@ -69,8 +69,6 @@ const headerActions = computed(() => [{
 	text: i18n.ts.save,
 	handler: save,
 }]);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.other,

@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <MkStickyContainer>
 	<template #header>
-		<MkPageHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/>
+		<MkPageHeader v-model:tab="tab" :tabs="headerTabs"/>
 	</template>
 
 	<MkHorizontalSwipe v-model:tab="tab" :tabs="headerTabs">
@@ -35,8 +35,6 @@ const XFileInfo = defineAsyncComponent(() => import('./drive.file.info.vue'));
 const XNotes = defineAsyncComponent(() => import('./drive.file.notes.vue'));
 
 const tab = ref('info');
-
-const headerActions = computed(() => []);
 
 const headerTabs = computed(() => [{
 	key: 'info',

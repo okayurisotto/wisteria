@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div>
 	<MkStickyContainer>
-		<template #header><XHeader :tabs="headerTabs"/></template>
+		<template #header><XHeader/></template>
 		<MkSpacer :contentMax="600">
 			<XEditor v-if="data" v-model="data"/>
 		</MkSpacer>
@@ -22,7 +22,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import { v4 as uuid } from 'uuid';
 import XHeader from './_header_.vue';
@@ -84,8 +84,6 @@ async function save() {
 		router.push('/admin/roles/' + created.id);
 	}
 }
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: role.value ? `${i18n.ts._role.edit}: ${role.value.name}` : i18n.ts._role.new,

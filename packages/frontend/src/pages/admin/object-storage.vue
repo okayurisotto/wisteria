@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><XHeader :tabs="headerTabs"/></template>
+	<template #header><XHeader/></template>
 	<MkSpacer :contentMax="700">
 		<FormSuspense :p="init">
 			<div class="_gaps_m">
@@ -83,7 +83,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import XHeader from './_header_.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import MkInput from '@/components/MkInput.vue';
@@ -146,8 +146,6 @@ function save() {
 		fetchInstance();
 	});
 }
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.objectStorage,

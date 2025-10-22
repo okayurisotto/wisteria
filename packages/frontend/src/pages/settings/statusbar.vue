@@ -15,7 +15,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import { v4 as uuid } from 'uuid';
 import XStatusbar from './statusbar.statusbar.vue';
@@ -45,10 +45,6 @@ async function add() {
 		props: {},
 	});
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.statusbar,

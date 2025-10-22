@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { defineAsyncComponent } from 'vue';
 import type { MenuItem } from '@/types/menu.js';
 import * as os from '@/os.js';
 import { instance } from '@/instance.js';

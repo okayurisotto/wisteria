@@ -45,7 +45,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import FormPagination from '@/components/MkPagination.vue';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { i18n } from '@/i18n.js';
@@ -70,10 +70,6 @@ function revoke(token) {
 		list.value.reload();
 	});
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.installedApps,

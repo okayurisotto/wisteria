@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <MkStickyContainer>
 	<template #header>
-		<XHeader :actions="headerActions" :tabs="headerTabs"/>
+		<XHeader :actions="headerActions"/>
 	</template>
 	<MkSpacer :contentMax="900">
 		<MkSelect v-model="filterType" :class="$style.input" @update:modelValue="filterItems">
@@ -252,8 +252,6 @@ const headerActions = computed(() => [{
 	text: i18n.ts.add,
 	handler: add,
 }]);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.ads,

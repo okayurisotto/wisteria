@@ -59,7 +59,7 @@ const APPEAR_MINIMUM_INTERVAL = 600;
 export type Paging<E extends keyof Misskey.Endpoints = keyof Misskey.Endpoints> = {
 	endpoint: E;
 	limit: number;
-	params?: Misskey.Endpoints[E]['req'] | ComputedRef<Misskey.Endpoints[E]['req']>;
+	params?: Misskey.Endpoints[E]['request'] | ComputedRef<Misskey.Endpoints[E]['request']>;
 
 	/**
 	 * 検索APIのような、ページング不可なエンドポイントを利用する場合
@@ -203,7 +203,7 @@ async function init(): Promise<void> {
 	queue.value = new Map();
 	fetching.value = true;
 	const params = props.pagination.params ? isRef(props.pagination.params) ? props.pagination.params.value : props.pagination.params : {};
-	await misskeyApi<MisskeyEntity[]>(props.pagination.endpoint, {
+	await misskeyApi(props.pagination.endpoint, {
 		...params,
 		limit: props.pagination.limit ?? 10,
 		allowPartial: true,
@@ -225,7 +225,7 @@ async function init(): Promise<void> {
 		offset.value = res.length;
 		error.value = false;
 		fetching.value = false;
-	}, err => {
+	}, () => {
 		error.value = true;
 		fetching.value = false;
 	});
@@ -239,7 +239,7 @@ const fetchMore = async (): Promise<void> => {
 	if (!more.value || fetching.value || moreFetching.value || items.value.size === 0) return;
 	moreFetching.value = true;
 	const params = props.pagination.params ? isRef(props.pagination.params) ? props.pagination.params.value : props.pagination.params : {};
-	await misskeyApi<MisskeyEntity[]>(props.pagination.endpoint, {
+	await misskeyApi(props.pagination.endpoint, {
 		...params,
 		limit: SECOND_FETCH_LIMIT,
 		...(props.pagination.offsetMode ? {
@@ -294,7 +294,7 @@ const fetchMore = async (): Promise<void> => {
 			}
 		}
 		offset.value += res.length;
-	}, err => {
+	}, () => {
 		moreFetching.value = false;
 	});
 };
@@ -303,7 +303,7 @@ const fetchMoreAhead = async (): Promise<void> => {
 	if (!more.value || fetching.value || moreFetching.value || items.value.size === 0) return;
 	moreFetching.value = true;
 	const params = props.pagination.params ? isRef(props.pagination.params) ? props.pagination.params.value : props.pagination.params : {};
-	await misskeyApi<MisskeyEntity[]>(props.pagination.endpoint, {
+	await misskeyApi(props.pagination.endpoint, {
 		...params,
 		limit: SECOND_FETCH_LIMIT,
 		...(props.pagination.offsetMode ? {
@@ -321,7 +321,7 @@ const fetchMoreAhead = async (): Promise<void> => {
 		}
 		offset.value += res.length;
 		moreFetching.value = false;
-	}, err => {
+	}, () => {
 		moreFetching.value = false;
 	});
 };

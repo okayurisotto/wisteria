@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import XSetup from './welcome.setup.vue';
 import XEntrance from './welcome.entrance.a.vue';
@@ -24,10 +24,6 @@ const meta = ref<Misskey.Endpoints['meta']['response'] | null>(null);
 misskeyApi('meta', { detail: true }).then(res => {
 	meta.value = res;
 });
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: instanceName,

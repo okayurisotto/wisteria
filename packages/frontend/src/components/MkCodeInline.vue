@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<code :class="$style.root">{{ code }}</code>
+<code :class="$style.root">{{ props.code }}</code>
 </template>
 
 <script lang="ts" setup>

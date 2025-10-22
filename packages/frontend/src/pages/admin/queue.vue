@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><XHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><XHeader v-model:tab="tab" :tabs="headerTabs"/></template>
 	<MkSpacer :contentMax="800">
 		<XQueue v-if="tab === 'deliver'" domain="deliver"/>
 		<XQueue v-else-if="tab === 'inbox'" domain="inbox"/>
@@ -26,18 +26,6 @@ import MkButton from '@/components/MkButton.vue';
 
 const tab = ref('deliver');
 
-function clear() {
-	os.confirm({
-		type: 'warning',
-		title: i18n.ts.clearQueueConfirmTitle,
-		text: i18n.ts.clearQueueConfirmText,
-	}).then(({ canceled }) => {
-		if (canceled) return;
-
-		os.apiWithDialog('admin/queue/clear');
-	});
-}
-
 function promoteAllQueues() {
 	os.confirm({
 		type: 'warning',
@@ -49,8 +37,6 @@ function promoteAllQueues() {
 		os.apiWithDialog('admin/queue/promote', { type: tab.value });
 	});
 }
-
-const headerActions = computed(() => []);
 
 const headerTabs = computed(() => [{
 	key: 'deliver',

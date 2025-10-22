@@ -61,7 +61,7 @@ function onClose() {
 	if (dialog.value) dialog.value.close();
 }
 
-function done(res) {
+function done() {
 	emit('done', { password: password.value, token: token.value });
 	if (dialog.value) dialog.value.close();
 }

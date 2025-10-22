@@ -19,7 +19,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import {} from 'vue';
 import * as Misskey from 'misskey-js';
 import MkPagination from '@/components/MkPagination.vue';
 import MkStickyContainer from '@/components/global/MkStickyContainer.vue';

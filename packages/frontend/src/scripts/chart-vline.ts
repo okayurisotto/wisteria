@@ -7,7 +7,7 @@ import type { Plugin } from 'chart.js';
 
 export const chartVLine = (vLineColor: string) => ({
 	id: 'vLine',
-	beforeDraw(chart, args, options) {
+	beforeDraw(chart) {
 		if (chart.tooltip?._active?.length) {
 			const ctx = chart.ctx;
 			const xs = chart.tooltip._active.map(a => a.element.x);

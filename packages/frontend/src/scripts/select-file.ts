@@ -13,7 +13,7 @@ import { defaultStore } from '@/store.js';
 import { uploadFile } from '@/scripts/upload.js';
 
 export function chooseFileFromPc(multiple: boolean, keepOriginal = false): Promise<Misskey.entities.DriveFile[]> {
-	return new Promise((res, rej) => {
+	return new Promise((res) => {
 		const input = document.createElement('input');
 		input.type = 'file';
 		input.multiple = multiple;
@@ -23,7 +23,7 @@ export function chooseFileFromPc(multiple: boolean, keepOriginal = false): Promi
 
 			Promise.all(promises).then(driveFiles => {
 				res(driveFiles);
-			}).catch(err => {
+			}).catch(() => {
 				// アップロードのエラーは uploadFile 内でハンドリングされているためアラートダイアログを出したりはしてはいけない
 			});
 
@@ -40,7 +40,7 @@ export function chooseFileFromPc(multiple: boolean, keepOriginal = false): Promi
 }
 
 export function chooseFileFromDrive(multiple: boolean): Promise<Misskey.entities.DriveFile[]> {
-	return new Promise((res, rej) => {
+	return new Promise((res) => {
 		os.selectDriveFile(multiple).then(files => {
 			res(files);
 		});
@@ -48,7 +48,7 @@ export function chooseFileFromDrive(multiple: boolean): Promise<Misskey.entities
 }
 
 export function chooseFileFromUrl(): Promise<Misskey.entities.DriveFile> {
-	return new Promise((res, rej) => {
+	return new Promise((res) => {
 		os.inputText({
 			title: i18n.ts.uploadFromUrl,
 			type: 'url',
@@ -81,7 +81,7 @@ export function chooseFileFromUrl(): Promise<Misskey.entities.DriveFile> {
 }
 
 function select(src: any, label: string | null, multiple: boolean): Promise<Misskey.entities.DriveFile[]> {
-	return new Promise((res, rej) => {
+	return new Promise((res) => {
 		const keepOriginal = ref(defaultStore.state.keepOriginalUploading);
 
 		os.popupMenu([label ? {
@@ -107,8 +107,9 @@ function select(src: any, label: string | null, multiple: boolean): Promise<Miss
 	});
 }
 
-export function selectFile(src: any, label: string | null = null): Promise<Misskey.entities.DriveFile> {
-	return select(src, label, false).then(files => files[0]);
+export async function selectFile(src: any, label: string | null = null): Promise<Misskey.entities.DriveFile> {
+	const files = await select(src, label, false);
+	return files[0];
 }
 
 export function selectFiles(src: any, label: string | null = null): Promise<Misskey.entities.DriveFile[]> {

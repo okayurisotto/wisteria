@@ -123,9 +123,9 @@ const texts = computed(() => {
 
 const gradient = computed(() => colorScheme.value === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)');
 const sHandColor = computed(() => colorScheme.value === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.3)');
-const mHandColor = computed(() => 'var(--fg)');
-const hHandColor = computed(() => 'var(--accent)');
-const nowColor = computed(() => 'var(--accent)');
+const mHandColor = 'var(--fg)';
+const hHandColor = 'var(--accent)';
+const nowColor = 'var(--accent)';
 const h = ref<number>(0);
 const hTurn = ref<number>(0);
 const mTurn = ref<number>(0);

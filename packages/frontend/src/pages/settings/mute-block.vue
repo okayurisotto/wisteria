@@ -126,7 +126,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import XInstanceMute from './mute-block.instance-mute.vue';
 import XWordMute from './mute-block.word-mute.vue';
 import MkPagination from '@/components/MkPagination.vue';
@@ -225,10 +225,6 @@ async function saveMutedWords(mutedWords: (string | string[])[]) {
 async function saveHardMutedWords(hardMutedWords: (string | string[])[]) {
 	await misskeyApi('i/update', { hardMutedWords });
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.muteAndBlock,

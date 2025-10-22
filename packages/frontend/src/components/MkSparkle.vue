@@ -88,7 +88,7 @@ let stop = false;
 let ro: ResizeObserver | undefined;
 
 onMounted(() => {
-	ro = new ResizeObserver((entries, observer) => {
+	ro = new ResizeObserver(() => {
 		if (el.value == null) return;
 		width.value = el.value.offsetWidth + 64;
 		height.value = el.value.offsetHeight + 64;

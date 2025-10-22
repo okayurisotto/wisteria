@@ -66,7 +66,7 @@ const onKeydown = (evt) => {
 	}
 };
 
-const ro = new ResizeObserver((entries, observer) => {
+const ro = new ResizeObserver(() => {
 	if (rootEl.value == null || headerEl.value == null) return;
 	bodyWidth.value = rootEl.value.offsetWidth;
 	bodyHeight.value = rootEl.value.offsetHeight - headerEl.value.offsetHeight;

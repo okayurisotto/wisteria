@@ -108,10 +108,6 @@ function reset() {
 	}));
 }
 
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
-
 definePageMetadata(() => ({
 	title: i18n.ts.navbar,
 	icon: 'ti ti-list',

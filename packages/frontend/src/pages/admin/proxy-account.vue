@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><MkPageHeader/></template>
 	<MkSpacer :contentMax="700">
 		<FormSuspense :p="init">
 			<MkInfo>{{ i18n.ts.proxyAccountDescription }}</MkInfo>
@@ -21,7 +21,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkKeyValue from '@/components/MkKeyValue.vue';
 import MkButton from '@/components/MkButton.vue';
@@ -59,10 +59,6 @@ function save() {
 		fetchInstance();
 	});
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.proxyAccount,

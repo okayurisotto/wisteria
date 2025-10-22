@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><XHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><XHeader :actions="headerActions"/></template>
 	<MkSpacer :contentMax="800">
 		<div class="_gaps">
 			<div v-for="relay in relays" :key="relay.inbox" class="relaycxt _panel" style="padding: 16px;">
@@ -44,7 +44,7 @@ async function addRelay() {
 	if (canceled) return;
 	misskeyApi('admin/relays/add', {
 		inbox,
-	}).then((relay: any) => {
+	}).then(() => {
 		refresh();
 	}).catch((err: any) => {
 		os.alert({
@@ -81,8 +81,6 @@ const headerActions = computed(() => [{
 	text: i18n.ts.addRelay,
 	handler: addRelay,
 }]);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.relays,

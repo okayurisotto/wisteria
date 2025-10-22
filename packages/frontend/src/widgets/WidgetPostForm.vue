@@ -8,7 +8,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
 import { useWidgetPropsManager, type WidgetComponentEmits, type WidgetComponentExpose, type WidgetComponentProps } from './widget.js';
 import type { GetFormResultType } from '@/scripts/form.js';
 import MkPostForm from '@/components/MkPostForm.vue';
@@ -23,7 +22,7 @@ type WidgetProps = GetFormResultType<typeof widgetPropsDef>;
 const props = defineProps<WidgetComponentProps<WidgetProps>>();
 const emit = defineEmits<WidgetComponentEmits<WidgetProps>>();
 
-const { widgetProps, configure } = useWidgetPropsManager(name,
+const { configure } = useWidgetPropsManager(name,
 	widgetPropsDef,
 	props,
 	emit,

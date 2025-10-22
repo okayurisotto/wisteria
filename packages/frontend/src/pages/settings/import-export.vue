@@ -119,7 +119,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import MkButton from '@/components/MkButton.vue';
 import FormSection from '@/components/form/section.vue';
 import MkFolder from '@/components/MkFolder.vue';
@@ -220,10 +220,6 @@ const importAntennas = async (ev) => {
 	const file = await selectFile(ev.currentTarget ?? ev.target);
 	misskeyApi('i/import-antennas', { fileId: file.id }).then(onImportSuccess).catch(onError);
 };
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.importAndExport,

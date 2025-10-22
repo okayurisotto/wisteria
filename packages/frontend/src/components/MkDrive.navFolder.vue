@@ -35,19 +35,10 @@ const emit = defineEmits<{
 	removeFolder: [v: Misskey.entities.DriveFolder['id']];
 }>();
 
-const hover = ref(false);
 const draghover = ref(false);
 
 function onClick() {
 	emit('move', props.folder);
-}
-
-function onMouseover() {
-	hover.value = true;
-}
-
-function onMouseout() {
-	hover.value = false;
 }
 
 function onDragover(ev: DragEvent) {

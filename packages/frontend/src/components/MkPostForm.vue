@@ -184,7 +184,6 @@ if (props.initialVisibleUsers) {
 	props.initialVisibleUsers.forEach(pushVisibleUser);
 }
 const reactionAcceptance = ref(defaultStore.state.reactionAcceptance);
-const autocomplete = ref(null);
 const draghover = ref(false);
 const quoteId = ref<string | null>(null);
 const hasNotSpecifiedMentions = ref(false);
@@ -193,7 +192,7 @@ const imeText = ref('');
 const showingOptions = ref(false);
 const textAreaReadOnly = ref(false);
 
-const draftKey = computed((): string => {
+const draftKey = computed(() => {
 	let key = props.channel ? `channel:${props.channel.id}` : '';
 
 	if (props.renote) {
@@ -207,7 +206,7 @@ const draftKey = computed((): string => {
 	return key;
 });
 
-const placeholder = computed((): string => {
+const placeholder = computed(() => {
 	if (props.renote) {
 		return i18n.ts._postForm.quotePlaceholder;
 	} else if (props.reply) {
@@ -227,7 +226,7 @@ const placeholder = computed((): string => {
 	}
 });
 
-const submitText = computed((): string => {
+const submitText = computed(() => {
 	return props.renote
 		? i18n.ts.quote
 		: props.reply
@@ -235,15 +234,15 @@ const submitText = computed((): string => {
 			: i18n.ts.note;
 });
 
-const textLength = computed((): number => {
+const textLength = computed(() => {
 	return (text.value + imeText.value).trim().length;
 });
 
-const maxTextLength = computed((): number => {
+const maxTextLength = computed(() => {
 	return instance ? instance.maxNoteTextLength : 1000;
 });
 
-const canPost = computed((): boolean => {
+const canPost = computed(() => {
 	return !props.mock && !posting.value && !posted.value &&
 		(1 <= textLength.value || 1 <= files.value.length || !!poll.value || !!props.renote) &&
 		(textLength.value <= maxTextLength.value) &&
@@ -391,10 +390,6 @@ function togglePoll() {
 			expiredAfter: null,
 		};
 	}
-}
-
-function addTag(tag: string) {
-	insertTextAtCursor(textareaEl.value, ` #${tag} `);
 }
 
 function focus() {
@@ -557,7 +552,7 @@ function onCompositionUpdate(ev: CompositionEvent) {
 	imeText.value = ev.data;
 }
 
-function onCompositionEnd(ev: CompositionEvent) {
+function onCompositionEnd() {
 	imeText.value = '';
 }
 

@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div>
 	<MkStickyContainer>
-		<template #header><XHeader :actions="headerActions" :tabs="headerTabs"/></template>
+		<template #header><XHeader/></template>
 		<MkSpacer :contentMax="700">
 			<div class="_gaps">
 				<MkFolder>
@@ -208,7 +208,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 import XHeader from './_header_.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkFolder from '@/components/MkFolder.vue';
@@ -249,10 +249,6 @@ async function updateBaseRole() {
 function create() {
 	router.push('/admin/roles/new');
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.roles,

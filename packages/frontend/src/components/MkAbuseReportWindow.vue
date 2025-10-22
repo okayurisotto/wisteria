@@ -54,7 +54,7 @@ function send() {
 	os.apiWithDialog('users/report-abuse', {
 		userId: props.user.id,
 		comment: comment.value,
-	}, undefined).then(res => {
+	}, undefined).then(() => {
 		os.alert({
 			type: 'success',
 			text: i18n.ts.abuseReported,

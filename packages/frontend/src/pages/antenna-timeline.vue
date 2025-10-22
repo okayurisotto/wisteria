@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><MkPageHeader :actions="headerActions"/></template>
 	<MkSpacer :contentMax="800">
 		<div ref="rootEl" v-hotkey.global="keymap">
 			<div v-if="queue > 0" :class="$style.new"><button class="_buttonPrimary" :class="$style.newButton" @click="top()">{{ i18n.ts.newNoteRecived }}</button></div>
@@ -28,7 +28,6 @@ import { computed, watch, ref, shallowRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkTimeline from '@/components/MkTimeline.vue';
 import { scroll } from '@/scripts/scroll.js';
-import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { i18n } from '@/i18n.js';
@@ -75,8 +74,6 @@ const headerActions = computed(() => antenna.value ? [{
 	text: i18n.ts.settings,
 	handler: settings,
 }] : []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: antenna.value ? antenna.value.name : i18n.ts.antennas,

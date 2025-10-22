@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div>
 	<MkStickyContainer>
-		<template #header><XHeader :tabs="headerTabs"/></template>
+		<template #header><XHeader/></template>
 		<MkSpacer :contentMax="700">
 			<FormSuspense :p="init">
 				<div class="_gaps_m">
@@ -104,7 +104,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import JSON5 from 'json5';
 import XHeader from './_header_.vue';
 import MkInput from '@/components/MkInput.vue';
@@ -136,18 +136,18 @@ const manifestJsonOverride = ref<string>('{}');
 
 async function init() {
 	const meta = await misskeyApi('admin/meta');
-	iconUrl.value = meta.iconUrl;
-	app192IconUrl.value = meta.app192IconUrl;
-	app512IconUrl.value = meta.app512IconUrl;
-	bannerUrl.value = meta.bannerUrl;
-	backgroundImageUrl.value = meta.backgroundImageUrl;
-	themeColor.value = meta.themeColor;
-	defaultLightTheme.value = meta.defaultLightTheme;
-	defaultDarkTheme.value = meta.defaultDarkTheme;
-	serverErrorImageUrl.value = meta.serverErrorImageUrl;
-	infoImageUrl.value = meta.infoImageUrl;
-	notFoundImageUrl.value = meta.notFoundImageUrl;
-	repositoryUrl.value = meta.repositoryUrl;
+	iconUrl.value = meta.iconUrl ?? null;
+	app192IconUrl.value = meta.app192IconUrl ?? null;
+	app512IconUrl.value = meta.app512IconUrl ?? null;
+	bannerUrl.value = meta.bannerUrl ?? null;
+	backgroundImageUrl.value = meta.backgroundImageUrl ?? null;
+	themeColor.value = meta.themeColor ?? null;
+	defaultLightTheme.value = meta.defaultLightTheme ?? null;
+	defaultDarkTheme.value = meta.defaultDarkTheme ?? null;
+	serverErrorImageUrl.value = meta.serverErrorImageUrl ?? null;
+	infoImageUrl.value = meta.infoImageUrl ?? null;
+	notFoundImageUrl.value = meta.notFoundImageUrl ?? null;
+	repositoryUrl.value = meta.repositoryUrl ?? null;
 	feedbackUrl.value = meta.feedbackUrl;
 	manifestJsonOverride.value = meta.manifestJsonOverride === '' ? '{}' : JSON.stringify(JSON.parse(meta.manifestJsonOverride), null, '\t');
 }
@@ -172,8 +172,6 @@ function save() {
 		fetchInstance();
 	});
 }
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.branding,

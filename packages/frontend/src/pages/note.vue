@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><MkPageHeader/></template>
 	<MkSpacer :contentMax="800">
 		<div>
 			<Transition :name="defaultStore.state.animation ? 'fade' : ''" mode="out-in">
@@ -136,10 +136,6 @@ function fetchNote() {
 watch(() => props.noteId, fetchNote, {
 	immediate: true,
 });
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.note,

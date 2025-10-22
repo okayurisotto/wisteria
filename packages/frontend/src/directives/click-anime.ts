@@ -7,7 +7,7 @@ import type { Directive } from 'vue';
 import { defaultStore } from '@/store.js';
 
 export default {
-	mounted(el: HTMLElement, binding, vn) {
+	mounted(el: HTMLElement) {
 		if (!defaultStore.state.animation) return;
 
 		const target = el.children[0];

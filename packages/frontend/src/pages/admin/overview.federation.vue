@@ -57,7 +57,7 @@ const fetching = ref(true);
 const totalSub = ref<number | null>(null);
 const totalPub = ref<number | null>(null);
 
-const { handler: externalTooltipHandler } = useChartTooltip();
+useChartTooltip();
 
 onMounted(async () => {
 	misskeyApiGet('federation/stats', { limit: 10 }).then(res => {

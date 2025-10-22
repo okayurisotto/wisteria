@@ -52,7 +52,6 @@ import { defaultStore } from '@/store.js';
 
 const animation = ref(defaultStore.state.animation);
 const squareAvatars = ref(defaultStore.state.squareAvatars);
-const useBlurEffect = ref(defaultStore.state.useBlurEffect);
 
 const props = withDefaults(defineProps<{
 	user: Misskey.entities.User;

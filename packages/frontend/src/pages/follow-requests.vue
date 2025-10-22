@@ -37,7 +37,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { shallowRef, computed } from 'vue';
+import { shallowRef } from 'vue';
 import MkPagination from '@/components/MkPagination.vue';
 import MkButton from '@/components/MkButton.vue';
 import { userPage, acct } from '@/filters/user.js';
@@ -64,10 +64,6 @@ function reject(user) {
 		paginationComponent.value.reload();
 	});
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.followRequests,

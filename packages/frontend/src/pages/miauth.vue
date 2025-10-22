@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><MkPageHeader/></template>
 	<MkSpacer :contentMax="800">
 		<div v-if="$i">
 			<div v-if="state == 'waiting'">
@@ -43,7 +43,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import MkSignin from '@/components/MkSignin.vue';
 import MkButton from '@/components/MkButton.vue';
 import { misskeyApi } from '@/scripts/misskey-api.js';
@@ -88,10 +88,6 @@ function deny(): void {
 function onLogin(res): void {
 	login(res.i);
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: 'MiAuth',

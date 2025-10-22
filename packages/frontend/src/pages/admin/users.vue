@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div>
 	<MkStickyContainer>
-		<template #header><XHeader :actions="headerActions" :tabs="headerTabs"/></template>
+		<template #header><XHeader :actions="headerActions"/></template>
 		<MkSpacer :contentMax="900">
 			<div class="_gaps">
 				<div :class="$style.inputs">
@@ -110,7 +110,7 @@ async function addUser() {
 	os.apiWithDialog('admin/accounts/create', {
 		username: username,
 		password: password,
-	}).then(res => {
+	}).then(() => {
 		paginationComponent.value.reload();
 	});
 }
@@ -134,8 +134,6 @@ const headerActions = computed(() => [{
 	text: i18n.ts.lookup,
 	handler: lookupUser,
 }]);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.users,

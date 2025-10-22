@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><MkPageHeader/></template>
 	<MkSpacer :contentMax="700">
 		<div class="_gaps_m">
 			<div class="_gaps_m">
@@ -34,7 +34,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import JSON5 from 'json5';
 import type { Endpoints } from 'misskey-js';
 import MkButton from '@/components/MkButton.vue';
@@ -82,10 +82,6 @@ function onEndpointChange() {
 		body.value = JSON5.stringify(endpointBody, null, 2);
 	});
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: 'API console',

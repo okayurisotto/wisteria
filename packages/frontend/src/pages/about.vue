@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><MkPageHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><MkPageHeader v-model:tab="tab" :tabs="headerTabs"/></template>
 	<MkHorizontalSwipe v-model:tab="tab" :tabs="headerTabs">
 		<MkSpacer v-if="tab === 'overview'" :contentMax="600">
 			<div class="_gaps_m">
@@ -159,8 +159,6 @@ const initStats = () => misskeyApi('stats', {
 }).then((res) => {
 	stats.value = res;
 });
-
-const headerActions = computed(() => []);
 
 const headerTabs = computed(() => [{
 	key: 'overview',

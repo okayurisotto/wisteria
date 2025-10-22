@@ -45,7 +45,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, defineAsyncComponent, computed } from 'vue';
+import { ref, defineAsyncComponent } from 'vue';
 import * as Misskey from 'misskey-js';
 import XDecoration from './avatar-decoration.decoration.vue';
 import MkButton from '@/components/MkButton.vue';
@@ -123,10 +123,6 @@ function detachAllDecorations() {
 		$i.avatarDecorations = [];
 	});
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.avatarDecorations,

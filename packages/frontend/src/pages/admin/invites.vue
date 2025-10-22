@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><XHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><XHeader/></template>
 	<MkSpacer :contentMax="800">
 		<div class="_gaps_m">
 			<MkFolder :expanded="false">
@@ -109,9 +109,6 @@ function deleted(id: string) {
 		pagingComponent.value.items.delete(id);
 	}
 }
-
-const headerActions = computed(() => []);
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.invite,

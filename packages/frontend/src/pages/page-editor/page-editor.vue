@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><MkPageHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><MkPageHeader v-model:tab="tab" :tabs="headerTabs"/></template>
 	<MkSpacer :contentMax="700">
 		<div class="jqqmcavi">
 			<MkButton v-if="pageId" class="button" inline link :to="`/@${ author.username }/pages/${ currentName }`"><i class="ti ti-external-link"></i> {{ i18n.ts._pages.viewPage }}</MkButton>
@@ -151,7 +151,7 @@ function save() {
 	if (pageId.value) {
 		options.pageId = pageId.value;
 		misskeyApi('pages/update', options)
-			.then(page => {
+			.then(() => {
 				currentName.value = name.value.trim();
 				os.alert({
 					type: 'success',
@@ -271,8 +271,6 @@ async function init() {
 }
 
 init();
-
-const headerActions = computed(() => []);
 
 const headerTabs = computed(() => [{
 	key: 'settings',

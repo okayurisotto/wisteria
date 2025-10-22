@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><MkPageHeader/></template>
 	<MkSpacer :contentMax="700" :class="$style.main">
 		<div v-if="list" class="_gaps">
 			<MkFolder>
@@ -67,15 +67,10 @@ import MkFolder from '@/components/MkFolder.vue';
 import MkInput from '@/components/MkInput.vue';
 import { userListsCache } from '@/cache.js';
 import { signinRequired } from '@/account.js';
-import { defaultStore } from '@/store.js';
 import MkPagination from '@/components/MkPagination.vue';
 import { mainRouter } from '@/router/main.js';
 
 const $i = signinRequired();
-
-const {
-	enableInfiniteScroll,
-} = defaultStore.reactiveState;
 
 const props = defineProps<{
 	listId: string;
@@ -181,10 +176,6 @@ async function updateSettings() {
 }
 
 watch(() => props.listId, fetchList, { immediate: true });
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: list.value ? list.value.name : i18n.ts.lists,

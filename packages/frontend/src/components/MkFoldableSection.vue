@@ -45,7 +45,6 @@ const props = withDefaults(defineProps<{
 });
 
 const rootEl = shallowRef<HTMLDivElement>();
-const bg = ref<string>();
 const showBody = ref((props.persistKey && miLocalStorage.getItem(`${miLocalStoragePrefix}${props.persistKey}`)) ? (miLocalStorage.getItem(`${miLocalStoragePrefix}${props.persistKey}`) === 't') : props.expanded);
 
 watch(showBody, () => {

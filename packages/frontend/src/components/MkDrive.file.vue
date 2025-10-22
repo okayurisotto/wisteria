@@ -78,13 +78,13 @@ function onClick(ev: MouseEvent) {
 		if (deviceKind === 'desktop') {
 			router.push(`/my/drive/file/${props.file.id}`);
 		} else {
-			os.popupMenu(getDriveFileMenu(props.file, props.folder), (ev.currentTarget ?? ev.target ?? undefined) as HTMLElement | undefined);
+			os.popupMenu(getDriveFileMenu(props.file), (ev.currentTarget ?? ev.target ?? undefined) as HTMLElement | undefined);
 		}
 	}
 }
 
 function onContextmenu(ev: MouseEvent) {
-	os.contextMenu(getDriveFileMenu(props.file, props.folder), ev);
+	os.contextMenu(getDriveFileMenu(props.file), ev);
 }
 
 function onDragstart(ev: DragEvent) {

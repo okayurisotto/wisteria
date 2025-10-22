@@ -39,7 +39,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import MkInput from '@/components/MkInput.vue';
 import FormSection from '@/components/form/section.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
@@ -77,10 +77,6 @@ async function create(): Promise<void> {
 		on: events,
 	});
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: 'Create new webhook',

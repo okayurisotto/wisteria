@@ -17,7 +17,7 @@ export function useChartTooltip(opts: { position: 'top' | 'middle' } = { positio
 		borderColor: string;
 		text: string;
 	}[] | null>(null);
-	let disposeTooltipComponent;
+	let disposeTooltipComponent: () => void;
 
 	const show = () => {
 		if (disposeTooltipComponent) disposeTooltipComponent();

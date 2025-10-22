@@ -12,7 +12,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, ref, computed } from 'vue';
+import { defineAsyncComponent, ref } from 'vue';
 import FormLink from '@/components/form/link.vue';
 import MkButton from '@/components/MkButton.vue';
 import * as os from '@/os.js';
@@ -40,10 +40,6 @@ function generateToken() {
 		},
 	}, 'closed');
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: 'API',

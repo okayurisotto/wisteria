@@ -6,7 +6,6 @@
 // TODO: なんでもかんでもos.tsに突っ込むのやめたいのでよしなに分割する
 
 import { type Component, markRaw, type Ref, ref, defineAsyncComponent } from 'vue';
-import { EventEmitter } from 'eventemitter3';
 import insertTextAtCursor from 'insert-text-at-cursor';
 import * as Misskey from 'misskey-js';
 import type { ComponentProps } from 'vue-component-type-helpers';
@@ -200,9 +199,9 @@ export function alert(props: {
 	title?: string | null;
 	text?: string | null;
 }): Promise<void> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		popup(MkDialog, props, {
-			done: result => {
+			done: () => {
 				resolve();
 			},
 		}, 'closed');
@@ -216,7 +215,7 @@ export function confirm(props: {
 	okText?: string;
 	cancelText?: string;
 }): Promise<{ canceled: boolean }> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		popup(MkDialog, {
 			...props,
 			showCancelButton: true,
@@ -243,7 +242,7 @@ export function actions<T extends {
 }): Promise<{ canceled: true; result: undefined; } | {
 	canceled: false; result: T[number]['value'];
 }> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		popup(MkDialog, {
 			...props,
 			actions: props.actions.map(a => ({
@@ -274,7 +273,7 @@ export function inputText(props: {
 }): Promise<{ canceled: true; result: undefined; } | {
 	canceled: false; result: string;
 }> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		popup(MkDialog, {
 			title: props.title,
 			text: props.text,
@@ -303,7 +302,7 @@ export function inputNumber(props: {
 }): Promise<{ canceled: true; result: undefined; } | {
 	canceled: false; result: number;
 }> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		popup(MkDialog, {
 			title: props.title,
 			text: props.text,
@@ -329,7 +328,7 @@ export function inputDate(props: {
 }): Promise<{ canceled: true; result: undefined; } | {
 	canceled: false; result: Date;
 }> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		popup(MkDialog, {
 			title: props.title,
 			text: props.text,
@@ -349,7 +348,7 @@ export function inputDate(props: {
 export function authenticateDialog(): Promise<{ canceled: true; result: undefined; } | {
 	canceled: false; result: { password: string; token: string | null; };
 }> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		popup(MkPasswordDialog, {}, {
 			done: result => {
 				resolve(result ? { canceled: false, result } : { canceled: true, result: undefined });
@@ -378,7 +377,7 @@ export function select<C = any>(props: {
 })): Promise<{ canceled: true; result: undefined; } | {
 	canceled: false; result: C;
 }> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		popup(MkDialog, {
 			title: props.title,
 			text: props.text,
@@ -396,7 +395,7 @@ export function select<C = any>(props: {
 }
 
 export function success(): Promise<void> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		const showing = ref(true);
 		window.setTimeout(() => {
 			showing.value = false;
@@ -411,7 +410,7 @@ export function success(): Promise<void> {
 }
 
 export function waiting(): Promise<void> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		const showing = ref(true);
 		popup(MkWaitingDialog, {
 			success: false,
@@ -423,7 +422,7 @@ export function waiting(): Promise<void> {
 }
 
 export function form(title, form) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		popup(defineAsyncComponent(() => import('@/components/MkFormDialog.vue')), { title, form }, {
 			done: result => {
 				resolve(result);
@@ -433,7 +432,7 @@ export function form(title, form) {
 }
 
 export async function selectUser(opts: { includeSelf?: boolean; localOnly?: boolean; } = {}): Promise<Misskey.entities.UserDetailed> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		popup(defineAsyncComponent(() => import('@/components/MkUserSelectDialog.vue')), {
 			includeSelf: opts.includeSelf,
 			localOnly: opts.localOnly,
@@ -446,7 +445,7 @@ export async function selectUser(opts: { includeSelf?: boolean; localOnly?: bool
 }
 
 export async function selectDriveFile(multiple: boolean): Promise<Misskey.entities.DriveFile[]> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		popup(defineAsyncComponent(() => import('@/components/MkDriveSelectDialog.vue')), {
 			type: 'file',
 			multiple,
@@ -461,7 +460,7 @@ export async function selectDriveFile(multiple: boolean): Promise<Misskey.entiti
 }
 
 export async function selectDriveFolder(multiple: boolean) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		popup(defineAsyncComponent(() => import('@/components/MkDriveSelectDialog.vue')), {
 			type: 'folder',
 			multiple,
@@ -476,7 +475,7 @@ export async function selectDriveFolder(multiple: boolean) {
 }
 
 export async function pickEmoji(src: HTMLElement | null, opts) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		popup(MkEmojiPickerDialog, {
 			src,
 			...opts,
@@ -548,7 +547,7 @@ export function popupMenu(items: MenuItem[] | Ref<MenuItem[]>, src?: HTMLElement
 	viaKeyboard?: boolean;
 	onClosing?: () => void;
 }): Promise<void> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		let dispose;
 		popup(MkPopupMenu, {
 			items,
@@ -572,7 +571,7 @@ export function popupMenu(items: MenuItem[] | Ref<MenuItem[]>, src?: HTMLElement
 
 export function contextMenu(items: MenuItem[] | Ref<MenuItem[]>, ev: MouseEvent): Promise<void> {
 	ev.preventDefault();
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		let dispose;
 		popup(MkContextMenu, {
 			items,
@@ -591,7 +590,7 @@ export function contextMenu(items: MenuItem[] | Ref<MenuItem[]>, ev: MouseEvent)
 export function post(props: Record<string, any> = {}): Promise<void> {
 	showMovedDialog();
 
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		// NOTE: MkPostFormDialogをdynamic importするとiOSでテキストエリアに自動フォーカスできない
 		// NOTE: ただ、dynamic importしない場合、MkPostFormDialogインスタンスが使いまわされ、
 		//       Vueが渡されたコンポーネントに内部的に__propsというプロパティを生やす影響で、

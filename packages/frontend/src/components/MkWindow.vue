@@ -121,7 +121,7 @@ function close() {
 	showing.value = false;
 }
 
-function onKeydown(evt) {
+function onKeydown(evt: KeyboardEvent) {
 	if (evt.which === 27) { // Esc
 		evt.preventDefault();
 		evt.stopPropagation();

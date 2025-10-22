@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div>
 	<MkStickyContainer>
-		<template #header><XHeader :actions="headerActions"/></template>
+		<template #header><XHeader/></template>
 		<MkSpacer :contentMax="900">
 			<div class="_gaps">
 				<div>
@@ -97,10 +97,6 @@ function getStatus(instance) {
 	if (instance.isNotResponding) return 'Error';
 	return 'Alive';
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.federation,

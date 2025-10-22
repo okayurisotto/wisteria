@@ -75,7 +75,7 @@ async function deleteFile(file: Misskey.entities.DriveFile) {
 	});
 }
 
-export function getDriveFileMenu(file: Misskey.entities.DriveFile, folder?: Misskey.entities.DriveFolder | null): MenuItem[] {
+export function getDriveFileMenu(file: Misskey.entities.DriveFile): MenuItem[] {
 	let menu;
 	menu = [{
 		type: 'link',

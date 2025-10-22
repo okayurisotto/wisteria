@@ -40,7 +40,7 @@ export default defineComponent({
 		},
 	},
 
-	setup(props, { slots, expose }) {
+	setup(props, { slots }) {
 		const $style = useCssModule(); // カスタムレンダラなので使っても大丈夫
 
 		function getDateText(time: string) {

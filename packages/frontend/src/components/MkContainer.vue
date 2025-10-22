@@ -93,7 +93,7 @@ const calcOmit = () => {
 	omitted.value = height > props.maxHeight;
 };
 
-const omitObserver = new ResizeObserver((entries, observer) => {
+const omitObserver = new ResizeObserver(() => {
 	calcOmit();
 });
 

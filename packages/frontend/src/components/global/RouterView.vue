@@ -55,7 +55,7 @@ const currentPageComponent = shallowRef('component' in current.route ? current.r
 const currentPageProps = ref(current.props);
 const key = ref(current.route.path + JSON.stringify(Object.fromEntries(current.props)));
 
-function onChange({ resolved, key: newKey }) {
+function onChange({ resolved }) {
 	const current = resolveNested(resolved);
 	if (current == null || 'redirect' in current.route) return;
 	currentPageComponent.value = current.route.component;

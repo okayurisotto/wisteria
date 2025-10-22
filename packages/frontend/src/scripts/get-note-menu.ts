@@ -191,11 +191,6 @@ export function getNoteMenu(props: {
 		os.success();
 	}
 
-	function copyLink(): void {
-		copyToClipboard(`${url}/notes/${appearNote.id}`);
-		os.success();
-	}
-
 	function togglePin(pin: boolean): void {
 		os.apiWithDialog(pin ? 'i/pin' : 'i/unpin', {
 			noteId: appearNote.id,
@@ -212,19 +207,6 @@ export function getNoteMenu(props: {
 	async function unclip(): Promise<void> {
 		os.apiWithDialog('clips/remove-note', { clipId: props.currentClip.id, noteId: appearNote.id });
 		props.isDeleted.value = true;
-	}
-
-	async function promote(): Promise<void> {
-		const { canceled, result: days } = await os.inputNumber({
-			title: i18n.ts.numberOfDays,
-		});
-
-		if (canceled) return;
-
-		os.apiWithDialog('admin/promo/create', {
-			noteId: appearNote.id,
-			expiresAt: Date.now() + (86400000 * days),
-		});
 	}
 
 	function share(): void {

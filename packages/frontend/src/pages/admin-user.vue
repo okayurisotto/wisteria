@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><MkPageHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><MkPageHeader v-model:tab="tab" :tabs="headerTabs"/></template>
 	<MkSpacer :contentMax="600">
 		<FormSuspense :p="init">
 			<div v-if="tab === 'overview'" class="_gaps_m">
@@ -176,11 +176,11 @@ const props = withDefaults(defineProps<{
 });
 
 const tab = ref(props.initialTab);
-const user = ref<null | Misskey.entities.UserDetailed>();
+const user = ref<Misskey.Endpoints['users/show']['response']>();
 const init = ref<ReturnType<typeof createFetcher>>();
-const info = ref();
+const info = ref<Misskey.Endpoints['admin/show-user']['response']>();
 const ips = ref<Misskey.Endpoints['admin/get-user-ips']['response'] | null>(null);
-const ap = ref<any>(null);
+const ap = ref(null);
 const moderator = ref(false);
 const silenced = ref(false);
 const suspended = ref(false);
@@ -199,38 +199,31 @@ const announcementsPagination = {
 		userId: props.userId,
 	})),
 };
-const expandedRoles = ref([]);
+const expandedRoles = ref<string[]>([]);
 
 function createFetcher() {
-	return () => Promise.all([misskeyApi('users/show', {
-		userId: props.userId,
-	}), misskeyApi('admin/show-user', {
-		userId: props.userId,
-	}), iAmAdmin ? misskeyApi('admin/get-user-ips', {
-		userId: props.userId,
-	}) : Promise.resolve(null)]).then(([_user, _info, _ips]) => {
+	return () => Promise.all([
+		misskeyApi('users/show', { userId: props.userId }),
+		misskeyApi('admin/show-user', { userId: props.userId }),
+		iAmAdmin ? misskeyApi('admin/get-user-ips', { userId: props.userId }) : Promise.resolve(null),
+	]).then(([_user, _info, _ips]) => {
 		user.value = _user;
 		info.value = _info;
 		ips.value = _ips;
-		moderator.value = info.value.isModerator;
-		silenced.value = info.value.isSilenced;
-		suspended.value = info.value.isSuspended;
-		moderationNote.value = info.value.moderationNote;
+		if (info.value.isModerator !== undefined) moderator.value = info.value.isModerator;
+		if (info.value.isSilenced !== undefined) silenced.value = info.value.isSilenced;
+		if (info.value.isSuspended !== undefined) suspended.value = info.value.isSuspended;
+		if (info.value.moderationNote !== undefined) moderationNote.value = info.value.moderationNote;
 
 		watch(moderationNote, async () => {
 			await misskeyApi('admin/update-user-note', { userId: user.value.id, text: moderationNote.value });
-			await refreshUser();
+			refreshUser();
 		});
 	});
 }
 
 function refreshUser() {
 	init.value = createFetcher();
-}
-
-async function updateRemoteUser() {
-	await os.apiWithDialog('federation/update-remote-user', { userId: user.value.id });
-	refreshUser();
 }
 
 async function resetPassword() {
@@ -251,7 +244,7 @@ async function resetPassword() {
 	}
 }
 
-async function toggleSuspend(v) {
+async function toggleSuspend(v: boolean) {
 	const confirm = await os.confirm({
 		type: 'warning',
 		text: v ? i18n.ts.suspendConfirm : i18n.ts.unsuspendConfirm,
@@ -300,25 +293,6 @@ async function unsetUserBanner() {
 		});
 	});
 	refreshUser();
-}
-
-async function deleteAllFiles() {
-	const confirm = await os.confirm({
-		type: 'warning',
-		text: i18n.ts.deleteAllFilesConfirm,
-	});
-	if (confirm.canceled) return;
-	const process = async () => {
-		await misskeyApi('admin/delete-all-files-of-a-user', { userId: user.value.id });
-		os.success();
-	};
-	await process().catch(err => {
-		os.alert({
-			type: 'error',
-			text: err.toString(),
-		});
-	});
-	await refreshUser();
 }
 
 async function deleteAccount() {
@@ -382,7 +356,7 @@ async function assignRole() {
 	refreshUser();
 }
 
-async function unassignRole(role, ev) {
+async function unassignRole(role: Misskey.entities.Role, ev: Event) {
 	os.popupMenu([{
 		text: i18n.ts.unassign,
 		icon: 'ti ti-x',
@@ -394,7 +368,7 @@ async function unassignRole(role, ev) {
 	}], ev.currentTarget ?? ev.target);
 }
 
-function toggleRoleItem(role) {
+function toggleRoleItem(role: Misskey.entities.Role) {
 	if (expandedRoles.value.includes(role.id)) {
 		expandedRoles.value = expandedRoles.value.filter(x => x !== role.id);
 	} else {
@@ -408,7 +382,7 @@ function createAnnouncement() {
 	}, {}, 'closed');
 }
 
-function editAnnouncement(announcement) {
+function editAnnouncement(announcement: Misskey.entities.Announcement) {
 	os.popup(defineAsyncComponent(() => import('@/components/MkUserAnnouncementEditDialog.vue')), {
 		user: user.value,
 		announcement,
@@ -428,8 +402,6 @@ watch(user, () => {
 		ap.value = res;
 	});
 });
-
-const headerActions = computed(() => []);
 
 const headerTabs = computed(() => [{
 	key: 'overview',

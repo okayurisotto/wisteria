@@ -220,7 +220,6 @@ import MkRange from '@/components/MkRange.vue';
 import MkFolder from '@/components/MkFolder.vue';
 import MkButton from '@/components/MkButton.vue';
 import FormSection from '@/components/form/section.vue';
-import FormLink from '@/components/form/link.vue';
 import MkLink from '@/components/MkLink.vue';
 import MkInfo from '@/components/MkInfo.vue';
 import { langs } from '@/config.js';
@@ -419,10 +418,6 @@ watch(dataSaver, (to) => {
 }, {
 	deep: true,
 });
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.general,

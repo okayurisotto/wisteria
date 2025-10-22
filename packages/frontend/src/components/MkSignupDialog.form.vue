@@ -105,7 +105,7 @@ const reCaptchaResponse = ref<string | null>(null);
 const turnstileResponse = ref<string | null>(null);
 const usernameAbortController = ref<null | AbortController>(null);
 
-const shouldDisableSubmitting = computed((): boolean => {
+const shouldDisableSubmitting = computed(() => {
 	return submitting.value ||
 		instance.enableHcaptcha && !hCaptchaResponse.value ||
 		instance.enableMcaptcha && !mCaptchaResponse.value ||

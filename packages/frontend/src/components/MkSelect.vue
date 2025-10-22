@@ -65,7 +65,6 @@ const focused = ref(false);
 const opening = ref(false);
 const changed = ref(false);
 const invalid = ref(false);
-const filled = computed(() => v.value !== '' && v.value != null);
 const inputEl = ref<HTMLObjectElement | null>(null);
 const prefixEl = ref<HTMLElement | null>(null);
 const suffixEl = ref<HTMLElement | null>(null);
@@ -76,7 +75,7 @@ const height =
 	36;
 
 const focus = () => inputEl.value?.focus();
-const onInput = (ev) => {
+const onInput = () => {
 	changed.value = true;
 };
 

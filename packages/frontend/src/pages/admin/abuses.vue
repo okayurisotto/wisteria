@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><XHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><XHeader/></template>
 	<MkSpacer :contentMax="900">
 		<div>
 			<div class="reports">
@@ -66,8 +66,6 @@ const reports = shallowRef<InstanceType<typeof MkPagination>>();
 const state = ref('unresolved');
 const reporterOrigin = ref('combined');
 const targetUserOrigin = ref('combined');
-const searchUsername = ref('');
-const searchHost = ref('');
 
 const pagination = {
 	endpoint: 'admin/abuse-user-reports' as const,
@@ -82,10 +80,6 @@ const pagination = {
 function resolved(reportId) {
 	reports.value.removeItem(reportId);
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.abuseReports,

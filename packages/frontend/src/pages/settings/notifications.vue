@@ -113,10 +113,6 @@ function testNotification(): void {
 	misskeyApi('notifications/test-notification');
 }
 
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
-
 definePageMetadata(() => ({
 	title: i18n.ts.notifications,
 	icon: 'ti ti-bell',

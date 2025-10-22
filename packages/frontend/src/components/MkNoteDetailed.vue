@@ -267,7 +267,7 @@ const canRenote = computed(() => ['public', 'home'].includes(appearNote.value.vi
 
 const keymap = {
 	'r': () => reply(true),
-	'e|a|plus': () => react(true),
+	'e|a|plus': () => react(),
 	'q': () => renote(true),
 	'esc': blur,
 	'm|o': () => showMenu(true),
@@ -348,7 +348,7 @@ function reply(viaKeyboard = false): void {
 	});
 }
 
-function react(viaKeyboard = false): void {
+function react(): void {
 	pleaseLogin();
 	showMovedDialog();
 	if (appearNote.value.reactionAcceptance === 'likeOnly') {

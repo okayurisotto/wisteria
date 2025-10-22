@@ -17,7 +17,7 @@ export function getScrollContainer(el: HTMLElement | null): HTMLElement | null {
 
 export function getStickyTop(el: HTMLElement, container: HTMLElement | null = null, top = 0) {
 	if (!el.parentElement) return top;
-	const data = el.dataset.stickyContainerHeaderHeight;
+	const data = el.dataset["stickyContainerHeaderHeight"];
 	const newTop = data ? Number(data) + top : top;
 	if (el === container) return newTop;
 	return getStickyTop(el.parentElement, container, newTop);
@@ -37,7 +37,7 @@ export function onScrollTop(el: HTMLElement, cb: () => unknown, tolerance = 1, o
 
 	const container = getScrollContainer(el) ?? window;
 
-	const onScroll = ev => {
+	const onScroll = () => {
 		if (!document.body.contains(el)) return;
 		if (isTopVisible(el, tolerance)) {
 			cb();
@@ -61,7 +61,7 @@ export function onScrollBottom(el: HTMLElement, cb: () => unknown, tolerance = 1
 	}
 
 	const containerOrWindow = container ?? window;
-	const onScroll = ev => {
+	const onScroll = () => {
 		if (!document.body.contains(el)) return;
 		if (isBottomVisible(el, 1, container)) {
 			cb();

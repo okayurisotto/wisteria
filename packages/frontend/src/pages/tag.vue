@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><MkPageHeader/></template>
 	<MkSpacer :contentMax="800">
 		<MkNotes ref="notes" class="" :pagination="pagination"/>
 	</MkSpacer>
@@ -50,10 +50,6 @@ async function post() {
 	defaultStore.set('postFormWithHashtags', false);
 	notes.value?.pagingComponent?.reload();
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: props.tag,

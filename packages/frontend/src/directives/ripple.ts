@@ -5,9 +5,10 @@
 
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { popup } from '@/os.js';
+import type { Directive } from 'vue';
 
 export default {
-	mounted(el, binding, vn) {
+	mounted(el, binding) {
 		// 明示的に false であればバインドしない
 		if (binding.value === false) return;
 
@@ -20,4 +21,4 @@ export default {
 			popup(MkRippleEffect, { x, y }, {}, 'end');
 		});
 	},
-};
+} as Directive;

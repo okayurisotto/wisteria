@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><MkPageHeader/></template>
 	<MkSpacer :contentMax="800">
 		<MkPostForm
 			v-if="state === 'writing'"
@@ -32,7 +32,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 // SPECIFICATION: https://misskey-hub.net/docs/for-users/features/share-form/
 
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkButton from '@/components/MkButton.vue';
 import MkPostForm from '@/components/MkPostForm.vue';
@@ -167,10 +167,6 @@ function onPosted(): void {
 	state.value = 'posted';
 	postMessageToParentWindow('misskey:shareForm:shareCompleted');
 }
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: i18n.ts.share,

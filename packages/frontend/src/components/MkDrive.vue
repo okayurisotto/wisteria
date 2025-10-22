@@ -60,7 +60,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					@dragend="isDragSource = false"
 				/>
 				<!-- SEE: https://stackoverflow.com/questions/18744164/flex-box-align-last-row-to-grid -->
-				<div v-for="(n, i) in 16" :key="i" :class="$style.padding"></div>
+				<div v-for="(, i) in 16" :key="i" :class="$style.padding"></div>
 				<MkButton v-if="moreFolders" ref="moreFolders" @click="fetchMoreFolders">{{ i18n.ts.loadMore }}</MkButton>
 			</div>
 			<div v-show="files.length > 0" ref="filesContainer" :class="$style.files">
@@ -78,7 +78,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					@dragend="isDragSource = false"
 				/>
 				<!-- SEE: https://stackoverflow.com/questions/18744164/flex-box-align-last-row-to-grid -->
-				<div v-for="(n, i) in 16" :key="i" :class="$style.padding"></div>
+				<div v-for="(, i) in 16" :key="i" :class="$style.padding"></div>
 				<MkButton v-show="moreFiles" ref="loadMoreFiles" @click="fetchMoreFiles">{{ i18n.ts.loadMore }}</MkButton>
 			</div>
 			<div v-if="files.length == 0 && folders.length == 0 && !fetching" :class="$style.empty">

@@ -20,7 +20,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					{{ t.title }}
 				</div>
 				<Transition
-					v-else mode="in-out" @enter="enter" @afterEnter="afterEnter" @leave="leave"
+					v-else mode="in-out" @enter="enter" @leave="leave"
 					@afterLeave="afterLeave"
 				>
 					<div v-show="t.key === tab" :class="[$style.tabTitle, $style.animate]">{{ t.title }}</div>
@@ -74,7 +74,7 @@ const el = shallowRef<HTMLElement | null>(null);
 const tabRefs: Record<string, HTMLElement | null> = {};
 const tabHighlightEl = shallowRef<HTMLElement | null>(null);
 
-function onTabMousedown(tab: Tab, ev: MouseEvent): void {
+function onTabMousedown(tab: Tab, _ev: MouseEvent): void {
 	// ユーザビリティの観点からmousedown時にはonClickは呼ばない
 	if (tab.key) {
 		emit('update:tab', tab.key);
@@ -137,10 +137,6 @@ async function enter(element: Element) {
 	setTimeout(renderTab, 170);
 }
 
-function afterEnter(element: Element) {
-	//el.style.width = '';
-}
-
 async function leave(element: Element) {
 	const el = element as HTMLElement;
 	const elementWidth = el.getBoundingClientRect().width;
@@ -169,7 +165,7 @@ onMounted(() => {
 	});
 
 	if (props.rootEl) {
-		ro2 = new ResizeObserver((entries, observer) => {
+		ro2 = new ResizeObserver(() => {
 			if (document.body.contains(el.value as HTMLElement)) {
 				nextTick(() => renderTab());
 			}

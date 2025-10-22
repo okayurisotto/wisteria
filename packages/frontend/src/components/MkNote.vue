@@ -160,7 +160,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, onMounted, ref, shallowRef, type Ref, watch, provide } from 'vue';
+import { computed, inject, ref, shallowRef, type Ref, watch, provide } from 'vue';
 import * as mfm from 'mfm-js';
 import * as Misskey from 'misskey-js';
 import MkNoteSub from '@/components/MkNoteSub.vue';
@@ -271,7 +271,7 @@ function checkMute(noteToCheck: Misskey.entities.Note, mutedWords: Array<string 
 
 const keymap = {
 	'r': () => reply(true),
-	'e|a|plus': () => react(true),
+	'e|a|plus': () => react(),
 	'q': () => renote(true),
 	'up|k|shift+tab': focusBefore,
 	'down|j|tab': focusAfter,
@@ -344,7 +344,7 @@ function reply(viaKeyboard = false): void {
 	});
 }
 
-function react(viaKeyboard = false): void {
+function react(): void {
 	pleaseLogin();
 	showMovedDialog();
 	if (appearNote.value.reactionAcceptance === 'likeOnly') {
@@ -499,13 +499,6 @@ function focusBefore() {
 
 function focusAfter() {
 	focusNext(rootEl.value ?? null);
-}
-
-function readPromo() {
-	misskeyApi('promo/read', {
-		noteId: appearNote.value.id,
-	});
-	isDeleted.value = true;
 }
 
 function emitUpdReaction(emoji: string, delta: number) {

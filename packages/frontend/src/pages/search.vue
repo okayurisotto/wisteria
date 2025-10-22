@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><MkPageHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><MkPageHeader v-model:tab="tab" :tabs="headerTabs"/></template>
 
 	<MkHorizontalSwipe v-model:tab="tab" :tabs="headerTabs">
 		<MkSpacer v-if="tab === 'note'" key="note" :contentMax="800">
@@ -39,8 +39,6 @@ const XUser = defineAsyncComponent(() => import('./search.user.vue'));
 const tab = ref('note');
 
 const notesSearchAvailable = (($i == null && instance.policies.canSearchNotes) || ($i != null && $i.policies.canSearchNotes));
-
-const headerActions = computed(() => []);
 
 const headerTabs = computed(() => [{
 	key: 'note',

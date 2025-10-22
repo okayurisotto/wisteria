@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><MkPageHeader/></template>
 	<MkSpacer :contentMax="700">
 		<Transition :name="defaultStore.state.animation ? 'fade' : ''" mode="out-in">
 			<div v-if="page" :key="page.id" class="xcukqgmh">
@@ -172,10 +172,6 @@ function pin(pin) {
 }
 
 watch(() => path.value, fetchPage, { immediate: true });
-
-const headerActions = computed(() => []);
-
-const headerTabs = computed(() => []);
 
 definePageMetadata(() => ({
 	title: page.value ? page.value.title || page.value.name : i18n.ts.pages,

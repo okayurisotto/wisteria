@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkStickyContainer>
-	<template #header><XHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
+	<template #header><XHeader v-model:tab="tab" :tabs="headerTabs"/></template>
 	<MkSpacer :contentMax="700">
 		<FormSuspense :p="init">
 			<MkTextarea v-if="tab === 'block'" v-model="blockedHosts">
@@ -53,8 +53,6 @@ function save() {
 		fetchInstance();
 	});
 }
-
-const headerActions = computed(() => []);
 
 const headerTabs = computed(() => [{
 	key: 'block',
