@@ -22,7 +22,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { ref, useTemplateRef } from 'vue';
+import { useResizeObserver } from '@vueuse/core';
 import MkModal from './MkModal.vue';
 
 const props = withDefaults(defineProps<{
@@ -66,21 +67,10 @@ const onKeydown = (evt) => {
 	}
 };
 
-const ro = new ResizeObserver(() => {
+useResizeObserver(rootEl, () => {
 	if (rootEl.value == null || headerEl.value == null) return;
 	bodyWidth.value = rootEl.value.offsetWidth;
 	bodyHeight.value = rootEl.value.offsetHeight - headerEl.value.offsetHeight;
-});
-
-onMounted(() => {
-	if (rootEl.value == null || headerEl.value == null) return;
-	bodyWidth.value = rootEl.value.offsetWidth;
-	bodyHeight.value = rootEl.value.offsetHeight - headerEl.value.offsetHeight;
-	ro.observe(rootEl.value);
-});
-
-onUnmounted(() => {
-	ro.disconnect();
 });
 
 defineExpose({

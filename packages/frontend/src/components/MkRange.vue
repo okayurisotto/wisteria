@@ -22,8 +22,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch, useTemplateRef } from 'vue';
+import { computed, defineAsyncComponent, ref, watch, useTemplateRef } from 'vue';
 import * as os from '@/os.js';
+import { useResizeObserver } from '@vueuse/core';
 
 const props = withDefaults(defineProps<{
 	modelValue: number;
@@ -80,17 +81,8 @@ const calcThumbPosition = () => {
 };
 watch([steppedRawValue, containerEl], calcThumbPosition);
 
-let ro: ResizeObserver | undefined;
-
-onMounted(() => {
-	ro = new ResizeObserver(() => {
-		calcThumbPosition();
-	});
-	if (containerEl.value) ro.observe(containerEl.value);
-});
-
-onUnmounted(() => {
-	if (ro) ro.disconnect();
+useResizeObserver(containerEl, () => {
+	calcThumbPosition();
 });
 
 const steps = computed(() => {

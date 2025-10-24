@@ -71,6 +71,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { useResizeObserver } from '@vueuse/core';
 
 const particles = ref<{
 	id: string,
@@ -85,15 +86,14 @@ const width = ref(0);
 const height = ref(0);
 const colors = ['#FF1493', '#00FFFF', '#FFE202', '#FFE202', '#FFE202'];
 let stop = false;
-let ro: ResizeObserver | undefined;
+
+useResizeObserver(el, () => {
+	if (el.value == null) return;
+	width.value = el.value.offsetWidth + 64;
+	height.value = el.value.offsetHeight + 64;
+});
 
 onMounted(() => {
-	ro = new ResizeObserver(() => {
-		if (el.value == null) return;
-		width.value = el.value.offsetWidth + 64;
-		height.value = el.value.offsetHeight + 64;
-	});
-	if (el.value) ro.observe(el.value);
 	const add = () => {
 		if (stop) return;
 		const x = (Math.random() * (width.value - 64));
@@ -120,7 +120,6 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-	if (ro) ro.disconnect();
 	stop = true;
 });
 </script>

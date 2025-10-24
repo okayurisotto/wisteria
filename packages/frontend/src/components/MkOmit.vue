@@ -13,8 +13,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { ref, useTemplateRef } from 'vue';
 import { i18n } from '@/i18n.js';
+import { useResizeObserver } from '@vueuse/core';
 
 const props = withDefaults(defineProps<{
 	maxHeight?: number;
@@ -26,22 +27,9 @@ const content = useTemplateRef('content');
 const omitted = ref(false);
 const ignoreOmit = ref(false);
 
-const calcOmit = () => {
+useResizeObserver(content, () => {
 	if (omitted.value || ignoreOmit.value || content.value == null) return;
 	omitted.value = content.value.offsetHeight > props.maxHeight;
-};
-
-const omitObserver = new ResizeObserver(() => {
-	calcOmit();
-});
-
-onMounted(() => {
-	calcOmit();
-	omitObserver.observe(content.value as HTMLElement);
-});
-
-onUnmounted(() => {
-	omitObserver.disconnect();
 });
 </script>
 

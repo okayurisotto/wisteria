@@ -27,7 +27,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onActivated, onMounted, onUnmounted, provide, watch, ref, computed } from 'vue';
+import { onActivated, onMounted, provide, watch, ref, computed } from 'vue';
+import { useResizeObserver } from '@vueuse/core';
 import { i18n } from '@/i18n.js';
 import MkSuperMenu from '@/components/MkSuperMenu.vue';
 import MkInfo from '@/components/MkInfo.vue';
@@ -67,9 +68,9 @@ misskeyApi('admin/abuse-user-reports', {
 });
 
 const NARROW_THRESHOLD = 600;
-const ro = new ResizeObserver((entries) => {
-	if (entries.length === 0) return;
-	narrow.value = entries[0].borderBoxSize[0].inlineSize < NARROW_THRESHOLD;
+useResizeObserver(el, ([entry]) => {
+	if (entry === undefined) return;
+	narrow.value = entry.borderBoxSize[0].inlineSize < NARROW_THRESHOLD;
 });
 
 const menuDef = computed(() => [{
@@ -218,8 +219,6 @@ watch(narrow.value, () => {
 });
 
 onMounted(() => {
-	ro.observe(el.value);
-
 	narrow.value = el.value.offsetWidth < NARROW_THRESHOLD;
 	if (currentPage.value?.route.name == null && !narrow.value) {
 		router.push('/admin/overview');
@@ -231,10 +230,6 @@ onActivated(() => {
 	if (currentPage.value?.route.name == null && !narrow.value) {
 		router.push('/admin/overview');
 	}
-});
-
-onUnmounted(() => {
-	ro.disconnect();
 });
 
 watch(router.currentRef, (to) => {

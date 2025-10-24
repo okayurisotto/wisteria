@@ -18,8 +18,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, provide, inject, type Ref, ref, watch, useTemplateRef } from 'vue';
-
+import { onMounted, provide, inject, type Ref, ref, watch, useTemplateRef } from 'vue';
+import { useResizeObserver } from '@vueuse/core';
 import { CURRENT_STICKY_BOTTOM, CURRENT_STICKY_TOP } from '@/const.js';
 
 const rootEl = useTemplateRef('rootEl');
@@ -51,7 +51,7 @@ const calc = () => {
 	}
 };
 
-const observer = new ResizeObserver(() => {
+useResizeObserver([headerEl, footerEl], () => {
 	window.setTimeout(() => {
 		calc();
 	}, 100);
@@ -80,19 +80,13 @@ onMounted(() => {
 		headerEl.value.style.position = 'sticky';
 		headerEl.value.style.top = 'var(--stickyTop, 0)';
 		headerEl.value.style.zIndex = '1000';
-		observer.observe(headerEl.value);
 	}
 
 	if (footerEl.value != null) {
 		footerEl.value.style.position = 'sticky';
 		footerEl.value.style.bottom = 'var(--stickyBottom, 0)';
 		footerEl.value.style.zIndex = '1000';
-		observer.observe(footerEl.value);
 	}
-});
-
-onUnmounted(() => {
-	observer.disconnect();
 });
 
 defineExpose({

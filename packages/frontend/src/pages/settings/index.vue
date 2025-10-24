@@ -26,7 +26,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script setup lang="ts">
-import { computed, onActivated, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
+import { computed, onActivated, onMounted, ref, useTemplateRef, watch } from 'vue';
+import { useResizeObserver } from '@vueuse/core';
 import { i18n } from '@/i18n.js';
 import MkSuperMenu from '@/components/MkSuperMenu.vue';
 import { signout } from '@/account.js';
@@ -51,9 +52,9 @@ const NARROW_THRESHOLD = 600;
 
 const currentPage = computed(() => router.currentRef.value.child);
 
-const ro = new ResizeObserver((entries) => {
-	if (entries.length === 0) return;
-	narrow.value = entries[0].borderBoxSize[0].inlineSize < NARROW_THRESHOLD;
+useResizeObserver(el, ([entry]) => {
+	if (entry === undefined) return;
+	narrow.value = entry[0].borderBoxSize[0].inlineSize < NARROW_THRESHOLD;
 });
 
 const menuDef = computed(() => [{
@@ -188,8 +189,6 @@ watch(narrow, () => {
 });
 
 onMounted(() => {
-	ro.observe(el.value);
-
 	narrow.value = el.value.offsetWidth < NARROW_THRESHOLD;
 
 	if (!narrow.value && currentPage.value?.route.name == null) {
@@ -203,10 +202,6 @@ onActivated(() => {
 	if (!narrow.value && currentPage.value?.route.name == null) {
 		router.replace('/settings/profile');
 	}
-});
-
-onUnmounted(() => {
-	ro.disconnect();
 });
 
 watch(router.currentRef, (to) => {

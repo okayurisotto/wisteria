@@ -54,7 +54,8 @@ export type Tab = {
 </script>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, watch, nextTick, useTemplateRef } from 'vue';
+import { onMounted, watch, nextTick, useTemplateRef } from 'vue';
+import { useResizeObserver } from '@vueuse/core';
 import { defaultStore } from '@/store.js';
 
 const props = withDefaults(defineProps<{
@@ -152,7 +153,11 @@ function afterLeave(element: Element) {
 	el.style.width = '';
 }
 
-let ro2: ResizeObserver | null;
+useResizeObserver(props.rootEl, () => {
+	if (document.body.contains(el.value as HTMLElement)) {
+		nextTick(() => renderTab());
+	}
+});
 
 onMounted(() => {
 	watch([() => props.tab, () => props.tabs], () => {
@@ -163,19 +168,6 @@ onMounted(() => {
 	}, {
 		immediate: true,
 	});
-
-	if (props.rootEl) {
-		ro2 = new ResizeObserver(() => {
-			if (document.body.contains(el.value as HTMLElement)) {
-				nextTick(() => renderTab());
-			}
-		});
-		ro2.observe(props.rootEl);
-	}
-});
-
-onUnmounted(() => {
-	if (ro2) ro2.disconnect();
 });
 </script>
 

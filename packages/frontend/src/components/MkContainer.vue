@@ -39,7 +39,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
+import { onMounted, ref, useTemplateRef, watch } from 'vue';
+import { useResizeObserver } from '@vueuse/core';
 import { defaultStore } from '@/store.js';
 import { i18n } from '@/i18n.js';
 
@@ -86,15 +87,11 @@ function afterLeave(el) {
 	el.style.height = null;
 }
 
-const calcOmit = () => {
+useResizeObserver(contentEl, () => {
 	if (omitted.value || ignoreOmit.value || props.maxHeight == null) return;
 	if (!contentEl.value) return;
 	const height = contentEl.value.offsetHeight;
 	omitted.value = height > props.maxHeight;
-};
-
-const omitObserver = new ResizeObserver(() => {
-	calcOmit();
 });
 
 onMounted(() => {
@@ -112,14 +109,6 @@ onMounted(() => {
 	});
 
 	if (rootEl.value) rootEl.value.style.setProperty('--maxHeight', props.maxHeight + 'px');
-
-	calcOmit();
-
-	if (contentEl.value) omitObserver.observe(contentEl.value);
-});
-
-onUnmounted(() => {
-	omitObserver.disconnect();
 });
 </script>
 
