@@ -50,42 +50,6 @@ export interface paths {
      */
     post: operations["admin/accounts/find-by-email"];
   };
-  "/admin/ad/create": {
-    /**
-     * admin/ad/create
-     * @description No description provided.
-     *
-     * **Credential required**: *Yes* / **Permission**: *write:admin:ad*
-     */
-    post: operations["admin/ad/create"];
-  };
-  "/admin/ad/delete": {
-    /**
-     * admin/ad/delete
-     * @description No description provided.
-     *
-     * **Credential required**: *Yes* / **Permission**: *write:admin:ad*
-     */
-    post: operations["admin/ad/delete"];
-  };
-  "/admin/ad/list": {
-    /**
-     * admin/ad/list
-     * @description No description provided.
-     *
-     * **Credential required**: *Yes* / **Permission**: *read:admin:ad*
-     */
-    post: operations["admin/ad/list"];
-  };
-  "/admin/ad/update": {
-    /**
-     * admin/ad/update
-     * @description No description provided.
-     *
-     * **Credential required**: *Yes* / **Permission**: *write:admin:ad*
-     */
-    post: operations["admin/ad/update"];
-  };
   "/admin/announcements/create": {
     /**
      * admin/announcements/create
@@ -2893,18 +2857,6 @@ export interface components {
         id: string;
       };
     };
-    Ad: {
-      id: components["schemas"]["Id"];
-      expiresAt: string;
-      startsAt: string;
-      place: string;
-      priority: string;
-      ratio: number;
-      url: string;
-      imageUrl: string;
-      memo: string;
-      dayOfWeek: number;
-    };
     Announcement: {
       id: components["schemas"]["Id"];
       createdAt: string;
@@ -3868,7 +3820,6 @@ export interface operations {
             policies?: {
               [key: string]: unknown;
             };
-            notesPerOneAd?: number;
             backgroundImageUrl?: string | null;
             deeplAuthKey?: string | null;
             deeplIsPro?: boolean;
@@ -4290,240 +4241,6 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["UserDetailedNotMe"];
         };
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
-   * admin/ad/create
-   * @description No description provided.
-   *
-   * **Credential required**: *Yes* / **Permission**: *write:admin:ad*
-   */
-  "admin/ad/create": {
-    requestBody: {
-      content: {
-        "application/json": {
-          url: string;
-          memo: string;
-          place: string;
-          priority: string;
-          ratio: number;
-          expiresAt: number;
-          startsAt: number;
-          imageUrl: string;
-          dayOfWeek: number;
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (with results) */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Ad"];
-        };
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
-   * admin/ad/delete
-   * @description No description provided.
-   *
-   * **Credential required**: *Yes* / **Permission**: *write:admin:ad*
-   */
-  "admin/ad/delete": {
-    requestBody: {
-      content: {
-        "application/json": {
-          id: components["schemas"]["Id"];
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (without any results) */
-      204: {
-        content: never;
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
-   * admin/ad/list
-   * @description No description provided.
-   *
-   * **Credential required**: *Yes* / **Permission**: *read:admin:ad*
-   */
-  "admin/ad/list": {
-    requestBody: {
-      content: {
-        "application/json": {
-          /** @default 10 */
-          limit?: number;
-          sinceId?: components["schemas"]["Id"];
-          untilId?: components["schemas"]["Id"];
-          /** @default null */
-          publishing?: boolean | null;
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (with results) */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Ad"][];
-        };
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
-   * admin/ad/update
-   * @description No description provided.
-   *
-   * **Credential required**: *Yes* / **Permission**: *write:admin:ad*
-   */
-  "admin/ad/update": {
-    requestBody: {
-      content: {
-        "application/json": {
-          id: components["schemas"]["Id"];
-          memo: string;
-          url: string;
-          imageUrl: string;
-          place: string;
-          priority: string;
-          ratio: number;
-          expiresAt: number;
-          startsAt: number;
-          dayOfWeek: number;
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (without any results) */
-      204: {
-        content: never;
       };
       /** @description Client error */
       400: {
@@ -7837,7 +7554,6 @@ export interface operations {
           bannedEmailDomains?: string[];
           preservedUsernames?: string[];
           manifestJsonOverride?: string;
-          notesPerOneAd?: number;
           silencedHosts?: string[] | null;
           [key: string]: unknown;
         };
@@ -16391,7 +16107,6 @@ export interface operations {
                 dayOfWeek: number;
                 [key: string]: unknown;
               }[];
-            notesPerOneAd: number;
             requireSetup?: boolean;
             enableEmail: boolean;
             enableServiceWorker: boolean;

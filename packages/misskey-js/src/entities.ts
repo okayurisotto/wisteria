@@ -2,7 +2,6 @@ import type { ModerationLogPayloads } from './consts.js';
 import type { components } from './autogen.js';
 
 export type Error = components['schemas']['Error'];
-export type Ad = components['schemas']['Ad'];
 export type Announcement = components['schemas']['Announcement'];
 export type Antenna = components['schemas']['Antenna'];
 export type App = components['schemas']['App'];
