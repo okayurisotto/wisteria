@@ -93,7 +93,6 @@ export const meta = {
 		enableIdenticonGeneration: z.boolean().optional(),
 		manifestJsonOverride: z.string().optional(),
 		policies: z.record(z.string(), z.unknown()).optional(),
-		notesPerOneAd: z.number().optional(),
 		backgroundImageUrl: z.string().nullable().optional(),
 		deeplAuthKey: z.string().nullable().optional(),
 		deeplIsPro: z.boolean().optional(),
@@ -227,7 +226,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				bannedEmailDomains: instance.bannedEmailDomains,
 				policies: { ...DEFAULT_POLICIES, ...instance.policies },
 				manifestJsonOverride: instance.manifestJsonOverride,
-				notesPerOneAd: instance.notesPerOneAd,
 			};
 		});
 	}

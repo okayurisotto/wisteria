@@ -3,10 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Brackets } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import JSON5 from 'json5';
-import type { AdsRepository } from '@/models/_.js';
 import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { MetaService } from '@/core/MetaService.js';
@@ -68,7 +66,6 @@ export const meta = {
 			imageUrl: z.string()/* format: url */,
 			dayOfWeek: z.number().int(),
 		}).array(),
-		notesPerOneAd: z.number(),
 		requireSetup: z.boolean().optional(),
 		enableEmail: z.boolean(),
 		enableServiceWorker: z.boolean(),
@@ -107,25 +104,12 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 		@Inject(DI.config)
 		private readonly config: Config,
 
-		@Inject(DI.adsRepository)
-		private readonly adsRepository: AdsRepository,
-
 		private readonly metaService: MetaService,
 		private readonly instanceActorService: InstanceActorService,
 		private readonly userLiteEntityService: UserLiteEntityService,
 	) {
 		super(meta, paramDef, async (ps) => {
 			const instance = await this.metaService.fetch();
-
-			const ads = await this.adsRepository.createQueryBuilder('ads')
-				.where('ads.expiresAt > :now', { now: new Date() })
-				.andWhere('ads.startsAt <= :now', { now: new Date() })
-				.andWhere(new Brackets((qb) => {
-					// 曜日のビットフラグを確認する
-					qb.where('ads.dayOfWeek & :dayOfWeek > 0', { dayOfWeek: 1 << new Date().getDay() })
-						.orWhere('ads.dayOfWeek = 0');
-				}))
-				.getMany();
 
 			const response: z.infer<(typeof meta)['res']> = {
 				maintainerName: instance.maintainerName,
@@ -173,15 +157,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				defaultDarkTheme: instance.defaultDarkTheme !== null
 					? JSON.stringify(JSON5.parse(instance.defaultDarkTheme))
 					: null,
-				ads: ads.map(ad => ({
-					id: ad.id,
-					url: ad.url,
-					place: ad.place,
-					ratio: ad.ratio,
-					imageUrl: ad.imageUrl,
-					dayOfWeek: ad.dayOfWeek,
-				})),
-				notesPerOneAd: instance.notesPerOneAd,
+				ads: [],
 				enableEmail: false,
 				enableServiceWorker: instance.enableServiceWorker,
 

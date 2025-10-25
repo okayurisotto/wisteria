@@ -112,7 +112,6 @@ export const paramDef = z.object({
 	bannedEmailDomains: z.string().array().optional(),
 	preservedUsernames: z.string().array().optional(),
 	manifestJsonOverride: z.string().optional(),
-	notesPerOneAd: z.number().int().optional(),
 	silencedHosts: z.string().array().nullable().optional(),
 });
 
@@ -501,10 +500,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 			if (ps.manifestJsonOverride !== undefined) {
 				set.manifestJsonOverride = ps.manifestJsonOverride;
-			}
-
-			if (ps.notesPerOneAd !== undefined) {
-				set.notesPerOneAd = ps.notesPerOneAd;
 			}
 
 			if (ps.bannedEmailDomains !== undefined) {
