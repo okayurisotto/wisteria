@@ -95,22 +95,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</template>
 						</div>
 					</FormSection>
-
-					<FormSection>
-						<template #label>{{ i18n.ts._ad.adsSettings }}</template>
-
-						<div class="_gaps_m">
-							<div class="_gaps_s">
-								<MkInput v-model="notesPerOneAd" :min="0" type="number">
-									<template #label>{{ i18n.ts._ad.notesPerOneAd }}</template>
-									<template #caption>{{ i18n.ts._ad.setZeroToDisable }}</template>
-								</MkInput>
-								<MkInfo v-if="notesPerOneAd > 0 && notesPerOneAd < 20" :warn="true">
-									{{ i18n.ts._ad.adsTooClose }}
-								</MkInfo>
-							</div>
-						</div>
-					</FormSection>
 				</div>
 			</FormSuspense>
 		</MkSpacer>
@@ -155,7 +139,6 @@ const cacheRemoteSensitiveFiles = ref<boolean>(false);
 const enableServiceWorker = ref<boolean>(false);
 const swPublicKey = ref<string | null>(null);
 const swPrivateKey = ref<string | null>(null);
-const notesPerOneAd = ref<number>(0);
 
 async function init(): Promise<void> {
 	const meta = await misskeyApi('admin/meta');
@@ -172,7 +155,6 @@ async function init(): Promise<void> {
 	enableServiceWorker.value = meta.enableServiceWorker;
 	swPublicKey.value = meta.swPublickey;
 	swPrivateKey.value = meta.swPrivateKey;
-	notesPerOneAd.value = meta.notesPerOneAd;
 }
 
 async function save(): void {
@@ -190,7 +172,6 @@ async function save(): void {
 		enableServiceWorker: enableServiceWorker.value,
 		swPublicKey: swPublicKey.value,
 		swPrivateKey: swPrivateKey.value,
-		notesPerOneAd: notesPerOneAd.value,
 	});
 
 	fetchInstance();

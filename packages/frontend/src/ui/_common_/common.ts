@@ -48,12 +48,7 @@ export function openInstanceMenu(ev: MouseEvent) {
 		text: i18n.ts.federation,
 		icon: 'ti ti-whirl',
 		to: '/about#federation',
-	}, { type: 'divider' }, {
-		type: 'link',
-		text: i18n.ts.ads,
-		icon: 'ti ti-ad',
-		to: '/ads',
-	}, ($i && ($i.isAdmin || $i.policies.canInvite) && instance.disableRegistration) ? {
+	}, { type: 'divider' }, ($i && ($i.isAdmin || $i.policies.canInvite) && instance.disableRegistration) ? {
 		type: 'link',
 		to: '/invite',
 		text: i18n.ts.invite,

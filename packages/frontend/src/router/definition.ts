@@ -209,9 +209,6 @@ const routes: RouteDef[] = [{
 	name: 'invite',
 	component: page(() => import('@/pages/invite.vue')),
 }, {
-	path: parsePath('/ads'),
-	component: page(() => import('@/pages/ads.vue')),
-}, {
 	path: parsePath('/roles/:role'),
 	component: page(() => import('@/pages/role.vue')),
 }, {
@@ -321,10 +318,6 @@ const routes: RouteDef[] = [{
 		path: parsePath('/announcements'),
 		name: 'announcements',
 		component: page(() => import('@/pages/admin/announcements.vue')),
-	}, {
-		path: parsePath('/ads'),
-		name: 'ads',
-		component: page(() => import('@/pages/admin/ads.vue')),
 	}, {
 		path: parsePath('/roles/:id/edit'),
 		name: 'roles',

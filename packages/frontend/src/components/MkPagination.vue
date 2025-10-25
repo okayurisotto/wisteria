@@ -208,11 +208,6 @@ async function init(): Promise<void> {
 		limit: props.pagination.limit ?? 10,
 		allowPartial: true,
 	}).then(res => {
-		for (let i = 0; i < res.length; i++) {
-			const item = res[i];
-			if (i === 3) item._shouldInsertAd_ = true;
-		}
-
 		if (res.length === 0 || props.pagination.noPaging) {
 			concatItems(res);
 			more.value = false;
@@ -248,11 +243,6 @@ const fetchMore = async (): Promise<void> => {
 			untilId: Array.from(items.value.keys()).at(-1),
 		}),
 	}).then(res => {
-		for (let i = 0; i < res.length; i++) {
-			const item = res[i];
-			if (i === 10) item._shouldInsertAd_ = true;
-		}
-
 		const reverseConcat = _res => {
 			const oldHeight = scrollableElement.value ? scrollableElement.value.scrollHeight : getBodyScrollHeight();
 			const oldScroll = scrollableElement.value ? scrollableElement.value.scrollTop : window.scrollY;

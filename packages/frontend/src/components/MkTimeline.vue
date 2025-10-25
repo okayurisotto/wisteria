@@ -24,7 +24,6 @@ import MkPullToRefresh from '@/components/MkPullToRefresh.vue';
 import { useStream } from '@/stream.js';
 import * as sound from '@/scripts/sound.js';
 import { $i } from '@/account.js';
-import { instance } from '@/instance.js';
 import { defaultStore } from '@/store.js';
 import type { Paging } from '@/components/MkPagination.vue';
 
@@ -72,10 +71,6 @@ function prepend(note) {
 	if (tlComponent.value == null) return;
 
 	tlNotesCount++;
-
-	if (instance.notesPerOneAd > 0 && tlNotesCount % instance.notesPerOneAd === 0) {
-		note._shouldInsertAd_ = true;
-	}
 
 	tlComponent.value.pagingComponent?.prepend(note);
 

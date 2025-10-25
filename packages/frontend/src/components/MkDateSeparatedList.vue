@@ -5,7 +5,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts">
 import { defineComponent, h, type PropType, TransitionGroup, useCssModule } from 'vue';
-import MkAd from '@/components/global/MkAd.vue';
 import { isDebuggerEnabled, stackTraceInstances } from '@/debug.js';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
@@ -92,14 +91,7 @@ export default defineComponent({
 
 				return [el, separator];
 			} else {
-				if (props.ad && item._shouldInsertAd_) {
-					return [h(MkAd, {
-						key: item.id + ':ad',
-						prefer: ['horizontal', 'horizontal-big'],
-					}), el];
-				} else {
-					return el;
-				}
+				return el;
 			}
 		});
 
