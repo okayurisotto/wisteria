@@ -16,6 +16,10 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"correctness": {
+				"noUnusedImports": "off",
+				"noUnusedVariables": "off"
+			},
 			"style": {
 				"useImportType": "off"
 			}
