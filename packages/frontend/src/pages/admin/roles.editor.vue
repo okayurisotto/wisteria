@@ -518,7 +518,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { watch, ref, computed } from 'vue';
-import { throttle } from 'throttle-debounce';
+import { useThrottleFn } from '@vueuse/core';
 import RolesEditorFormula from './RolesEditorFormula.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkColorInput from '@/components/MkColorInput.vue';
@@ -576,7 +576,7 @@ function matchQuery(keywords: string[]): boolean {
 	return keywords.some(keyword => keyword.toLowerCase().includes(q.value.toLowerCase()));
 }
 
-const save = throttle(100, () => {
+const save = useThrottleFn(() => {
 	const data = {
 		name: role.value.name,
 		description: role.value.description,
@@ -595,7 +595,7 @@ const save = throttle(100, () => {
 	};
 
 	emit('update:modelValue', data);
-});
+}, 100);
 
 watch(role, save, { deep: true });
 </script>

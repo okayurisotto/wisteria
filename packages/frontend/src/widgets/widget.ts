@@ -4,7 +4,7 @@
  */
 
 import { reactive, watch } from 'vue';
-import { throttle } from 'throttle-debounce';
+import { useThrottleFn } from '@vueuse/core';
 import type { Form, GetFormResultType } from '@/scripts/form.js';
 import * as os from '@/os.js';
 import { deepClone } from '@/scripts/clone.js';
@@ -51,9 +51,9 @@ export const useWidgetPropsManager = <F extends Form & Record<string, { default:
 		mergeProps();
 	}, { deep: true, immediate: true });
 
-	const save = throttle(3000, () => {
+	const save = useThrottleFn(() => {
 		emit('updateProps', widgetProps);
-	});
+	}, 3000);
 
 	const configure = async () => {
 		const form = deepClone(propsDef);

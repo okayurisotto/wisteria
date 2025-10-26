@@ -33,7 +33,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { ref, watch, toRefs, nextTick, useTemplateRef } from 'vue';
-import { debounce } from 'throttle-debounce';
+import { useDebounceFn } from '@vueuse/core';
 import MkButton from '@/components/MkButton.vue';
 import { i18n } from '@/i18n.js';
 import XCode from '@/components/MkCode.core.vue';
@@ -109,7 +109,7 @@ const updated = () => {
 	emit('update:modelValue', v.value);
 };
 
-const debouncedUpdated = debounce(1000, updated);
+const debouncedUpdated = useDebounceFn(updated, 1000);
 
 watch(modelValue, newValue => {
 	v.value = newValue ?? '';
