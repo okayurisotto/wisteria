@@ -100,5 +100,6 @@ onMounted(() => {
 	border: solid 0.5px var(--divider);
 	pointer-events: none;
 	transform-origin: center center;
+	background-color: var(--panel);
 }
 </style>
