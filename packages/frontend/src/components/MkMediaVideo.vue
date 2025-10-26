@@ -400,7 +400,6 @@ onDeactivated(() => {
 	font: inherit;
 	color: inherit;
 	cursor: pointer;
-	padding: 120px 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
