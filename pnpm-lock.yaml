@@ -116,8 +116,8 @@ importers:
         specifier: 0.5.4
         version: 0.5.4
       date-fns:
-        specifier: 2.30.0
-        version: 2.30.0
+        specifier: 4.1.0
+        version: 4.1.0
       deep-email-validator:
         specifier: 0.1.21
         version: 0.1.21
@@ -455,7 +455,7 @@ importers:
         version: 4.4.1
       chartjs-adapter-date-fns:
         specifier: 3.0.0
-        version: 3.0.0(chart.js@4.4.1)(date-fns@2.30.0)
+        version: 3.0.0(chart.js@4.4.1)(date-fns@4.1.0)
       chartjs-chart-matrix:
         specifier: 2.0.1
         version: 2.0.1(chart.js@4.4.1)
@@ -466,8 +466,8 @@ importers:
         specifier: 2.0.1
         version: 2.0.1(chart.js@4.4.1)
       date-fns:
-        specifier: 2.30.0
-        version: 2.30.0
+        specifier: 4.1.0
+        version: 4.1.0
       eventemitter3:
         specifier: 5.0.1
         version: 5.0.1
@@ -3018,9 +3018,8 @@ packages:
     resolution: {integrity: sha512-BnBS08aLUM+DKamupXs3w2tJJoqU+AkaE/+6vQxi/G/DPmIZFJJp9Dkb1kM03AZx8ADehDUZgsNxju3mPXZYIA==}
     engines: {node: '>=20'}
 
-  date-fns@2.30.0:
-    resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
-    engines: {node: '>=0.11'}
+  date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
 
   dayjs@1.11.13:
     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
@@ -8356,10 +8355,10 @@ snapshots:
     dependencies:
       '@kurkle/color': 0.3.4
 
-  chartjs-adapter-date-fns@3.0.0(chart.js@4.4.1)(date-fns@2.30.0):
+  chartjs-adapter-date-fns@3.0.0(chart.js@4.4.1)(date-fns@4.1.0):
     dependencies:
       chart.js: 4.4.1
-      date-fns: 2.30.0
+      date-fns: 4.1.0
 
   chartjs-chart-matrix@2.0.1(chart.js@4.4.1):
     dependencies:
@@ -8609,9 +8608,7 @@ snapshots:
       whatwg-mimetype: 4.0.0
       whatwg-url: 15.1.0
 
-  date-fns@2.30.0:
-    dependencies:
-      '@babel/runtime': 7.28.2
+  date-fns@4.1.0: {}
 
   dayjs@1.11.13: {}
 
