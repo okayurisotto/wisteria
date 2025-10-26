@@ -33,7 +33,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref, shallowRef, watch, nextTick } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch, nextTick, useTemplateRef } from 'vue';
 import tinycolor from 'tinycolor2';
 import { popupMenu } from '@/os.js';
 import { scrollToTop } from '@/scripts/scroll.js';
@@ -67,9 +67,9 @@ const emit = defineEmits<{
 
 const pageMetadata = injectReactiveMetadata();
 
-const el = shallowRef<HTMLElement>(null);
+const el = useTemplateRef('el');
 const tabRefs = {};
-const tabHighlightEl = shallowRef<HTMLElement | null>(null);
+const tabHighlightEl = useTemplateRef('tabHighlightEl');
 const bg = ref<string | null>(null);
 const hasTabs = computed(() => {
 	return props.tabs && props.tabs.length > 0;

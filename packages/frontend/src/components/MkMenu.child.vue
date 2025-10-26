@@ -20,7 +20,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, shallowRef } from 'vue';
+import { computed, useTemplateRef } from 'vue';
 import MkMenu from './MkMenu.vue';
 import type { MenuItem } from '@/types/menu.js';
 import { getFloatingPosition } from '@/scripts/getFloatingPosition';
@@ -39,7 +39,7 @@ const emit = defineEmits<{
 	actioned: [];
 }>();
 
-const el = shallowRef<HTMLElement>();
+const el = useTemplateRef('el');
 const windowSize = useWindowSize();
 
 const align = 'left';

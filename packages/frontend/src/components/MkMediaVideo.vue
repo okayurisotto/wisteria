@@ -83,7 +83,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, shallowRef, computed, watch, onDeactivated, onActivated, onMounted } from 'vue';
+import { ref, computed, watch, onDeactivated, onActivated, onMounted, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import type { MenuItem } from '@/types/menu.js';
 import bytes from '@/filters/bytes.js';
@@ -147,8 +147,8 @@ function toggleSensitive(file: Misskey.entities.DriveFile) {
 }
 
 // MediaControl: Video State
-const videoEl = shallowRef<HTMLVideoElement>();
-const playerEl = shallowRef<HTMLDivElement>();
+const videoEl = useTemplateRef<HTMLVideoElement>('videoEl');
+const playerEl = useTemplateRef<HTMLDivElement>('playerEl');
 const isHoverring = ref(false);
 const controlsShowing = computed(() => {
 	if (!oncePlayed.value) return true;

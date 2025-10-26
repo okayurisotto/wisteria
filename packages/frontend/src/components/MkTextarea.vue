@@ -36,7 +36,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, nextTick, ref, watch, toRefs, shallowRef } from 'vue';
+import { onMounted, onUnmounted, nextTick, ref, watch, toRefs, useTemplateRef } from 'vue';
 import { debounce } from 'throttle-debounce';
 import MkButton from '@/components/MkButton.vue';
 import { i18n } from '@/i18n.js';
@@ -73,7 +73,7 @@ const v = ref<string>(modelValue.value ?? '');
 const focused = ref(false);
 const changed = ref(false);
 const invalid = ref(false);
-const inputEl = shallowRef<HTMLTextAreaElement>();
+const inputEl = useTemplateRef('inputEl');
 const preview = ref(false);
 let autocompleteWorker: Autocomplete | null = null;
 

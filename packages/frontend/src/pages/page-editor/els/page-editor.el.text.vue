@@ -14,7 +14,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { watch, ref, shallowRef, onMounted, onUnmounted } from 'vue';
+import { watch, ref, onMounted, onUnmounted, useTemplateRef } from 'vue';
 import XContainer from '../page-editor.container.vue';
 import { i18n } from '@/i18n.js';
 import { Autocomplete } from '@/scripts/autocomplete.js';
@@ -30,7 +30,7 @@ const emit = defineEmits<{
 let autocomplete: Autocomplete;
 
 const text = ref(props.modelValue.text ?? '');
-const inputEl = shallowRef<HTMLTextAreaElement | null>(null);
+const inputEl = useTemplateRef('inputEl');
 
 watch(text, () => {
 	emit('update:modelValue', {

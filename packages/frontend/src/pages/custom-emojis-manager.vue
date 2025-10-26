@@ -74,7 +74,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, ref, shallowRef } from 'vue';
+import { computed, defineAsyncComponent, ref, useTemplateRef } from 'vue';
 import MkButton from '@/components/MkButton.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkPagination from '@/components/MkPagination.vue';
@@ -86,7 +86,7 @@ import { misskeyApi } from '@/scripts/misskey-api.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 
-const emojisPaginationComponent = shallowRef<InstanceType<typeof MkPagination>>();
+const emojisPaginationComponent = useTemplateRef('emojisPaginationComponent');
 
 const tab = ref('local');
 const query = ref<string | null>(null);

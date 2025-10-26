@@ -18,7 +18,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, onMounted, shallowRef, watch } from 'vue';
+import { computed, inject, onMounted, useTemplateRef, watch } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkCustomEmojiDetailedDialog from './MkCustomEmojiDetailedDialog.vue';
 import XDetails from '@/components/MkReactionsViewer.details.vue';
@@ -47,7 +47,7 @@ const emit = defineEmits<{
 	reactionToggled: [emoji: string, newCount: number];
 }>();
 
-const buttonEl = shallowRef<HTMLElement>();
+const buttonEl = useTemplateRef('buttonEl');
 
 const isCustomEmoji = computed(() => props.reaction.includes(':'));
 const emoji = computed(() => isCustomEmoji.value ? customEmojis.value.find(emoji => emoji.name === props.reaction.replace(/:/g, '').replace(/@\./, '')) : null);

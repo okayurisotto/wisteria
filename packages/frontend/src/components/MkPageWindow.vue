@@ -29,7 +29,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, provide, ref, shallowRef } from 'vue';
+import { computed, onMounted, onUnmounted, provide, ref, useTemplateRef } from 'vue';
 import RouterView from '@/components/global/RouterView.vue';
 import MkWindow from '@/components/MkWindow.vue';
 import { popout as _popout } from '@/scripts/popout.js';
@@ -54,9 +54,9 @@ defineEmits<{
 const routerFactory = useRouterFactory();
 const windowRouter = routerFactory(props.initialPath);
 
-const contents = shallowRef<HTMLElement | null>(null);
+const contents = useTemplateRef('contents');
 const pageMetadata = ref<null | PageMetadata>(null);
-const windowEl = shallowRef<InstanceType<typeof MkWindow>>();
+const windowEl = useTemplateRef('windowEl');
 const history = ref<{ path: string; key: any; }[]>([{
 	path: windowRouter.getCurrentPath(),
 	key: windowRouter.getCurrentKey(),

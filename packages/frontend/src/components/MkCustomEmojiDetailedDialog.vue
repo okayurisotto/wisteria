@@ -57,7 +57,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import * as Misskey from 'misskey-js';
-import { defineProps, shallowRef } from 'vue';
+import { defineProps, useTemplateRef } from 'vue';
 import { i18n } from '@/i18n.js';
 import MkModalWindow from '@/components/MkModalWindow.vue';
 import MkKeyValue from '@/components/MkKeyValue.vue';
@@ -70,7 +70,7 @@ const emit = defineEmits<{
 	cancel: [];
 	closed: [];
 }>();
-const dialogEl = shallowRef<InstanceType<typeof MkModalWindow>>();
+const dialogEl = useTemplateRef('dialogEl');
 const cancel = () => {
 	emit('cancel');
 	dialogEl.value!.close();

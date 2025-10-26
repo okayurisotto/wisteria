@@ -15,7 +15,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, shallowRef, computed, onMounted, onBeforeUnmount, watch, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch, onUnmounted, useTemplateRef } from 'vue';
 import { colorScheme } from '@/themes/colorScheme';
 
 // APIs provided by Captcha services
@@ -52,7 +52,7 @@ const emit = defineEmits<{
 
 const available = ref(false);
 
-const captchaEl = shallowRef<HTMLDivElement | undefined>();
+const captchaEl = useTemplateRef('captchaEl');
 
 const variable = computed(() => {
 	switch (props.provider) {

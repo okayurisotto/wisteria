@@ -24,7 +24,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { shallowRef, watch, ref } from 'vue';
+import { watch, ref, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import { i18n } from '@/i18n.js';
 import MkMediaAudio from '@/components/MkMediaAudio.vue';
@@ -34,7 +34,7 @@ const props = withDefaults(defineProps<{
 }>(), {
 });
 
-const audioEl = shallowRef<HTMLAudioElement>();
+const audioEl = useTemplateRef('audioEl');
 const hide = ref(true);
 
 watch(audioEl, () => {

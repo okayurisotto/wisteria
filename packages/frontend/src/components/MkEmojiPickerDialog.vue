@@ -33,7 +33,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import * as Misskey from 'misskey-js';
-import { shallowRef } from 'vue';
+import { useTemplateRef } from 'vue';
 import MkModal from '@/components/MkModal.vue';
 import MkEmojiPicker from '@/components/MkEmojiPicker.vue';
 import { defaultStore } from '@/store.js';
@@ -60,8 +60,8 @@ const emit = defineEmits<{
 	closed: [];
 }>();
 
-const modal = shallowRef<InstanceType<typeof MkModal>>();
-const picker = shallowRef<InstanceType<typeof MkEmojiPicker>>();
+const modal = useTemplateRef('modal');
+const picker = useTemplateRef('picker');
 
 function chosen(emoji: any) {
 	emit('done', emoji);

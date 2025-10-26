@@ -43,7 +43,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts">
-import { markRaw, ref, shallowRef, computed, onUpdated, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
+import { markRaw, ref, computed, onUpdated, onMounted, onBeforeUnmount, nextTick, watch, useTemplateRef } from 'vue';
 import sanitizeHtml from 'sanitize-html';
 import contains from '@/scripts/contains.js';
 import { char2twemojiFilePath, char2fluentEmojiFilePath } from '@/scripts/emoji-base.js';
@@ -147,7 +147,7 @@ const emit = defineEmits<{
 }>();
 
 const suggests = ref<Element>();
-const rootEl = shallowRef<HTMLDivElement>();
+const rootEl = useTemplateRef('rootEl');
 
 const fetching = ref(true);
 const users = ref<any[]>([]);

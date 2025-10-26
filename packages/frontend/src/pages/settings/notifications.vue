@@ -55,7 +55,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { shallowRef, computed } from 'vue';
+import { computed, useTemplateRef } from 'vue';
 import XNotificationConfig from './notifications.notification-config.vue';
 import FormLink from '@/components/form/link.vue';
 import FormSection from '@/components/form/section.vue';
@@ -73,7 +73,7 @@ const $i = signinRequired();
 
 const nonConfigurableNotificationTypes = ['note', 'roleAssigned', 'followRequestAccepted'];
 
-const allowButton = shallowRef<InstanceType<typeof MkPushNotificationAllowButton>>();
+const allowButton = useTemplateRef('allowButton');
 const pushRegistrationInServer = computed(() => allowButton.value?.pushRegistrationInServer);
 const sendReadMessage = computed(() => pushRegistrationInServer.value?.sendReadMessage || false);
 const userLists = await misskeyApi('users/lists/list');

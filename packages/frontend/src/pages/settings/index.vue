@@ -26,7 +26,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script setup lang="ts">
-import { computed, onActivated, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
+import { computed, onActivated, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 import { i18n } from '@/i18n.js';
 import MkSuperMenu from '@/components/MkSuperMenu.vue';
 import { signout } from '@/account.js';
@@ -41,7 +41,7 @@ const indexInfo = {
 	hideHeader: true,
 };
 const INFO = ref(indexInfo);
-const el = shallowRef<HTMLElement | null>(null);
+const el = useTemplateRef('el');
 const childInfo = ref<null | PageMetadata>(null);
 
 const router = useRouter();

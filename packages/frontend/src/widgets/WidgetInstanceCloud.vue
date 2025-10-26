@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <MkContainer :naked="widgetProps.transparent" :showHeader="false" class="mkw-instance-cloud">
 	<div class="">
-		<MkTagCloud v-if="activeInstances">
+		<MkTagCloud ref="cloud" v-if="activeInstances.length !== 0">
 			<li v-for="instance in activeInstances" :key="instance.id">
 				<a @click.prevent="onInstanceClick(instance)">
 					<img style="width: 32px;" :src="getInstanceIcon(instance)">
@@ -18,7 +18,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { shallowRef } from 'vue';
+import { ref, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import { useWidgetPropsManager, type WidgetComponentEmits, type WidgetComponentExpose, type WidgetComponentProps } from './widget.js';
 import type { GetFormResultType } from '@/scripts/form.js';
@@ -49,8 +49,8 @@ const { widgetProps, configure } = useWidgetPropsManager(name,
 	emit,
 );
 
-const cloud = shallowRef<InstanceType<typeof MkTagCloud> | null>();
-const activeInstances = shallowRef<Misskey.entities.FederationInstance[] | null>(null);
+const cloud = useTemplateRef('cloud');
+const activeInstances = ref<Misskey.entities.FederationInstance[]>([]);
 
 function onInstanceClick(i) {
 	os.pageWindow(`/instance-info/${i.host}`);

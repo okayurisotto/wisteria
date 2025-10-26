@@ -18,14 +18,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, provide, inject, type Ref, ref, watch, shallowRef } from 'vue';
+import { onMounted, onUnmounted, provide, inject, type Ref, ref, watch, useTemplateRef } from 'vue';
 
 import { CURRENT_STICKY_BOTTOM, CURRENT_STICKY_TOP } from '@/const.js';
 
-const rootEl = shallowRef<HTMLElement>();
-const headerEl = shallowRef<HTMLElement>();
-const footerEl = shallowRef<HTMLElement>();
-const bodyEl = shallowRef<HTMLElement>();
+const rootEl = useTemplateRef('rootEl');
+const headerEl = useTemplateRef('headerEl');
+const footerEl = useTemplateRef('footerEl');
+const bodyEl = useTemplateRef('bodyEl');
 
 const headerHeight = ref<string | undefined>();
 const childStickyTop = ref(0);

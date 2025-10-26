@@ -30,7 +30,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, shallowRef, ref } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import XHeader from './_header_.vue';
 import XModLog from './modlog.ModLog.vue';
@@ -40,7 +40,7 @@ import MkPagination from '@/components/MkPagination.vue';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 
-const logs = shallowRef<InstanceType<typeof MkPagination>>();
+const logs = useTemplateRef('logs');
 
 const type = ref<string | null>(null);
 const moderatorId = ref('');

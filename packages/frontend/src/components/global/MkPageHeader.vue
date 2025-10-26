@@ -42,7 +42,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, inject, shallowRef, computed } from 'vue';
+import { onMounted, onUnmounted, ref, inject, computed, useTemplateRef } from 'vue';
 import XTabs, { type Tab } from './MkPageHeader.tabs.vue';
 import { scrollToTop } from '@/scripts/scroll.js';
 import { injectReactiveMetadata } from '@/scripts/page-metadata.js';
@@ -66,7 +66,7 @@ const pageMetadata = injectReactiveMetadata();
 const hideTitle = inject<boolean>('shouldOmitHeaderTitle', false);
 const thin_ = props.thin || inject<boolean>('shouldHeaderThin', false);
 
-const el = shallowRef<HTMLElement | undefined>(undefined);
+const el = useTemplateRef('el');
 const bg = ref<string | undefined>(undefined);
 const narrow = ref(false);
 const hasTabs = computed(() => props.tabs.length > 0);

@@ -57,7 +57,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { shallowRef, watch, computed, ref, onDeactivated, onActivated, onMounted } from 'vue';
+import { watch, computed, ref, onDeactivated, onActivated, onMounted, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import type { MenuItem } from '@/types/menu.js';
 import { defaultStore } from '@/store.js';
@@ -72,7 +72,7 @@ const props = defineProps<{
 	audio: Misskey.entities.DriveFile;
 }>();
 
-const audioEl = shallowRef<HTMLAudioElement>();
+const audioEl = useTemplateRef('audioEl');
 
 const hide = ref((defaultStore.state.nsfw === 'force' || defaultStore.state.dataSaver.media) ? true : (props.audio.isSensitive && defaultStore.state.nsfw !== 'ignore'));
 

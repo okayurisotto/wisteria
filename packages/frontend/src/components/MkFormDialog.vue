@@ -64,7 +64,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { reactive, shallowRef } from 'vue';
+import { reactive, useTemplateRef } from 'vue';
 import MkInput from './MkInput.vue';
 import MkTextarea from './MkTextarea.vue';
 import MkSwitch from './MkSwitch.vue';
@@ -89,7 +89,7 @@ const emit = defineEmits<{
 	closed: [];
 }>();
 
-const dialog = shallowRef<InstanceType<typeof MkModalWindow>>();
+const dialog = useTemplateRef('dialog');
 const values = reactive({});
 
 for (const item in props.form) {

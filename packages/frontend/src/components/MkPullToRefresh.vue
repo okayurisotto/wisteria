@@ -23,7 +23,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, shallowRef } from 'vue';
+import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import { i18n } from '@/i18n.js';
 import { getScrollContainer } from '@/scripts/scroll.js';
 import { isHorizontalSwipeSwiping } from '@/scripts/touch.js';
@@ -43,7 +43,7 @@ const pullDistance = ref(0);
 let supportPointerDesktop = false;
 let startScreenY: number | null = null;
 
-const rootEl = shallowRef<HTMLDivElement>();
+const rootEl = useTemplateRef('rootEl');
 let scrollEl: HTMLElement | null = null;
 
 let disabled = false;

@@ -54,7 +54,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { nextTick, normalizeClass, onMounted, provide, watch, ref, shallowRef, computed } from 'vue';
+import { nextTick, normalizeClass, onMounted, provide, watch, ref, computed, useTemplateRef } from 'vue';
 import { useWindowSize } from '@vueuse/core';
 import * as os from '@/os.js';
 import { isTouchUsing } from '@/scripts/touch.js';
@@ -94,7 +94,7 @@ provide('modal', true);
 const maxHeight = ref<number>();
 const transformOrigin = ref('center');
 const showing = ref(true);
-const content = shallowRef<HTMLElement>();
+const content = useTemplateRef('content');
 const zIndex = os.claimZIndex(props.zPriority);
 const useSendAnime = ref(false);
 const type = computed<ModalTypes>(() => {

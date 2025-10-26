@@ -33,7 +33,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onMounted, shallowRef } from 'vue';
+import { nextTick, onMounted, useTemplateRef } from 'vue';
 
 const props = defineProps<{
 	type?: 'button' | 'submit' | 'reset';
@@ -59,8 +59,8 @@ const emit = defineEmits<{
 	click: [payload: MouseEvent];
 }>();
 
-const el = shallowRef<HTMLElement | null>(null);
-const ripples = shallowRef<HTMLElement | null>(null);
+const el = useTemplateRef('el');
+const ripples = useTemplateRef('ripples');
 
 onMounted(() => {
 	if (props.autofocus) {

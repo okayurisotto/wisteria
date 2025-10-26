@@ -98,7 +98,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { provide, onMounted, computed, ref, watch, shallowRef, type Ref, onBeforeUnmount } from 'vue';
+import { provide, onMounted, computed, ref, watch, type Ref, onBeforeUnmount, useTemplateRef } from 'vue';
 import XWidgets from './universal.widgets.vue';
 import XCommon from './_common_/common.vue';
 import XSidebar from './_common_/navbar.vue';
@@ -121,8 +121,8 @@ const isRoot = computed(() => mainRouter.currentRoute.value.name === 'index');
 
 const pageMetadata = ref<null | PageMetadata>(null);
 const widgetsShowing = ref(false);
-const navFooter = shallowRef<HTMLElement>();
-const contents = shallowRef<InstanceType<typeof MkStickyContainer>>();
+const navFooter = useTemplateRef('navFooter');
+const contents = useTemplateRef('contents');
 
 provide('router', mainRouter);
 provideMetadataReceiver((metadataGetter) => {

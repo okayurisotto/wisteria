@@ -48,7 +48,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { markRaw, onMounted, onUnmounted, ref, shallowRef } from 'vue';
+import { markRaw, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import XChart from './queue.chart.chart.vue';
 import number from '@/filters/number.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
@@ -63,10 +63,10 @@ const active = ref(0);
 const delayed = ref(0);
 const waiting = ref(0);
 const jobs = ref<(string | number)[][]>([]);
-const chartProcess = shallowRef<InstanceType<typeof XChart>>();
-const chartActive = shallowRef<InstanceType<typeof XChart>>();
-const chartDelayed = shallowRef<InstanceType<typeof XChart>>();
-const chartWaiting = shallowRef<InstanceType<typeof XChart>>();
+const chartProcess = useTemplateRef('chartProcess');
+const chartActive = useTemplateRef('chartActive');
+const chartDelayed = useTemplateRef('chartDelayed');
+const chartWaiting = useTemplateRef('chartWaiting');
 
 const props = defineProps<{
 	domain: string;

@@ -28,7 +28,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import * as Misskey from 'misskey-js';
-import { onUpdated, ref, shallowRef } from 'vue';
+import { onUpdated, ref, useTemplateRef } from 'vue';
 import MkReactionsViewer from '@/components/MkReactionsViewer.vue';
 import MkMediaList from '@/components/MkMediaList.vue';
 import MkPoll from '@/components/MkPoll.vue';
@@ -37,7 +37,7 @@ import { getScrollContainer } from '@/scripts/scroll.js';
 
 const notes = ref<Misskey.entities.Note[]>([]);
 const isScrolling = ref(false);
-const scrollEl = shallowRef<HTMLElement>();
+const scrollEl = useTemplateRef('scrollEl');
 
 misskeyApiGet('notes/featured').then(_notes => {
 	notes.value = _notes;

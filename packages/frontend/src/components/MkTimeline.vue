@@ -17,7 +17,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, watch, onUnmounted, provide, shallowRef } from 'vue';
+import { computed, watch, onUnmounted, provide, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkNotes from '@/components/MkNotes.vue';
 import MkPullToRefresh from '@/components/MkPullToRefresh.vue';
@@ -62,8 +62,8 @@ type TimelineQueryType = {
   roleId?: string
 }
 
-const prComponent = shallowRef<InstanceType<typeof MkPullToRefresh>>();
-const tlComponent = shallowRef<InstanceType<typeof MkNotes>>();
+const prComponent = useTemplateRef('prComponent');
+const tlComponent = useTemplateRef('tlComponent');
 
 let tlNotesCount = 0;
 

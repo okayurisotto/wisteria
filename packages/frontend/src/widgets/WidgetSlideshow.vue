@@ -17,7 +17,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, shallowRef } from 'vue';
+import { onMounted, ref, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import { useWidgetPropsManager, type WidgetComponentEmits, type WidgetComponentExpose, type WidgetComponentProps } from './widget.js';
 import type { GetFormResultType } from '@/scripts/form.js';
@@ -53,8 +53,8 @@ const { widgetProps, configure, save } = useWidgetPropsManager(name,
 
 const images = ref<Misskey.entities.DriveFile[]>([]);
 const fetching = ref(true);
-const slideA = shallowRef<HTMLElement>();
-const slideB = shallowRef<HTMLElement>();
+const slideA = useTemplateRef('slideA');
+const slideB = useTemplateRef('slideB');
 
 const change = () => {
 	if (images.value.length === 0) return;

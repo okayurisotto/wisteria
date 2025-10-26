@@ -74,7 +74,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts">
-import { type ComputedRef, computed, defineAsyncComponent, isRef, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
+import { type ComputedRef, computed, defineAsyncComponent, isRef, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue';
 import { focusPrev, focusNext } from '@/scripts/focus.js';
 import MkSwitchButton from '@/components/MkSwitch.button.vue';
 import type { MenuItem, InnerMenuItem, MenuPending, MenuAction, MenuSwitch, MenuParent } from '@/types/menu.js';
@@ -101,11 +101,11 @@ const emit = defineEmits<{
 	hide: [];
 }>();
 
-const itemsEl = shallowRef<HTMLDivElement>();
+const itemsEl = useTemplateRef('itemsEl');
 
 const items2 = ref<InnerMenuItem[]>();
 
-const child = shallowRef<InstanceType<typeof XChild>>();
+const child = useTemplateRef('child');
 
 const keymap = computed(() => ({
 	'up|k|shift+tab': focusUp,
