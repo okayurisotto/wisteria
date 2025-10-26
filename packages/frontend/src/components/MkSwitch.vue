@@ -4,31 +4,28 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="[$style.root, { [$style.disabled]: disabled }]">
-	<input
-		ref="input"
-		type="checkbox"
-		:disabled="disabled"
-		:class="$style.input"
-		@keydown.enter="toggle"
-	>
-	<XButton :checked="checked" :disabled="disabled" @toggle="toggle"/>
-	<span :class="$style.body">
-		<!-- TODO: 無名slotの方は廃止 -->
-		<span :class="$style.label">
-			<span @click="toggle">
+	<label :class="[$style.root, { [$style.disabled]: disabled }]">
+		<input
+			ref="input"
+			type="checkbox"
+			:class="$style.input"
+			v-model="checked"
+			:disabled="props.disabled"
+			@click="toggle"
+		>
+		<div>
+			<p :class="$style.body">
+				<!-- TODO: 無名slotの方は廃止 -->
 				<slot name="label"></slot><slot></slot>
-			</span>
-			<span v-if="helpText" v-tooltip:dialog="helpText" class="_button _help" :class="$style.help"><i class="ti ti-help-circle"></i></span>
-		</span>
-		<p :class="$style.caption"><slot name="caption"></slot></p>
-	</span>
-</div>
+				<span v-if="helpText" v-tooltip:dialog="helpText" class="_button _help" :class="$style.help"><i class="ti ti-help-circle"></i></span>
+			</p>
+			<p :class="$style.caption"><slot name="caption"></slot></p>
+		</div>
+	</label>
 </template>
 
 <script lang="ts" setup>
 import { toRefs, type Ref } from 'vue';
-import XButton from '@/components/MkSwitch.button.vue';
 
 const props = defineProps<{
 	modelValue: boolean | Ref<boolean>;
@@ -53,12 +50,9 @@ const toggle = () => {
 	display: flex;
 	transition: all 0.2s ease;
 	user-select: none;
-
-	&:hover {
-		> .button {
-			border-color: var(--inputBorderHover) !important;
-		}
-	}
+	align-items: center;
+	cursor: pointer;
+	gap: .5em;
 
 	&.disabled {
 		opacity: 0.6;
@@ -67,25 +61,14 @@ const toggle = () => {
 }
 
 .input {
-	position: absolute;
-	width: 0;
-	height: 0;
-	opacity: 0;
-	margin: 0;
-}
-.body {
-	margin-left: 12px;
-	margin-top: 2px;
-	display: block;
-	transition: inherit;
-	color: var(--fg);
+	cursor: inherit;
 }
 
-.label {
-	display: block;
-	line-height: 20px;
-	cursor: pointer;
-	transition: inherit;
+.body {
+	margin: unset;
+	color: var(--fg);
+	display: flex;
+	gap: .5em;
 }
 
 .caption {
@@ -99,7 +82,6 @@ const toggle = () => {
 }
 
 .help {
-	margin-left: 0.5em;
 	font-size: 85%;
 	vertical-align: top;
 }
