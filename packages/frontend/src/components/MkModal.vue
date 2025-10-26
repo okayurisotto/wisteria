@@ -369,7 +369,7 @@ defineExpose({
 }
 
 .content {
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 
 .bg {

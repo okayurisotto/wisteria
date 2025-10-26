@@ -317,12 +317,12 @@ onBeforeUnmount(() => {
 .contents {
 	border-right: solid 0.5px var(--divider);
 	flex: 1;
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 
 .widgets {
 	box-sizing: border-box;
-	overflow-y: scroll;
+	overflow-y: auto;
 	padding: var(--margin) var(--margin) calc(var(--margin) + env(safe-area-inset-bottom, 0px));
 	width: var(--widgets-width);
 }

@@ -99,6 +99,6 @@ defineExpose({
 <style lang="scss" module>
 .root {
 	position: fixed;
-	overflow: scroll;
+	overflow: auto;
 }
 </style>

@@ -81,7 +81,7 @@ function close() {
 
 <style lang="scss" module>
 .menu {
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 
 .drawer {
