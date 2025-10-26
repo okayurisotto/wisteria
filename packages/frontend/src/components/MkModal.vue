@@ -30,10 +30,34 @@ SPDX-License-Identifier: AGPL-3.0-only
 		[$style.transition_modal_leaveTo]: transitionName === 'modal',
 		[$style.transition_send_leaveTo]: transitionName === 'send',
 	})"
-	:duration="transitionDuration" appear @afterLeave="emit('closed')" @enter="emit('opening')" @afterEnter="onOpened"
+	:duration="transitionDuration"
+	appear
+	@afterLeave="emit('closed')"
+	@enter="emit('opening')"
+	@afterEnter="onOpened"
 >
-	<div v-show="manualShowing != null ? manualShowing : showing" v-hotkey.global="keymap" :class="[$style.root, { [$style.drawer]: type === 'drawer', [$style.dialog]: type === 'dialog', [$style.popup]: type === 'popup' }]" :style="{ zIndex, pointerEvents: (manualShowing != null ? manualShowing : showing) ? 'auto' : 'none', '--transformOrigin': transformOrigin }">
-		<div class="_modalBg" :class="[$style.bg, { [$style.bgTransparent]: isEnableBgTransparent }]" :style="{ zIndex }" @click="onBgClick" @mousedown="onBgClick" @contextmenu.prevent.stop="() => {}"></div>
+	<div
+		v-show="manualShowing != null ? manualShowing : showing"
+		v-hotkey.global="keymap"
+		:class="[$style.root, {
+			[$style.drawer]: type === 'drawer',
+			[$style.dialog]: type === 'dialog',
+			[$style.popup]: type === 'popup',
+		}]"
+		:style="{
+			zIndex,
+			pointerEvents: (manualShowing != null ? manualShowing : showing) ? 'auto' : 'none',
+			'--transformOrigin': transformOrigin,
+		}"
+	>
+		<div
+			class="_modalBg"
+			:class="[$style.bg, { [$style.bgTransparent]: isEnableBgTransparent }]"
+			:style="{ zIndex }"
+			@click="onBgClick"
+			@mousedown="onBgClick"
+			@contextmenu.prevent.stop="() => {}"
+		></div>
 		<div
 			ref="content"
 			class="_shadow"
@@ -105,7 +129,7 @@ const type = computed<ModalTypes>(() => {
 			return props.src != null ? 'popup' : 'dialog';
 		}
 	} else {
-		return props.preferType!;
+		return props.preferType;
 	}
 });
 const isEnableBgTransparent = computed(() => props.transparentBg && (type.value === 'popup'));
