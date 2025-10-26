@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <MkSpacer :contentMax="1000">
-	<div ref="rootEl" :class="$style.root">
+	<div :class="$style.root">
 		<MkFoldableSection class="item">
 			<template #header>Stats</template>
 			<XStats/>
@@ -45,85 +45,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { markRaw, onMounted, onBeforeUnmount, nextTick, ref, useTemplateRef } from 'vue';
-import * as Misskey from 'misskey-js';
 import XFederation from './overview.federation.vue';
 import XInstances from './overview.instances.vue';
 import XQueue from './overview.queue.vue';
 import XUsers from './overview.users.vue';
 import XStats from './overview.stats.vue';
 import XModerators from './overview.moderators.vue';
-import type { InstanceForPie } from './overview.pie.vue';
-import * as os from '@/os.js';
-import { misskeyApi, misskeyApiGet } from '@/scripts/misskey-api.js';
-import { useStream } from '@/stream.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkFoldableSection from '@/components/MkFoldableSection.vue';
-
-const rootEl = useTemplateRef('rootEl')
-const serverInfo = ref<Misskey.Endpoints['server-info']['response'] | null>(null);
-const topSubInstancesForPie = ref<InstanceForPie[] | null>(null);
-const topPubInstancesForPie = ref<InstanceForPie[] | null>(null);
-const newUsers = ref<Misskey.entities.UserDetailed[] | null>(null);
-const activeInstances = ref<Misskey.entities.FederationInstance[]>([]);
-const queueStatsConnection = markRaw(useStream().useChannel('queueStats'));
-
-onMounted(async () => {
-	misskeyApiGet('federation/stats', { limit: 10 }).then(res => {
-		topSubInstancesForPie.value = [
-			...res.topSubInstances.map(x => ({
-				name: x.host,
-				color: x.themeColor,
-				value: x.followersCount,
-				onClick: () => {
-					os.pageWindow(`/instance-info/${x.host}`);
-				},
-			})),
-			{ name: '(other)', color: '#80808080', value: res.otherFollowersCount },
-		];
-		topPubInstancesForPie.value = [
-			...res.topPubInstances.map(x => ({
-				name: x.host,
-				color: x.themeColor,
-				value: x.followingCount,
-				onClick: () => {
-					os.pageWindow(`/instance-info/${x.host}`);
-				},
-			})),
-			{ name: '(other)', color: '#80808080', value: res.otherFollowingCount },
-		];
-	});
-
-	misskeyApi('admin/server-info').then(serverInfoResponse => {
-		serverInfo.value = serverInfoResponse;
-	});
-
-	misskeyApi('admin/show-users', {
-		limit: 5,
-		sort: '+createdAt',
-	}).then(res => {
-		newUsers.value = res;
-	});
-
-	misskeyApi('federation/instances', {
-		sort: '+latestRequestReceivedAt',
-		limit: 25,
-	}).then(res => {
-		activeInstances.value = res;
-	});
-
-	nextTick(() => {
-		queueStatsConnection.send('requestLog', {
-			id: Math.random().toString().substring(2, 10),
-			length: 100,
-		});
-	});
-});
-
-onBeforeUnmount(() => {
-	queueStatsConnection.dispose();
-});
 
 definePageMetadata(() => ({
 	title: i18n.ts.dashboard,
