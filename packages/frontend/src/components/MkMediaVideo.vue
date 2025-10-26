@@ -394,7 +394,7 @@ onDeactivated(() => {
 .hidden {
 	width: 100%;
 	height: 100%;
-	background: #000;
+	background: var(--bg);
 	border: none;
 	outline: none;
 	font: inherit;
@@ -412,7 +412,7 @@ onDeactivated(() => {
 }
 
 .videoRoot {
-	background: #000;
+	background: var(--bg);
 	position: relative;
 	width: 100%;
 	height: 100%;
