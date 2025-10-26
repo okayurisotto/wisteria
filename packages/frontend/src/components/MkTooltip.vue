@@ -25,7 +25,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { nextTick, onMounted, useTemplateRef } from 'vue';
 import * as os from '@/os.js';
-import { calcPopupPosition } from '@/scripts/popup-position.js';
+import { useWindowSize } from '@vueuse/core';
+import { getFloatingPosition } from '@/scripts/getFloatingPosition';
 import { defaultStore } from '@/store.js';
 
 const props = withDefaults(defineProps<{
@@ -54,20 +55,36 @@ if (!props.showing) emit('closed');
 const el = useTemplateRef('el');
 const zIndex = os.claimZIndex('high');
 
+const windowSize = useWindowSize();
+const VIEWPORT_MARGIN = 18;
+
 function setPosition() {
 	if (el.value == null) return;
-	const data = calcPopupPosition(el.value, {
-		anchorElement: props.targetElement,
-		direction: props.direction,
-		align: 'center',
-		innerMargin: props.innerMargin,
-		x: props.x,
-		y: props.y,
+	if (props.targetElement === undefined) return;
+
+	const contentSize = el.value.getBoundingClientRect();
+	const targetRect = props.targetElement.getBoundingClientRect();
+
+	const left = getFloatingPosition({
+		target: targetRect.left,
+		targetSize: targetRect.width,
+		contentSize: contentSize.width,
+		contentAlignment: 'center',
+		viewportSize: windowSize.width.value,
+		viewportMargin: VIEWPORT_MARGIN,
 	});
 
-	el.value.style.transformOrigin = data.transformOrigin;
-	el.value.style.left = data.left + 'px';
-	el.value.style.top = data.top + 'px';
+	const top = getFloatingPosition({
+		target: targetRect.top,
+		targetSize: targetRect.height,
+		contentAlignment: 'negative',
+		contentSize: contentSize.height,
+		viewportSize: windowSize.height.value,
+		viewportMargin: VIEWPORT_MARGIN,
+	});
+
+	el.value.style.left = `${left.value}px`;
+	el.value.style.top = `${top.value}px`;
 }
 
 onMounted(() => {

@@ -57,12 +57,12 @@ export const getFloatingPosition = (opts: GetFloatingPositionOptions) => {
 
     // 左にはみ出したとき、それが左寄せのせいだと考えられるなら（右に余白があるなら）、右寄せにする
     if (underflow && opts.contentAlignment === 'negative' && B < D) {
-			return Math.max(x_min, getPos['positive']());
+			return Math.max(x_min, getPos.positive());
     }
 
     // 右にはみ出したとき、それが右寄せのせいだと考えられるなら（左に余白があるなら）、左寄せにする
     if (overflow && opts.contentAlignment === 'positive' && B > D) {
-			return Math.max(x_min, getPos['negative']());
+			return Math.max(x_min, getPos.negative());
     }
 
     return Math.max(x_min, value);
