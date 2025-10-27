@@ -7,7 +7,7 @@ import RE2 from 're2';
 import * as mfm from 'mfm-js';
 import { Inject, Injectable } from '@nestjs/common';
 import * as ms from '@/misc/ms.js';
-import { JSDOM } from 'jsdom';
+import { Browser } from 'happy-dom';
 import { extractCustomEmojisFromMfm } from '@/misc/extract-custom-emojis-from-mfm.js';
 import { extractHashtags } from '@/misc/extract-hashtags.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
@@ -447,25 +447,27 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 			const urls = updatedProfile.fields.filter(x => x.value.startsWith('https://'));
 			for (const url of urls) {
-				this.verifyLink(url.value, user);
+				await this.verifyLink(url.value, user);
 			}
 
 			return iObj;
 		});
 	}
 
-	private async verifyLink(url: string, user: MiLocalUser) {
+	private async verifyLink(url: string, user: MiLocalUser): Promise<void> {
 		if (!safeForSql(url)) return;
 
 		const html = await this.httpRequestService.getHtml(url);
 
-		const { window } = new JSDOM(html);
-		const doc = window.document;
+		const browser = new Browser();
+		const page = browser.newPage();
+		page.url = url;
+		page.content = html;
 
 		const myLink = `${this.config.url}/@${user.username}`;
 
-		const aEls = Array.from(doc.getElementsByTagName('a'));
-		const linkEls = Array.from(doc.getElementsByTagName('link'));
+		const aEls = [...page.mainFrame.document.getElementsByTagName('a')];
+		const linkEls = [...page.mainFrame.document.getElementsByTagName('link')];
 
 		const includesMyLink = aEls.some(a => a.href === myLink);
 		const includesRelMeLinks = [...aEls, ...linkEls].some(link => link.rel === 'me' && link.href === myLink);
