@@ -15,7 +15,8 @@
 	"scripts": {
 		"build": "tsup",
 		"test": "vitest run",
-		"typecheck": "tsc",
+		"typecheck:app": "tsc --project tsconfig.app.json",
+		"typecheck:dev": "tsc --project tsconfig.dev.json",
 		"watch": "tsup --watch"
 	},
 	"dependencies": {

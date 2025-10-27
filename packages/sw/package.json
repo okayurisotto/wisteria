@@ -3,7 +3,8 @@
 	"private": true,
 	"scripts": {
 		"build": "tsup",
-		"typecheck": "tsc",
+		"typecheck:app": "tsc --project tsconfig.app.json",
+		"typecheck:dev": "tsc --project tsconfig.dev.json",
 		"watch": "tsup --watch"
 	},
 	"dependencies": {

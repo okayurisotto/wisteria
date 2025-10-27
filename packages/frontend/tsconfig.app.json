@@ -12,7 +12,8 @@
 			"./node_modules/@vue-macros",
 			"./node_modules"
 		],
-		"types": ["vite/client", "vitest/importMeta"]
+		"types": ["vite/client", "vitest/importMeta"],
+		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo"
 	},
 	"extends": "../../tsconfig.base.json",
 	"include": ["src"]

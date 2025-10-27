@@ -6,7 +6,8 @@
 		"build": "vite build",
 		"dev": "vite --config vite.config.local-dev.ts --debug hmr",
 		"test": "vitest --run --globals",
-		"typecheck": "vue-tsc --noEmit",
+		"typecheck:app": "vue-tsc --project tsconfig.app.json",
+		"typecheck:dev": "tsc --project tsconfig.dev.json",
 		"watch": "vite"
 	},
 	"dependencies": {

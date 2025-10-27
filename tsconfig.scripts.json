@@ -1,9 +1,0 @@
-{
-	"compilerOptions": {
-		"composite": true
-	},
-	"extends": "./tsconfig.base.json",
-	"include": [
-		"scripts"
-	]
-}
