@@ -6,7 +6,7 @@
 import * as fs from 'node:fs';
 import { Inject, Injectable } from '@nestjs/common';
 import { MoreThan } from 'typeorm';
-import { format as dateFormat } from 'date-fns';
+import { formatDateTime } from '@/misc/formatDate.js';
 import { DI } from '@/di-symbols.js';
 import type { NotesRepository, PollsRepository, UsersRepository } from '@/models/_.js';
 import type { Logger } from '@/logger.js';
@@ -121,7 +121,7 @@ export class ExportNotesProcessorService {
 			stream.end();
 			this.logger.succ(`Exported to: ${path}`);
 
-			const fileName = 'notes-' + dateFormat(new Date(), 'yyyy-MM-dd-HH-mm-ss') + '.json';
+			const fileName = 'notes-' + formatDateTime(new Date()) + '.json';
 			const driveFile = await this.driveService.addFile({ user, path, name: fileName, force: true, ext: 'json' });
 
 			this.logger.succ(`Exported to: ${driveFile.id}`);

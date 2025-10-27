@@ -6,7 +6,7 @@
 import * as fs from 'node:fs';
 import { Inject, Injectable } from '@nestjs/common';
 import { MoreThan } from 'typeorm';
-import { format as dateFormat } from 'date-fns';
+import { formatDateTime } from '@/misc/formatDate.js';
 import { DI } from '@/di-symbols.js';
 import type { UsersRepository, BlockingsRepository, MiBlocking } from '@/models/_.js';
 import type { Logger } from '@/logger.js';
@@ -106,7 +106,7 @@ export class ExportBlockingProcessorService {
 			stream.end();
 			this.logger.succ(`Exported to: ${path}`);
 
-			const fileName = 'blocking-' + dateFormat(new Date(), 'yyyy-MM-dd-HH-mm-ss') + '.csv';
+			const fileName = 'blocking-' + formatDateTime(new Date()) + '.csv';
 			const driveFile = await this.driveService.addFile({ user, path, name: fileName, force: true, ext: 'csv' });
 
 			this.logger.succ(`Exported to: ${driveFile.id}`);

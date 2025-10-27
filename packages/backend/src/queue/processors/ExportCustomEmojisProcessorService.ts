@@ -6,7 +6,7 @@
 import * as fs from 'node:fs';
 import { Inject, Injectable } from '@nestjs/common';
 import { IsNull } from 'typeorm';
-import { format as dateFormat } from 'date-fns';
+import { formatDateTime } from '@/misc/formatDate.js';
 import mime from 'mime-types';
 import archiver from 'archiver';
 import { DI } from '@/di-symbols.js';
@@ -128,7 +128,7 @@ export class ExportCustomEmojisProcessorService {
 			archiveStream.on('close', async () => {
 				this.logger.succ(`Exported to: ${archivePath}`);
 
-				const fileName = 'custom-emojis-' + dateFormat(new Date(), 'yyyy-MM-dd-HH-mm-ss') + '.zip';
+				const fileName = 'custom-emojis-' + formatDateTime(new Date()) + '.zip';
 				const driveFile = await this.driveService.addFile({ user, path: archivePath, name: fileName, force: true });
 
 				this.logger.succ(`Exported to: ${driveFile.id}`);

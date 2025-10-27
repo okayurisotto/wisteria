@@ -6,7 +6,7 @@
 import * as fs from 'node:fs';
 import { Inject, Injectable } from '@nestjs/common';
 import { IsNull, MoreThan } from 'typeorm';
-import { format as dateFormat } from 'date-fns';
+import { formatDateTime } from '@/misc/formatDate.js';
 import { DI } from '@/di-symbols.js';
 import type { MutingsRepository, UsersRepository, MiMuting } from '@/models/_.js';
 import type { Logger } from '@/logger.js';
@@ -107,7 +107,7 @@ export class ExportMutingProcessorService {
 			stream.end();
 			this.logger.succ(`Exported to: ${path}`);
 
-			const fileName = 'mute-' + dateFormat(new Date(), 'yyyy-MM-dd-HH-mm-ss') + '.csv';
+			const fileName = 'mute-' + formatDateTime(new Date()) + '.csv';
 			const driveFile = await this.driveService.addFile({ user, path, name: fileName, force: true, ext: 'csv' });
 
 			this.logger.succ(`Exported to: ${driveFile.id}`);

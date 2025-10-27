@@ -5,7 +5,7 @@
 
 import chalk from 'chalk';
 import colors from 'color-name';
-import { format as dateFormat } from 'date-fns';
+import { formatTime } from '@/misc/formatDate.js';
 import { envOption } from './env.js';
 
 export type ColorName = keyof typeof colors;
@@ -51,7 +51,7 @@ export class Logger {
 			return;
 		}
 
-		const time = dateFormat(new Date(), 'HH:mm:ss');
+		const time = formatTime(new Date());
 
 		const l = (() => {
 			switch (level) {
