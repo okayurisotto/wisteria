@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { Converter } from './type.js';
+import type { SchemaObject } from 'openapi3-ts/oas30';
 
 export const ZodNumber = z.object({
 	type: z.literal('number'),
@@ -44,6 +45,6 @@ export const convertZodNumber: Converter<typeof ZodNumber> = (result, descriptio
 			if (def.check === 'number_format') return {};
 			if (def.check === 'custom') return {};
 			return def satisfies never;
-		}).reduce((prev, current) => ({ ...prev, ...current }), {}),
+		}).reduce<SchemaObject>((prev, current) => ({ ...prev, ...current }), {}),
 	};
 };

@@ -5,7 +5,7 @@ export const ZodNull = z.object({
 	type: z.literal('null'),
 });
 
-export const convertZodNull: Converter<typeof ZodNull> = (result, description) => {
+export const convertZodNull: Converter<typeof ZodNull> = (_result, description) => {
 	return {
 		type: 'null',
 		...(description !== undefined

@@ -11,5 +11,10 @@ export const convertZodEffects: Converter<typeof ZodEffects> = (
 	description,
 	recursive,
 ) => {
-	return recursive(result.schema);
+	return {
+		...(description !== undefined
+				? { description }
+				: {}),
+		...recursive(result.schema),
+	};
 };

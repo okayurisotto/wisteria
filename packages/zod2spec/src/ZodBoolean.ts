@@ -5,7 +5,7 @@ export const ZodBoolean = z.object({
 	type: z.literal('boolean'),
 });
 
-export const convertZodBoolean: Converter<typeof ZodBoolean> = (result, description) => {
+export const convertZodBoolean: Converter<typeof ZodBoolean> = (_result, description) => {
 	return {
 		type: 'boolean',
 		...(description !== undefined

@@ -14,6 +14,9 @@ export const convertZodDefault: Converter<typeof ZodDefault> = (
 ) => {
 	const inner = recursive(result.innerType);
 	return {
+		...(description !== undefined
+				? { description }
+				: {}),
 		...inner,
 		default: result.defaultValue,
 	};

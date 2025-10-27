@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { Converter } from './type.js';
+import type { SchemaObject } from 'openapi3-ts/oas30';
 
 export const ZodString = z.object({
 	type: z.literal('string'),
@@ -57,6 +58,6 @@ export const convertZodString: Converter<typeof ZodString> = (result, descriptio
 			if (def.check === 'string_format') return { pattern: def.pattern.source };
 			if (def.check === 'custom') return {};
 			return def satisfies never;
-		}).reduce((prev, current) => ({ ...prev, ...current }), {}),
+		}).reduce<SchemaObject>((prev, current) => ({ ...prev, ...current }), {}),
 	};
 };

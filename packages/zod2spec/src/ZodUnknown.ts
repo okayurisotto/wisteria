@@ -5,7 +5,7 @@ export const ZodUnknown = z.object({
 	type: z.literal('unknown'),
 });
 
-export const convertZodUnknown: Converter<typeof ZodUnknown> = (result, description) => {
+export const convertZodUnknown: Converter<typeof ZodUnknown> = (_result, description) => {
 	return {
 		...(description !== undefined
 			? { description }

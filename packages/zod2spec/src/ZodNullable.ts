@@ -13,6 +13,9 @@ export const convertZodNullable: Converter<typeof ZodNullable> = (
 ) => {
 	const inner = recursive(result.innerType);
 	return {
+		...(description !== undefined
+			? { description }
+			: {}),
 		...inner,
 		nullable: true,
 	};

@@ -13,6 +13,9 @@ export const convertZodOptional: Converter<typeof ZodOptional> = (
 ) => {
 	const inner = recursive(result.innerType);
 	return {
+		...(description !== undefined
+				? { description }
+				: {}),
 		...inner,
 	};
 };

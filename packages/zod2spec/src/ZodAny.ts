@@ -5,7 +5,7 @@ export const ZodAny = z.object({
 	type: z.literal('any'),
 });
 
-export const convertZodAny: Converter<typeof ZodAny> = (result, description) => {
+export const convertZodAny: Converter<typeof ZodAny> = (_result, description) => {
 	return {
 		...(description !== undefined
 			? { description }
