@@ -63,8 +63,8 @@ importers:
         specifier: 16.0.1
         version: 16.0.1
       '@hono/node-server':
-        specifier: 1.18.2
-        version: 1.18.2(hono@4.10.2)
+        specifier: 1.19.5
+        version: 1.19.5(hono@4.10.3)
       '@misskey-dev/sharp-read-bmp':
         specifier: 1.3.0
         version: 1.3.0
@@ -126,8 +126,8 @@ importers:
         specifier: 20.0.2
         version: 20.0.2
       hono:
-        specifier: 4.10.2
-        version: 4.10.2
+        specifier: 4.10.3
+        version: 4.10.3
       hono-serve-static:
         specifier: workspace:*
         version: link:../hono-serve-static
@@ -561,8 +561,8 @@ importers:
   packages/hono-serve-static:
     dependencies:
       hono:
-        specifier: 4.10.2
-        version: 4.10.2
+        specifier: 4.10.3
+        version: 4.10.3
       mime:
         specifier: 4.0.7
         version: 4.0.7
@@ -1189,8 +1189,8 @@ packages:
   '@hexagon/base64@1.1.28':
     resolution: {integrity: sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw==}
 
-  '@hono/node-server@1.18.2':
-    resolution: {integrity: sha512-icgNvC0vRYivzyuSSaUv9ttcwtN8fDyd1k3AOIBDJgYd84tXRZSS6na8X54CY/oYoFTNhEmZraW/Rb9XYwX4KA==}
+  '@hono/node-server@1.19.5':
+    resolution: {integrity: sha512-iBuhh+uaaggeAuf+TftcjZyWh2GEgZcVGXkNtskLVoWaXhnJtC5HLHrU8W1KHDoucqO1MswwglmkWLFyiDn4WQ==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: ^4
@@ -3317,8 +3317,8 @@ packages:
     resolution: {integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==}
     engines: {node: '>=12.0.0'}
 
-  hono@4.10.2:
-    resolution: {integrity: sha512-p6fyzl+mQo6uhESLxbF5WlBOAJMDh36PljwlKtP5V1v09NxlqGru3ShK+4wKhSuhuYf8qxMmrivHOa/M7q0sMg==}
+  hono@4.10.3:
+    resolution: {integrity: sha512-2LOYWUbnhdxdL8MNbNg9XZig6k+cZXm5IjHn2Aviv7honhBMOHb+jxrKIeJRZJRmn+htUCKhaicxwXuUDlchRA==}
     engines: {node: '>=16.9.0'}
 
   hpagent@1.2.0:
@@ -6217,9 +6217,9 @@ snapshots:
 
   '@hexagon/base64@1.1.28': {}
 
-  '@hono/node-server@1.18.2(hono@4.10.2)':
+  '@hono/node-server@1.19.5(hono@4.10.3)':
     dependencies:
-      hono: 4.10.2
+      hono: 4.10.3
 
   '@img/sharp-darwin-arm64@0.34.2':
     optionalDependencies:
@@ -8583,7 +8583,7 @@ snapshots:
 
   highlight.js@11.11.1: {}
 
-  hono@4.10.2: {}
+  hono@4.10.3: {}
 
   hpagent@1.2.0: {}
 
