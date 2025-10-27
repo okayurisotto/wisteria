@@ -16,6 +16,7 @@ import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import z from 'zod';
 import * as ms from '@/misc/ms.js';
+import { envOption } from '@/env.js';
 
 // 互換性維持のためできるだけ緩く
 const WellKnownSchema = z.object({
@@ -147,7 +148,7 @@ export class FetchInstanceMetadataService {
 			let _wellknown: unknown;
 
 			try {
-				_wellknown = await this.httpRequestService.getJson(`https://${instance.host}/.well-known/nodeinfo`);
+				_wellknown = await this.httpRequestService.getJson(`${envOption.isProduction ? 'https' : 'http'}://${instance.host}/.well-known/nodeinfo`);
 			} catch (err: unknown) {
 				if (err.statusCode === 404) {
 					throw new Error('No nodeinfo provided');
@@ -194,7 +195,7 @@ export class FetchInstanceMetadataService {
 	private async fetchDom(instance: MiInstance): Promise<Document> {
 		this.logger.info(`Fetching HTML of ${instance.host} ...`);
 
-		const url = `https://${instance.host}`;
+		const url = `${envOption.isProduction ? 'https' : 'http'}://${instance.host}`;
 
 		const html = await this.httpRequestService.getHtml(url);
 
@@ -208,7 +209,7 @@ export class FetchInstanceMetadataService {
 	}
 
 	private async fetchManifest(instance: MiInstance): Promise<z.output<typeof ManifestSchema> | null> {
-		const url = `https://${instance.host}`;
+		const url = `${envOption.isProduction ? 'https' : 'http'}://${instance.host}`;
 
 		const manifestUrl = `${url}/manifest.json`;
 
@@ -218,7 +219,7 @@ export class FetchInstanceMetadataService {
 	}
 
 	private async fetchFaviconUrl(instance: MiInstance, doc: Document | null): Promise<string | null> {
-		const url = `https://${instance.host}`;
+		const url = `${envOption.isProduction ? 'https' : 'http'}://${instance.host}`;
 
 		if (doc) {
 			// https://github.com/misskey-dev/misskey/pull/8220#issuecomment-1025104043
