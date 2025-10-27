@@ -4,7 +4,7 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { MiNote } from '@/models/Note.js';
 import type { MiLocalUser, MiUser } from '@/models/User.js';
@@ -29,7 +29,7 @@ export const meta = {
 	kind: 'read:account',
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 30,
 	},
 

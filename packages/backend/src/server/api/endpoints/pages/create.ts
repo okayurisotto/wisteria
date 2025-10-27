@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { Inject, Injectable } from '@nestjs/common';
 import type { DriveFilesRepository, PagesRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
@@ -26,7 +26,7 @@ export const meta = {
 	kind: 'write:pages',
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 10,
 	},
 

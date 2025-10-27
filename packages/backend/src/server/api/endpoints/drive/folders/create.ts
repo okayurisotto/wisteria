@@ -4,7 +4,7 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { DriveFoldersRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
@@ -24,7 +24,7 @@ export const meta = {
 	kind: 'write:drive',
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 10,
 	},
 

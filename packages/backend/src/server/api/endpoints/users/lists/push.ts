@@ -4,7 +4,7 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import type { UserListsRepository, UserListMembershipsRepository, BlockingsRepository } from '@/models/_.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { GetterService } from '@/server/api/GetterService.js';
@@ -26,7 +26,7 @@ export const meta = {
 	description: 'Add a user to an existing list.',
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 30,
 	},
 

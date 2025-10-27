@@ -4,7 +4,7 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { MutingsRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
@@ -23,7 +23,7 @@ export const meta = {
 	kind: 'write:mutes',
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 20,
 	},
 

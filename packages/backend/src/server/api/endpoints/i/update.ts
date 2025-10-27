@@ -6,7 +6,7 @@
 import RE2 from 're2';
 import * as mfm from 'mfm-js';
 import { Inject, Injectable } from '@nestjs/common';
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { JSDOM } from 'jsdom';
 import { extractCustomEmojisFromMfm } from '@/misc/extract-custom-emojis-from-mfm.js';
 import { extractHashtags } from '@/misc/extract-hashtags.js';
@@ -46,7 +46,7 @@ export const meta = {
 	kind: 'write:account',
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 20,
 	},
 

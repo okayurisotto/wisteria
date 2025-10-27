@@ -4,7 +4,7 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { z } from 'zod';
 
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
@@ -28,7 +28,7 @@ export const meta = {
 	requireCredential: true,
 	prohibitMoved: true,
 	limit: {
-		duration: ms('1day'),
+		duration: ms.days(1),
 		max: 5,
 	},
 

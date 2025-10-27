@@ -4,7 +4,7 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import type { NotesRepository, NoteThreadMutingsRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
@@ -23,7 +23,7 @@ export const meta = {
 	kind: 'write:account',
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 10,
 	},
 

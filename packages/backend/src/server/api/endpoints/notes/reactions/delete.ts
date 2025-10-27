@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { Injectable } from '@nestjs/common';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { GetterService } from '@/server/api/GetterService.js';
@@ -20,9 +20,9 @@ export const meta = {
 	kind: 'write:reactions',
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 60,
-		minInterval: ms('3sec'),
+		minInterval: ms.seconds(3),
 	},
 
 	errors: {

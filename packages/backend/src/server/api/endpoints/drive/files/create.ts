@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { Injectable } from '@nestjs/common';
 import { DB_MAX_IMAGE_COMMENT_LENGTH } from '@/const.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
@@ -24,7 +24,7 @@ export const meta = {
 	prohibitMoved: true,
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 120,
 	},
 

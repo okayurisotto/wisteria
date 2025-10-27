@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { Inject, Injectable } from '@nestjs/common';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import type { FollowingsRepository } from '@/models/_.js';
@@ -14,7 +14,7 @@ export const meta = {
 	tags: ['following', 'users'],
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 10,
 	},
 

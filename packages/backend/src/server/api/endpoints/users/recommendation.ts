@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository, FollowingsRepository } from '@/models/_.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
@@ -47,7 +47,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				.where('user.isLocked = FALSE')
 				.andWhere('user.isExplorable = TRUE')
 				.andWhere('user.host IS NULL')
-				.andWhere('user.updatedAt >= :date', { date: new Date(Date.now() - ms('7days')) })
+				.andWhere('user.updatedAt >= :date', { date: new Date(Date.now() - ms.days(7)) })
 				.andWhere('user.id != :meId', { meId: me.id })
 				.orderBy('user.followersCount', 'DESC');
 

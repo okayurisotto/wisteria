@@ -4,7 +4,7 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { ApResolverService } from '@/core/activitypub/ApResolverService.js';
 import { z } from 'zod';
@@ -16,7 +16,7 @@ export const meta = {
 	kind: 'read:federation',
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 30,
 	},
 

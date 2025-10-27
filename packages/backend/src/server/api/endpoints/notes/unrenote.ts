@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository, NotesRepository } from '@/models/_.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
@@ -22,9 +22,9 @@ export const meta = {
 	kind: 'write:notes',
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 300,
-		minInterval: ms('1sec'),
+		minInterval: ms.seconds(1),
 	},
 
 	errors: {

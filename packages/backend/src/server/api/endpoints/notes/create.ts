@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { In } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository, NotesRepository, BlockingsRepository, DriveFilesRepository, ChannelsRepository } from '@/models/_.js';
@@ -29,7 +29,7 @@ export const meta = {
 	prohibitMoved: true,
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 300,
 	},
 

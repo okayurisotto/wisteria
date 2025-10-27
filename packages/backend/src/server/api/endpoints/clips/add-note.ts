@@ -4,7 +4,7 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { ClipService } from '@/core/ClipService.js';
 import { ApiError } from '../../error.js';
@@ -21,7 +21,7 @@ export const meta = {
 	kind: 'write:account',
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 20,
 	},
 

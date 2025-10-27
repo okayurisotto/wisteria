@@ -4,7 +4,7 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { QueueService } from '@/core/QueueService.js';
 import type { AntennasRepository, DriveFilesRepository, UsersRepository, MiAntenna as _Antenna } from '@/models/_.js';
@@ -21,7 +21,7 @@ export const meta = {
 	prohibitMoved: true,
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 1,
 	},
 	errors: {

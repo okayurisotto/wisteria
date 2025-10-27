@@ -4,7 +4,7 @@
  */
 
 import { createHash } from 'crypto';
-import ms from 'ms';
+import * as ms from '@/misc/ms.js';
 import { Injectable } from '@nestjs/common';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
@@ -18,7 +18,7 @@ export const meta = {
 	secure: true,
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms.hours(1),
 		max: 50,
 	},
 
