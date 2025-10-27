@@ -5,7 +5,7 @@
 
 import { URL } from 'node:url';
 import { Inject, Injectable } from '@nestjs/common';
-import { JSDOM } from 'jsdom';
+import { Browser, Document } from 'happy-dom';
 import tinycolor from 'tinycolor2';
 import * as Redis from 'ioredis';
 import type { MiInstance } from '@/models/Instance.js';
@@ -14,7 +14,6 @@ import { DI } from '@/di-symbols.js';
 import { LoggerService } from '@/core/LoggerService.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
-import type { DOMWindow } from 'jsdom';
 import z from 'zod';
 import * as ms from '@/misc/ms.js';
 
@@ -192,15 +191,18 @@ export class FetchInstanceMetadataService {
 		}
 	}
 
-	private async fetchDom(instance: MiInstance): Promise<DOMWindow['document']> {
+	private async fetchDom(instance: MiInstance): Promise<Document> {
 		this.logger.info(`Fetching HTML of ${instance.host} ...`);
 
 		const url = `https://${instance.host}`;
 
 		const html = await this.httpRequestService.getHtml(url);
 
-		const { window } = new JSDOM(html);
-		const doc = window.document;
+		const browser = new Browser();
+		const page = browser.newPage();
+		page.url = url;
+		page.content = html;
+		const doc = page.mainFrame.document;
 
 		return doc;
 	}
@@ -215,7 +217,7 @@ export class FetchInstanceMetadataService {
 		return ManifestSchema.nullable().parse(manifest);
 	}
 
-	private async fetchFaviconUrl(instance: MiInstance, doc: DOMWindow['document'] | null): Promise<string | null> {
+	private async fetchFaviconUrl(instance: MiInstance, doc: Document | null): Promise<string | null> {
 		const url = `https://${instance.host}`;
 
 		if (doc) {
@@ -240,7 +242,7 @@ export class FetchInstanceMetadataService {
 		return null;
 	}
 
-	private async fetchIconUrl(instance: MiInstance, doc: DOMWindow['document'] | null, manifest: z.output<typeof ManifestSchema> | null): Promise<string | null> {
+	private async fetchIconUrl(instance: MiInstance, doc: Document | null, manifest: z.output<typeof ManifestSchema> | null): Promise<string | null> {
 		if (manifest?.icons && manifest.icons.length > 0 && manifest.icons[0]?.src) {
 			const baseurl = `https://${instance.host}`;
 			return (new URL(manifest.icons[0].src, baseurl)).href;
@@ -268,7 +270,7 @@ export class FetchInstanceMetadataService {
 		return null;
 	}
 
-	private async getThemeColor(info: NodeInfo | null, doc: DOMWindow['document'] | null, manifest: z.output<typeof ManifestSchema> | null): Promise<string | null> {
+	private async getThemeColor(info: NodeInfo | null, doc: Document | null, manifest: z.output<typeof ManifestSchema> | null): Promise<string | null> {
 		const themeColor = info?.metadata?.themeColor ?? doc?.querySelector('meta[name="theme-color"]')?.getAttribute('content') ?? manifest?.theme_color;
 
 		if (themeColor) {
@@ -279,7 +281,7 @@ export class FetchInstanceMetadataService {
 		return null;
 	}
 
-	private async getSiteName(info: NodeInfo | null, doc: DOMWindow['document'] | null, manifest: z.output<typeof ManifestSchema> | null): Promise<string | null> {
+	private async getSiteName(info: NodeInfo | null, doc: Document | null, manifest: z.output<typeof ManifestSchema> | null): Promise<string | null> {
 		if (info?.metadata) {
 			if (typeof info.metadata.nodeName === 'string') {
 				return info.metadata.nodeName;
@@ -303,7 +305,7 @@ export class FetchInstanceMetadataService {
 		return null;
 	}
 
-	private async getDescription(info: NodeInfo | null, doc: DOMWindow['document'] | null, manifest: z.output<typeof ManifestSchema> | null): Promise<string | null> {
+	private async getDescription(info: NodeInfo | null, doc: Document | null, manifest: z.output<typeof ManifestSchema> | null): Promise<string | null> {
 		if (info?.metadata) {
 			if (typeof info.metadata.nodeDescription === 'string') {
 				return info.metadata.nodeDescription;
