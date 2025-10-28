@@ -13,7 +13,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div ref="timeline" :class="$style.timeline">
 				<div ref="timelineTopMarker"></div>
 				<MkNote :class="$style.timelineItem" v-for="note of notes" :key="note.id" :note="note" :withHardMute="true"/>
-				<div ref="timelineBottomMarker"></div>
+				<div ref="timelineBottomMarker" :class="$style.timelineBottomMarker"></div>
 			</div>
 		</MkPullToRefresh>
 	</div>
@@ -220,5 +220,9 @@ onUnmounted(() => {
 
 .timelineItem:not(:nth-last-child(2)) {
 	border-bottom: 1px solid var(--divider);
+}
+
+.timelineBottomMarker {
+	translate: 0 -150px;
 }
 </style>
