@@ -22,6 +22,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import * as MisskeyJS from 'misskey-js';
+import { useIntersectionObserver } from '@vueuse/core';
 import MkPostForm from '@/components/MkPostForm.vue';
 import MkPullToRefresh from '@/components/MkPullToRefresh.vue';
 import MkNote from '@/components/MkNote.vue';
@@ -77,7 +78,6 @@ const reloadTimeline = async () => {
 };
 
 let stream: MisskeyJS.Stream;
-let iObserver: IntersectionObserver;
 
 const smoothUnshift = () => {
 	if (timeline.value === null) return;
@@ -105,6 +105,29 @@ const checkMute = (note: MisskeyJS.entities.Note, mutedWords: Array<string | str
 
 	return false;
 };
+
+useIntersectionObserver([timelineTopMarker, timelineBottomMarker], async (entries) => {
+	for (const entry of entries) {
+		if (entry.target === timelineTopMarker.value) {
+			isTop.value = entry.isIntersecting;
+
+			if (queue.value.length !== 0) {
+				notes.value = [...queue.value, ...notes.value];
+				queue.value = [];
+			}
+		}
+
+		if (entry.target === timelineBottomMarker.value) {
+			if (entry.isIntersecting) {
+				if (oldestNoteId.value !== undefined) {
+					const prevNotes = (await misskeyApi('notes/timeline', { limit: 10, untilId: oldestNoteId.value }))
+						.filter((note) => !checkMute(note, $i?.hardMutedWords));
+					notes.value = [...notes.value, ...prevNotes];
+				}
+			}
+		}
+	}
+});
 
 onMounted(async () => {
 	notes.value = (await misskeyApi('notes/timeline', { limit: 10 }))
@@ -145,37 +168,10 @@ onMounted(async () => {
 			stream.send('s', { id: note.id });
 		}
 	});
-
-	iObserver = new IntersectionObserver(async (entries) => {
-		for (const entry of entries) {
-			if (entry.target === timelineTopMarker.value) {
-				isTop.value = entry.isIntersecting;
-
-				if (queue.value.length !== 0) {
-					notes.value = [...queue.value, ...notes.value];
-					queue.value = [];
-				}
-			}
-
-			if (entry.target === timelineBottomMarker.value) {
-				if (entry.isIntersecting) {
-					if (oldestNoteId.value !== undefined) {
-						const prevNotes = (await misskeyApi('notes/timeline', { limit: 10, untilId: oldestNoteId.value, }))
-							.filter((note) => !checkMute(note, $i?.hardMutedWords));
-						notes.value = [...notes.value, ...prevNotes];
-					}
-				}
-			}
-		}
-	});
-
-	if (timelineTopMarker.value) iObserver.observe(timelineTopMarker.value);
-	if (timelineBottomMarker.value) iObserver.observe(timelineBottomMarker.value);
 });
 
 onUnmounted(() => {
 	stream.close();
-	iObserver.disconnect();
 });
 </script>
 
