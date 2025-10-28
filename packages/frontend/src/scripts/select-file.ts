@@ -12,7 +12,7 @@ import { i18n } from '@/i18n.js';
 import { defaultStore } from '@/store.js';
 import { uploadFile } from '@/scripts/upload.js';
 
-export function chooseFileFromPc(multiple: boolean, keepOriginal = false): Promise<Misskey.entities.DriveFile[]> {
+function chooseFileFromPc(multiple: boolean, keepOriginal = false): Promise<Misskey.entities.DriveFile[]> {
 	return new Promise((res) => {
 		const input = document.createElement('input');
 		input.type = 'file';
@@ -39,7 +39,7 @@ export function chooseFileFromPc(multiple: boolean, keepOriginal = false): Promi
 	});
 }
 
-export function chooseFileFromDrive(multiple: boolean): Promise<Misskey.entities.DriveFile[]> {
+function chooseFileFromDrive(multiple: boolean): Promise<Misskey.entities.DriveFile[]> {
 	return new Promise((res) => {
 		os.selectDriveFile(multiple).then(files => {
 			res(files);
@@ -47,7 +47,7 @@ export function chooseFileFromDrive(multiple: boolean): Promise<Misskey.entities
 	});
 }
 
-export function chooseFileFromUrl(): Promise<Misskey.entities.DriveFile> {
+function chooseFileFromUrl(): Promise<Misskey.entities.DriveFile> {
 	return new Promise((res) => {
 		os.inputText({
 			title: i18n.ts.uploadFromUrl,

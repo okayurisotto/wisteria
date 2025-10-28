@@ -13,14 +13,6 @@ export function isDebuggerEnabled(id: number): boolean {
 	}
 }
 
-export function switchDebuggerEnabled(id: number, enabled: boolean): void {
-	if (enabled) {
-		localStorage.setItem(`DEBUG_${id}`, '');
-	} else {
-		localStorage.removeItem(`DEBUG_${id}`);
-	}
-}
-
 export function stackTraceInstances(): ComponentInternalInstance[] {
 	let instance = getCurrentInstance();
 	const stack: ComponentInternalInstance[] = [];

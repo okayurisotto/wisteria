@@ -155,19 +155,6 @@ export async function playMisskeySfxFile(soundStore: SoundStore) {
 	createSourceNode(buffer, { volume }).soundSource.start();
 }
 
-export async function playUrl(url: string, opts: {
-	volume?: number;
-	pan?: number;
-	playbackRate?: number;
-}) {
-	if (opts.volume === 0) {
-		return;
-	}
-	const buffer = await loadAudio(url);
-	if (!buffer) return;
-	createSourceNode(buffer, opts).soundSource.start();
-}
-
 export function createSourceNode(buffer: AudioBuffer, opts: {
 	volume?: number;
 	pan?: number;
@@ -216,7 +203,7 @@ export async function getSoundDuration(file: string): Promise<number> {
 /**
  * ミュートすべきかどうかを判断する
  */
-export function isMute(): boolean {
+function isMute(): boolean {
 	if (defaultStore.state.sound_notUseSound) {
 		// サウンドを出力しない
 		return true;

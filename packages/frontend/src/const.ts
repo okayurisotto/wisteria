@@ -68,7 +68,6 @@ export const notificationTypes = [
 	'roleAssigned',
 	'app',
 ] as const;
-export const obsoleteNotificationTypes = ['pollVote', 'groupInvited'] as const;
 
 export const ROLE_POLICIES = [
 	'gtlAvailable',

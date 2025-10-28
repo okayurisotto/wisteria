@@ -21,5 +21,3 @@ export const wsOrigin = location.origin;
 export const lang = useLanguage();
 export const locale = await useLocale(version, lang);
 export const instanceName = siteName === 'Misskey' || siteName == null ? host : siteName;
-export const ui = miLocalStorage.getItem('ui');
-export const debug = miLocalStorage.getItem('debug') === 'true';

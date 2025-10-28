@@ -3,16 +3,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-export const postMessageEventTypes = [
+const postMessageEventTypes = [
 	'misskey:shareForm:shareCompleted',
 ] as const;
 
-export type PostMessageEventType = typeof postMessageEventTypes[number];
-
-export type MiPostMessageEvent = {
-	type: PostMessageEventType;
-	payload?: any;
-};
+type PostMessageEventType = typeof postMessageEventTypes[number];
 
 /**
  * 親フレームにイベントを送信

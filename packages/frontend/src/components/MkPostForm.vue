@@ -115,7 +115,7 @@ import { defaultStore } from '@/store.js';
 import MkInfo from '@/components/MkInfo.vue';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
-import { signinRequired, incNotesCount } from '@/account.js';
+import { signinRequired } from '@/account.js';
 import { uploadFile } from '@/scripts/upload.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { miLocalStorage } from '@/local-storage.js';
@@ -771,8 +771,6 @@ async function post(ev?: MouseEvent) {
 				miLocalStorage.setItem('hashtags', JSON.stringify(unique(hashtags_.concat(history))));
 			}
 			posting.value = false;
-
-			incNotesCount();
 		});
 	}).catch(err => {
 		posting.value = false;

@@ -6,7 +6,6 @@
 // TODO: なんでもかんでもos.tsに突っ込むのやめたいのでよしなに分割する
 
 import { type Component, markRaw, type Ref, ref, defineAsyncComponent } from 'vue';
-import insertTextAtCursor from 'insert-text-at-cursor';
 import * as Misskey from 'misskey-js';
 import type { ComponentProps } from 'vue-component-type-helpers';
 import { misskeyApi } from '@/scripts/misskey-api.js';
@@ -293,58 +292,6 @@ export function inputText(props: {
 	});
 }
 
-export function inputNumber(props: {
-	title?: string | null;
-	text?: string | null;
-	placeholder?: string | null;
-	autocomplete?: string;
-	default?: number | null;
-}): Promise<{ canceled: true; result: undefined; } | {
-	canceled: false; result: number;
-}> {
-	return new Promise((resolve) => {
-		popup(MkDialog, {
-			title: props.title,
-			text: props.text,
-			input: {
-				type: 'number',
-				placeholder: props.placeholder,
-				autocomplete: props.autocomplete,
-				default: props.default,
-			},
-		}, {
-			done: result => {
-				resolve(result ? result : { canceled: true });
-			},
-		}, 'closed');
-	});
-}
-
-export function inputDate(props: {
-	title?: string | null;
-	text?: string | null;
-	placeholder?: string | null;
-	default?: Date | null;
-}): Promise<{ canceled: true; result: undefined; } | {
-	canceled: false; result: Date;
-}> {
-	return new Promise((resolve) => {
-		popup(MkDialog, {
-			title: props.title,
-			text: props.text,
-			input: {
-				type: 'date',
-				placeholder: props.placeholder,
-				default: props.default,
-			},
-		}, {
-			done: result => {
-				resolve(result ? { result: new Date(result.result), canceled: false } : { canceled: true });
-			},
-		}, 'closed');
-	});
-}
-
 export function authenticateDialog(): Promise<{ canceled: true; result: undefined; } | {
 	canceled: false; result: { password: string; token: string | null; };
 }> {
@@ -484,60 +431,6 @@ export async function pickEmoji(src: HTMLElement | null, opts) {
 				resolve(emoji);
 			},
 		}, 'closed');
-	});
-}
-
-type AwaitType<T> =
-	T extends Promise<infer U> ? U :
-	T extends (...args: any[]) => Promise<infer V> ? V :
-	T;
-let openingEmojiPicker: AwaitType<ReturnType<typeof popup>> | null = null;
-let activeTextarea: HTMLTextAreaElement | HTMLInputElement | null = null;
-export async function openEmojiPicker(src?: HTMLElement, opts, initialTextarea: typeof activeTextarea) {
-	if (openingEmojiPicker) return;
-
-	activeTextarea = initialTextarea;
-
-	const textareas = document.querySelectorAll('textarea, input');
-	for (const textarea of Array.from(textareas)) {
-		textarea.addEventListener('focus', () => {
-			activeTextarea = textarea;
-		});
-	}
-
-	const observer = new MutationObserver(records => {
-		for (const record of records) {
-			for (const node of Array.from(record.addedNodes).filter(node => node instanceof HTMLElement) as HTMLElement[]) {
-				const textareas = node.querySelectorAll('textarea, input') as NodeListOf<NonNullable<typeof activeTextarea>>;
-				for (const textarea of Array.from(textareas).filter(textarea => textarea.dataset.preventEmojiInsert == null)) {
-					if (document.activeElement === textarea) activeTextarea = textarea;
-					textarea.addEventListener('focus', () => {
-						activeTextarea = textarea;
-					});
-				}
-			}
-		}
-	});
-
-	observer.observe(document.body, {
-		childList: true,
-		subtree: true,
-		attributes: false,
-		characterData: false,
-	});
-
-	openingEmojiPicker = await popup(MkEmojiPickerWindow, {
-		src,
-		...opts,
-	}, {
-		chosen: emoji => {
-			insertTextAtCursor(activeTextarea, emoji);
-		},
-		closed: () => {
-			openingEmojiPicker!.dispose();
-			openingEmojiPicker = null;
-			observer.disconnect();
-		},
 	});
 }
 

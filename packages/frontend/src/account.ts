@@ -30,11 +30,6 @@ export function signinRequired() {
 	return $i;
 }
 
-export let notesCount = $i == null ? 0 : $i.notesCount;
-export function incNotesCount() {
-	notesCount++;
-}
-
 export async function signout() {
 	if (!$i) return;
 

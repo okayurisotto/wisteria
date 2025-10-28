@@ -12,7 +12,7 @@ export default (input: string): string[] => {
 	}
 };
 
-export const aliases = {
+const aliases = {
 	'esc': 'Escape',
 	'enter': ['Enter', 'NumpadEnter'],
 	'up': 'ArrowUp',

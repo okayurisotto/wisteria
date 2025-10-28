@@ -33,8 +33,6 @@ try {
 }
 export const dateTimeFormat = _dateTimeFormat;
 
-export const timeZone = dateTimeFormat.resolvedOptions().timeZone;
-
 let _numberFormat: Intl.NumberFormat;
 try {
 	_numberFormat = new Intl.NumberFormat(versatileLang);

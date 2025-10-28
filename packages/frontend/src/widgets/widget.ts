@@ -9,7 +9,7 @@ import type { Form, GetFormResultType } from '@/scripts/form.js';
 import * as os from '@/os.js';
 import { deepClone } from '@/scripts/clone.js';
 
-export type Widget<P extends Record<string, unknown>> = {
+type Widget<P extends Record<string, unknown>> = {
 	id: string;
 	data: Partial<P>;
 };

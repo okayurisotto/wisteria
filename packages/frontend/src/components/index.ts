@@ -31,7 +31,7 @@ export default function(app: App) {
 	}
 }
 
-export const components = {
+const components = {
 	I18n: I18n,
 	RouterView: RouterView,
 	Mfm: Mfm,

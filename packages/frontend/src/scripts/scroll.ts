@@ -15,7 +15,7 @@ export function getScrollContainer(el: HTMLElement | null): HTMLElement | null {
 	}
 }
 
-export function getStickyTop(el: HTMLElement, container: HTMLElement | null = null, top = 0) {
+function getStickyTop(el: HTMLElement, container: HTMLElement | null = null, top = 0) {
 	if (!el.parentElement) return top;
 	const data = el.dataset["stickyContainerHeaderHeight"];
 	const newTop = data ? Number(data) + top : top;
@@ -23,7 +23,7 @@ export function getStickyTop(el: HTMLElement, container: HTMLElement | null = nu
 	return getStickyTop(el.parentElement, container, newTop);
 }
 
-export function getScrollPosition(el: HTMLElement | null): number {
+function getScrollPosition(el: HTMLElement | null): number {
 	const container = getScrollContainer(el);
 	return container == null ? window.scrollY : container.scrollTop;
 }

@@ -62,19 +62,19 @@ export const allThemes = computed<Theme[]>(() => [
 	...(instanceLightTheme.value !== undefined ? [instanceLightTheme.value] : []),
 	...(instanceDarkTheme.value !== undefined ? [instanceDarkTheme.value] : []),
 ]);
-export const lightThemes = computed<Theme[]>(() => [
+const lightThemes = computed<Theme[]>(() => [
 	...builtinLightThemes.value,
 	...installedLightThemes.value,
 	...(instanceLightTheme.value !== undefined ? [instanceLightTheme.value] : []),
 ]);
-export const darkThemes = computed<Theme[]>(() => [
+const darkThemes = computed<Theme[]>(() => [
 	...builtinDarkThemes.value,
 	...installedDarkThemes.value,
 	...(instanceDarkTheme.value !== undefined ? [instanceDarkTheme.value] : []),
 ]);
 
-export const defaultLightTheme = computed<Theme>(() => instanceLightTheme.value ?? lLight);
-export const defaultDarkTheme = computed<Theme>(() => instanceDarkTheme.value ?? dDark);
+const defaultLightTheme = computed((): Theme => instanceLightTheme.value ?? lLight);
+const defaultDarkTheme = computed((): Theme => instanceDarkTheme.value ?? dDark);
 
 export const selectedLightThemeId = ref<string>();
 export const selectedDarkThemeId = ref<string>();
@@ -95,7 +95,7 @@ const primaryTheme = computed<Theme>(() => {
   }
 });
 
-export const validateTheme = (theme: Record<string, any>): boolean => {
+export const validateTheme = (theme: Record<string, unknown>): boolean => {
 	if (theme.id == null || typeof theme.id !== 'string') return false;
 	if (theme.name == null || typeof theme.name !== 'string') return false;
 	if (theme.base == null || !['light', 'dark'].includes(theme.base)) return false;

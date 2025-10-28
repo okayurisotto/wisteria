@@ -23,7 +23,7 @@ export default function(app: App) {
 	}
 }
 
-export const directives = {
+const directives = {
 	'userPreview': userPreview,
 	'user-preview': userPreview,
 	'get-size': getSize,

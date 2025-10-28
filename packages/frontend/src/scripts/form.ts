@@ -8,7 +8,7 @@ type EnumItem = string | {
 	value: string;
 };
 
-export type FormItem = {
+type FormItem = {
 	label?: string;
 	type: 'string';
 	default: string | null;

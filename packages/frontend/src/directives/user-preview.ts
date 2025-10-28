@@ -6,7 +6,7 @@
 import { defineAsyncComponent, type Directive, ref } from 'vue';
 import { popup } from '@/os.js';
 
-export class UserPreview {
+class UserPreview {
 	private el;
 	private user;
 	private showTimer: number | undefined;
