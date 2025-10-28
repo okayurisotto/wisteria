@@ -24,7 +24,7 @@ import { getProxiedImageUrl, getStaticImageUrl } from '@/scripts/media-proxy.js'
 import { defaultStore } from '@/store.js';
 import { customEmojisMap } from '@/custom-emojis.js';
 import * as os from '@/os.js';
-import { misskeyApiGet } from '@/scripts/misskey-api.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { copyToClipboard } from '@/scripts/copy-to-clipboard.js';
 import * as sound from '@/scripts/sound.js';
 import { i18n } from '@/i18n.js';
@@ -100,7 +100,7 @@ function onClick(ev: MouseEvent) {
 			icon: 'ti ti-info-circle',
 			action: async () => {
 				os.popup(MkCustomEmojiDetailedDialog, {
-					emoji: await misskeyApiGet('emoji', {
+					emoji: await misskeyApi('emoji', {
 						name: customEmojiName.value,
 					}),
 				}, {

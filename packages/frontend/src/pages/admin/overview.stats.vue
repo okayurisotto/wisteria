@@ -61,7 +61,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import * as Misskey from 'misskey-js';
-import { misskeyApi, misskeyApiGet } from '@/scripts/misskey-api.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import MkNumber from '@/components/MkNumber.vue';
 import { customEmojis } from '@/custom-emojis.js';
 import { defaultStore } from '@/store.js';
@@ -73,7 +73,7 @@ const fetching = ref(true);
 onMounted(async () => {
 	const [_stats, _onlineUsersCount] = await Promise.all([
 		misskeyApi('stats', {}),
-		misskeyApiGet('get-online-users-count').then(res => res.count),
+		misskeyApi('get-online-users-count').then(res => res.count),
 	]);
 	stats.value = _stats;
 	onlineUsersCount.value = _onlineUsersCount;

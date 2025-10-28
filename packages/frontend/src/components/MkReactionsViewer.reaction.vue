@@ -24,7 +24,7 @@ import MkCustomEmojiDetailedDialog from './MkCustomEmojiDetailedDialog.vue';
 import XDetails from '@/components/MkReactionsViewer.details.vue';
 import MkReactionIcon from '@/components/MkReactionIcon.vue';
 import * as os from '@/os.js';
-import { misskeyApi, misskeyApiGet } from '@/scripts/misskey-api.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { useTooltip } from '@/scripts/use-tooltip.js';
 import { $i } from '@/account.js';
 import MkReactionEffect from '@/components/MkReactionEffect.vue';
@@ -112,7 +112,7 @@ async function menu(ev) {
 		icon: 'ti ti-info-circle',
 		action: async () => {
 			os.popup(MkCustomEmojiDetailedDialog, {
-				emoji: await misskeyApiGet('emoji', {
+				emoji: await misskeyApi('emoji', {
 					name: props.reaction.replace(/:/g, '').replace(/@\./, ''),
 				}),
 			});
@@ -139,7 +139,7 @@ onMounted(() => {
 
 if (!mock) {
 	useTooltip(buttonEl, async (showing) => {
-		const reactions = await misskeyApiGet('notes/reactions', {
+		const reactions = await misskeyApi('notes/reactions', {
 			noteId: props.note.id,
 			type: props.reaction,
 			limit: 10,

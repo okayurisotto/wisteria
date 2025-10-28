@@ -32,14 +32,14 @@ import { onUpdated, ref, useTemplateRef } from 'vue';
 import MkReactionsViewer from '@/components/MkReactionsViewer.vue';
 import MkMediaList from '@/components/MkMediaList.vue';
 import MkPoll from '@/components/MkPoll.vue';
-import { misskeyApiGet } from '@/scripts/misskey-api.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { getScrollContainer } from '@/scripts/scroll.js';
 
 const notes = ref<Misskey.entities.Note[]>([]);
 const isScrolling = ref(false);
 const scrollEl = useTemplateRef('scrollEl');
 
-misskeyApiGet('notes/featured').then(_notes => {
+misskeyApi('notes/featured').then(_notes => {
 	notes.value = _notes;
 });
 

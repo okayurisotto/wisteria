@@ -47,7 +47,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { onMounted, ref } from 'vue';
 import XPie, { type InstanceForPie } from './overview.pie.vue';
 import * as os from '@/os.js';
-import { misskeyApiGet } from '@/scripts/misskey-api.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import number from '@/filters/number.js';
 import { useChartTooltip } from '@/scripts/use-chart-tooltip.js';
 
@@ -60,7 +60,7 @@ const totalPub = ref<number | null>(null);
 useChartTooltip();
 
 onMounted(async () => {
-	misskeyApiGet('federation/stats', { limit: 10 }).then(res => {
+	misskeyApi('federation/stats', { limit: 10 }).then(res => {
 		totalSub.value = res.topSubInstances.length + res.otherFollowersCount;
 		totalPub.value = res.topPubInstances.length + res.otherFollowingCount;
 

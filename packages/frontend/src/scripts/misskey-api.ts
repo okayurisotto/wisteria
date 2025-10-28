@@ -19,4 +19,3 @@ const apiClient = new Misskey.api.APIClient({
 });
 
 export const misskeyApi = apiClient.request.bind(apiClient);
-export const misskeyApiGet = misskeyApi;
