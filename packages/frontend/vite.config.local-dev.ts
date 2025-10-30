@@ -25,6 +25,7 @@ export default defineConfig({
 				changeOrigin: true,
 				target: httpUrl,
 			},
+			'/emoji/': httpUrl,
 			'/assets': httpUrl,
 			'/static-assets': httpUrl,
 			'/client-assets': httpUrl,
