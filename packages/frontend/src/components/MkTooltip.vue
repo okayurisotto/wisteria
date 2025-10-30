@@ -11,11 +11,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 	:leaveToClass="defaultStore.state.animation ? $style.transition_tooltip_leaveTo : ''"
 	appear @afterLeave="emit('closed')"
 >
-	<div v-show="showing" ref="el" :class="$style.root" class="_acrylic _shadow" :style="{ zIndex, maxWidth: maxWidth + 'px' }">
+	<div
+		v-show="props.showing"
+		ref="content"
+		:class="$style.root"
+		class="_acrylic _shadow"
+		:style="{ zIndex, maxWidth: `${props.maxWidth}px`, left: `${left}px`, top: `${top}px` }"
+	>
 		<slot>
-			<template v-if="text">
-				<Mfm v-if="asMfm" :text="text"/>
-				<span v-else>{{ text }}</span>
+			<template v-if="props.text">
+				<Mfm v-if="props.asMfm" :text="props.text"/>
+				<span v-else>{{ props.text }}</span>
 			</template>
 		</slot>
 	</div>
@@ -23,9 +29,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onMounted, useTemplateRef } from 'vue';
+import { computed, useTemplateRef } from 'vue';
 import * as os from '@/os.js';
-import { useWindowSize } from '@vueuse/core';
+import { useElementBounding, useWindowSize } from '@vueuse/core';
 import { getFloatingPosition } from '@/scripts/getFloatingPosition';
 import { defaultStore } from '@/store.js';
 
@@ -52,45 +58,49 @@ const emit = defineEmits<{
 // タイミングによっては最初から showing = false な場合があり、その場合に closed 扱いにしないと永久にDOMに残ることになる
 if (!props.showing) emit('closed');
 
-const el = useTemplateRef('el');
+const horizontalAlignment = computed(() => {
+	if (props.direction === 'left') return 'negative';
+	if (props.direction === 'right') return 'positive';
+	return 'center';
+});
+
+const verticalAlignment = computed(() => {
+	if (props.direction === 'top') return 'negative';
+	if (props.direction === 'bottom') return 'positive';
+	return 'center';
+});
+
 const zIndex = os.claimZIndex('high');
 
+const content = useTemplateRef('content');
+const contentRect = useElementBounding(content);
+const targetRect = useElementBounding(props.targetElement);
 const windowSize = useWindowSize();
-const VIEWPORT_MARGIN = 18;
 
-function setPosition() {
-	if (el.value == null) return;
-	if (props.targetElement === undefined) return;
-
-	const contentSize = el.value.getBoundingClientRect();
-	const targetRect = props.targetElement.getBoundingClientRect();
-
+const left = computed(() => {
 	const left = getFloatingPosition({
-		target: targetRect.left,
-		targetSize: targetRect.width,
-		contentSize: contentSize.width,
-		contentAlignment: 'center',
+		target: targetRect.left.value,
+		targetSize: targetRect.width.value,
+		contentSize: contentRect.width.value,
+		contentAlignment: horizontalAlignment.value,
 		viewportSize: windowSize.width.value,
-		viewportMargin: VIEWPORT_MARGIN,
+		viewportMargin: props.innerMargin,
 	});
 
+	return left.value;
+});
+
+const top = computed(() => {
 	const top = getFloatingPosition({
-		target: targetRect.top,
-		targetSize: targetRect.height,
-		contentAlignment: 'negative',
-		contentSize: contentSize.height,
+		target: targetRect.top.value,
+		targetSize: targetRect.height.value,
+		contentSize: contentRect.height.value,
+		contentAlignment: verticalAlignment.value,
 		viewportSize: windowSize.height.value,
-		viewportMargin: VIEWPORT_MARGIN,
+		viewportMargin: props.innerMargin,
 	});
 
-	el.value.style.left = `${left.value}px`;
-	el.value.style.top = `${top.value}px`;
-}
-
-onMounted(() => {
-	nextTick(() => {
-		setPosition();
-	});
+	return top.value;
 });
 </script>
 

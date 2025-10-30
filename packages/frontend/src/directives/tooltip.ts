@@ -15,22 +15,64 @@ const end = isTouchUsing ? 'touchend' : 'mouseleave';
 
 export default {
 	mounted(el: HTMLElement, binding) {
-		const delay = binding.modifiers.noDelay ? 0 : 100;
+		const modifiers = {
+			noDelay: binding.modifiers['noDelay'] ?? false,
+			mfm: binding.modifiers['mfm'] ?? false,
+			left: binding.modifiers['left'] ?? false,
+			right: binding.modifiers['right'] ?? false,
+			top: binding.modifiers['top'] ?? false,
+			bottom: binding.modifiers['bottom'] ?? false,
+		};
 
-		const self = (el as any)._tooltipDirective_ = {} as any;
+		const delay = modifiers.noDelay ? 0 : 100;
+		const direction =
+			modifiers.left ? 'left' :
+			modifiers.right ? 'right' :
+			modifiers.top ? 'top' :
+			modifiers.bottom ? 'bottom' :
+			'top';
 
-		self.text = binding.value as string;
-		self._close = null;
-		self.showTimer = null;
-		self.hideTimer = null;
-		self.checkTimer = null;
+		type Self = {
+			text: string;
+			_close: (() => void) | undefined;
+			showTimer: number | undefined;
+			hideTimer: number | undefined;
+			checkTimer: number | undefined;
+			close: () => void;
+			show: () => void;
+		};
 
-		self.close = () => {
-			if (self._close) {
-				window.clearInterval(self.checkTimer);
-				self._close();
-				self._close = null;
-			}
+		const self: Self = {
+			text: binding.value,
+			_close: undefined,
+			showTimer: undefined,
+			hideTimer: undefined,
+			checkTimer: undefined,
+			close() {
+				if (self._close) {
+					window.clearInterval(self.checkTimer);
+					self._close();
+					self._close = undefined;
+				}
+			},
+			show() {
+				if (!document.body.contains(el)) return;
+				if (self._close) return;
+				if (self.text == null) return;
+
+				const showing = ref(true);
+				popup(defineAsyncComponent(() => import('@/components/MkTooltip.vue')), {
+					showing: showing, // TODO: 型エラー解消
+					text: self.text,
+					asMfm: modifiers.mfm,
+					direction: direction,
+					targetElement: el,
+				}, {}, 'closed');
+
+				self._close = () => {
+					showing.value = false;
+				};
+			},
 		};
 
 		if (binding.arg === 'dialog') {
@@ -44,25 +86,6 @@ export default {
 				return false;
 			});
 		}
-
-		self.show = () => {
-			if (!document.body.contains(el)) return;
-			if (self._close) return;
-			if (self.text == null) return;
-
-			const showing = ref(true);
-			popup(defineAsyncComponent(() => import('@/components/MkTooltip.vue')), {
-				showing,
-				text: self.text,
-				asMfm: binding.modifiers.mfm,
-				direction: binding.modifiers.left ? 'left' : binding.modifiers.right ? 'right' : binding.modifiers.top ? 'top' : binding.modifiers.bottom ? 'bottom' : 'top',
-				targetElement: el,
-			}, {}, 'closed');
-
-			self._close = () => {
-				showing.value = false;
-			};
-		};
 
 		el.addEventListener('selectstart', ev => {
 			ev.preventDefault();
@@ -81,17 +104,15 @@ export default {
 		el.addEventListener(end, () => {
 			window.clearTimeout(self.showTimer);
 			window.clearTimeout(self.hideTimer);
-			if (delay === 0) {
-				self.close();
-			} else {
-				self.hideTimer = window.setTimeout(self.close, delay);
-			}
+			self.hideTimer = window.setTimeout(self.close, delay);
 		}, { passive: true });
 
 		el.addEventListener('click', () => {
 			window.clearTimeout(self.showTimer);
 			self.close();
 		});
+
+		el._tooltipDirective_ = self;
 	},
 
 	updated(el, binding) {
@@ -103,4 +124,4 @@ export default {
 		const self = el._tooltipDirective_;
 		window.clearInterval(self.checkTimer);
 	},
-} as Directive;
+} satisfies Directive;

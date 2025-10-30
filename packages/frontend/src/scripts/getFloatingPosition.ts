@@ -93,5 +93,8 @@ export const getFloatingPosition = (opts: GetFloatingPositionOptions): FloatingP
 		}
 	})();
 
-	return { value, maxLength };
+	return {
+		value: Math.round(value),
+		maxLength: Math.round(maxLength),
+	};
 };
