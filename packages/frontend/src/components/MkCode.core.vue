@@ -9,7 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { codeToHtml } from 'shiki';
+import { codeToHtml, type BundledLanguage, type BundledTheme, type CodeToHastOptions } from 'shiki';
 import { getTheme } from '@/scripts/code-highlighter.js';
 import { computedAsync } from '@vueuse/core';
 import { colorScheme } from '@/themes/colorScheme';
@@ -29,28 +29,24 @@ const [lightThemeName, darkThemeName] = await Promise.all([
 ]);
 
 const html = computedAsync(async () => {
+	const opts: CodeToHastOptions<BundledLanguage, BundledTheme> = {
+		lang: codeLang.value,
+		themes: {
+			fallback: 'dark-plus',
+			light: lightThemeName,
+			dark: darkThemeName,
+		},
+		defaultColor: false,
+		cssVariablePrefix: '--shiki-',
+	};
+
 	try {
-		return await codeToHtml(props.code, {
-			lang: codeLang.value,
-			themes: {
-				fallback: 'dark-plus',
-				light: lightThemeName,
-				dark: darkThemeName,
-			},
-			defaultColor: false,
-			cssVariablePrefix: '--shiki-',
-		});
+		// https://github.com/shikijs/shiki/issues/1089
+		await codeToHtml('', { ...opts, lang: 'text' });
+
+		return await codeToHtml(props.code, opts);
 	} catch {
-		return await codeToHtml(props.code, {
-			lang: 'text',
-			themes: {
-				fallback: 'dark-plus',
-				light: lightThemeName,
-				dark: darkThemeName,
-			},
-			defaultColor: false,
-			cssVariablePrefix: '--shiki-',
-		});
+		return await codeToHtml(props.code, { ...opts, lang: 'text' });
 	}
 });
 </script>
