@@ -14,7 +14,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "22.17.2",
-		"tsup": "8.5.0"
+		"tsup": "8.5.1"
 	},
 	"dependencies": {
 		"hono": "4.10.3",
