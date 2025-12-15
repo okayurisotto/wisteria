@@ -129,7 +129,7 @@ JavaScriptランタイムとしてNode.jsを使用します。バージョンは
 
 `backend`では、ORMとしてTypeORMを使用します。Prismaなどの型安全なORMへ移行する試みが模索されています。
 
-`backend`では、サーバライブラリとしてHonoを使用します。（Misskey時代にはFastifyが使われていました。）Elysiaのようなより扱いやすいサーバライブラリへの移行が検討されています。
+`backend`では、サーバライブラリとしてHonoを使用します。（Misskey時代にはFastifyが使われていました。）
 
 `backend`では、SSRにPugを使用します。`frontend`はSPAであり、ほとんどすべてのDOMはJavaScriptによって構築されますが、最低限のmetaタグやOGPの設定、`frontend`起動前の調整のためにSSRが行われています。
 
