@@ -119,7 +119,7 @@ onMounted(async () => {
 <style lang="scss" module>
 .root {
 	contain: strict;
-	container-type: inline-size;
+	container-type: size;
 
 	align-items: center;
 	border-radius: var(--rounded);
@@ -162,6 +162,7 @@ onMounted(async () => {
 }
 
 .footer {
+	align-items: end;
 	display: flex;
 	gap: 4px;
 }
@@ -176,8 +177,9 @@ onMounted(async () => {
 }
 
 .thumbnail {
-	height: 100px;
-	max-width: min(191px, 30%);
+	height: 100cqh;
+	max-width: min(191cqh, 30cqw);
+	min-width: 100cqh;
 	object-fit: cover;
 
 	@container (width < 350px) {
