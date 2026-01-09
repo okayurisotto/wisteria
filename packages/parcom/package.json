@@ -14,9 +14,9 @@
 		"watch": "tsup --watch"
 	},
 	"devDependencies": {
-		"@types/node": "22.17.2",
+		"@types/node": "24.10.4",
 		"tsup": "8.5.1",
 		"typescript": "5.9.3",
-		"vitest": "4.0.4"
+		"vitest": "4.0.16"
 	}
 }

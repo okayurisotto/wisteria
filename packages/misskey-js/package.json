@@ -14,7 +14,7 @@
 		"watch": "tsup --watch"
 	},
 	"devDependencies": {
-		"@types/node": "22.17.2",
+		"@types/node": "24.10.4",
 		"openapi-typescript": "6.7.6",
 		"tsup": "8.5.1",
 		"typescript": "5.9.3"
