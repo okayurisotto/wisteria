@@ -58,7 +58,7 @@ const html = computedAsync(async () => {
 	overflow: auto;
 	border-radius: var(--rounded);
 	border: 1px solid var(--divider);
-	font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
+	font-family: monospace;
 
 	color: var(--shiki-fallback);
 	background-color: var(--shiki-fallback-bg);
@@ -70,7 +70,7 @@ const html = computedAsync(async () => {
 
 	& pre,
 	& code {
-		font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
+		font-family: monospace;
 	}
 }
 

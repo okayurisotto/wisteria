@@ -66,7 +66,7 @@ function copy() {
 }
 
 .codeBlockFallbackCode {
-	font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
+	font-family: monospace;
 }
 
 .codePlaceholderRoot {
