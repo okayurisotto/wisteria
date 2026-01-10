@@ -39,7 +39,6 @@ export const UserLiteSchema = z
 			.strict()
 			.optional(),
 		emojis: z.record(z.string(), z.unknown()),
-		onlineStatus: z.enum(['unknown', 'online', 'active', 'offline']),
 		badgeRoles: z
 			.object({
 				name: z.string(),

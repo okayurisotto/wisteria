@@ -288,7 +288,6 @@ export class UserEntityService {
 					: undefined)
 				: undefined,
 			emojis: this.customEmojiPopulateService.populateEmojis(user.emojis, user.host),
-			onlineStatus: this.userLiteEntityService.getOnlineStatus(user),
 			// パフォーマンス上の理由でローカルユーザーのみ
 			badgeRoles: user.host == null
 				? this.roleUserService.getUserBadgeRoles(user.id).then(rs => rs.sort((a, b) => b.displayOrder - a.displayOrder).map(r => ({

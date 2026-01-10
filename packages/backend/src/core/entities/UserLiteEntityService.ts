@@ -7,7 +7,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import { USER_ACTIVE_THRESHOLD, USER_ONLINE_THRESHOLD } from '@/const.js';
 import type { MiUser } from '@/models/User.js';
 import type { UsersRepository, InstancesRepository } from '@/models/_.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
@@ -40,19 +39,6 @@ export class UserLiteEntityService {
 		private readonly customEmojiPopulateService: CustomEmojiPopulateService,
 		private readonly roleUserService: RoleUserService,
 	) {}
-
-	public getOnlineStatus(user: MiUser): 'unknown' | 'online' | 'active' | 'offline' {
-		if (user.hideOnlineStatus) return 'unknown';
-		if (user.lastActiveDate == null) return 'unknown';
-		const elapsed = Date.now() - user.lastActiveDate.getTime();
-		return (
-			elapsed < USER_ONLINE_THRESHOLD
-				? 'online'
-				: elapsed < USER_ACTIVE_THRESHOLD
-					? 'active'
-					: 'offline'
-		);
-	}
 
 	public getIdenticonUrl(user: MiUser): string {
 		return `${this.config.url}/identicon/${user.username.toLowerCase()}@${user.host ?? this.config.host}`;
@@ -93,7 +79,6 @@ export class UserLiteEntityService {
 					: undefined)
 				: undefined,
 			emojis: this.customEmojiPopulateService.populateEmojis(user.emojis, user.host),
-			onlineStatus: this.getOnlineStatus(user),
 			// パフォーマンス上の理由でローカルユーザーのみ
 			badgeRoles: user.host == null
 				? this.roleUserService.getUserBadgeRoles(user.id).then(rs => rs.sort((a, b) => b.displayOrder - a.displayOrder).map(r => ({
