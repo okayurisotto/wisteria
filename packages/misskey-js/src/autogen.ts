@@ -2979,6 +2979,7 @@ export interface components {
       aliases: components["schemas"]["Id"][];
       name: string;
       category: string | null;
+      /** @description The local host is represented with `null`. */
       host: string | null;
       url: string;
       license: string | null;
@@ -3054,6 +3055,7 @@ export interface components {
       id: components["schemas"]["Id"];
       name: string | null;
       username: string;
+      /** @description The local host is represented with `null`. */
       host: string | null;
       avatarUrl: string | null;
       avatarBlurhash: string | null;
@@ -3078,8 +3080,6 @@ export interface components {
       emojis: {
         [key: string]: unknown;
       };
-      /** @enum {string} */
-      onlineStatus: "unknown" | "online" | "active" | "offline";
       badgeRoles?: ({
           name: string;
           iconUrl: string | null;
@@ -3574,6 +3574,7 @@ export interface components {
       id: components["schemas"]["Id"];
       name: string | null;
       username: string;
+      /** @description The local host is represented with `null`. */
       host: string | null;
       avatarUrl: string | null;
       avatarBlurhash: string | null;
@@ -3598,8 +3599,6 @@ export interface components {
       emojis: {
         [key: string]: unknown;
       };
-      /** @enum {string} */
-      onlineStatus: "unknown" | "online" | "active" | "offline";
       badgeRoles?: ({
           name: string;
           iconUrl: string | null;
@@ -3679,6 +3678,7 @@ export interface components {
       id: components["schemas"]["Id"];
       name: string | null;
       username: string;
+      /** @description The local host is represented with `null`. */
       host: string | null;
       avatarUrl: string | null;
       avatarBlurhash: string | null;
@@ -3703,8 +3703,6 @@ export interface components {
       emojis: {
         [key: string]: unknown;
       };
-      /** @enum {string} */
-      onlineStatus: "unknown" | "online" | "active" | "offline";
       badgeRoles?: ({
           name: string;
           iconUrl: string | null;
@@ -3983,6 +3981,7 @@ export interface operations {
             id: components["schemas"]["Id"];
             name: string | null;
             username: string;
+            /** @description The local host is represented with `null`. */
             host: string | null;
             avatarUrl: string | null;
             avatarBlurhash: string | null;
@@ -4007,8 +4006,6 @@ export interface operations {
             emojis: {
               [key: string]: unknown;
             };
-            /** @enum {string} */
-            onlineStatus: "unknown" | "online" | "active" | "offline";
             badgeRoles?: ({
                 name: string;
                 iconUrl: string | null;
@@ -5046,7 +5043,10 @@ export interface operations {
            * @enum {string}
            */
           origin?: "combined" | "local" | "remote";
-          /** @default null */
+          /**
+           * @description The local host is represented with `null`.
+           * @default null
+           */
           hostname?: string | null;
           [key: string]: unknown;
         };
@@ -5119,6 +5119,7 @@ export interface operations {
             id?: components["schemas"]["Id"];
             createdAt?: string;
             userId?: components["schemas"]["Id"];
+            /** @description The local host is represented with `null`. */
             userHost?: string | null;
             md5?: string;
             name?: string;
@@ -5246,6 +5247,7 @@ export interface operations {
         "application/json": {
           name: string;
           fileId: components["schemas"]["Id"];
+          /** @description Use `null` to reset the category. */
           category?: string | null;
           aliases?: string[];
           license?: string | null;
@@ -5519,7 +5521,10 @@ export interface operations {
         "application/json": {
           /** @default null */
           query?: string | null;
-          /** @default null */
+          /**
+           * @description Use `null` to represent the local host.
+           * @default null
+           */
           host?: string | null;
           /** @default 10 */
           limit?: number;
@@ -5538,6 +5543,7 @@ export interface operations {
               aliases?: string[];
               name?: string;
               category?: string | null;
+              /** @description The local host is represented with `null`. */
               host?: string | null;
               url?: string;
               [key: string]: unknown;
@@ -5605,6 +5611,7 @@ export interface operations {
               aliases?: string[];
               name?: string;
               category?: string | null;
+              /** @description The local host is represented with `null`. The field exists for compatibility with other API endpoints that return files. */
               host?: string | null;
               url?: string;
               [key: string]: unknown;
@@ -5760,6 +5767,7 @@ export interface operations {
       content: {
         "application/json": {
           ids: components["schemas"]["Id"][];
+          /** @description Use `null` to reset the category. */
           category?: string | null;
           [key: string]: unknown;
         };
@@ -5813,6 +5821,7 @@ export interface operations {
       content: {
         "application/json": {
           ids: components["schemas"]["Id"][];
+          /** @description Use `null` to reset the license. */
           license?: string | null;
           [key: string]: unknown;
         };
@@ -5868,6 +5877,7 @@ export interface operations {
           id: components["schemas"]["Id"];
           name: string;
           fileId?: components["schemas"]["Id"];
+          /** @description Use `null` to reset the category. */
           category?: string | null;
           aliases: string[];
           license?: string | null;
@@ -7301,7 +7311,10 @@ export interface operations {
           origin?: "combined" | "local" | "remote";
           /** @default null */
           username?: string | null;
-          /** @default null */
+          /**
+           * @description The local host is represented with `null`.
+           * @default null
+           */
           hostname?: string | null;
           [key: string]: unknown;
         };
@@ -11407,6 +11420,7 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": {
+          /** @description Omit or use `null` to not filter by host. */
           host?: string | null;
           blocked?: boolean | null;
           notResponding?: boolean | null;
@@ -16352,6 +16366,7 @@ export interface operations {
       content: {
         "application/json": {
           userId: components["schemas"]["Id"];
+          /** @description A Unix Epoch timestamp that must lie in the future. `null` means an indefinite mute. */
           expiresAt?: number | null;
           [key: string]: unknown;
         };
@@ -17769,7 +17784,10 @@ export interface operations {
           reply?: boolean | null;
           /** @default null */
           renote?: boolean | null;
-          /** @default false */
+          /**
+           * @description Only show notes that have attached files.
+           * @default false
+           */
           withFiles?: boolean;
           /** @default null */
           poll?: boolean | null;
@@ -18321,7 +18339,10 @@ export interface operations {
           includeLocalRenotes?: boolean;
           /** @default true */
           withRenotes?: boolean;
-          /** @default false */
+          /**
+           * @description Only show notes that have attached files.
+           * @default false
+           */
           withFiles?: boolean;
           [key: string]: unknown;
         };
@@ -20028,7 +20049,10 @@ export interface operations {
            * @enum {string}
            */
           origin?: "combined" | "local" | "remote";
-          /** @default null */
+          /**
+           * @description The local host is represented with `null`.
+           * @default null
+           */
           hostname?: string | null;
           [key: string]: unknown;
         };
@@ -20148,6 +20172,7 @@ export interface operations {
         } | ({
           userId?: unknown;
           username: string;
+          /** @description The local host is represented with `null`. */
           host: string | null;
           [key: string]: unknown;
         })) & {
@@ -20215,6 +20240,7 @@ export interface operations {
         } | ({
           userId?: unknown;
           username: string;
+          /** @description The local host is represented with `null`. */
           host: string | null;
           [key: string]: unknown;
         })) & ({
@@ -21570,6 +21596,7 @@ export interface operations {
           username: string;
           [key: string]: unknown;
         }) & ({
+          /** @description The local host is represented with `null`. */
           host?: string | null;
           [key: string]: unknown;
         });
@@ -21625,6 +21652,7 @@ export interface operations {
       content: {
         "application/json": {
           userId: components["schemas"]["Id"];
+          /** @description A personal memo for the target user. If null or empty, delete the memo. */
           memo: string | null;
           [key: string]: unknown;
         };
