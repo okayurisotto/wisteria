@@ -16,7 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<MkLoading v-else-if="fetching"/>
 		<div v-else class="users">
 			<span v-for="user in users" :key="user.id" class="user">
-				<MkAvatar :user="user" class="avatar" indicator link preview/>
+				<MkAvatar :user="user" class="avatar" link preview/>
 			</span>
 		</div>
 	</div>

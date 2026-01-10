@@ -32,7 +32,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<MkFollowButton v-if="$i.id != user.id" v-model:user="user" :inline="true" :transparent="false" :full="true" class="koudoku"/>
 						</div>
 					</div>
-					<MkAvatar class="avatar" :user="user" indicator/>
+					<MkAvatar class="avatar" :user="user"/>
 					<div class="title">
 						<MkUserName :user="user" :nowrap="false" class="name"/>
 						<div class="bottom">

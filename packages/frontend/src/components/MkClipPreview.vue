@@ -9,7 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<div v-if="clip.description" :class="$style.description">{{ clip.description }}</div>
 	<div v-if="clip.lastClippedAt">{{ i18n.ts.updatedAt }}: <MkTime :time="clip.lastClippedAt" mode="detail"/></div>
 	<div :class="$style.user">
-		<MkAvatar :user="clip.user" :class="$style.userAvatar" indicator link preview/> <MkUserName :user="clip.user" :nowrap="false"/>
+		<MkAvatar :user="clip.user" :class="$style.userAvatar" link preview/> <MkUserName :user="clip.user" :nowrap="false"/>
 	</div>
 </div>
 </template>

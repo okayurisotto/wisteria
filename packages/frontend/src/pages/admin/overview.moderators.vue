@@ -9,7 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<MkLoading v-if="fetching"/>
 		<div v-else :class="$style.root" class="_panel">
 			<MkA v-for="user in moderators" :key="user.id" class="user" :to="`/admin/user/${user.id}`">
-				<MkAvatar :user="user" class="avatar" indicator/>
+				<MkAvatar :user="user" class="avatar"/>
 			</MkA>
 		</div>
 	</Transition>

@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
       <template v-if="pageMetadata">
         <div v-if="!hideTitle" :class="$style.titleContainer" @click="top">
           <div v-if="pageMetadata.avatar" :class="$style.titleAvatarContainer">
-            <MkAvatar :class="$style.titleAvatar" :user="pageMetadata.avatar" indicator />
+            <MkAvatar :class="$style.titleAvatar" :user="pageMetadata.avatar" />
           </div>
           <i v-else-if="pageMetadata.icon" :class="[$style.titleIcon, pageMetadata.icon]" />
 

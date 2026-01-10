@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <MkSpacer :contentMax="600">
 	<div class="_gaps_m">
 		<div :class="$style.userMInfoRoot">
-			<MkAvatar :class="$style.userMInfoAvatar" :user="user" indicator link preview/>
+			<MkAvatar :class="$style.userMInfoAvatar" :user="user" link preview/>
 			<div :class="$style.userMInfoMetaRoot">
 				<span :class="$style.userMInfoMetaName"><MkUserName :class="$style.userMInfoMetaName" :user="user"/></span>
 				<span :class="$style.userMInfoMetaSub"><span class="acct _monospace">@{{ acct(user) }}</span></span>

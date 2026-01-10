@@ -6,7 +6,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <component :is="link ? MkA : 'span'" v-user-preview="preview ? user.id : undefined" v-bind="bound" class="_noSelect" :class="[$style.root, { [$style.animation]: animation, [$style.cat]: user.isCat, [$style.square]: squareAvatars }]" :style="{ color }" :title="acct(user)" @click="onClick">
 	<MkImgWithBlurhash :class="$style.inner" :src="url" :hash="user.avatarBlurhash" :cover="true"/>
-	<MkUserOnlineIndicator v-if="indicator" :class="$style.indicator" :user="user"/>
 	<div v-if="user.isCat" :class="[$style.ears]">
 		<div :class="$style.earLeft">
 			<div v-if="false" :class="$style.layer">
@@ -47,7 +46,6 @@ import MkA from './MkA.vue';
 import { getStaticImageUrl } from '@/scripts/media-proxy.js';
 import { extractAvgColorFromBlurhash } from '@/scripts/extract-avg-color-from-blurhash.js';
 import { acct, userPage } from '@/filters/user.js';
-import MkUserOnlineIndicator from '@/components/MkUserOnlineIndicator.vue';
 import { defaultStore } from '@/store.js';
 
 const animation = ref(defaultStore.state.animation);
@@ -58,14 +56,12 @@ const props = withDefaults(defineProps<{
 	target?: string | null;
 	link?: boolean;
 	preview?: boolean;
-	indicator?: boolean;
 	decorations?: Omit<Misskey.entities.UserDetailed['avatarDecorations'][number], 'id'>[];
 	forceShowDecoration?: boolean;
 }>(), {
 	target: null,
 	link: false,
 	preview: false,
-	indicator: false,
 	decorations: undefined,
 	forceShowDecoration: false,
 });
@@ -172,15 +168,6 @@ watch(() => props.user.avatarBlurhash, () => {
 	object-fit: cover;
 	width: 100%;
 	height: 100%;
-}
-
-.indicator {
-	position: absolute;
-	z-index: 2;
-	bottom: 0;
-	left: 0;
-	width: 20%;
-	height: 20%;
 }
 
 .square {

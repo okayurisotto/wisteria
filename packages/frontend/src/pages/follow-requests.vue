@@ -17,7 +17,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<template #default="{items}">
 				<div class="mk-follow-requests">
 					<div v-for="req in items" :key="req.id" class="user _panel">
-						<MkAvatar class="avatar" :user="req.follower" indicator link preview/>
+						<MkAvatar class="avatar" :user="req.follower" link preview/>
 						<div class="body">
 							<div class="name">
 								<MkA v-user-preview="req.follower.id" class="name" :to="userPage(req.follower)"><MkUserName :user="req.follower"/></MkA>

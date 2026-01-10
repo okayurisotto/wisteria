@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div v-adaptive-bg :class="[$style.root]">
-	<MkAvatar :class="$style.avatar" :user="user" indicator/>
+	<MkAvatar :class="$style.avatar" :user="user"/>
 	<div :class="$style.body">
 		<span :class="$style.name"><MkUserName :user="user"/></span>
 		<span :class="$style.sub"><span class="_monospace">@{{ acct(user) }}</span></span>

@@ -45,7 +45,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</div>
 	<article :class="$style.note" @contextmenu.stop="onContextmenu">
 		<header :class="$style.noteHeader">
-			<MkAvatar :class="$style.noteHeaderAvatar" :user="appearNote.user" indicator link preview/>
+			<MkAvatar :class="$style.noteHeaderAvatar" :user="appearNote.user" link preview/>
 			<div :class="$style.noteHeaderBody">
 				<div>
 					<MkA v-user-preview="appearNote.user.id" :class="$style.noteHeaderName" :to="userPage(appearNote.user)">
