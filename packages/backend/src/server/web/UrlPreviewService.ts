@@ -62,7 +62,7 @@ export class UrlPreviewService {
 				? await this.httpRequestService.getJson<ReturnType<typeof summaly>>(
 					`${meta.summalyProxy}?${query({ url: url, lang: lang })}`)
 				: await summaly(url, {
-					followRedirects: false,
+					followRedirects: true,
 					lang: lang,
 					agent: this.config.proxy
 						? {
