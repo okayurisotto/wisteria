@@ -12,7 +12,7 @@
 		"misskey-js": "workspace:*"
 	},
 	"devDependencies": {
-		"@types/serviceworker": "0.0.67",
+		"@types/serviceworker": "0.0.176",
 		"tsup": "8.5.1",
 		"typescript": "5.9.3"
 	},
