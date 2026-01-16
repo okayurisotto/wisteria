@@ -6,7 +6,6 @@
 import { URL } from 'node:url';
 import { toASCII } from 'punycode';
 import { Inject, Injectable } from '@nestjs/common';
-import RE2 from 're2';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 
@@ -46,13 +45,8 @@ export class UtilityService {
 				const words = filter.split(' ');
 				return words.every(keyword => text.includes(keyword));
 			}
-			try {
-				// TODO: RE2インスタンスをキャッシュ
-				return new RE2(regexp[1], regexp[2]).test(text);
-			} catch (err) {
-				// This should never happen due to input sanitisation.
-				return false;
-			}
+			// This should never happen due to input sanitisation.
+			return false;
 		});
 
 		return matched;

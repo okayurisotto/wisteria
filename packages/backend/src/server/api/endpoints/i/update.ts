@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import RE2 from 're2';
 import * as mfm from 'mfm-js';
 import { Inject, Injectable } from '@nestjs/common';
 import * as ms from '@/misc/ms.js';
@@ -242,11 +241,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 					const regexp = mutedWord.match(/^\/(.+)\/(.*)$/);
 					if (!regexp) throw new ApiError(meta.errors.invalidRegexp);
 
-					try {
-						new RE2(regexp[1], regexp[2]);
-					} catch (err) {
-						throw new ApiError(meta.errors.invalidRegexp);
-					}
+					throw new ApiError(meta.errors.invalidRegexp);
 				}
 			}
 

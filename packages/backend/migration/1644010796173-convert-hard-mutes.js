@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import RE2 from 're2';
-
 export class convertHardMutes1644010796173 {
     name = 'convertHardMutes1644010796173'
 
@@ -16,14 +14,7 @@ export class convertHardMutes1644010796173 {
 										if (typeof line === 'string') return [];
                     const regexp = line.join(" ").match(/^\/(.+)\/(.*)$/);
                     if (regexp) {
-                        // convert regexp's
-                        try {
-                            new RE2(regexp[1], regexp[2]);
-                            return `/${regexp[1]}/${regexp[2]}`;
-                        } catch (err) {
-                            // invalid regex, ignore it
-                            return [];
-                        }
+                      return [];
                     } else {
                         // remove empty segments
                         return line.filter(x => x !== '');
