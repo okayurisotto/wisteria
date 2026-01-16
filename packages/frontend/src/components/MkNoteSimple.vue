@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div :class="$style.root">
 	<MkAvatar :class="$style.avatar" :user="note.user" link preview/>
 	<div :class="$style.main">
-		<MkNoteHeader :class="$style.header" :note="note" :mini="true"/>
+		<MkNoteHeader :note="note" :mini="true"/>
 		<div>
 			<p v-if="note.cw != null" :class="$style.cw">
 				<Mfm v-if="note.cw != ''" style="margin-right: 8px;" :text="note.cw" :author="note.user" :nyaize="'respect'" :emojiUrls="note.emojis"/>
@@ -41,27 +41,27 @@ const showContent = ref(false);
 	margin: 0;
 	padding: 0;
 	font-size: 0.95em;
+
+	gap: var(--margin-half);
+
+	--avatar-size: 48px;
+	@container (width < 500px) {
+		--avatar-size: 40px
+	}
 }
 
 .avatar {
 	flex-shrink: 0;
 	display: block;
-	margin: 0 10px 0 0;
-	width: 34px;
-	height: 34px;
-	border-radius: var(--rounded);
-	position: sticky !important;
-	top: calc(16px + var(--stickyTop, 0px));
-	left: 0;
+	width: var(--avatar-size);
+	height: var(--avatar-size);
 }
 
 .main {
 	flex: 1;
-	min-width: 0;
-}
-
-.header {
-	margin-bottom: 2px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
 }
 
 .cw {
@@ -76,29 +76,5 @@ const showContent = ref(false);
 	cursor: default;
 	margin: 0;
 	padding: 0;
-}
-
-@container (min-width: 250px) {
-	.avatar {
-		margin: 0 10px 0 0;
-		width: 40px;
-		height: 40px;
-	}
-}
-
-@container (min-width: 350px) {
-	.avatar {
-		margin: 0 10px 0 0;
-		width: 44px;
-		height: 44px;
-	}
-}
-
-@container (min-width: 500px) {
-	.avatar {
-		margin: 0 12px 0 0;
-		width: 48px;
-		height: 48px;
-	}
 }
 </style>
