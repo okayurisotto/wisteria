@@ -100,36 +100,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</template>
 					</MkReactionsViewer>
 					<footer :class="$style.footer">
-						<button :class="$style.footerButton" class="_button" @click="reply()">
-							<i class="ti ti-arrow-back-up"></i>
-							<p v-if="appearNote.repliesCount > 0" :class="$style.footerButtonCount">{{ appearNote.repliesCount }}</p>
-						</button>
-						<button
-							v-if="canRenote"
-							ref="renoteButton"
-							:class="$style.footerButton"
-							class="_button"
-							@mousedown="renote()"
-						>
-							<i class="ti ti-repeat"></i>
-							<p v-if="appearNote.renoteCount > 0" :class="$style.footerButtonCount">{{ appearNote.renoteCount }}</p>
-						</button>
-						<button v-else :class="$style.footerButton" class="_button" disabled>
-							<i class="ti ti-ban"></i>
-						</button>
-						<button v-if="appearNote.myReaction == null" ref="reactButton" :class="$style.footerButton" class="_button" @mousedown="react()">
-							<i v-if="appearNote.reactionAcceptance === 'likeOnly'" class="ti ti-heart"></i>
-							<i v-else class="ti ti-plus"></i>
-						</button>
-						<button v-if="appearNote.myReaction != null" ref="reactButton" :class="$style.footerButton" class="_button" @click="undoReact(appearNote)">
-							<i class="ti ti-minus"></i>
-						</button>
-						<button v-if="defaultStore.state.showClipButtonInNoteFooter" ref="clipButton" :class="$style.footerButton" class="_button" @mousedown="clip()">
-							<i class="ti ti-paperclip"></i>
-						</button>
-						<button ref="menuButton" :class="$style.footerButton" class="_button" @mousedown="showMenu()">
-							<i class="ti ti-dots"></i>
-						</button>
+						<MkNoteMenu
+							ref="menu"
+							:note="appearNote"
+							:canRenote="canRenote"
+							@reply="reply()"
+							@renote="renote()"
+							@react="react()"
+							@undoReact="undoReact(appearNote)"
+							@clip="clip()"
+							@showMenu="showMenu()"
+						/>
 					</footer>
 				</div>
 			</article>
@@ -173,6 +154,7 @@ import MkPoll from '@/components/MkPoll.vue';
 import MkUsersTooltip from '@/components/MkUsersTooltip.vue';
 import MkUrlPreview from '@/components/MkUrlPreview.vue';
 import MkInstanceTicker from '@/components/MkInstanceTicker.vue';
+import MkNoteMenu from '@/components/MkNoteMenu.vue';
 import { pleaseLogin } from '@/scripts/please-login.js';
 import { focusPrev, focusNext } from '@/scripts/focus.js';
 import { checkWordMute } from '@/scripts/check-word-mute.js';
@@ -225,12 +207,13 @@ const isRenote = (
 	note.value.poll == null
 );
 
+const menu = useTemplateRef('menu');
 const rootEl = useTemplateRef('rootEl');
-const menuButton = useTemplateRef('menuButton');
-const renoteButton = useTemplateRef('renoteButton');
+const menuButton = computed(() => menu.value?.menu ?? null);
+const renoteButton = computed(() => menu.value?.renote ?? null);
 const renoteTime = useTemplateRef('renoteTime');
-const reactButton = useTemplateRef('reactButton');
-const clipButton = useTemplateRef('clipButton');
+const reactButton = computed(() => menu.value?.react ?? null);
+const clipButton = computed(() => menu.value?.clip ?? null);
 const appearNote = computed(() => isRenote ? note.value.renote as Misskey.entities.Note : note.value);
 const isMyRenote = $i && ($i.id === note.value.userId);
 const showContent = ref(false);
@@ -547,7 +530,6 @@ function emitUpdReaction(emoji: string, delta: number) {
 
 	&.showActionsOnlyHover {
 		.footer {
-			visibility: hidden;
 			position: absolute;
 			top: 12px;
 			right: 12px;
@@ -555,16 +537,13 @@ function emitUpdReaction(emoji: string, delta: number) {
 			background: var(--popup);
 			border-radius: var(--rounded);
 			box-shadow: 0px 4px 32px var(--shadow);
-		}
-
-		.footerButton {
 			font-size: 90%;
 		}
 	}
 
-	&.showActionsOnlyHover:hover {
+	&.showActionsOnlyHover:not(:hover) {
 		.footer {
-			visibility: visible;
+			visibility: hidden;
 		}
 	}
 }
@@ -790,28 +769,6 @@ function emitUpdReaction(emoji: string, delta: number) {
 .channel {
 	opacity: 0.7;
 	font-size: 80%;
-}
-
-.footer {
-	display: flex;
-	column-gap: var(--margin);
-}
-
-.footerButton {
-	margin: 0;
-	padding: 8px;
-	opacity: 0.7;
-
-	&:hover {
-		color: var(--fgHighlighted);
-		opacity: 1;
-	}
-}
-
-.footerButtonCount {
-	display: inline;
-	margin: 0 0 0 8px;
-	opacity: 0.7;
 }
 
 .muted {
