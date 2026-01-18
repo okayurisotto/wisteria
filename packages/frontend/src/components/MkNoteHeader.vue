@@ -4,106 +4,92 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<header :class="$style.root">
-	<div v-if="mock" :class="$style.name">
-		<MkUserName :user="note.user"/>
-	</div>
-	<MkA v-else v-user-preview="note.user.id" :class="$style.name" :to="userPage(note.user)">
-		<MkUserName :user="note.user"/>
-	</MkA>
-	<div v-if="note.user.isBot" :class="$style.isBot">bot</div>
-	<div :class="$style.username"><MkAcct :user="note.user"/></div>
-	<div v-if="note.user.badgeRoles" :class="$style.badgeRoles">
-		<img v-for="(role, i) in note.user.badgeRoles" :key="i" v-tooltip="role.name" :class="$style.badgeRole" :src="role.iconUrl!"/>
-	</div>
-	<div :class="$style.info">
-		<div v-if="mock">
-			<MkTime :time="note.createdAt" colored/>
+	<header :class="$style.root">
+		<div :class="$style.user">
+			<MkA v-user-preview="props.note.user.id" :class="$style.name" :to="userPage(props.note.user)">
+				<MkUserName :user="props.note.user"/>
+			</MkA>
+			<span v-if="props.note.user.isBot" :class="$style.isBot">bot</span>
+			<MkAcct :class="$style.acct" :user="props.note.user"/>
 		</div>
-		<MkA v-else :to="notePage(note)">
-			<MkTime :time="note.createdAt" colored/>
-		</MkA>
-		<span v-if="note.visibility !== 'public'" style="margin-left: 0.5em;" :title="i18n.ts._visibility[note.visibility]">
-			<i v-if="note.visibility === 'home'" class="ti ti-home"></i>
-			<i v-else-if="note.visibility === 'followers'" class="ti ti-lock"></i>
-			<i v-else-if="note.visibility === 'specified'" ref="specified" class="ti ti-mail"></i>
-		</span>
-		<span v-if="note.localOnly" style="margin-left: 0.5em;" :title="i18n.ts._visibility['disableFederation']"><i class="ti ti-rocket-off"></i></span>
-		<span v-if="note.channel" style="margin-left: 0.5em;" :title="note.channel.name"><i class="ti ti-device-tv"></i></span>
-	</div>
-</header>
+		<div :class="$style.info">
+			<MkA :to="notePage(props.note)">
+				<MkTime :time="props.note.createdAt" colored/>
+			</MkA>
+			<span :class="$style.visibility" :title="i18n.ts._visibility[props.note.visibility]">
+				<i v-if="props.note.visibility === 'home'" class="ti ti-home"></i>
+				<i v-if="props.note.visibility === 'followers'" class="ti ti-lock"></i>
+				<i v-if="props.note.visibility === 'specified'" class="ti ti-mail"></i>
+			</span>
+			<span v-if="props.note.localOnly" :title="i18n.ts._visibility['disableFederation']"><i class="ti ti-rocket-off"></i></span>
+			<span v-if="props.note.channel" :title="props.note.channel.name"><i class="ti ti-device-tv"></i></span>
+		</div>
+	</header>
 </template>
 
 <script lang="ts" setup>
-import { inject } from 'vue';
 import * as Misskey from 'misskey-js';
 import { i18n } from '@/i18n.js';
 import { notePage } from '@/filters/note.js';
 import { userPage } from '@/filters/user.js';
 
-defineProps<{
+const props = defineProps<{
 	note: Misskey.entities.Note;
 }>();
-
-const mock = inject<boolean>('mock', false);
 </script>
 
 <style lang="scss" module>
 .root {
-	display: flex;
 	align-items: baseline;
+	contain: content;
+	display: flex;
+	gap: 0.5em;
+	justify-content: space-between;
 	white-space: nowrap;
 }
 
+.user {
+	display: flex;
+	gap: 0.5em;
+}
+
 .name {
-	flex-shrink: 1;
 	display: block;
-	margin: 0 .5em 0 0;
-	padding: 0;
-	overflow: hidden;
 	font-size: 1em;
 	font-weight: bold;
-	text-decoration: none;
-	text-overflow: ellipsis;
-
-	&:hover {
-		text-decoration: underline;
-	}
+	overflow: hidden;
+	padding: 0;
 }
 
 .isBot {
-	flex-shrink: 0;
 	align-self: center;
-	margin: 0 .5em 0 0;
-	padding: 1px 6px;
-	font-size: 80%;
-	border: solid 0.5px var(--divider);
 	border-radius: var(--rounded);
+	border: solid 0.5px var(--divider);
+	font-size: 80%;
+	padding: 1px 6px;
 }
 
-.username {
-	flex-shrink: 9999999;
-	margin: 0 .5em 0 0;
+.acct {
+	display: block;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
 .info {
-	flex-shrink: 0;
-	margin-left: auto;
+	display: flex;
 	font-size: 0.9em;
+	gap: 0.5em;
 }
 
-.badgeRoles {
-	margin: 0 .5em 0 0;
+.visibility:empty {
+	display: none;
 }
 
-.badgeRole {
-	height: 1.3em;
-	vertical-align: -20%;
-
-	& + .badgeRole {
-		margin-left: 0.2em;
-	}
+.user,
+.name,
+.acct {
+	overflow-inline: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 </style>
