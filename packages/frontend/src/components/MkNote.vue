@@ -48,7 +48,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</div>
 			<article v-else :class="$style.article" @contextmenu.stop="onContextmenu">
 				<div v-if="appearNote.channel" :class="$style.colorBar" :style="{ background: appearNote.channel.color }"></div>
-				<MkAvatar :class="$style.avatar" :user="appearNote.user" :link="!mock" :preview="!mock"/>
+				<div :class="$style.avatarContainer">
+					<MkAvatar :class="$style.avatar" :user="appearNote.user" :link="!mock" :preview="!mock"/>
+					<div :class="[$style.avatarSubIcon, {
+						[$style.t_reply]: appearNote.replyId != null,
+					}]">
+						<i v-if="appearNote.replyId" class="ti ti-arrow-back-up"></i>
+					</div>
+				</div>
 				<div :class="$style.main">
 					<MkNoteHeader :note="appearNote" :mini="true"/>
 					<MkInstanceTicker v-if="showTicker" :instance="appearNote.user.instance"/>
@@ -60,7 +67,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<div v-show="appearNote.cw == null || showContent" :class="[{ [$style.contentCollapsed]: collapsed }]">
 							<div :class="$style.text">
 								<span v-if="appearNote.isHidden" style="opacity: 0.5">({{ i18n.ts.private }})</span>
-								<MkA v-if="appearNote.replyId" :class="$style.replyIcon" :to="`/notes/${appearNote.replyId}`"><i class="ti ti-arrow-back-up"></i></MkA>
 								<Mfm
 									v-if="appearNote.text"
 									:parsedNodes="parsed"
@@ -665,11 +671,40 @@ function emitUpdReaction(emoji: string, delta: number) {
 	pointer-events: none;
 }
 
-.avatar {
-	flex-shrink: 0;
-	display: block;
+.avatarContainer {
+	position: relative;
 	width: var(--avatar-size);
 	height: var(--avatar-size);
+}
+
+.avatar {
+	width: var(--avatar-size);
+	height: var(--avatar-size);
+}
+
+.avatarSubIcon {
+	align-items: center;
+	background: var(--panel);
+	border-radius: var(--rounded-full);
+	bottom: 0;
+	box-sizing: border-box;
+	color: #fff;
+	display: flex;
+	font-size: calc(var(--avatar-size) * 0.2);
+	height: calc(var(--avatar-size) * 0.4);
+	justify-content: center;
+	position: absolute;
+	right: 0;
+	width: calc(var(--avatar-size) * 0.4);
+	z-index: 1;
+
+	&:empty {
+		display: none;
+	}
+}
+
+.t_reply {
+	background-color: #007aff;
 }
 
 .main {
@@ -733,11 +768,6 @@ function emitUpdReaction(emoji: string, delta: number) {
 
 .text {
 	overflow-wrap: break-word;
-}
-
-.replyIcon {
-	color: var(--accent);
-	margin-right: 0.5em;
 }
 
 .translation {
