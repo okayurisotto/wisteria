@@ -20,7 +20,6 @@ type Keys =
 	'wallpaper' |
 	'theme' |
 	'colorScheme' |
-	'useSystemFont' |
 	'fontSize' |
 	'ui' |
 	'ui_temp' |

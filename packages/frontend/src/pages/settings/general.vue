@@ -112,7 +112,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkSwitch v-model="highlightSensitiveMedia">{{ i18n.ts.highlightSensitiveMedia }}</MkSwitch>
 				<MkSwitch v-model="squareAvatars">{{ i18n.ts.squareAvatars }}</MkSwitch>
 				<MkSwitch v-model="showAvatarDecorations">{{ i18n.ts.showAvatarDecorations }}</MkSwitch>
-				<MkSwitch v-model="useSystemFont">{{ i18n.ts.useSystemFont }}</MkSwitch>
 				<MkSwitch v-model="disableDrawer">{{ i18n.ts.disableDrawer }}</MkSwitch>
 				<MkSwitch v-model="forceShowAds">{{ i18n.ts.forceShowAds }}</MkSwitch>
 			</div>
@@ -234,7 +233,6 @@ import { globalEvents } from '@/events.js';
 
 const lang = ref(miLocalStorage.getItem('lang'));
 const fontSize = ref(miLocalStorage.getItem('fontSize'));
-const useSystemFont = ref(miLocalStorage.getItem('useSystemFont') != null);
 const dataSaver = ref(defaultStore.state.dataSaver);
 
 async function reloadAsk() {
@@ -298,18 +296,9 @@ watch(fontSize, () => {
 	}
 });
 
-watch(useSystemFont, () => {
-	if (useSystemFont.value) {
-		miLocalStorage.setItem('useSystemFont', 't');
-	} else {
-		miLocalStorage.removeItem('useSystemFont');
-	}
-});
-
 watch([
 	lang,
 	fontSize,
-	useSystemFont,
 	enableInfiniteScroll,
 	squareAvatars,
 	showNoteActionsOnlyHover,

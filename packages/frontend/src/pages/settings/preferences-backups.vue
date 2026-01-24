@@ -130,7 +130,6 @@ type Profile = {
 		hot: Record<keyof typeof defaultStoreSaveKeys, unknown>;
 		cold: {};
 		fontSize: string | null;
-		useSystemFont: 't' | null;
 		wallpaper: string | null;
 	};
 };
@@ -182,7 +181,6 @@ function getSettings(): Profile['settings'] {
 		hot,
 		cold: {},
 		fontSize: miLocalStorage.getItem('fontSize'),
-		useSystemFont: miLocalStorage.getItem('useSystemFont') as 't' | null,
 		wallpaper: miLocalStorage.getItem('wallpaper'),
 	};
 }
@@ -286,13 +284,6 @@ async function applyProfile(id: string): Promise<void> {
 		miLocalStorage.setItem('fontSize', settings.fontSize);
 	} else {
 		miLocalStorage.removeItem('fontSize');
-	}
-
-	// useSystemFont
-	if (settings.useSystemFont) {
-		miLocalStorage.setItem('useSystemFont', settings.useSystemFont);
-	} else {
-		miLocalStorage.removeItem('useSystemFont');
 	}
 
 	// wallpaper

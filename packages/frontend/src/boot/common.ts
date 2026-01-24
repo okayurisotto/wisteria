@@ -60,11 +60,6 @@ export async function common(createVue: () => App<Element>): Promise<{ isClientU
 		document.documentElement.classList.add('f-' + fontSize);
 	}
 
-	const useSystemFont = localStorage.getItem('useSystemFont');
-	if (useSystemFont !== null) {
-		document.documentElement.classList.add('useSystemFont');
-	}
-
 	const wallpaper = localStorage.getItem('wallpaper');
 	if (wallpaper !== null) {
 		document.documentElement.style.backgroundImage = `url(${wallpaper})`;
