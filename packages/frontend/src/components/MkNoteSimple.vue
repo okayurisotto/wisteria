@@ -5,7 +5,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div :class="$style.root">
-	<MkAvatar :class="$style.avatar" :user="note.user" link preview/>
+	<div :class="$style.avatarContainer">
+		<MkAvatar :class="$style.avatar" :user="note.user"/>
+		<div :class="[$style.avatarSubIcon, { [$style.t_reply]: note.replyId != null }]">
+			<i v-if="note.replyId" class="ti ti-arrow-back-up"></i>
+		</div>
+	</div>
 	<div :class="$style.main">
 		<MkNoteHeader :note="note" :mini="true"/>
 		<div>
@@ -50,11 +55,40 @@ const showContent = ref(false);
 	}
 }
 
-.avatar {
-	flex-shrink: 0;
-	display: block;
+.avatarContainer {
+	position: relative;
 	width: var(--avatar-size);
 	height: var(--avatar-size);
+}
+
+.avatar {
+	width: var(--avatar-size);
+	height: var(--avatar-size);
+}
+
+.avatarSubIcon {
+	align-items: center;
+	background: var(--panel);
+	border-radius: var(--rounded-full);
+	bottom: 0;
+	box-sizing: border-box;
+	color: #fff;
+	display: flex;
+	font-size: calc(var(--avatar-size) * 0.2);
+	height: calc(var(--avatar-size) * 0.4);
+	justify-content: center;
+	position: absolute;
+	right: 0;
+	width: calc(var(--avatar-size) * 0.4);
+	z-index: 1;
+
+	&:empty {
+		display: none;
+	}
+}
+
+.t_reply {
+	background-color: #007aff;
 }
 
 .main {
