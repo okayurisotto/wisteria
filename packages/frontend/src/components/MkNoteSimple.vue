@@ -62,6 +62,7 @@ const showContent = ref(false);
 	display: flex;
 	flex-direction: column;
 	gap: 2px;
+	overflow-x: hidden;
 }
 
 .cw {
