@@ -8,11 +8,11 @@
 		"watch": "tsup --watch"
 	},
 	"dependencies": {
-		"idb-keyval": "6.2.1",
+		"idb-keyval": "6.2.2",
 		"misskey-js": "workspace:*"
 	},
 	"devDependencies": {
-		"@types/serviceworker": "0.0.176",
+		"@types/serviceworker": "0.0.191",
 		"tsup": "8.5.1",
 		"typescript": "5.9.3"
 	},

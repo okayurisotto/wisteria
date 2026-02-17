@@ -16,13 +16,13 @@
 		"watch": "tsup --watch"
 	},
 	"devDependencies": {
-		"@types/node": "24.10.4",
+		"@types/node": "24.10.13",
 		"@types/random-seed": "0.3.5",
 		"tsup": "8.5.1",
 		"typescript": "5.9.3"
 	},
 	"dependencies": {
-		"@napi-rs/canvas": "0.1.77",
+		"@napi-rs/canvas": "0.1.92",
 		"random-seed": "0.3.0"
 	}
 }
