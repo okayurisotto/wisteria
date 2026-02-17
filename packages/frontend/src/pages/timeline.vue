@@ -138,7 +138,6 @@ onMounted(async () => {
 	stream.on("noteUpdated", (data) => {
 		if (data.type === 'deleted') {
 			const deletedNoteId = data.id;
-			console.log({ deletedNoteId });
 			notes.value = notes.value.filter(({ id }) => id !== deletedNoteId);
 			queue.value = queue.value.filter(({ id }) => id !== deletedNoteId);
 		}
