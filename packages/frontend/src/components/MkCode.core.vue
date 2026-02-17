@@ -41,9 +41,6 @@ const html = computedAsync(async () => {
 	};
 
 	try {
-		// https://github.com/shikijs/shiki/issues/1089
-		await codeToHtml('', { ...opts, lang: 'text' });
-
 		return await codeToHtml(props.code, opts);
 	} catch {
 		return await codeToHtml(props.code, { ...opts, lang: 'text' });
