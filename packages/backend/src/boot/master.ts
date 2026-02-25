@@ -5,7 +5,7 @@
 
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
-import sysUtils from 'systeminformation';
+import si from 'systeminformation';
 import { z } from 'zod';
 import { Logger } from '@/logger.js';
 import { loadConfig } from '@/config.js';
@@ -57,7 +57,7 @@ export const initialize = async () => {
 		machineLogger.debug(`Hostname: ${os.hostname()}`);
 		machineLogger.debug(`Platform: ${process.platform} Arch: ${process.arch}`);
 
-		const mem = await sysUtils.mem();
+		const mem = await si.mem();
 		const totalmem = (mem.total / 1024 / 1024 / 1024).toFixed(1);
 		const availmem = (mem.available / 1024 / 1024 / 1024).toFixed(1);
 
