@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"allowImportingTsExtensions": true,
+		"exactOptionalPropertyTypes": false,
 		"module": "preserve",
 		"moduleDetection": "force",
 		"moduleResolution": "bundler",
