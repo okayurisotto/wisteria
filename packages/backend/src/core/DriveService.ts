@@ -365,13 +365,13 @@ export class DriveService {
 
 		const meta = await this.metaService.fetch();
 
-		const params = {
-			Bucket: meta.objectStorageBucket,
+		const params: PutObjectCommandInput = {
+			Bucket: meta.objectStorageBucket ?? undefined,
 			Key: key,
 			Body: stream,
 			ContentType: type,
 			CacheControl: 'max-age=31536000, immutable',
-		} as PutObjectCommandInput;
+		};
 
 		if (filename) params.ContentDisposition = contentDisposition(
 			'inline',
@@ -750,10 +750,10 @@ export class DriveService {
 	public async deleteObjectStorageFile(key: string) {
 		const meta = await this.metaService.fetch();
 		try {
-			const param = {
-				Bucket: meta.objectStorageBucket,
+			const param: DeleteObjectCommandInput = {
+				Bucket: meta.objectStorageBucket ?? undefined,
 				Key: key,
-			} as DeleteObjectCommandInput;
+			};
 
 			await this.s3Service.delete(meta, param);
 		} catch (err: any) {
