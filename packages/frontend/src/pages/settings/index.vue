@@ -108,11 +108,6 @@ const menuDef = computed(() => [{
 		to: '/settings/navbar',
 		active: currentPage.value?.route.name === 'navbar',
 	}, {
-		icon: 'ti ti-equal-double',
-		text: i18n.ts.statusbar,
-		to: '/settings/statusbar',
-		active: currentPage.value?.route.name === 'statusbar',
-	}, {
 		icon: 'ti ti-music',
 		text: i18n.ts.sounds,
 		to: '/settings/sounds',

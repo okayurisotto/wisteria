@@ -11,7 +11,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<template #header>
 			<div>
 				<XAnnouncements v-if="$i"/>
-				<XStatusBars :class="$style.statusbars"/>
 			</div>
 		</template>
 		<RouterView/>
@@ -102,7 +101,6 @@ import { provide, onMounted, computed, ref, watch, type Ref, onBeforeUnmount, us
 import XWidgets from './universal.widgets.vue';
 import XCommon from './_common_/common.vue';
 import XSidebar from './_common_/navbar.vue';
-import XStatusBars from './_common_/statusbars.vue';
 import XAnnouncements from './_common_/announcements.vue';
 import type MkStickyContainer from '@/components/global/MkStickyContainer.vue';
 import { instanceName } from '@/config.js';
@@ -440,12 +438,6 @@ onBeforeUnmount(() => {
 	overflow: auto;
 	overscroll-behavior: contain;
 	background: var(--panel);
-}
-
-.statusbars {
-	position: sticky;
-	top: 0;
-	left: 0;
 }
 
 .spacer {

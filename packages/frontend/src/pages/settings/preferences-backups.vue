@@ -59,7 +59,7 @@ const defaultStoreSaveKeys: (keyof typeof defaultStore['state'])[] = [
 	'menu',
 	'visibility',
 	'localOnly',
-	'statusbars',
+	'statusbars', // deprecated
 	'widgets',
 	'tl',
 	'pinnedUserLists',
