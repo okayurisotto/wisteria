@@ -4,10 +4,7 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { HybridTimelineChannelService } from './channels/hybrid-timeline.js';
-import { LocalTimelineChannelService } from './channels/local-timeline.js';
 import { HomeTimelineChannelService } from './channels/home-timeline.js';
-import { GlobalTimelineChannelService } from './channels/global-timeline.js';
 import { MainChannelService } from './channels/main.js';
 import { ChannelChannelService } from './channels/channel.js';
 import { AdminChannelService } from './channels/admin.js';
@@ -25,9 +22,6 @@ export class ChannelsService {
 	constructor(
 		private readonly mainChannelService: MainChannelService,
 		private readonly homeTimelineChannelService: HomeTimelineChannelService,
-		private readonly localTimelineChannelService: LocalTimelineChannelService,
-		private readonly hybridTimelineChannelService: HybridTimelineChannelService,
-		private readonly globalTimelineChannelService: GlobalTimelineChannelService,
 		private readonly userListChannelService: UserListChannelService,
 		private readonly hashtagChannelService: HashtagChannelService,
 		private readonly roleTimelineChannelService: RoleTimelineChannelService,
@@ -43,9 +37,6 @@ export class ChannelsService {
 		switch (name) {
 			case 'main': return this.mainChannelService;
 			case 'homeTimeline': return this.homeTimelineChannelService;
-			case 'localTimeline': return this.localTimelineChannelService;
-			case 'hybridTimeline': return this.hybridTimelineChannelService;
-			case 'globalTimeline': return this.globalTimelineChannelService;
 			case 'userList': return this.userListChannelService;
 			case 'hashtag': return this.hashtagChannelService;
 			case 'roleTimeline': return this.roleTimelineChannelService;
