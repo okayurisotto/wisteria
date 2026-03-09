@@ -17,6 +17,7 @@ import { computed, ref } from 'vue';
 const editMode = ref(false);
 </script>
 <script lang="ts" setup>
+import { widgets as widgetNames } from '@/widgets/index.ts';
 import XWidgets from '@/components/MkWidgets.vue';
 import { i18n } from '@/i18n.js';
 import { defaultStore } from '@/store.js';
@@ -31,9 +32,17 @@ const props = withDefaults(defineProps<{
 });
 
 const widgets = computed(() => {
-	if (props.place === null) return defaultStore.reactiveState.widgets.value;
-	if (props.place === 'left') return defaultStore.reactiveState.widgets.value.filter(w => w.place === 'left');
-	return defaultStore.reactiveState.widgets.value.filter(w => w.place !== 'left');
+	const allWidgets = defaultStore.reactiveState.widgets.value.filter((widget) => widgetNames.includes(widget.name));
+
+	if (props.place === 'left') {
+		return allWidgets.filter(w => w.place === 'left');
+	}
+
+	if (props.place === 'right') {
+		return allWidgets.filter(w => w.place === 'right');
+	}
+
+	return allWidgets;
 });
 
 function addWidget(widget) {
