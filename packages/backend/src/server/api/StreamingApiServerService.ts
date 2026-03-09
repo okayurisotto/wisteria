@@ -21,7 +21,7 @@ import type * as http from 'node:http';
 
 @Injectable()
 export class StreamingApiServerService {
-	#wss: WebSocket.WebSocketServer;
+	#wss: WebSocket.WebSocketServer | null = null;
 	readonly #connections = new Map<WebSocket.WebSocket, number>();
 	#cleanConnectionsIntervalId: NodeJS.Timeout | null = null;
 
@@ -112,8 +112,8 @@ export class StreamingApiServerService {
 
 			await stream.init();
 
-			this.#wss.handleUpgrade(request, socket, head, (ws) => {
-				this.#wss.emit('connection', ws, request, {
+			this.#wss?.handleUpgrade(request, socket, head, (ws) => {
+				this.#wss?.emit('connection', ws, request, {
 					stream, user, app,
 				});
 			});
