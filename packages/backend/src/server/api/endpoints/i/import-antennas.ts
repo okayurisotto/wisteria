@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import * as ms from '@/misc/ms.js';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
 import { QueueService } from '@/core/QueueService.js';
-import type { AntennasRepository, DriveFilesRepository, UsersRepository, MiAntenna as _Antenna } from '@/models/_.js';
+import type { AntennasRepository, DriveFilesRepository, MiAntenna as _Antenna } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
 import { DownloadService } from '@/core/DownloadService.js';
@@ -60,24 +60,22 @@ export const paramDef = z.object({
 		@Inject(DI.antennasRepository)
 		private readonly antennasRepository: AntennasRepository,
 
-		@Inject(DI.usersRepository)
-		private readonly usersRepository: UsersRepository,
-
 		private readonly roleUserService: RoleUserService,
 		private readonly queueService: QueueService,
 		private readonly downloadService: DownloadService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const userExist = await this.usersRepository.exists({ where: { id: me.id } });
-			if (!userExist) throw new ApiError(meta.errors.noSuchUser);
 			const file = await this.driveFilesRepository.findOneBy({ id: ps.fileId, userId: me.id });
 			if (file === null) throw new ApiError(meta.errors.noSuchFile);
 			if (file.size === 0) throw new ApiError(meta.errors.emptyFile);
-			const antennas: (_Antenna & { userListAccts: string[] | null })[] = JSON.parse(await this.downloadService.downloadTextFile(file.url));
+
+			const antennas: unknown = JSON.parse(await this.downloadService.downloadTextFile(file.url));
+
 			const currentAntennasCount = await this.antennasRepository.countBy({ userId: me.id });
 			if (currentAntennasCount + antennas.length > (await this.roleUserService.getUserPolicies(me.id)).antennaLimit) {
 				throw new ApiError(meta.errors.tooManyAntennas);
 			}
+
 			this.queueService.createImportAntennasJob(me, antennas);
 		});
 	}
