@@ -2795,22 +2795,6 @@ export interface paths {
      */
     post: operations["users/update-memo"];
   };
-  "/fetch-rss": {
-    /**
-     * fetch-rss
-     * @description No description provided.
-     *
-     * **Credential required**: *No*
-     */
-    get: operations["fetch-rss"];
-    /**
-     * fetch-rss
-     * @description No description provided.
-     *
-     * **Credential required**: *No*
-     */
-    post: operations["fetch-rss"];
-  };
   "/fetch-external-resources": {
     /**
      * fetch-external-resources
@@ -21662,65 +21646,6 @@ export interface operations {
       /** @description OK (without any results) */
       204: {
         content: never;
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
-   * fetch-rss
-   * @description No description provided.
-   *
-   * **Credential required**: *No*
-   */
-  "fetch-rss": {
-    requestBody: {
-      content: {
-        "application/json": {
-          url: string;
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (with results) */
-      200: {
-        content: {
-          "application/json": {
-            items?: {
-                [key: string]: unknown;
-              }[];
-            [key: string]: unknown;
-          };
-        };
       };
       /** @description Client error */
       400: {
