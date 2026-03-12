@@ -55,6 +55,7 @@ COPY --link ./packages/identicon-generator/package.json ./packages/identicon-gen
 COPY --link ./packages/locales/package.json             ./packages/locales/package.json
 COPY --link ./packages/misskey-js/package.json          ./packages/misskey-js/package.json
 COPY --link ./packages/parcom/package.json              ./packages/parcom/package.json
+COPY --link ./packages/redis-lock/package.json          ./packages/redis-lock/package.json
 COPY --link ./packages/sw/package.json                  ./packages/sw/package.json
 COPY --link ./packages/zod2spec/package.json            ./packages/zod2spec/package.json
 
@@ -69,6 +70,7 @@ COPY --link --from=builder /misskey/packages/identicon-generator/built ./package
 COPY --link --from=builder /misskey/packages/locales/built             ./packages/locales/built
 COPY --link --from=builder /misskey/packages/misskey-js/built          ./packages/misskey-js/built
 COPY --link --from=builder /misskey/packages/parcom/built              ./packages/parcom/built
+COPY --link --from=builder /misskey/packages/redis-lock/built          ./packages/redis-lock/built
 COPY --link --from=builder /misskey/packages/sw/built                  ./packages/sw/built
 COPY --link --from=builder /misskey/packages/zod2spec/built            ./packages/zod2spec/built
 

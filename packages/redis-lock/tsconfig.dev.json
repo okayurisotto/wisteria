@@ -1,0 +1,8 @@
+{
+	"compilerOptions": {
+		"composite": true,
+		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.dev.tsbuildinfo"
+	},
+	"extends": ["@tsconfig/node-lts/tsconfig.json", "../../tsconfig.base.json"],
+	"files": ["tsup.config.ts"]
+}
