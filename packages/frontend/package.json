@@ -51,7 +51,7 @@
 		"@types/sanitize-html": "2.13.0",
 		"@types/tinycolor2": "1.4.6",
 		"@vitejs/plugin-vue": "6.0.4",
-		"@vue/runtime-core": "3.5.28",
+		"@vue/runtime-core": "3.5.30",
 		"acorn": "8.11.3",
 		"astring": "1.8.6",
 		"estree-walker": "3.0.3",
@@ -61,7 +61,7 @@
 		"typescript": "5.9.3",
 		"vite": "7.3.1",
 		"vitest": "4.0.18",
-		"vue-component-type-helpers": "3.2.4",
-		"vue-tsc": "3.2.4"
+		"vue-component-type-helpers": "3.2.5",
+		"vue-tsc": "3.2.5"
 	}
 }
