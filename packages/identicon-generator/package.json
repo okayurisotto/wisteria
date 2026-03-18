@@ -22,7 +22,7 @@
 		"typescript": "5.9.3"
 	},
 	"dependencies": {
-		"@napi-rs/canvas": "0.1.92",
+		"@napi-rs/canvas": "0.1.97",
 		"random-seed": "0.3.0"
 	}
 }

@@ -15,7 +15,7 @@
 		"@mcaptcha/vanilla-glue": "0.1.0-alpha-3",
 		"@misskey-dev/browser-image-resizer": "2024.1.0",
 		"@tabler/icons-webfont": "2.44.0",
-		"@vueuse/core": "14.1.0",
+		"@vueuse/core": "14.2.1",
 		"broadcast-channel": "7.1.0",
 		"chart.js": "4.4.9",
 		"chartjs-adapter-date-fns": "3.0.0",
@@ -60,7 +60,7 @@
 		"sass": "1.90.0",
 		"typescript": "5.9.3",
 		"vite": "7.3.1",
-		"vitest": "4.0.18",
+		"vitest": "4.1.0",
 		"vue-component-type-helpers": "3.2.5",
 		"vue-tsc": "3.2.5"
 	}
