@@ -17,7 +17,7 @@
 		"@types/node": "24.10.13",
 		"openapi-typescript": "6.7.6",
 		"tsup": "8.5.1",
-		"typescript": "5.9.3"
+		"typescript": "6.0.3"
 	},
 	"files": [
 		"built"
