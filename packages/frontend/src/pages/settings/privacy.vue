@@ -31,10 +31,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 		{{ i18n.ts.noCrawle }}
 		<template #caption>{{ i18n.ts.noCrawleDescription }}</template>
 	</MkSwitch>
-	<MkSwitch v-model="preventAiLearning" @update:modelValue="save()">
-		{{ i18n.ts.preventAiLearning }}<span class="_beta">{{ i18n.ts.beta }}</span>
-		<template #caption>{{ i18n.ts.preventAiLearningDescription }}</template>
-	</MkSwitch>
 	<MkSwitch v-model="isExplorable" @update:modelValue="save()">
 		{{ i18n.ts.makeExplorable }}
 		<template #caption>{{ i18n.ts.makeExplorableDescription }}</template>
@@ -84,7 +80,6 @@ const $i = signinRequired();
 const isLocked = ref($i.isLocked);
 const autoAcceptFollowed = ref($i.autoAcceptFollowed);
 const noCrawle = ref($i.noCrawle);
-const preventAiLearning = ref($i.preventAiLearning);
 const isExplorable = ref($i.isExplorable);
 const publicReactions = ref($i.publicReactions);
 const followingVisibility = ref($i.followingVisibility);
@@ -100,7 +95,6 @@ function save() {
 		isLocked: !!isLocked.value,
 		autoAcceptFollowed: !!autoAcceptFollowed.value,
 		noCrawle: !!noCrawle.value,
-		preventAiLearning: !!preventAiLearning.value,
 		isExplorable: !!isExplorable.value,
 		hideOnlineStatus: $i.hideOnlineStatus,
 		publicReactions: !!publicReactions.value,
