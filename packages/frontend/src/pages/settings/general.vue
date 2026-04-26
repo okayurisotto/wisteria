@@ -119,7 +119,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkRadios v-model="emojiStyle">
 					<template #label>{{ i18n.ts.emojiStyle }}</template>
 					<option value="native">{{ i18n.ts.native }}</option>
-					<option value="fluentEmoji">Fluent Emoji</option>
 					<option value="twemoji">Twemoji</option>
 				</MkRadios>
 				<div style="margin: 8px 0 0 0; font-size: 1.5em;"><Mfm :key="emojiStyle" text="🍮🍦🍭🍩🍰🍫🍬🥞🍪"/></div>

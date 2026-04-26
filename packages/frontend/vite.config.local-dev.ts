@@ -31,7 +31,6 @@ export default defineConfig({
 			'/client-assets': httpUrl,
 			'/files': httpUrl,
 			'/twemoji': httpUrl,
-			'/fluent-emoji': httpUrl,
 			'/sw.js': httpUrl,
 			'/streaming': {
 				target: websocketUrl,

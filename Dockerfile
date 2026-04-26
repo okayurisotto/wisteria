@@ -61,7 +61,6 @@ COPY --link ./packages/zod2spec/package.json            ./packages/zod2spec/pack
 
 RUN pnpm install --prod --offline --frozen-lockfile
 
-COPY --link --from=builder /misskey/fluent-emojis                      ./fluent-emojis
 COPY --link --from=builder /misskey/packages/backend/built             ./packages/backend/built
 COPY --link --from=builder /misskey/packages/frontend/built            ./packages/frontend/built
 COPY --link --from=builder /misskey/packages/hono-serve-static/built   ./packages/hono-serve-static/built

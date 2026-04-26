@@ -2,7 +2,6 @@
 /Dockerfile
 
 .turbo/
-/fluent-emojis/
 /misskey-assets/
 built-test/
 built/

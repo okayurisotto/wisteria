@@ -5,7 +5,7 @@
 
 import { Injectable } from '@nestjs/common';
 import sharp from 'sharp';
-import { FLUENT_EMOJI_DIR, TWEMOJI_DIR } from '@/path.js';
+import { TWEMOJI_DIR } from '@/path.js';
 import path from 'node:path';
 import { Hono, type MiddlewareHandler } from 'hono';
 import { serveStaticDir } from 'hono-serve-static';
@@ -20,16 +20,6 @@ export class EmojiServerService {
 			c.header('Cache-Control', `max-age=${30 * 24 * 60 * 60}`);
 			await next();
 		};
-
-		hono.get(
-			'/fluent-emoji/:path',
-			setEmojiHeaders,
-			serveStaticDir({
-				path: FLUENT_EMOJI_DIR,
-				mountpoint: '/fluent-emoji/',
-				index: null,
-			}),
-		);
 
 		hono.get(
 			'/twemoji/:path',

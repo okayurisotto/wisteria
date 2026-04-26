@@ -45,9 +45,6 @@ export const TABLER_ICONS_DIR = path.join(ROOT_DIR, 'packages/frontend/node_modu
 /** `/built/tarball` */
 export const TARBALL_DIR = path.join(BUILT_DIR, 'tarball');
 
-/** `/fluent-emojis/dist` */
-export const FLUENT_EMOJI_DIR = path.join(ROOT_DIR, 'fluent-emojis/dist');
-
 /** `/files` */
 export const INTERNAL_STORAGE_DIR = path.join(ROOT_DIR, 'files');
 
