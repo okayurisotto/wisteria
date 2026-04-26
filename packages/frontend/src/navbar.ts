@@ -76,11 +76,6 @@ export const navbarItemDef = reactive({
 		show: computed(() => $i != null),
 		to: '/my/favorites',
 	},
-	pages: {
-		title: i18n.ts.pages,
-		icon: 'ti ti-news',
-		to: '/pages',
-	},
 	clips: {
 		title: i18n.ts.clip,
 		icon: 'ti ti-paperclip',

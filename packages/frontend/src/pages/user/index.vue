@@ -16,7 +16,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<XReactions v-else-if="tab === 'reactions'" key="reactions" :user="user"/>
 				<XClips v-else-if="tab === 'clips'" key="clips" :user="user"/>
 				<XLists v-else-if="tab === 'lists'" key="lists" :user="user"/>
-				<XPages v-else-if="tab === 'pages'" key="pages" :user="user"/>
 				<XRaw v-else-if="tab === 'raw'" key="raw" :user="user"/>
 			</MkHorizontalSwipe>
 		</div>
@@ -41,7 +40,6 @@ const XTimeline = defineAsyncComponent(() => import('./index.timeline.vue'));
 const XReactions = defineAsyncComponent(() => import('./reactions.vue'));
 const XClips = defineAsyncComponent(() => import('./clips.vue'));
 const XLists = defineAsyncComponent(() => import('./lists.vue'));
-const XPages = defineAsyncComponent(() => import('./pages.vue'));
 const XRaw = defineAsyncComponent(() => import('./raw.vue'));
 
 const props = withDefaults(defineProps<{
@@ -83,7 +81,6 @@ const headerTabs = computed(() => {
 		...(isLocalUser ? [
 			{ key: 'clips', title: i18n.ts.clips, icon: 'ti ti-paperclip' },
 			{ key: 'lists', title: i18n.ts.lists, icon: 'ti ti-list' },
-			{ key: 'pages', title: i18n.ts.pages, icon: 'ti ti-news' },
 		] : []),
 		{ key: 'raw', title: 'Raw', icon: 'ti ti-code' },
 	];

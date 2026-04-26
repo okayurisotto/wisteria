@@ -49,12 +49,6 @@ const page = (loader: AsyncComponentLoader<any>) => defineAsyncComponent({
 });
 
 const routes: RouteDef[] = [{
-	path: parsePath('/@:initUser/pages/:initPageName/view-source'),
-	component: page(() => import('@/pages/page-editor/page-editor.vue')),
-}, {
-	path: parsePath('/@:username/pages/:pageName'),
-	component: page(() => import('@/pages/page.vue')),
-}, {
 	path: parsePath('/@:acct/following'),
 	component: page(() => import('@/pages/user/following.vue')),
 }, {
@@ -246,17 +240,6 @@ const routes: RouteDef[] = [{
 }, {
 	path: parsePath('/tags/:tag'),
 	component: page(() => import('@/pages/tag.vue')),
-}, {
-	path: parsePath('/pages/new'),
-	component: page(() => import('@/pages/page-editor/page-editor.vue')),
-	loginRequired: true,
-}, {
-	path: parsePath('/pages/edit/:initPageId'),
-	component: page(() => import('@/pages/page-editor/page-editor.vue')),
-	loginRequired: true,
-}, {
-	path: parsePath('/pages'),
-	component: page(() => import('@/pages/pages.vue')),
 }, {
 	path: parsePath('/custom-emojis-manager'),
 	component: page(() => import('@/pages/custom-emojis-manager.vue')),
