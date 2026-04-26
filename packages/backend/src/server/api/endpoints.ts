@@ -182,8 +182,6 @@ import * as ep___i_importUserLists from './endpoints/i/import-user-lists.js';
 import * as ep___i_importAntennas from './endpoints/i/import-antennas.js';
 import * as ep___i_notifications from './endpoints/i/notifications.js';
 import * as ep___i_notificationsGrouped from './endpoints/i/notifications-grouped.js';
-import * as ep___i_pageLikes from './endpoints/i/page-likes.js';
-import * as ep___i_pages from './endpoints/i/pages.js';
 import * as ep___i_pin from './endpoints/i/pin.js';
 import * as ep___i_readAllUnreadNotes from './endpoints/i/read-all-unread-notes.js';
 import * as ep___i_readAnnouncement from './endpoints/i/read-announcement.js';
@@ -252,13 +250,6 @@ import * as ep___notifications_create from './endpoints/notifications/create.js'
 import * as ep___notifications_markAllAsRead from './endpoints/notifications/mark-all-as-read.js';
 import * as ep___notifications_testNotification from './endpoints/notifications/test-notification.js';
 import * as ep___pagePush from './endpoints/page-push.js';
-import * as ep___pages_create from './endpoints/pages/create.js';
-import * as ep___pages_delete from './endpoints/pages/delete.js';
-import * as ep___pages_featured from './endpoints/pages/featured.js';
-import * as ep___pages_like from './endpoints/pages/like.js';
-import * as ep___pages_show from './endpoints/pages/show.js';
-import * as ep___pages_unlike from './endpoints/pages/unlike.js';
-import * as ep___pages_update from './endpoints/pages/update.js';
 import * as ep___ping from './endpoints/ping.js';
 import * as ep___pinnedUsers from './endpoints/pinned-users.js';
 import * as ep___promo_read from './endpoints/promo/read.js';
@@ -295,7 +286,6 @@ import * as ep___users_lists_update from './endpoints/users/lists/update.js';
 import * as ep___users_lists_updateMembership from './endpoints/users/lists/update-membership.js';
 import * as ep___users_lists_getMemberships from './endpoints/users/lists/get-memberships.js';
 import * as ep___users_notes from './endpoints/users/notes.js';
-import * as ep___users_pages from './endpoints/users/pages.js';
 import * as ep___users_reactions from './endpoints/users/reactions.js';
 import * as ep___users_recommendation from './endpoints/users/recommendation.js';
 import * as ep___users_relation from './endpoints/users/relation.js';
@@ -486,8 +476,6 @@ const eps = [
 	['i/import-antennas', ep___i_importAntennas],
 	['i/notifications', ep___i_notifications],
 	['i/notifications-grouped', ep___i_notificationsGrouped],
-	['i/page-likes', ep___i_pageLikes],
-	['i/pages', ep___i_pages],
 	['i/pin', ep___i_pin],
 	['i/read-all-unread-notes', ep___i_readAllUnreadNotes],
 	['i/read-announcement', ep___i_readAnnouncement],
@@ -556,13 +544,6 @@ const eps = [
 	['notifications/mark-all-as-read', ep___notifications_markAllAsRead],
 	['notifications/test-notification', ep___notifications_testNotification],
 	['page-push', ep___pagePush],
-	['pages/create', ep___pages_create],
-	['pages/delete', ep___pages_delete],
-	['pages/featured', ep___pages_featured],
-	['pages/like', ep___pages_like],
-	['pages/show', ep___pages_show],
-	['pages/unlike', ep___pages_unlike],
-	['pages/update', ep___pages_update],
 	['ping', ep___ping],
 	['pinned-users', ep___pinnedUsers],
 	['promo/read', ep___promo_read],
@@ -599,7 +580,6 @@ const eps = [
 	['users/lists/update-membership', ep___users_lists_updateMembership],
 	['users/lists/get-memberships', ep___users_lists_getMemberships],
 	['users/notes', ep___users_notes],
-	['users/pages', ep___users_pages],
 	['users/reactions', ep___users_reactions],
 	['users/recommendation', ep___users_recommendation],
 	['users/relation', ep___users_relation],

@@ -16,7 +16,6 @@ import { IdService } from '@/core/IdService.js';
 import { AnnouncementService } from '@/core/AnnouncementService.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 import { NoteEntityService } from './NoteEntityService.js';
-import { PageEntityService } from './PageEntityService.js';
 import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
 import { RoleUserService } from '../RoleUserService.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
@@ -81,7 +80,6 @@ export class UserEntityService {
 		private readonly customEmojiPopulateService: CustomEmojiPopulateService,
 		private readonly roleUserService: RoleUserService,
 		private readonly userLiteEntityService: UserLiteEntityService,
-		private readonly pageEntityService: PageEntityService,
 		private readonly apPersonService: ApPersonService,
 	) {}
 
@@ -323,7 +321,7 @@ export class UserEntityService {
 			pinnedNoteIds: pins.map(pin => pin.noteId),
 			pinnedNotes: this.noteEntityService.packMany(pins.map(pin => pin.note!), me, { detail: true }),
 			pinnedPageId: profile.pinnedPageId,
-			pinnedPage: profile.pinnedPageId ? this.pageEntityService.pack(profile.pinnedPageId, me) : null,
+			pinnedPage: null,
 			publicReactions: isLocalUser(user) ? profile.publicReactions : false, // https://github.com/misskey-dev/misskey/issues/12964
 			followersVisibility: profile.followersVisibility,
 			followingVisibility: profile.followingVisibility,

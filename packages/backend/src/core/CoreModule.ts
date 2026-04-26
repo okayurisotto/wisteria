@@ -85,8 +85,6 @@ import { NoteEntityService } from './entities/NoteEntityService.js';
 import { NoteFavoriteEntityService } from './entities/NoteFavoriteEntityService.js';
 import { NoteReactionEntityService } from './entities/NoteReactionEntityService.js';
 import { NotificationEntityService } from './entities/NotificationEntityService.js';
-import { PageEntityService } from './entities/PageEntityService.js';
-import { PageLikeEntityService } from './entities/PageLikeEntityService.js';
 import { SigninEntityService } from './entities/SigninEntityService.js';
 import { UserEntityService } from './entities/UserEntityService.js';
 import { UserListEntityService } from './entities/UserListEntityService.js';
@@ -231,8 +229,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		NoteFavoriteEntityService,
 		NoteReactionEntityService,
 		NotificationEntityService,
-		PageEntityService,
-		PageLikeEntityService,
 		SigninEntityService,
 		UserEntityService,
 		UserLiteEntityService,
@@ -361,8 +357,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		NoteFavoriteEntityService,
 		NoteReactionEntityService,
 		NotificationEntityService,
-		PageEntityService,
-		PageLikeEntityService,
 		SigninEntityService,
 		UserEntityService,
 		UserLiteEntityService,
