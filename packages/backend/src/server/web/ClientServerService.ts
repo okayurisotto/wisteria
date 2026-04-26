@@ -14,9 +14,7 @@ import { DI } from '@/di-symbols.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 import { MetaService } from '@/core/MetaService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { PageEntityService } from '@/core/entities/PageEntityService.js';
-import { ClipEntityService } from '@/core/entities/ClipEntityService.js';
-import type { ClipsRepository, MiMeta, NotesRepository, PagesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import type { MiMeta, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
 import { ClientLoggerService } from './ClientLoggerService.js';
 import { PUG_DIR } from '@/path.js';
@@ -48,15 +46,7 @@ export class ClientServerService {
 		@Inject(DI.notesRepository)
 		private readonly notesRepository: NotesRepository,
 
-		@Inject(DI.clipsRepository)
-		private readonly clipsRepository: ClipsRepository,
-
-		@Inject(DI.pagesRepository)
-		private readonly pagesRepository: PagesRepository,
-
 		private readonly noteEntityService: NoteEntityService,
-		private readonly pageEntityService: PageEntityService,
-		private readonly clipEntityService: ClipEntityService,
 		private readonly metaService: MetaService,
 		private readonly urlPreviewService: UrlPreviewService,
 		private readonly clientLoggerService: ClientLoggerService,
@@ -180,19 +170,6 @@ export class ClientServerService {
 			});
 		});
 
-		// User by ID
-		hono.get('/users/:user', async (c) => {
-			const user = await this.usersRepository.findOneBy({
-				id: c.req.param('user'),
-				host: IsNull(),
-				isSuspended: false,
-			});
-			if (user === null) return c.notFound();
-
-			const acct = AcctEntity.from(user.username, user.host, this.config.host);
-			return c.redirect(`/@${acct.toShortString()}`);
-		});
-
 		// Note
 		hono.get('/notes/:note', noIframe, usePug, async (c, next) => {
 			const note = await this.notesRepository.findOneBy({
@@ -224,81 +201,6 @@ export class ClientServerService {
 				profile,
 				avatarUrl: packedNote.user.avatarUrl,
 				summary: getNoteSummary(packedNote),
-			});
-		});
-
-		// Page
-		hono.get('/:user{^@\\S+$}/pages/:page', noIframe, usePug, async (c, next) => {
-			const acct = AcctEntity.parse(c.req.param('user'), this.config.host);
-			if (acct === null) {
-				await next();
-				return;
-			}
-
-			const user = await this.usersRepository.findOneBy({
-				usernameLower: acct.username.toLowerCase(),
-				host: acct.host ?? IsNull(),
-			});
-
-			if (user === null) {
-				await next();
-				return;
-			}
-
-			const page = await this.pagesRepository.findOneBy({
-				name: c.req.param('page'),
-				userId: user.id,
-			});
-			if (page === null) {
-				await next();
-				return;
-			}
-
-			if (['public'].includes(page.visibility)) {
-				c.header('Cache-Control', 'public, max-age=15');
-			} else {
-				c.header('Cache-Control', 'private, max-age=0, must-revalidate');
-			}
-
-			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: page.userId });
-
-			const packedPage = await this.pageEntityService.pack(page);
-			const meta = await this.metaService.fetch();
-			return await c.render('page', {
-				...this.generateCommonPugData(meta),
-				version: this.config.version,
-				config: this.config,
-				page: packedPage,
-				profile,
-				avatarUrl: packedPage.user.avatarUrl,
-			});
-		});
-
-		// Clip
-		hono.get('/clips/:clip', noIframe, usePug, async (c, next) => {
-			const clip = await this.clipsRepository.findOneBy({
-				id: c.req.param('clip'),
-				isPublic: true,
-			});
-
-			if (clip === null) {
-				await next();
-				return;
-			}
-
-			c.header('Cache-Control', 'public, max-age=15');
-
-			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: clip.userId });
-
-			const packedClip = await this.clipEntityService.pack(clip);
-			const meta = await this.metaService.fetch();
-			return await c.render('clip', {
-				...this.generateCommonPugData(meta),
-				version: this.config.version,
-				config: this.config,
-				clip: packedClip,
-				profile,
-				avatarUrl: packedClip.user.avatarUrl,
 			});
 		});
 
