@@ -163,10 +163,6 @@ export class ClientServerService {
 			}
 
 			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
-			if (profile.preventAiLearning) {
-				c.header('X-Robots-Tag', 'noimageai');
-				c.header('X-Robots-Tag', 'noai');
-			}
 
 			const meta = await this.metaService.fetch();
 			const me = profile.fields
@@ -217,10 +213,6 @@ export class ClientServerService {
 			}
 
 			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: note.userId });
-			if (profile.preventAiLearning) {
-				c.header('X-Robots-Tag', 'noimageai');
-				c.header('X-Robots-Tag', 'noai');
-			}
 
 			const packedNote = await this.noteEntityService.pack(note);
 			const meta = await this.metaService.fetch();
@@ -269,10 +261,6 @@ export class ClientServerService {
 			}
 
 			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: page.userId });
-			if (profile.preventAiLearning) {
-				c.header('X-Robots-Tag', 'noimageai');
-				c.header('X-Robots-Tag', 'noai');
-			}
 
 			const packedPage = await this.pageEntityService.pack(page);
 			const meta = await this.metaService.fetch();
@@ -301,10 +289,6 @@ export class ClientServerService {
 			c.header('Cache-Control', 'public, max-age=15');
 
 			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: clip.userId });
-			if (profile.preventAiLearning) {
-				c.header('X-Robots-Tag', 'noimageai');
-				c.header('X-Robots-Tag', 'noai');
-			}
 
 			const packedClip = await this.clipEntityService.pack(clip);
 			const meta = await this.metaService.fetch();

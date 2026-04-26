@@ -145,7 +145,6 @@ export const paramDef = z.object({
 	carefulBot: z.boolean().optional(),
 	autoAcceptFollowed: z.boolean().optional(),
 	noCrawle: z.boolean().optional(),
-	preventAiLearning: z.boolean().optional(),
 	isBot: z.boolean().optional(),
 	isCat: z.boolean().optional(),
 	injectFeaturedNote: z.boolean().optional(),
@@ -267,7 +266,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			if (typeof ps.carefulBot === 'boolean') profileUpdates.carefulBot = ps.carefulBot;
 			if (typeof ps.autoAcceptFollowed === 'boolean') profileUpdates.autoAcceptFollowed = ps.autoAcceptFollowed;
 			if (typeof ps.noCrawle === 'boolean') profileUpdates.noCrawle = ps.noCrawle;
-			if (typeof ps.preventAiLearning === 'boolean') profileUpdates.preventAiLearning = ps.preventAiLearning;
 			if (typeof ps.isCat === 'boolean') updates.isCat = ps.isCat;
 			if (typeof ps.injectFeaturedNote === 'boolean') profileUpdates.injectFeaturedNote = ps.injectFeaturedNote;
 			if (typeof ps.receiveAnnouncementEmail === 'boolean') profileUpdates.receiveAnnouncementEmail = ps.receiveAnnouncementEmail;

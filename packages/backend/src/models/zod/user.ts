@@ -103,7 +103,6 @@ export const MeDetailedOnlySchema = z
 		carefulBot: z.boolean(),
 		autoAcceptFollowed: z.boolean(),
 		noCrawle: z.boolean(),
-		preventAiLearning: z.boolean(),
 		isExplorable: z.boolean(),
 		isDeleted: z.boolean(),
 		twoFactorBackupCodesStock: z.enum(['full', 'partial', 'none']),
