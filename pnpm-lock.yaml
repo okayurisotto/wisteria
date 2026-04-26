@@ -201,8 +201,8 @@ importers:
         specifier: 3.4.1
         version: 3.4.1
       redis-lock:
-        specifier: 0.1.4
-        version: 0.1.4
+        specifier: workspace:*
+        version: link:../redis-lock
       reflect-metadata:
         specifier: 0.2.2
         version: 0.2.2
@@ -4586,10 +4586,6 @@ packages:
   redis-errors@1.2.0:
     resolution: {integrity: sha512-1qny3OExCf0UvUV/5wpYKf2YwPcOqXzkwKKSmKHiE6ZMQs5heeE/c8eXK+PNllPvmjgAbfnsbpkGZWy8cBpn9w==}
     engines: {node: '>=4'}
-
-  redis-lock@0.1.4:
-    resolution: {integrity: sha512-7/+zu86XVQfJVx1nHTzux5reglDiyUCDwmW7TSlvVezfhH2YLc/Rc8NE0ejQG+8/0lwKzm29/u/4+ogKeLosiA==}
-    engines: {node: '>=0.6'}
 
   redis-parser@3.0.0:
     resolution: {integrity: sha512-DJnGAeenTdpMEH6uAJRK/uiyEIH9WVsUmoLwzudwGJUwZPp80PDBWPHXSAGNPwNvIXAbe7MSUB1zQFugFml66A==}
@@ -9676,8 +9672,6 @@ snapshots:
   reconnecting-websocket@4.4.0: {}
 
   redis-errors@1.2.0: {}
-
-  redis-lock@0.1.4: {}
 
   redis-parser@3.0.0:
     dependencies:
