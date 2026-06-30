@@ -5,7 +5,7 @@
 		"type": "git",
 		"url": "https://github.com/okayurisotto/wisteria.git"
 	},
-	"packageManager": "pnpm@10.33.2+sha512.a90faf6feeab71ad6c6e57f94e0fe1a12f5dcc22cd754db40ae9593eb6a3e0b6b12e3540218bb37ae083404b1f2ce6db2a4121e979829b4aff94b99f49da1cf8",
+	"packageManager": "pnpm@11.9.0+sha512.bd682d5d03fe525ef7c9fd6780c6884d1e756ac4c9c9fe00c538782824310dcf90e3ddc4f53835f06dfaebd5085e41855e0bcbb3b60de2ac5bbab89e5036f03b",
 	"private": true,
 	"scripts": {
 		"build": "turbo build && node ./scripts/build-assets.mjs",
@@ -25,8 +25,8 @@
 		"fast-glob": "3.3.3",
 		"ignore-walk": "8.0.0",
 		"postcss": "8.5.6",
-		"tar": "7.5.11",
-		"turbo": "2.9.6",
+		"tar": "7.5.16",
+		"turbo": "2.9.18",
 		"typescript": "6.0.3"
 	}
 }
