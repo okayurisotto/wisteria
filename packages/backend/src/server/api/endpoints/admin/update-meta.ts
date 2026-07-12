@@ -106,7 +106,6 @@ export const paramDef = z.object({
 	truemailAuthKey: z.string().nullable().optional(),
 	enableChartsForRemoteUser: z.boolean().optional(),
 	enableChartsForFederatedInstances: z.boolean().optional(),
-	enableServerMachineStats: z.boolean().optional(),
 	enableIdenticonGeneration: z.boolean().optional(),
 	serverRules: z.string().array().optional(),
 	bannedEmailDomains: z.string().array().optional(),
@@ -480,10 +479,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 			if (ps.enableChartsForFederatedInstances !== undefined) {
 				set.enableChartsForFederatedInstances = ps.enableChartsForFederatedInstances;
-			}
-
-			if (ps.enableServerMachineStats !== undefined) {
-				set.enableServerMachineStats = ps.enableServerMachineStats;
 			}
 
 			if (ps.enableIdenticonGeneration !== undefined) {

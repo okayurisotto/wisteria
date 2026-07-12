@@ -5,7 +5,6 @@
 
 import { QueueProcessorService } from '@/queue/QueueProcessorService.js';
 import { QueueStatsService } from '@/daemons/QueueStatsService.js';
-import { ServerStatsService } from '@/daemons/ServerStatsService.js';
 import { ServerService } from '@/server/ServerService.js';
 import { envOption } from '@/env.js';
 import type { INestApplicationContext } from '@nestjs/common';
@@ -16,7 +15,6 @@ export const server = (app: INestApplicationContext) => {
 
 	if (!envOption.isTest) {
 		app.get(QueueStatsService).start();
-		void app.get(ServerStatsService).start();
 	}
 
 	return app;

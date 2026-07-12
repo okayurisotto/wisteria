@@ -172,24 +172,6 @@ export type ModerationLog = {
 	info: ModerationLogPayloads['unsetUserBanner'];
 });
 
-export type ServerStats = {
-	cpu: number;
-	mem: {
-		used: number;
-		active: number;
-	};
-	net: {
-		rx: number;
-		tx: number;
-	};
-	fs: {
-		r: number;
-		w: number;
-	};
-};
-
-export type ServerStatsLog = ServerStats[];
-
 export type QueueStats = {
 	deliver: {
 		activeSincePrevTick: number;

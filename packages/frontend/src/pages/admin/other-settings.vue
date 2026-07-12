@@ -10,13 +10,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<FormSuspense :p="init">
 			<div class="_gaps">
 				<div class="_panel" style="padding: 16px;">
-					<MkSwitch v-model="enableServerMachineStats">
-						<template #label>{{ i18n.ts.enableServerMachineStats }}</template>
-						<template #caption>{{ i18n.ts.turnOffToImprovePerformance }}</template>
-					</MkSwitch>
-				</div>
-
-				<div class="_panel" style="padding: 16px;">
 					<MkSwitch v-model="enableIdenticonGeneration">
 						<template #label>{{ i18n.ts.enableIdenticonGeneration }}</template>
 						<template #caption>{{ i18n.ts.turnOffToImprovePerformance }}</template>
@@ -39,14 +32,12 @@ import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkSwitch from '@/components/MkSwitch.vue';
 
-const enableServerMachineStats = ref<boolean>(false);
 const enableIdenticonGeneration = ref<boolean>(false);
 const enableChartsForRemoteUser = ref<boolean>(false);
 const enableChartsForFederatedInstances = ref<boolean>(false);
 
 async function init() {
 	const meta = await misskeyApi('admin/meta');
-	enableServerMachineStats.value = meta.enableServerMachineStats;
 	enableIdenticonGeneration.value = meta.enableIdenticonGeneration;
 	enableChartsForRemoteUser.value = meta.enableChartsForRemoteUser;
 	enableChartsForFederatedInstances.value = meta.enableChartsForFederatedInstances;
@@ -54,7 +45,6 @@ async function init() {
 
 function save() {
 	os.apiWithDialog('admin/update-meta', {
-		enableServerMachineStats: enableServerMachineStats.value,
 		enableIdenticonGeneration: enableIdenticonGeneration.value,
 		enableChartsForRemoteUser: enableChartsForRemoteUser.value,
 		enableChartsForFederatedInstances: enableChartsForFederatedInstances.value,

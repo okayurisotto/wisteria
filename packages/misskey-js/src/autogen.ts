@@ -438,15 +438,6 @@ export interface paths {
      */
     post: operations["admin/resolve-abuse-user-report"];
   };
-  "/admin/server-info": {
-    /**
-     * admin/server-info
-     * @description No description provided.
-     *
-     * **Credential required**: *Yes* / **Permission**: *read:admin:server-info*
-     */
-    post: operations["admin/server-info"];
-  };
   "/admin/show-moderation-logs": {
     /**
      * admin/show-moderation-logs
@@ -2301,22 +2292,6 @@ export interface paths {
      */
     post: operations["reset-password"];
   };
-  "/server-info": {
-    /**
-     * server-info
-     * @description No description provided.
-     *
-     * **Credential required**: *No*
-     */
-    get: operations["server-info"];
-    /**
-     * server-info
-     * @description No description provided.
-     *
-     * **Credential required**: *No*
-     */
-    post: operations["server-info"];
-  };
   "/stats": {
     /**
      * stats
@@ -3633,7 +3608,6 @@ export interface operations {
             truemailAuthKey?: string | null;
             enableChartsForRemoteUser?: boolean;
             enableChartsForFederatedInstances?: boolean;
-            enableServerMachineStats?: boolean;
             enableIdenticonGeneration?: boolean;
             manifestJsonOverride?: string;
             policies?: {
@@ -6543,83 +6517,6 @@ export interface operations {
     };
   };
   /**
-   * admin/server-info
-   * @description No description provided.
-   *
-   * **Credential required**: *Yes* / **Permission**: *read:admin:server-info*
-   */
-  "admin/server-info": {
-    requestBody: {
-      content: {
-        "application/json": {
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (with results) */
-      200: {
-        content: {
-          "application/json": {
-            machine?: string;
-            os?: string;
-            node?: string;
-            psql?: string;
-            cpu: {
-              model?: string;
-              cores?: number;
-              [key: string]: unknown;
-            };
-            mem: {
-              total?: number;
-              [key: string]: unknown;
-            };
-            fs: {
-              total?: number;
-              used?: number;
-              [key: string]: unknown;
-            };
-            net: {
-              interface?: string;
-              [key: string]: unknown;
-            };
-            [key: string]: unknown;
-          };
-        };
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
    * admin/show-moderation-logs
    * @description No description provided.
    *
@@ -7064,7 +6961,6 @@ export interface operations {
           truemailAuthKey?: string | null;
           enableChartsForRemoteUser?: boolean;
           enableChartsForFederatedInstances?: boolean;
-          enableServerMachineStats?: boolean;
           enableIdenticonGeneration?: boolean;
           serverRules?: string[];
           bannedEmailDomains?: string[];
@@ -18292,76 +18188,6 @@ export interface operations {
       /** @description OK (without any results) */
       204: {
         content: never;
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
-   * server-info
-   * @description No description provided.
-   *
-   * **Credential required**: *No*
-   */
-  "server-info": {
-    requestBody: {
-      content: {
-        "application/json": {
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (with results) */
-      200: {
-        content: {
-          "application/json": {
-            machine?: string;
-            cpu: {
-              model?: string;
-              cores?: number;
-              [key: string]: unknown;
-            };
-            mem: {
-              total?: number;
-              [key: string]: unknown;
-            };
-            fs: {
-              total?: number;
-              used?: number;
-              [key: string]: unknown;
-            };
-            [key: string]: unknown;
-          };
-        };
       };
       /** @description Client error */
       400: {

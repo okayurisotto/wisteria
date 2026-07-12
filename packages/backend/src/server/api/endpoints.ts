@@ -54,7 +54,6 @@ import * as ep___admin_relays_list from './endpoints/admin/relays/list.js';
 import * as ep___admin_relays_remove from './endpoints/admin/relays/remove.js';
 import * as ep___admin_resetPassword from './endpoints/admin/reset-password.js';
 import * as ep___admin_resolveAbuseUserReport from './endpoints/admin/resolve-abuse-user-report.js';
-import * as ep___admin_serverInfo from './endpoints/admin/server-info.js';
 import * as ep___admin_showModerationLogs from './endpoints/admin/show-moderation-logs.js';
 import * as ep___admin_showUser from './endpoints/admin/show-user.js';
 import * as ep___admin_showUsers from './endpoints/admin/show-users.js';
@@ -251,7 +250,6 @@ import * as ep___roles_users from './endpoints/roles/users.js';
 import * as ep___roles_notes from './endpoints/roles/notes.js';
 import * as ep___resetDb from './endpoints/reset-db.js';
 import * as ep___resetPassword from './endpoints/reset-password.js';
-import * as ep___serverInfo from './endpoints/server-info.js';
 import * as ep___stats from './endpoints/stats.js';
 import * as ep___sw_show_registration from './endpoints/sw/show-registration.js';
 import * as ep___sw_update_registration from './endpoints/sw/update-registration.js';
@@ -340,7 +338,6 @@ const eps = [
 	['admin/relays/remove', ep___admin_relays_remove],
 	['admin/reset-password', ep___admin_resetPassword],
 	['admin/resolve-abuse-user-report', ep___admin_resolveAbuseUserReport],
-	['admin/server-info', ep___admin_serverInfo],
 	['admin/show-moderation-logs', ep___admin_showModerationLogs],
 	['admin/show-user', ep___admin_showUser],
 	['admin/show-users', ep___admin_showUsers],
@@ -537,7 +534,6 @@ const eps = [
 	['roles/notes', ep___roles_notes],
 	['reset-db', ep___resetDb],
 	['reset-password', ep___resetPassword],
-	['server-info', ep___serverInfo],
 	['stats', ep___stats],
 	['sw/show-registration', ep___sw_show_registration],
 	['sw/update-registration', ep___sw_update_registration],

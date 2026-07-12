@@ -55,7 +55,6 @@ export const permissions = [
 	'write:admin:reset-password',
 	'write:admin:resolve-abuse-user-report',
 	'write:admin:send-email',
-	'read:admin:server-info',
 	'read:admin:show-moderation-log',
 	'read:admin:show-user',
 	'read:admin:show-users',
