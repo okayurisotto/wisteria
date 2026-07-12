@@ -13,6 +13,7 @@
 
 - Deck UI
 - チャンネル
+- ページ
 - ドライブクリーナー
 - 画像のcropping
 - テーマエディター
@@ -94,6 +95,7 @@ Wisteriaを構成するコンポーネントは、おおまかに次の3つに�
 
 ```
 backend
+	-> redis-lock
   -> hono-serve-static
   -> http-signature
     -> parcom
@@ -106,6 +108,8 @@ frontend
 sw
   -> misskey-js
 ```
+
+`redis-lock`は、Redisを使った分散ロックライブラリです。
 
 `hono-serve-static`は、Hono（サーバライブラリ）にて、単一のファイルやディレクトリ内のファイルを簡単に静的にサーブできるようにするためのライブラリです。
 
