@@ -8,11 +8,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<XSidebar :class="$style.sidebar"/>
 
 	<MkStickyContainer ref="contents" :class="$style.contents" style="container-type: inline-size;" @contextmenu.stop="onContextmenu">
-		<template #header>
-			<div>
-				<XAnnouncements v-if="$i"/>
-			</div>
-		</template>
 		<RouterView/>
 		<div :class="$style.spacer"></div>
 	</MkStickyContainer>
@@ -101,7 +96,6 @@ import { provide, onMounted, computed, ref, watch, type Ref, onBeforeUnmount, us
 import XWidgets from './universal.widgets.vue';
 import XCommon from './_common_/common.vue';
 import XSidebar from './_common_/navbar.vue';
-import XAnnouncements from './_common_/announcements.vue';
 import type MkStickyContainer from '@/components/global/MkStickyContainer.vue';
 import { instanceName } from '@/config.js';
 import * as os from '@/os.js';

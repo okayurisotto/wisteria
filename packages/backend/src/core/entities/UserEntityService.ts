@@ -13,7 +13,6 @@ import { localUsernameSchema, passwordSchema } from '@/models/User.js';
 import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, NoteUnreadsRepository, UserNotePiningsRepository, UserProfilesRepository, MiUserProfile, RenoteMutingsRepository, UserMemoRepository, InstancesRepository } from '@/models/_.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
 import { IdService } from '@/core/IdService.js';
-import { AnnouncementService } from '@/core/AnnouncementService.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 import { NoteEntityService } from './NoteEntityService.js';
 import { CustomEmojiPopulateService } from '../CustomEmojiPopulateService.js';
@@ -74,7 +73,6 @@ export class UserEntityService {
 		private readonly instancesRepository: InstancesRepository,
 
 		private readonly idService: IdService,
-		private readonly announcementService: AnnouncementService,
 		private readonly avatarDecorationService: AvatarDecorationService,
 		private readonly noteEntityService: NoteEntityService,
 		private readonly customEmojiPopulateService: CustomEmojiPopulateService,
@@ -245,12 +243,6 @@ export class UserEntityService {
 
 		const isModerator = isMe ? this.roleUserService.isModerator(user) : null;
 		const isAdmin = isMe ? this.roleUserService.isAdministrator(user) : null;
-		const unreadAnnouncements = isMe
-			? (await this.announcementService.getUnreadAnnouncements(user)).map(announcement => ({
-					createdAt: this.idService.parse(announcement.id).date.toISOString(),
-					...announcement,
-				}))
-			: null;
 
 		const notificationsInfo = isMe ? await this.getNotificationsInfo(user.id) : null;
 
@@ -374,8 +366,8 @@ export class UserEntityService {
 					where: { userId: user.id, isMentioned: true },
 					take: 1,
 				}).then(count => count > 0),
-				hasUnreadAnnouncement: unreadAnnouncements!.length > 0,
-				unreadAnnouncements,
+				hasUnreadAnnouncement: false,
+				unreadAnnouncements: [],
 				hasUnreadAntenna: false,
 				hasUnreadChannel: false, // 後方互換性のため
 				hasUnreadNotification: notificationsInfo?.hasUnread, // 後方互換性のため

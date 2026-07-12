@@ -219,10 +219,6 @@ export type EmojiDeleted = {
 	emojis: EmojiDetailed[];
 };
 
-export type AnnouncementCreated = {
-	announcement: Announcement;
-};
-
 export type SignupRequest = {
 	'username': string;
 	'password': string;

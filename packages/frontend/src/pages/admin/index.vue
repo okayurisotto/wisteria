@@ -134,11 +134,6 @@ const menuDef = computed(() => [{
 		to: '/admin/files',
 		active: currentPage.value?.route.name === 'files',
 	}, {
-		icon: 'ti ti-speakerphone',
-		text: i18n.ts.announcements,
-		to: '/admin/announcements',
-		active: currentPage.value?.route.name === 'announcements',
-	}, {
 		icon: 'ti ti-exclamation-circle',
 		text: i18n.ts.abuseReports,
 		to: '/admin/abuses',

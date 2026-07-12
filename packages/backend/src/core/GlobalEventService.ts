@@ -46,9 +46,6 @@ export interface BroadcastTypes {
 			[other: string]: any;
 		}[];
 	};
-	announcementCreated: {
-		announcement: z.infer<typeof AnnouncementSchema>;
-	};
 }
 
 export interface MainEventTypes {
@@ -96,9 +93,6 @@ export interface MainEventTypes {
 	driveFileCreated: z.infer<typeof DriveFileSchema>;
 	readAntenna: MiAntenna;
 	receiveFollowRequest: z.infer<typeof UserLiteSchema>;
-	announcementCreated: {
-		announcement: z.infer<typeof AnnouncementSchema>;
-	};
 }
 
 export interface DriveEventTypes {

@@ -47,7 +47,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<Transition :name="'tray'">
 		<div v-if="showMenu" class="menu">
 			<MkA to="/" class="link" activeClass="active"><i class="ti ti-home icon"></i>{{ i18n.ts.home }}</MkA>
-			<MkA to="/announcements" class="link" activeClass="active"><i class="ti ti-speakerphone icon"></i>{{ i18n.ts.announcements }}</MkA>
 			<div class="divider"></div>
 			<MkA to="/pages" class="link" activeClass="active"><i class="ti ti-news icon"></i>{{ i18n.ts.pages }}</MkA>
 			<div class="action">

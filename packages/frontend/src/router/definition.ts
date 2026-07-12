@@ -185,9 +185,6 @@ const routes: RouteDef[] = [{
 	path: parsePath('/signup-complete/:code'),
 	component: page(() => import('@/pages/signup-complete.vue')),
 }, {
-	path: parsePath('/announcements'),
-	component: page(() => import('@/pages/announcements.vue')),
-}, {
 	path: parsePath('/about'),
 	component: page(() => import('@/pages/about.vue')),
 	hash: 'initialTab',
@@ -293,10 +290,6 @@ const routes: RouteDef[] = [{
 		path: parsePath('/federation'),
 		name: 'federation',
 		component: page(() => import('@/pages/admin/federation.vue')),
-	}, {
-		path: parsePath('/announcements'),
-		name: 'announcements',
-		component: page(() => import('@/pages/admin/announcements.vue')),
 	}, {
 		path: parsePath('/roles/:id/edit'),
 		name: 'roles',

@@ -71,21 +71,6 @@ export async function mainBoot() {
 		// only add post shortcuts if logged in
 		hotkeys['p|n'] = post;
 
-		for (const announcement of ($i.unreadAnnouncements ?? []).filter(x => x.display === 'dialog')) {
-			popup(defineAsyncComponent(() => import('@/components/MkAnnouncementDialog.vue')), {
-				announcement,
-			}, {}, 'closed');
-		}
-
-		stream.on('announcementCreated', (ev) => {
-			const announcement = ev.announcement;
-			if (announcement.display === 'dialog') {
-				popup(defineAsyncComponent(() => import('@/components/MkAnnouncementDialog.vue')), {
-					announcement,
-				}, {}, 'closed');
-			}
-		});
-
 		if ($i.isDeleted) {
 			alert({
 				type: 'warning',
@@ -162,10 +147,6 @@ export async function mainBoot() {
 		main.on('unreadAntenna', () => {
 			updateAccount({ hasUnreadAntenna: true });
 			sound.playMisskeySfx('antenna');
-		});
-
-		main.on('readAllAnnouncements', () => {
-			updateAccount({ hasUnreadAnnouncement: false });
 		});
 
 		// トークンが再生成されたとき

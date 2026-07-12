@@ -6,7 +6,6 @@
 import { Module } from '@nestjs/common';
 import { AccountMoveService } from './AccountMoveService.js';
 import { AccountUpdateService } from './AccountUpdateService.js';
-import { AnnouncementService } from './AnnouncementService.js';
 import { AntennaService } from './AntennaService.js';
 import { AppLockService } from './AppLockService.js';
 import { AvatarDecorationService } from './AvatarDecorationService.js';
@@ -140,7 +139,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		LoggerService,
 		AccountMoveService,
 		AccountUpdateService,
-		AnnouncementService,
 		AntennaService,
 		AppLockService,
 		AvatarDecorationService,
@@ -268,7 +266,6 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 		LoggerService,
 		AccountMoveService,
 		AccountUpdateService,
-		AnnouncementService,
 		AntennaService,
 		AppLockService,
 		AvatarDecorationService,

@@ -11,7 +11,6 @@ import type {
 	UserLite,
 } from './entities.js';
 import type {
-	AnnouncementCreated,
 	EmojiAdded, EmojiDeleted,
 	EmojiUpdated,
 	PageEvent,
@@ -54,7 +53,6 @@ export type Channels = {
 			driveFileCreated: (payload: DriveFile) => void;
 			readAntenna: (payload: Antenna) => void;
 			receiveFollowRequest: (payload: User) => void;
-			announcementCreated: (payload: AnnouncementCreated) => void;
 		};
 		receives: null;
 	};
@@ -199,5 +197,4 @@ export type BroadcastEvents = {
 	emojiAdded: (payload: EmojiAdded) => void;
 	emojiUpdated: (payload: EmojiUpdated) => void;
 	emojiDeleted: (payload: EmojiDeleted) => void;
-	announcementCreated: (payload: AnnouncementCreated) => void;
 };

@@ -11,10 +11,6 @@ import * as ep___admin_abuseUserReports from './endpoints/admin/abuse-user-repor
 import * as ep___admin_accounts_create from './endpoints/admin/accounts/create.js';
 import * as ep___admin_accounts_delete from './endpoints/admin/accounts/delete.js';
 import * as ep___admin_accounts_findByEmail from './endpoints/admin/accounts/find-by-email.js';
-import * as ep___admin_announcements_create from './endpoints/admin/announcements/create.js';
-import * as ep___admin_announcements_delete from './endpoints/admin/announcements/delete.js';
-import * as ep___admin_announcements_list from './endpoints/admin/announcements/list.js';
-import * as ep___admin_announcements_update from './endpoints/admin/announcements/update.js';
 import * as ep___admin_avatarDecorations_create from './endpoints/admin/avatar-decorations/create.js';
 import * as ep___admin_avatarDecorations_delete from './endpoints/admin/avatar-decorations/delete.js';
 import * as ep___admin_avatarDecorations_list from './endpoints/admin/avatar-decorations/list.js';
@@ -76,7 +72,6 @@ import * as ep___admin_roles_assign from './endpoints/admin/roles/assign.js';
 import * as ep___admin_roles_unassign from './endpoints/admin/roles/unassign.js';
 import * as ep___admin_roles_updateDefaultPolicies from './endpoints/admin/roles/update-default-policies.js';
 import * as ep___admin_roles_users from './endpoints/admin/roles/users.js';
-import * as ep___announcements from './endpoints/announcements.js';
 import * as ep___antennas_create from './endpoints/antennas/create.js';
 import * as ep___antennas_delete from './endpoints/antennas/delete.js';
 import * as ep___antennas_list from './endpoints/antennas/list.js';
@@ -183,7 +178,6 @@ import * as ep___i_notifications from './endpoints/i/notifications.js';
 import * as ep___i_notificationsGrouped from './endpoints/i/notifications-grouped.js';
 import * as ep___i_pin from './endpoints/i/pin.js';
 import * as ep___i_readAllUnreadNotes from './endpoints/i/read-all-unread-notes.js';
-import * as ep___i_readAnnouncement from './endpoints/i/read-announcement.js';
 import * as ep___i_regenerateToken from './endpoints/i/regenerate-token.js';
 import * as ep___i_registry_getAll from './endpoints/i/registry/get-all.js';
 import * as ep___i_registry_getDetail from './endpoints/i/registry/get-detail.js';
@@ -303,10 +297,6 @@ const eps = [
 	['admin/accounts/create', ep___admin_accounts_create],
 	['admin/accounts/delete', ep___admin_accounts_delete],
 	['admin/accounts/find-by-email', ep___admin_accounts_findByEmail],
-	['admin/announcements/create', ep___admin_announcements_create],
-	['admin/announcements/delete', ep___admin_announcements_delete],
-	['admin/announcements/list', ep___admin_announcements_list],
-	['admin/announcements/update', ep___admin_announcements_update],
 	['admin/avatar-decorations/create', ep___admin_avatarDecorations_create],
 	['admin/avatar-decorations/delete', ep___admin_avatarDecorations_delete],
 	['admin/avatar-decorations/list', ep___admin_avatarDecorations_list],
@@ -368,7 +358,6 @@ const eps = [
 	['admin/roles/unassign', ep___admin_roles_unassign],
 	['admin/roles/update-default-policies', ep___admin_roles_updateDefaultPolicies],
 	['admin/roles/users', ep___admin_roles_users],
-	['announcements', ep___announcements],
 	['antennas/create', ep___antennas_create],
 	['antennas/delete', ep___antennas_delete],
 	['antennas/list', ep___antennas_list],
@@ -475,7 +464,6 @@ const eps = [
 	['i/notifications-grouped', ep___i_notificationsGrouped],
 	['i/pin', ep___i_pin],
 	['i/read-all-unread-notes', ep___i_readAllUnreadNotes],
-	['i/read-announcement', ep___i_readAnnouncement],
 	['i/regenerate-token', ep___i_regenerateToken],
 	['i/registry/get-all', ep___i_registry_getAll],
 	['i/registry/get-detail', ep___i_registry_getDetail],
