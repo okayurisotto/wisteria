@@ -9,7 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<MkSpacer :contentMax="800">
 		<MkHorizontalSwipe v-model:tab="tab" :tabs="headerTabs">
 			<div v-if="tab === 'all'" key="all">
-				<XNotifications :class="$style.notifications" :excludeTypes="excludeTypes"/>
+				<XNotifications :class="$style.notifications" :excludeTypes="excludeTypes ?? []"/>
 			</div>
 			<div v-else-if="tab === 'mentions'" key="mention">
 				<MkNotes :pagination="mentionsPagination"/>
