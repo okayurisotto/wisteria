@@ -48,7 +48,6 @@ import * as ep___admin_getTableStats from './endpoints/admin/get-table-stats.js'
 import * as ep___admin_getUserIps from './endpoints/admin/get-user-ips.js';
 import * as ep___admin_invite_create from './endpoints/admin/invite/create.js';
 import * as ep___admin_invite_list from './endpoints/admin/invite/list.js';
-import * as ep___admin_promo_create from './endpoints/admin/promo/create.js';
 import * as ep___admin_queue_clear from './endpoints/admin/queue/clear.js';
 import * as ep___admin_queue_deliverDelayed from './endpoints/admin/queue/deliver-delayed.js';
 import * as ep___admin_queue_inboxDelayed from './endpoints/admin/queue/inbox-delayed.js';
@@ -252,7 +251,6 @@ import * as ep___notifications_testNotification from './endpoints/notifications/
 import * as ep___pagePush from './endpoints/page-push.js';
 import * as ep___ping from './endpoints/ping.js';
 import * as ep___pinnedUsers from './endpoints/pinned-users.js';
-import * as ep___promo_read from './endpoints/promo/read.js';
 import * as ep___roles_list from './endpoints/roles/list.js';
 import * as ep___roles_show from './endpoints/roles/show.js';
 import * as ep___roles_users from './endpoints/roles/users.js';
@@ -342,7 +340,6 @@ const eps = [
 	['admin/get-user-ips', ep___admin_getUserIps],
 	['admin/invite/create', ep___admin_invite_create],
 	['admin/invite/list', ep___admin_invite_list],
-	['admin/promo/create', ep___admin_promo_create],
 	['admin/queue/clear', ep___admin_queue_clear],
 	['admin/queue/deliver-delayed', ep___admin_queue_deliverDelayed],
 	['admin/queue/inbox-delayed', ep___admin_queue_inboxDelayed],
@@ -546,7 +543,6 @@ const eps = [
 	['page-push', ep___pagePush],
 	['ping', ep___ping],
 	['pinned-users', ep___pinnedUsers],
-	['promo/read', ep___promo_read],
 	['roles/list', ep___roles_list],
 	['roles/show', ep___roles_show],
 	['roles/users', ep___roles_users],

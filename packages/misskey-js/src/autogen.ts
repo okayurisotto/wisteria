@@ -384,15 +384,6 @@ export interface paths {
      */
     post: operations["admin/invite/list"];
   };
-  "/admin/promo/create": {
-    /**
-     * admin/promo/create
-     * @description No description provided.
-     *
-     * **Credential required**: *Yes* / **Permission**: *write:admin:promo*
-     */
-    post: operations["admin/promo/create"];
-  };
   "/admin/queue/clear": {
     /**
      * admin/queue/clear
@@ -2390,15 +2381,6 @@ export interface paths {
      * **Credential required**: *No*
      */
     post: operations["pinned-users"];
-  };
-  "/promo/read": {
-    /**
-     * promo/read
-     * @description No description provided.
-     *
-     * **Credential required**: *Yes* / **Permission**: *write:account*
-     */
-    post: operations["promo/read"];
   };
   "/roles/list": {
     /**
@@ -6379,59 +6361,6 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["InviteCode"][];
         };
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
-   * admin/promo/create
-   * @description No description provided.
-   *
-   * **Credential required**: *Yes* / **Permission**: *write:admin:promo*
-   */
-  "admin/promo/create": {
-    requestBody: {
-      content: {
-        "application/json": {
-          noteId: components["schemas"]["Id"];
-          expiresAt: number;
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (without any results) */
-      204: {
-        content: never;
       };
       /** @description Client error */
       400: {
@@ -19092,58 +19021,6 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["UserDetailed"][];
         };
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
-   * promo/read
-   * @description No description provided.
-   *
-   * **Credential required**: *Yes* / **Permission**: *write:account*
-   */
-  "promo/read": {
-    requestBody: {
-      content: {
-        "application/json": {
-          noteId: components["schemas"]["Id"];
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (without any results) */
-      204: {
-        content: never;
       };
       /** @description Client error */
       400: {
