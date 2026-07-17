@@ -174,7 +174,6 @@ import * as ep___i_importMuting from './endpoints/i/import-muting.js';
 import * as ep___i_importUserLists from './endpoints/i/import-user-lists.js';
 import * as ep___i_importAntennas from './endpoints/i/import-antennas.js';
 import * as ep___i_notifications from './endpoints/i/notifications.js';
-import * as ep___i_notificationsGrouped from './endpoints/i/notifications-grouped.js';
 import * as ep___i_pin from './endpoints/i/pin.js';
 import * as ep___i_readAllUnreadNotes from './endpoints/i/read-all-unread-notes.js';
 import * as ep___i_regenerateToken from './endpoints/i/regenerate-token.js';
@@ -458,7 +457,6 @@ const $i_importMuting: Provider = { provide: 'ep:i/import-muting', useClass: ep_
 const $i_importUserLists: Provider = { provide: 'ep:i/import-user-lists', useClass: ep___i_importUserLists.default };
 const $i_importAntennas: Provider = { provide: 'ep:i/import-antennas', useClass: ep___i_importAntennas.default };
 const $i_notifications: Provider = { provide: 'ep:i/notifications', useClass: ep___i_notifications.default };
-const $i_notificationsGrouped: Provider = { provide: 'ep:i/notifications-grouped', useClass: ep___i_notificationsGrouped.default };
 const $i_pin: Provider = { provide: 'ep:i/pin', useClass: ep___i_pin.default };
 const $i_readAllUnreadNotes: Provider = { provide: 'ep:i/read-all-unread-notes', useClass: ep___i_readAllUnreadNotes.default };
 const $i_regenerateToken: Provider = { provide: 'ep:i/regenerate-token', useClass: ep___i_regenerateToken.default };
@@ -746,7 +744,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$i_importUserLists,
 		$i_importAntennas,
 		$i_notifications,
-		$i_notificationsGrouped,
 		$i_pin,
 		$i_readAllUnreadNotes,
 		$i_regenerateToken,
@@ -1028,7 +1025,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$i_importUserLists,
 		$i_importAntennas,
 		$i_notifications,
-		$i_notificationsGrouped,
 		$i_pin,
 		$i_readAllUnreadNotes,
 		$i_regenerateToken,

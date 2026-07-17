@@ -107,7 +107,6 @@ const defaultStoreSaveKeys: (keyof typeof defaultStore['state'])[] = [
 	'keepScreenOn',
 	'defaultWithReplies',
 	'disableStreamingTimeline',
-	'useGroupedNotifications',
 	'sound_masterVolume',
 	'sound_note',
 	'sound_noteMy',

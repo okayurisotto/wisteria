@@ -33,7 +33,6 @@ import { useStream } from '@/stream.js';
 import { i18n } from '@/i18n.js';
 import { notificationTypes } from '@/const.js';
 import { infoImageUrl } from '@/instance.js';
-import { defaultStore } from '@/store.js';
 import MkPullToRefresh from '@/components/MkPullToRefresh.vue';
 
 const props = defineProps<{
@@ -42,19 +41,13 @@ const props = defineProps<{
 
 const pagingComponent = useTemplateRef('pagingComponent');
 
-const pagination = computed(() => defaultStore.reactiveState.useGroupedNotifications.value ? {
-	endpoint: 'i/notifications-grouped' as const,
-	limit: 20,
-	params: computed(() => ({
-		excludeTypes: props.excludeTypes ?? undefined,
-	})),
-} : {
+const pagination = {
 	endpoint: 'i/notifications' as const,
 	limit: 20,
 	params: computed(() => ({
 		excludeTypes: props.excludeTypes ?? undefined,
 	})),
-});
+};
 
 function onNotification(notification) {
 	const isMuted = props.excludeTypes ? props.excludeTypes.includes(notification.type) : false;

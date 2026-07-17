@@ -8,8 +8,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<div :class="$style.head">
 		<MkAvatar v-if="['pollEnded', 'note'].includes(notification.type) && notification.note" :class="$style.icon" :user="notification.note.user" link preview/>
 		<MkAvatar v-else-if="['roleAssigned'].includes(notification.type)" :class="$style.icon" :user="$i" link preview/>
-		<div v-else-if="notification.type === 'reaction:grouped'" :class="[$style.icon, $style.icon_reactionGroup]"><i class="ti ti-plus" style="line-height: 1;"></i></div>
-		<div v-else-if="notification.type === 'renote:grouped'" :class="[$style.icon, $style.icon_renoteGroup]"><i class="ti ti-repeat" style="line-height: 1;"></i></div>
 		<img v-else-if="notification.type === 'test'" :class="$style.icon" :src="infoImageUrl"/>
 		<MkAvatar v-else-if="notification.user" :class="$style.icon" :user="notification.user" link preview/>
 		<img v-else-if="notification.icon" :class="[$style.icon, $style.icon_app]" :src="notification.icon" alt=""/>
@@ -54,18 +52,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<span v-else-if="notification.type === 'roleAssigned'">{{ i18n.ts._notification.roleAssigned }}</span>
 			<span v-else-if="notification.type === 'test'">{{ i18n.ts._notification.testNotification }}</span>
 			<MkA v-else-if="notification.type === 'follow' || notification.type === 'mention' || notification.type === 'reply' || notification.type === 'renote' || notification.type === 'quote' || notification.type === 'reaction' || notification.type === 'receiveFollowRequest' || notification.type === 'followRequestAccepted'" v-user-preview="notification.user.id" :class="$style.headerName" :to="userPage(notification.user)"><MkUserName :user="notification.user"/></MkA>
-			<span v-else-if="notification.type === 'reaction:grouped'">{{ i18n.tsx._notification.reactedBySomeUsers({ n: notification.reactions.length }) }}</span>
-			<span v-else-if="notification.type === 'renote:grouped'">{{ i18n.tsx._notification.renotedBySomeUsers({ n: notification.users.length }) }}</span>
 			<span v-else-if="notification.type === 'app'">{{ notification.header }}</span>
 			<MkTime v-if="withTime" :time="notification.createdAt" :class="$style.headerTime"/>
 		</header>
 		<div>
-			<MkA v-if="notification.type === 'reaction' || notification.type === 'reaction:grouped'" :class="$style.text" :to="notePage(notification.note)" :title="getNoteSummary(notification.note)">
+			<MkA v-if="notification.type === 'reaction'" :class="$style.text" :to="notePage(notification.note)" :title="getNoteSummary(notification.note)">
 				<i class="ti ti-quote" :class="$style.quote"></i>
 				<Mfm :text="getNoteSummary(notification.note)" :plain="true" :nowrap="true" :author="notification.note.user"/>
 				<i class="ti ti-quote" :class="$style.quote"></i>
 			</MkA>
-			<MkA v-else-if="notification.type === 'renote' || notification.type === 'renote:grouped'" :class="$style.text" :to="notePage(notification.note)" :title="getNoteSummary(notification.note.renote)">
+			<MkA v-else-if="notification.type === 'renote'" :class="$style.text" :to="notePage(notification.note)" :title="getNoteSummary(notification.note.renote)">
 				<i class="ti ti-quote" :class="$style.quote"></i>
 				<Mfm :text="getNoteSummary(notification.note.renote)" :plain="true" :nowrap="true" :author="notification.note.renote.user"/>
 				<i class="ti ti-quote" :class="$style.quote"></i>
@@ -105,25 +101,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<span v-else-if="notification.type === 'app'" :class="$style.text">
 				<Mfm :text="notification.body" :nowrap="false"/>
 			</span>
-
-			<div v-if="notification.type === 'reaction:grouped'">
-				<div v-for="reaction of notification.reactions" :key="reaction.user.id + reaction.reaction" :class="$style.reactionsItem">
-					<MkAvatar :class="$style.reactionsItemAvatar" :user="reaction.user" link preview/>
-					<div :class="$style.reactionsItemReaction">
-						<MkReactionIcon
-							:withTooltip="true"
-							:reaction="reaction.reaction.replace(/^:(\w+):$/, ':$1@.:')"
-							:noStyle="true"
-							style="width: 100%; height: 100%;"
-						/>
-					</div>
-				</div>
-			</div>
-			<div v-else-if="notification.type === 'renote:grouped'">
-				<div v-for="user of notification.users" :key="user.id" :class="$style.reactionsItem">
-					<MkAvatar :class="$style.reactionsItemAvatar" :user="user" link preview/>
-				</div>
-			</div>
 		</div>
 	</div>
 </div>
@@ -195,27 +172,6 @@ const rejectFollowRequest = () => {
 	width: 40px;
 	height: 40px;
 }
-
-.icon_reactionGroup,
-.icon_renoteGroup {
-	display: grid;
-	align-items: center;
-	justify-items: center;
-	width: 80%;
-	height: 80%;
-	font-size: 15px;
-	border-radius: var(--rounded-full);
-	color: #fff;
-}
-
-.icon_reactionGroup {
-	background: #e99a0b;
-}
-
-.icon_renoteGroup {
-	background: #36d298;
-}
-
 .icon_app {
 	border-radius: var(--rounded);
 }
@@ -339,35 +295,5 @@ const rejectFollowRequest = () => {
 }
 .followRequestCommandButton {
 	flex: 1;
-}
-
-.reactionsItem {
-	display: inline-block;
-	position: relative;
-	width: 38px;
-	height: 38px;
-	margin-top: 8px;
-	margin-right: 8px;
-}
-
-.reactionsItemAvatar {
-	width: 100%;
-	height: 100%;
-}
-
-.reactionsItemReaction {
-	position: absolute;
-	z-index: 1;
-	bottom: -2px;
-	right: -2px;
-	width: 20px;
-	height: 20px;
-	box-sizing: border-box;
-	border-radius: var(--rounded-full);
-	background: var(--panel);
-	box-shadow: 0 0 0 3px var(--panel);
-	font-size: 11px;
-	text-align: center;
-	color: #fff;
 }
 </style>

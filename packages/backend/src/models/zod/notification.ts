@@ -13,7 +13,7 @@ import { RoleSchema } from './role.js';
 const NotificationBaseSchema = z.object({
 	id: IdSchema,
 	createdAt: z.string()/* format: date-time */,
-	type: z.enum([...notificationTypes, 'reaction:grouped', 'renote:grouped']),
+	type: z.enum(notificationTypes),
 });
 
 export const NotificationSchema = z.discriminatedUnion('type', [
@@ -84,21 +84,6 @@ export const NotificationSchema = z.discriminatedUnion('type', [
 		body: z.string(),
 		header: z.string(),
 		icon: z.string(),
-	}),
-	NotificationBaseSchema.extend({
-		type: z.literal('reaction:grouped'),
-		note: NoteSchema,
-		reactions: z
-			.object({
-				user: UserLiteSchema,
-				reaction: z.string(),
-			})
-			.array(),
-	}),
-	NotificationBaseSchema.extend({
-		type: z.literal('renote:grouped'),
-		note: NoteSchema,
-		users: UserLiteSchema.array(),
 	}),
 	NotificationBaseSchema.extend({
 		type: z.literal('test'),

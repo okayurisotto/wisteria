@@ -369,10 +369,6 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: false,
 	},
-	useGroupedNotifications: {
-		where: 'device',
-		default: true,
-	},
 	dataSaver: {
 		where: 'device',
 		default: {

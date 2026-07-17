@@ -103,20 +103,3 @@ export type MiNotification = {
 	id: string;
 	createdAt: string;
 };
-
-export type MiGroupedNotification = MiNotification | {
-	type: 'reaction:grouped';
-	id: string;
-	createdAt: string;
-	noteId: MiNote['id'];
-	reactions: {
-		userId: string;
-		reaction: string;
-	}[];
-} | {
-	type: 'renote:grouped';
-	id: string;
-	createdAt: string;
-	noteId: MiNote['id'];
-	userIds: string[];
-};

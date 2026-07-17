@@ -1573,15 +1573,6 @@ export interface paths {
      */
     post: operations["i/notifications"];
   };
-  "/i/notifications-grouped": {
-    /**
-     * i/notifications-grouped
-     * @description No description provided.
-     *
-     * **Credential required**: *Yes* / **Permission**: *read:notifications*
-     */
-    post: operations["i/notifications-grouped"];
-  };
   "/i/pin": {
     /**
      * i/pin
@@ -3182,26 +3173,6 @@ export interface components {
       body: string;
       header: string;
       icon: string;
-      [key: string]: unknown;
-    } | {
-      id: components["schemas"]["Id"];
-      createdAt: string;
-      /** @enum {unknown} */
-      type: "reaction:grouped";
-      note: components["schemas"]["Note"];
-      reactions: {
-          user: components["schemas"]["UserLite"];
-          reaction: string;
-          [key: string]: unknown;
-        }[];
-      [key: string]: unknown;
-    } | {
-      id: components["schemas"]["Id"];
-      createdAt: string;
-      /** @enum {unknown} */
-      type: "renote:grouped";
-      note: components["schemas"]["Note"];
-      users: components["schemas"]["UserLite"][];
       [key: string]: unknown;
     } | {
       id: components["schemas"]["Id"];
@@ -13605,73 +13576,6 @@ export interface operations {
    * **Credential required**: *Yes* / **Permission**: *read:notifications*
    */
   "i/notifications": {
-    requestBody: {
-      content: {
-        "application/json": {
-          /** @default 10 */
-          limit?: number;
-          sinceId?: components["schemas"]["Id"];
-          untilId?: components["schemas"]["Id"];
-          /** @default true */
-          markAsRead?: boolean;
-          includeTypes?: ("note" | "follow" | "mention" | "reply" | "renote" | "quote" | "reaction" | "pollEnded" | "receiveFollowRequest" | "followRequestAccepted" | "roleAssigned" | "app" | "test" | "pollVote" | "groupInvited")[];
-          excludeTypes?: ("note" | "follow" | "mention" | "reply" | "renote" | "quote" | "reaction" | "pollEnded" | "receiveFollowRequest" | "followRequestAccepted" | "roleAssigned" | "app" | "test" | "pollVote" | "groupInvited")[];
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (with results) */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Notification"][];
-        };
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description To many requests */
-      429: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
-   * i/notifications-grouped
-   * @description No description provided.
-   *
-   * **Credential required**: *Yes* / **Permission**: *read:notifications*
-   */
-  "i/notifications-grouped": {
     requestBody: {
       content: {
         "application/json": {
