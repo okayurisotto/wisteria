@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, type OnModuleInit } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import promiseLimit from 'promise-limit';
 import type { MiRemoteUser, MiUser } from '@/models/User.js';
 import { concat, unique } from '@/misc/prelude/array.js';
 import { getApIds } from './type.js';
-import { ApPersonService } from './models/ApPersonService.js';
+import type { ApPersonService } from './models/ApPersonService.js';
 import type { ApObject } from './type.js';
 import type { Resolver } from './ApResolverService.js';
 
@@ -23,10 +24,16 @@ type AudienceInfo = {
 type GroupedAudience = Record<'public' | 'followers' | 'other', string[]>;
 
 @Injectable()
-export class ApAudienceService {
+export class ApAudienceService implements OnModuleInit {
+	private apPersonService: ApPersonService;
+
 	constructor(
-		private readonly apPersonService: ApPersonService,
+		private readonly moduleRef: ModuleRef,
 	) {}
+
+	onModuleInit(): void {
+		this.apPersonService = this.moduleRef.get('ApPersonService');
+	}
 
 	public async parseAudience(actor: MiRemoteUser, to?: ApObject, cc?: ApObject, resolver?: Resolver): Promise<AudienceInfo> {
 		const toGroups = this.groupingAudience(getApIds(to), actor);

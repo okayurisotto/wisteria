@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { In } from 'typeorm';
 import type {
 	MiRole,
@@ -15,7 +16,7 @@ import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import { IdService } from '@/core/IdService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
-import { NotificationCreateService } from './NotificationCreateService.js';
+import type { NotificationCreateService } from './NotificationCreateService.js';
 
 export type RolePolicies = {
 	gtlAvailable: boolean;
@@ -72,11 +73,14 @@ export const DEFAULT_POLICIES: RolePolicies = {
 };
 
 @Injectable()
-export class RoleService {
+export class RoleService implements OnModuleInit {
 	public static AlreadyAssignedError = class extends Error {};
 	public static NotAssignedError = class extends Error {};
+	private notificationCreateService: NotificationCreateService;
 
 	constructor(
+		private readonly moduleRef: ModuleRef,
+
 		@Inject(DI.usersRepository)
 		private readonly usersRepository: UsersRepository,
 
@@ -88,8 +92,11 @@ export class RoleService {
 
 		private readonly idService: IdService,
 		private readonly moderationLogService: ModerationLogService,
-		private readonly notificationCreateService: NotificationCreateService,
 	) {}
+
+	onModuleInit(): void {
+		this.notificationCreateService = this.moduleRef.get('NotificationCreateService');
+	}
 
 	public async getRoles() {
 		const roles = await this.rolesRepository.findBy({});

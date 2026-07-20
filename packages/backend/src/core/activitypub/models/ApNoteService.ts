@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import promiseLimit from 'promise-limit';
 import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
@@ -29,7 +30,7 @@ import { ApMfmService } from '../ApMfmService.js';
 import { ApDbResolverService } from '../ApDbResolverService.js';
 import { ApResolverService } from '../ApResolverService.js';
 import { ApAudienceService } from '../ApAudienceService.js';
-import { ApPersonService } from './ApPersonService.js';
+import type { ApPersonService } from './ApPersonService.js';
 import { extractApHashtags } from './tag.js';
 import { ApMentionService } from './ApMentionService.js';
 import { ApQuestionService } from './ApQuestionService.js';
@@ -39,10 +40,13 @@ import type { IObject, IPost } from '../type.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 
 @Injectable()
-export class ApNoteService {
+export class ApNoteService implements OnModuleInit {
 	private readonly logger: Logger;
+	private apPersonService: ApPersonService;
 
 	constructor(
+		private readonly moduleRef: ModuleRef,
+
 		@Inject(DI.config)
 		private readonly config: Config,
 
@@ -55,7 +59,6 @@ export class ApNoteService {
 		private readonly idService: IdService,
 		private readonly apMfmService: ApMfmService,
 		private readonly apResolverService: ApResolverService,
-		private readonly apPersonService: ApPersonService,
 		private readonly utilityService: UtilityService,
 		private readonly apAudienceService: ApAudienceService,
 		private readonly apMentionService: ApMentionService,
@@ -69,6 +72,10 @@ export class ApNoteService {
 		private readonly apLoggerService: ApLoggerService,
 	) {
 		this.logger = this.apLoggerService.logger;
+	}
+
+	onModuleInit() {
+		this.apPersonService = this.moduleRef.get('ApPersonService');
 	}
 
 	public validateNote(object: IObject, uri: string): Error | null {

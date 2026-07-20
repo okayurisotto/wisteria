@@ -128,6 +128,8 @@ import { RiverflowService } from './RiverflowService.js';
 
 // #region 文字列ベースでのinjection用(循環参照対応のため)
 const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNoteService };
+const $ApPersonService: Provider = { provide: 'ApPersonService', useExisting: ApPersonService };
+const $NotificationCreateService: Provider = { provide: 'NotificationCreateService', useExisting: NotificationCreateService };
 // #endregion
 
 @Module({
@@ -257,6 +259,8 @@ const $ApNoteService: Provider = { provide: 'ApNoteService', useExisting: ApNote
 
 		// #region 文字列ベースでのinjection用(循環参照対応のため)
 		$ApNoteService,
+		$ApPersonService,
+		$NotificationCreateService,
 		// #endregion
 	],
 	exports: [

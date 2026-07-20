@@ -4,7 +4,8 @@
  */
 
 import { URL } from 'node:url';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import chalk from 'chalk';
 import { IsNull } from 'typeorm';
 import { DI } from '@/di-symbols.js';
@@ -15,14 +16,17 @@ import type { Logger } from '@/logger.js';
 import { type ILink, WebfingerService } from '@/core/WebfingerService.js';
 import { RemoteLoggerService } from '@/core/RemoteLoggerService.js';
 import { ApDbResolverService } from '@/core/activitypub/ApDbResolverService.js';
-import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
+import type { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
 import { AcctEntity } from '@/misc/AcctEntity.js';
 
 @Injectable()
-export class RemoteUserResolveService {
+export class RemoteUserResolveService implements OnModuleInit {
 	private readonly logger: Logger;
+	private apPersonService: ApPersonService;
 
 	constructor(
+		private readonly moduleRef: ModuleRef,
+
 		@Inject(DI.config)
 		private readonly config: Config,
 
@@ -32,9 +36,12 @@ export class RemoteUserResolveService {
 		private readonly webfingerService: WebfingerService,
 		private readonly remoteLoggerService: RemoteLoggerService,
 		private readonly apDbResolverService: ApDbResolverService,
-		private readonly apPersonService: ApPersonService,
 	) {
 		this.logger = this.remoteLoggerService.logger.createSubLogger('resolve-user');
+	}
+
+	onModuleInit(): void {
+		this.apPersonService = this.moduleRef.get('ApPersonService');
 	}
 
 	public async resolveUser(acct: AcctEntity): Promise<MiLocalUser | MiRemoteUser> {
