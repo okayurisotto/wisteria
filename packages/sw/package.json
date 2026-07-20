@@ -2,10 +2,10 @@
 	"name": "sw",
 	"private": true,
 	"scripts": {
-		"build": "tsup",
+		"build": "tsdown",
 		"typecheck:app": "tsc --project tsconfig.app.json",
 		"typecheck:dev": "tsc --project tsconfig.dev.json",
-		"watch": "tsup --watch"
+		"watch": "tsdown --watch"
 	},
 	"dependencies": {
 		"idb-keyval": "6.2.2",
@@ -13,7 +13,7 @@
 	},
 	"devDependencies": {
 		"@types/serviceworker": "0.0.191",
-		"tsup": "8.5.1",
+		"tsdown": "0.22.7",
 		"typescript": "6.0.3"
 	},
 	"type": "module"

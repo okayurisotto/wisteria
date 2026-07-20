@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsdown';
 
 export default defineConfig({
 	tsconfig: "tsconfig.app.json",
@@ -6,4 +6,6 @@ export default defineConfig({
 	format: 'esm',
 	minify: true,
 	outDir: 'built',
+	platform: 'neutral',
+	fixedExtension: false,
 });

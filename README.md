@@ -136,7 +136,7 @@ JavaScriptランタイムとしてNode.jsを使用します。バージョンは
 
 パッケージマネージャとしてpnpmを使用します。バージョンは`package.json`内の`packageManager`の値を参照してください。
 
-`frontend`はViteを、その他の内部パッケージはtsupをビルドに使用します。これらは内部でesbuildを使用して、TypeScriptからJavaScriptを生成します。
+`frontend`はViteを、その他の内部パッケージはtsdownをビルドに使用します。これらは内部でrolldownを使用して、TypeScriptからJavaScriptを生成します。
 
 `backend`では、DIライブラリとしてNestJSを使用します。ただし`backend`でのDIの仕方には（Misskey時代から）問題があり、各コンポーネントは疎結合になるどころか巨大な一つの塊と化しています。Wisteriaではリファクタリングを進めていますが、根本的な解決には時間を要しています。
 

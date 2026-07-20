@@ -7,16 +7,16 @@
 		"types": "./src/index.ts"
 	},
 	"scripts": {
-		"build": "tsup",
+		"build": "tsdown",
 		"generate": "openapi-typescript ../backend/built/api.json -o ./src/autogen.ts",
 		"typecheck:app": "tsc --project tsconfig.app.json",
 		"typecheck:dev": "tsc --project tsconfig.dev.json",
-		"watch": "tsup --watch"
+		"watch": "tsdown --watch"
 	},
 	"devDependencies": {
 		"@types/node": "24.10.13",
 		"openapi-typescript": "6.7.6",
-		"tsup": "8.5.1",
+		"tsdown": "0.22.7",
 		"typescript": "6.0.3"
 	},
 	"files": [

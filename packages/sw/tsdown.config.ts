@@ -1,5 +1,5 @@
-import { defineConfig } from 'tsup';
-import meta from '../../package.json' assert { type: 'json' };
+import { defineConfig } from 'tsdown';
+import meta from '../../package.json' with { type: 'json' };
 
 export default defineConfig({
 	tsconfig: "tsconfig.app.json",
@@ -13,4 +13,5 @@ export default defineConfig({
 		_DEV_: JSON.stringify(process.env.NODE_ENV !== 'production'),
 		_VERSION_: JSON.stringify(meta.version),
 	},
+	fixedExtension: false,
 });

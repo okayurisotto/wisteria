@@ -13,11 +13,11 @@
 		}
 	},
 	"scripts": {
-		"build": "tsup",
+		"build": "tsdown",
 		"test": "vitest run",
 		"typecheck:app": "tsc --project tsconfig.app.json",
 		"typecheck:dev": "tsc --project tsconfig.dev.json",
-		"watch": "tsup --watch"
+		"watch": "tsdown --watch"
 	},
 	"dependencies": {
 		"parcom": "workspace:*",
@@ -26,7 +26,7 @@
 	"devDependencies": {
 		"@types/node": "24.10.13",
 		"@types/sshpk": "1.17.4",
-		"tsup": "8.5.1",
+		"tsdown": "0.22.7",
 		"vitest": "4.1.9"
 	}
 }
