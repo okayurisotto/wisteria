@@ -6,7 +6,6 @@ packages:
 onlyBuiltDependencies:
   - '@nestjs/core'
   - '@parcel/watcher'
-  - '@swc/core'
   - bufferutil
   - cbor-extract
   - esbuild
@@ -19,7 +18,6 @@ onlyBuiltDependencies:
 allowBuilds:
   '@nestjs/core': true
   '@parcel/watcher': true
-  '@swc/core': true
   bufferutil: true
   esbuild: true
   msgpackr-extract: true

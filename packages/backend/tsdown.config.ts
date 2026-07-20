@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsdown';
 
 export default defineConfig({
 	tsconfig: "tsconfig.app.json",
@@ -9,9 +9,11 @@ export default defineConfig({
 		'./src/postgres.ts',
 		'./src/server/api/openapi/gen-spec.ts',
 	],
-	external: ['@mapbox/node-pre-gyp', /^node:/],
+	deps: {
+		neverBundle: ['@mapbox/node-pre-gyp', /^node:/],
+	},
 	format: 'esm',
-	minify: true,
 	outDir: 'built',
 	removeNodeProtocol: false,
+	fixedExtension: false,
 });

@@ -209,7 +209,7 @@ export class StaticAssetsServerService {
 				c.header('Cache-Control', `max-age=${10 * 60}`);
 				await next();
 			},
-			serveStaticFile({ path: path.join(SW_ASSETS_DIR, '/sw.js') }),
+			serveStaticFile({ path: path.join(SW_ASSETS_DIR, '/sw.iife.js') }),
 		);
 
 		// #endregion
