@@ -35,7 +35,7 @@ import {
 	parseBytesRangeHeaderValue,
 } from '@/misc/range-header-value.js';
 import { Hono, type Context } from 'hono';
-import { DUMMY_PNG_FILE } from '@/path';
+import { DUMMY_PNG_FILE } from '@/path.js';
 import { Readable } from 'node:stream';
 
 @Injectable()

@@ -11,7 +11,7 @@ import { QueueService } from '@/core/QueueService.js';
 import { DI } from '@/di-symbols.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
-import { UserUriService } from './entities/UserUriService';
+import { UserUriService } from './entities/UserUriService.js';
 
 @Injectable()
 export class UserSuspendService {

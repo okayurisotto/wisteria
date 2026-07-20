@@ -10,8 +10,8 @@ import type { Config } from '@/config.js';
 import { getNoteSummary } from '@/misc/get-note-summary.js';
 import type { SwSubscriptionsRepository } from '@/models/_.js';
 import { MetaService } from '@/core/MetaService.js';
-import type { NoteSchema } from '@/models/zod/note';
-import type { NotificationSchema } from '@/models/zod/notification';
+import type { NoteSchema } from '@/models/zod/note.js';
+import type { NotificationSchema } from '@/models/zod/notification.js';
 import type { z } from 'zod';
 
 // Defined also packages/sw/types.ts#L13

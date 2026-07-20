@@ -10,7 +10,7 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiDriveFolder } from '@/models/DriveFolder.js';
 import { IdService } from '@/core/IdService.js';
 import type { z } from 'zod';
-import type { DriveFolderSchema } from '@/models/zod/drive-folder';
+import type { DriveFolderSchema } from '@/models/zod/drive-folder.js';
 
 @Injectable()
 export class DriveFolderEntityService {

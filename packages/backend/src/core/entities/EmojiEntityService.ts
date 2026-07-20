@@ -8,7 +8,7 @@ import { DI } from '@/di-symbols.js';
 import type { EmojisRepository } from '@/models/_.js';
 import type { MiEmoji } from '@/models/Emoji.js';
 import type { z } from 'zod';
-import type { EmojiSimpleSchema } from '@/models/zod/emoji';
+import type { EmojiSimpleSchema } from '@/models/zod/emoji.js';
 
 @Injectable()
 export class EmojiEntityService {

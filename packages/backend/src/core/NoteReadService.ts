@@ -13,7 +13,7 @@ import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import type { NoteUnreadsRepository, MutingsRepository, NoteThreadMutingsRepository } from '@/models/_.js';
 import { trackPromise } from '@/misc/promise-tracker.js';
-import type { NoteSchema } from '@/models/zod/note';
+import type { NoteSchema } from '@/models/zod/note.js';
 import type { z } from 'zod';
 
 @Injectable()

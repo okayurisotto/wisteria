@@ -22,14 +22,14 @@ import type { Serialized } from '@/types.js';
 import type { EventEmitter } from 'events';
 import type { UnionToIntersection, ValueOf } from 'type-fest';
 import type { z } from 'zod';
-import type { AnnouncementSchema } from '@/models/zod/announcement';
-import type { DriveFileSchema } from '@/models/zod/drive-file';
-import type { DriveFolderSchema } from '@/models/zod/drive-folder';
-import type { EmojiDetailedSchema } from '@/models/zod/emoji';
-import type { NoteSchema } from '@/models/zod/note';
-import type { NotificationSchema } from '@/models/zod/notification';
-import type { UserDetailedNotMeSchema, UserDetailedSchema } from '@/models/zod/user';
-import type { UserLiteSchema } from '@/models/zod/user-lite';
+import type { AnnouncementSchema } from '@/models/zod/announcement.js';
+import type { DriveFileSchema } from '@/models/zod/drive-file.js';
+import type { DriveFolderSchema } from '@/models/zod/drive-folder.js';
+import type { EmojiDetailedSchema } from '@/models/zod/emoji.js';
+import type { NoteSchema } from '@/models/zod/note.js';
+import type { NotificationSchema } from '@/models/zod/notification.js';
+import type { UserDetailedNotMeSchema, UserDetailedSchema } from '@/models/zod/user.js';
+import type { UserLiteSchema } from '@/models/zod/user-lite.js';
 
 // #region Stream type-body definitions
 export interface BroadcastTypes {

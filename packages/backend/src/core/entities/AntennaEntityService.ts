@@ -8,7 +8,7 @@ import { DI } from '@/di-symbols.js';
 import type { AntennasRepository } from '@/models/_.js';
 import type { MiAntenna } from '@/models/Antenna.js';
 import { IdService } from '@/core/IdService.js';
-import type { AntennaSchema } from '@/models/zod/antenna';
+import type { AntennaSchema } from '@/models/zod/antenna.js';
 import type { z } from 'zod';
 
 @Injectable()

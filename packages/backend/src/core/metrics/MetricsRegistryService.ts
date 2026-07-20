@@ -1,10 +1,10 @@
 import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
 import { Registry, collectDefaultMetrics } from 'prom-client';
-import type { Config } from '@/config';
-import { DI } from '@/di-symbols';
-import { ApiServerMetricsService } from './ApiServerMetricsService';
-import { QueueEventMetricsService } from './QueueEventMetricsService';
-import { QueueCountMetricsService } from './QueueCountMetricsService';
+import type { Config } from '@/config.js';
+import { DI } from '@/di-symbols.js';
+import { ApiServerMetricsService } from './ApiServerMetricsService.js';
+import { QueueEventMetricsService } from './QueueEventMetricsService.js';
+import { QueueCountMetricsService } from './QueueCountMetricsService.js';
 
 @Injectable()
 export class MetricsRegistryService implements OnModuleInit {

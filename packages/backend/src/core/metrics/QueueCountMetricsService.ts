@@ -1,8 +1,8 @@
 import { Inject, Injectable, type OnModuleDestroy } from '@nestjs/common';
 import { Gauge, Registry } from 'prom-client';
-import type { Config } from '@/config';
-import { DI } from '@/di-symbols';
-import { QueueService } from '../QueueService';
+import type { Config } from '@/config.js';
+import { DI } from '@/di-symbols.js';
+import { QueueService } from '@/core/QueueService.js';
 
 const interval = 10 * 1000;
 

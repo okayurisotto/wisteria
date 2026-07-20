@@ -16,7 +16,7 @@ import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import type { OnApplicationShutdown } from '@nestjs/common';
 import type { Config } from '@/config.js';
 import type { z } from 'zod';
-import type { NoteSchema } from '@/models/zod/note';
+import type { NoteSchema } from '@/models/zod/note.js';
 import { RiverflowService } from './RiverflowService.js';
 
 @Injectable()

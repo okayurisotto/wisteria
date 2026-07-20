@@ -15,7 +15,7 @@ import { DEFAULT_POLICIES } from '@/core/RoleService.js';
 import { z } from 'zod';
 import { IdSchema } from '@/models/zod/IdSchema.js';
 import { RolePoliciesSchema } from '@/models/zod/role.js';
-import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService';
+import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService.js';
 
 export const meta = {
 	tags: ['meta'],

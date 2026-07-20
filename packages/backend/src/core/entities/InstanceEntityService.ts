@@ -6,7 +6,7 @@
 import { Injectable } from '@nestjs/common';
 import type { MiInstance } from '@/models/Instance.js';
 import { MetaService } from '@/core/MetaService.js';
-import { UtilityService } from '../UtilityService.js';
+import { UtilityService } from '@/core/UtilityService.js';
 import type { z } from 'zod';
 import type { FederationInstanceSchema } from '@/models/zod/federation-instance.js';
 

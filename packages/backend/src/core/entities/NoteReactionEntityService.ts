@@ -10,7 +10,7 @@ import { IdService } from '@/core/IdService.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiNoteReaction } from '@/models/NoteReaction.js';
 import { NoteEntityService } from './NoteEntityService.js';
-import { LegacyReactionConvertService } from '../LegacyReactionConvertService.js';
+import { LegacyReactionConvertService } from '@/core/LegacyReactionConvertService.js';
 import type { z } from 'zod';
 import type { NoteReactionSchema } from '@/models/zod/note-reaction.js';
 import { UserLiteEntityService } from './UserLiteEntityService.js';

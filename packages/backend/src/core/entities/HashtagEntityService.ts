@@ -6,7 +6,7 @@
 import { Injectable } from '@nestjs/common';
 import type { MiHashtag } from '@/models/Hashtag.js';
 import type { z } from 'zod';
-import type { HashtagSchema } from '@/models/zod/hashtag';
+import type { HashtagSchema } from '@/models/zod/hashtag.js';
 
 @Injectable()
 export class HashtagEntityService {

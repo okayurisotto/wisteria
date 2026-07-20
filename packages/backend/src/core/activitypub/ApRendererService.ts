@@ -29,8 +29,8 @@ import { LdSignatureService } from './LdSignatureService.js';
 import { ApMfmService } from './ApMfmService.js';
 import type { IAccept, IActivity, IAdd, IAnnounce, IApDocument, IApEmoji, IApHashtag, IApImage, IApMention, IBlock, ICreate, IDelete, IFlag, IFollow, IKey, ILike, IMove, IObject, IPost, IQuestion, IReject, IRemove, ITombstone, IUndo, IUpdate } from './type.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
-import { DriveFilePublicUrlGetService } from '../entities/DriveFilePublicUrlGetService.js';
-import { UserUriService } from '../entities/UserUriService.js';
+import { DriveFilePublicUrlGetService } from '@/core/entities/DriveFilePublicUrlGetService.js';
+import { UserUriService } from '@/core/entities/UserUriService.js';
 
 @Injectable()
 export class ApRendererService {

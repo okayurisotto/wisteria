@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Counter, Registry } from 'prom-client';
 import * as Bull from 'bullmq';
-import type { Config } from '@/config';
-import { DI } from '@/di-symbols';
+import type { Config } from '@/config.js';
+import { DI } from '@/di-symbols.js';
 import { baseQueueOptions, QUEUE } from '@/queue/const.js';
 
 @Injectable()

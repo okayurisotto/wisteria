@@ -1,4 +1,4 @@
-import type { MiUser, MiRemoteUser } from '@/models/User';
+import type { MiUser, MiRemoteUser } from '@/models/User.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
 
 export function isRemoteUser(user: MiUser): user is MiRemoteUser;

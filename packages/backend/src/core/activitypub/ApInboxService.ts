@@ -11,7 +11,7 @@ import { UserFollowingService } from '@/core/UserFollowingService.js';
 import { ReactionCreateService } from '@/core/ReactionCreateService.js';
 import { RelayService } from '@/core/RelayService.js';
 import { NotePiningService } from '@/core/NotePiningService.js';
-import { UserBlockingBlockService } from '../UserBlockingBlockService.js';
+import { UserBlockingBlockService } from '@/core/UserBlockingBlockService.js';
 import { UserBlockingUnblockService } from '@/core/UserBlockingUnblockService.js';
 import { NoteDeleteService } from '@/core/NoteDeleteService.js';
 import { NoteCreateService } from '@/core/NoteCreateService.js';
@@ -36,7 +36,7 @@ import { ApPersonService } from './models/ApPersonService.js';
 import { ApQuestionService } from './models/ApQuestionService.js';
 import type { Resolver } from './ApResolverService.js';
 import type { IAccept, IAdd, IAnnounce, IBlock, ICreate, IDelete, IFlag, IFollow, ILike, IObject, IReject, IRemove, IUndo, IUpdate, IMove } from './type.js';
-import { ReactionDeleteService } from '../ReactionDeleteService.js';
+import { ReactionDeleteService } from '@/core/ReactionDeleteService.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
 
 @Injectable()

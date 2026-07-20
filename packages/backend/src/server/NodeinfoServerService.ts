@@ -11,7 +11,7 @@ import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { Hono } from 'hono';
 import type { NotesRepository, UsersRepository } from '@/models/_.js';
 import { IsNull } from 'typeorm';
-import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService';
+import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService.js';
 
 const nodeinfo2_1path = '/nodeinfo/2.1';
 const nodeinfo2_0path = '/nodeinfo/2.0';

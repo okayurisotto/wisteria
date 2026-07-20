@@ -8,7 +8,7 @@ import { DI } from '@/di-symbols.js';
 import type { AccessTokensRepository, AppsRepository } from '@/models/_.js';
 import type { MiApp } from '@/models/App.js';
 import type { MiUser } from '@/models/User.js';
-import type { AppSchema } from '@/models/zod/app';
+import type { AppSchema } from '@/models/zod/app.js';
 import type { z } from 'zod';
 
 @Injectable()

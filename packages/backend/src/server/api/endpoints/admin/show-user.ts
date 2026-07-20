@@ -12,9 +12,9 @@ import { RoleEntityService } from '@/core/entities/RoleEntityService.js';
 import { IdService } from '@/core/IdService.js';
 import { z } from 'zod';
 import { IdSchema } from '@/models/zod/IdSchema.js';
-import { NotificationRecieveConfig } from '@/models/zod/user';
-import { SigninSchema } from '@/models/zod/signin';
-import { RolePoliciesSchema, RoleSchema } from '@/models/zod/role';
+import { NotificationRecieveConfig } from '@/models/zod/user.js';
+import { SigninSchema } from '@/models/zod/signin.js';
+import { RolePoliciesSchema, RoleSchema } from '@/models/zod/role.js';
 
 export const meta = {
 	tags: ['admin'],

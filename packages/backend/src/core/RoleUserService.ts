@@ -15,8 +15,8 @@ import { IdService } from '@/core/IdService.js';
 import { isLocalUser } from '@/misc/isLocalUser.js';
 import { isRemoteUser } from '@/misc/isRemoteUser.js';
 import type { z } from 'zod';
-import type { NoteSchema } from '@/models/zod/note';
-import { RiverflowService } from './RiverflowService';
+import type { NoteSchema } from '@/models/zod/note.js';
+import { RiverflowService } from './RiverflowService.js';
 
 export type RolePolicies = {
 	gtlAvailable: boolean;

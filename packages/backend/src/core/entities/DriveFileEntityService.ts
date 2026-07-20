@@ -15,7 +15,7 @@ import { deepClone } from '@/misc/clone.js';
 import { isMimeImage } from '@/misc/is-mime-image.js';
 import { isNotNull } from '@/misc/is-not-null.js';
 import { IdService } from '@/core/IdService.js';
-import { VideoProcessingService } from '../VideoProcessingService.js';
+import { VideoProcessingService } from '@/core/VideoProcessingService.js';
 import { DriveFolderEntityService } from './DriveFolderEntityService.js';
 import type { z } from 'zod';
 import type { DriveFileSchema } from '@/models/zod/drive-file.js';
