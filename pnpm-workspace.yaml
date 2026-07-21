@@ -3,18 +3,6 @@ minimumReleaseAge: 10080
 packages:
   - packages/*
 
-onlyBuiltDependencies:
-  - '@nestjs/core'
-  - '@parcel/watcher'
-  - bufferutil
-  - cbor-extract
-  - esbuild
-  - msgpackr-extract
-  - sharp
-  - utf-8-validate
-  - v-code-diff
-  - vue-demi
-
 allowBuilds:
   '@nestjs/core': true
   '@parcel/watcher': true
