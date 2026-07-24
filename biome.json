@@ -9,8 +9,7 @@
 		"ignoreUnknown": false
 	},
 	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
+		"enabled": false
 	},
 	"linter": {
 		"enabled": true,
