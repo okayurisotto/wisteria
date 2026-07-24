@@ -212,11 +212,11 @@ function togglePlayPause() {
 function toggleFullscreen() {
 	if (isFullscreenNotSupported && videoEl.value) {
 		if (isFullscreen.value) {
-			//@ts-ignore
+			//@ts-expect-error
 			videoEl.value.webkitExitFullscreen();
 			isFullscreen.value = false;
 		} else {
-			//@ts-ignore
+			//@ts-expect-error
 			videoEl.value.webkitEnterFullscreen();
 			isFullscreen.value = true;
 		}

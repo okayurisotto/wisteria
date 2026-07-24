@@ -38,7 +38,7 @@ export const convertZodArray: Converter<typeof ZodArray> = (
 			? { description }
 			: {}),
 		items: recursive(result.element),
-		...result.checks?.map(({ _zod: { def: def } }) => {
+		...result.checks?.map(({ _zod: { def } }) => {
 			if (def.check === 'min_length') return { minItems: def.minimum };
 			if (def.check === 'max_length') return { maxItems: def.maximum };
 			if (def.check === 'length_equals') return { minItems: def.length, maxItems: def.length };

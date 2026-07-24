@@ -51,7 +51,7 @@ export abstract class AbstractEndpoint<T extends EndpointMeta, Ps extends z.ZodT
 			ip?: string | null,
 			headers?: Record<string, string> | null,
 		) => {
-			let cleanup: undefined | (() => void) = undefined;
+			let cleanup: undefined | (() => void);
 
 			if (meta.requireFile === true) {
 				cleanup = () => {

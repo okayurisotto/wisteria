@@ -37,7 +37,7 @@ export class QueueCountMetricsService implements OnModuleDestroy {
 
 			const tick = async () => {
 				await Promise.all(
-					queues.map(q => [
+					queues.flatMap(q => [
 						q.getActiveCount().then((n) => {
 							this.gauge.set({ name: q.name, status: 'active' }, n);
 						}),
@@ -47,7 +47,7 @@ export class QueueCountMetricsService implements OnModuleDestroy {
 						q.getWaitingCount().then((n) => {
 							this.gauge.set({ name: q.name, status: 'waiting' }, n);
 						}),
-					]).flat(),
+					]),
 				);
 			};
 

@@ -5,7 +5,7 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { AbstractEndpoint } from '@/server/api/AbstractEndpoint.js';
-import type { DriveFilesRepository, ChannelsRepository } from '@/models/_.js';
+import type { DriveFilesRepository, ChannelsRepository, MiDriveFile } from '@/models/_.js';
 import { ChannelEntityService } from '@/core/entities/ChannelEntityService.js';
 import { DI } from '@/di-symbols.js';
 import { RoleUserService } from '@/core/RoleUserService.js';
@@ -83,7 +83,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				throw new ApiError(meta.errors.accessDenied);
 			}
 
-			let banner = undefined;
+			let banner: MiDriveFile | null = null;
 			if (ps.bannerId != null) {
 				banner = await this.driveFilesRepository.findOneBy({
 					id: ps.bannerId,

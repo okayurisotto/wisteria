@@ -215,7 +215,6 @@ export class Router extends EventEmitter<RouterEvent> implements IRouter {
 				let parts = [..._parts];
 				const props = new Map<string, string>();
 
-				pathMatchLoop:
 				for (const p of route.path) {
 					if (typeof p === 'string') {
 						if (p === parts[0]) {
@@ -232,7 +231,7 @@ export class Router extends EventEmitter<RouterEvent> implements IRouter {
 								props.set(p.name, safeURIDecode(parts.join('/')));
 								parts = [];
 							}
-							break pathMatchLoop;
+							break;
 						} else {
 							if (p.startsWith) {
 								if (!parts[0]?.startsWith(p.startsWith)) continue forEachRouteLoop;
@@ -260,7 +259,7 @@ export class Router extends EventEmitter<RouterEvent> implements IRouter {
 								_parsedRoute,
 							};
 						} else {
-							continue forEachRouteLoop;
+							continue;
 						}
 					}
 
@@ -295,11 +294,7 @@ export class Router extends EventEmitter<RouterEvent> implements IRouter {
 								child,
 								_parsedRoute,
 							};
-						} else {
-							continue forEachRouteLoop;
 						}
-					} else {
-						continue forEachRouteLoop;
 					}
 				}
 			}

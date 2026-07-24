@@ -28,7 +28,7 @@ export class RiverflowService {
 	public async addBulk(name: RiverName, ids: string[]): Promise<void> {
 		await this.redisForTimelines.zadd(
 			name,
-			...ids.map(id => [this.idService.parse(id).date.getTime(), id]).flat(),
+			...ids.flatMap(id => [this.idService.parse(id).date.getTime(), id]),
 		);
 	}
 

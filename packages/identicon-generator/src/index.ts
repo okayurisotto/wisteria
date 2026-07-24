@@ -54,8 +54,8 @@ export const generate = (
 
 	// Draw
 	for (let i = 0; i < opts.pixels ** 2; i++) {
-		let x = i % opts.pixels;
-		let y = Math.floor(i / opts.pixels);
+		const x = i % opts.pixels;
+		const y = Math.floor(i / opts.pixels);
 
 		const isXCenter = x === sideN;
 		if (isXCenter && !center[y]) continue;

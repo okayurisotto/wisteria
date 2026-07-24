@@ -112,32 +112,30 @@ export class SignupApiService {
 			}
 		}
 
-		{
-			try {
-				const { account, secret } = await this.signupService.signup({
-					username, password, host,
-				});
+		try {
+			const { account, secret } = await this.signupService.signup({
+				username, password, host,
+			});
 
-				const res = await this.userEntityService.pack(account, account, {
-					schema: 'MeDetailed',
-					includeSecrets: true,
-				});
+			const res = await this.userEntityService.pack(account, account, {
+				schema: 'MeDetailed',
+				includeSecrets: true,
+			});
 
-				if (ticket) {
-					await this.registrationTicketsRepository.update(ticket.id, {
-						usedAt: new Date(),
-						usedBy: account,
-						usedById: account.id,
-					});
-				}
-
-				return c.json({
-					...res,
-					token: secret,
+			if (ticket) {
+				await this.registrationTicketsRepository.update(ticket.id, {
+					usedAt: new Date(),
+					usedBy: account,
+					usedById: account.id,
 				});
-			} catch (err) {
-				return c.text(typeof err === 'string' ? err : 'UNKNOWN_ERROR', 400);
 			}
+
+			return c.json({
+				...res,
+				token: secret,
+			});
+		} catch (err) {
+			return c.text(typeof err === 'string' ? err : 'UNKNOWN_ERROR', 400);
 		}
 	}
 

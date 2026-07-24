@@ -34,12 +34,12 @@ type PrivateKey = {
 export class ApRequestCreator {
 	static createSignedPost(args: { key: PrivateKey; url: string; body: string; digest?: string; additionalHeaders: Record<string, string> }): Signed {
 		const u = new URL(args.url);
-		const digestHeader = args.digest ?? this.createDigest(args.body);
+		const digestHeader = args.digest ?? ApRequestCreator.createDigest(args.body);
 
 		const request: Request = {
 			url: u.href,
 			method: 'POST',
-			headers: this.#objectAssignWithLcKey({
+			headers: ApRequestCreator.#objectAssignWithLcKey({
 				'Date': new Date().toUTCString(),
 				'Host': u.host,
 				'Content-Type': 'application/activity+json',
@@ -47,7 +47,7 @@ export class ApRequestCreator {
 			}, args.additionalHeaders),
 		};
 
-		const result = this.#signToRequest(request, args.key, ['(request-target)', 'date', 'host', 'digest']);
+		const result = ApRequestCreator.#signToRequest(request, args.key, ['(request-target)', 'date', 'host', 'digest']);
 
 		return {
 			request,
@@ -67,14 +67,14 @@ export class ApRequestCreator {
 		const request: Request = {
 			url: u.href,
 			method: 'GET',
-			headers: this.#objectAssignWithLcKey({
+			headers: ApRequestCreator.#objectAssignWithLcKey({
 				Accept: 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
 				Date: new Date().toUTCString(),
 				Host: new URL(args.url).host,
 			}, args.additionalHeaders),
 		};
 
-		const result = this.#signToRequest(request, args.key, ['(request-target)', 'date', 'host', 'accept']);
+		const result = ApRequestCreator.#signToRequest(request, args.key, ['(request-target)', 'date', 'host', 'accept']);
 
 		return {
 			request,
@@ -85,11 +85,11 @@ export class ApRequestCreator {
 	}
 
 	static #signToRequest(request: Request, key: PrivateKey, includeHeaders: string[]): Signed {
-		const signingString = this.#genSigningString(request, includeHeaders);
+		const signingString = ApRequestCreator.#genSigningString(request, includeHeaders);
 		const signature = crypto.sign('sha256', Buffer.from(signingString), key.privateKeyPem).toString('base64');
 		const signatureHeader = `keyId="${key.keyId}",algorithm="rsa-sha256",headers="${includeHeaders.join(' ')}",signature="${signature}"`;
 
-		request.headers = this.#objectAssignWithLcKey(request.headers, {
+		request.headers = ApRequestCreator.#objectAssignWithLcKey(request.headers, {
 			Signature: signatureHeader,
 		});
 		// node-fetch will generate this for us. if we keep 'Host', it won't change with redirects!
@@ -104,7 +104,7 @@ export class ApRequestCreator {
 	}
 
 	static #genSigningString(request: Request, includeHeaders: string[]): string {
-		request.headers = this.#lcObjectKey(request.headers);
+		request.headers = ApRequestCreator.#lcObjectKey(request.headers);
 
 		const results: string[] = [];
 
@@ -126,7 +126,7 @@ export class ApRequestCreator {
 	}
 
 	static #objectAssignWithLcKey(a: Record<string, string>, b: Record<string, string>): Record<string, string> {
-		return Object.assign(this.#lcObjectKey(a), this.#lcObjectKey(b));
+		return Object.assign(ApRequestCreator.#lcObjectKey(a), ApRequestCreator.#lcObjectKey(b));
 	}
 }
 
