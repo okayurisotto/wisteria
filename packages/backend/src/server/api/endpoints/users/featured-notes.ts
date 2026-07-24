@@ -68,9 +68,7 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			const [
 				userIdsWhoMeMuting,
 			] = me
-				? await Promise.all([
-					this.mutingsRepository.find({ where: { muterId: me.id }, select: ['muteeId'] }).then(xs => new Set(xs.map(x => x.muteeId))),
-				])
+				? [await this.mutingsRepository.find({ where: { muterId: me.id }, select: ['muteeId'] }).then(xs => new Set(xs.map(x => x.muteeId)))]
 				: [new Set<string>()];
 
 			const query = this.notesRepository.createQueryBuilder('note')

@@ -110,15 +110,11 @@ const props = withDefaults(defineProps<{
 
 const graduationsMajor = computed(() => {
 	const times = props.twentyfour ? 24 : 12;
-	return [...new Array<number>(times)].map((_, i) => {
-		return i / times;
-	});
+	return Array.from({ length: times }, (_, i) => i / times);
 });
 const texts = computed(() => {
 	const times = props.twentyfour ? 24 : 12;
-	return [...new Array<number>(times)].map((_, i) => {
-		return i / times;
-	});
+	return Array.from({ length: times }, (_, i) => i / times);
 });
 
 const gradient = computed(() => colorScheme.value === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)');

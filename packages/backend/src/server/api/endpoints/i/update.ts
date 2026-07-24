@@ -127,7 +127,7 @@ export const paramDef = z.object({
 	description: DescriptionSchema.nullable().optional(),
 	location: LocationSchema.nullable().optional(),
 	birthday: BirthdaySchema.nullable().optional(),
-	lang: z.enum([...Object.keys(langmap)]).nullable().optional(),
+	lang: z.enum(Object.keys(langmap)).nullable().optional(),
 	avatarId: IdSchema.nullable().optional(),
 	avatarDecorations: z.object({
 		id: IdSchema,

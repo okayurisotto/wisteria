@@ -47,10 +47,10 @@ export const generate = (
 	context.fillStyle = '#ffffff';
 
 	/** side bitmap */
-	const side = [...new Array(sideN * opts.pixels)].map(() => random(3) === 0);
+	const side = Array.from({ length: sideN * opts.pixels }, () => random(3) === 0);
 
 	/** center bitmap */
-	const center = [...new Array(opts.pixels)].map(() => random(3) === 0);
+	const center = Array.from({ length: opts.pixels }, () => random(3) === 0);
 
 	// Draw
 	for (let i = 0; i < opts.pixels ** 2; i++) {
