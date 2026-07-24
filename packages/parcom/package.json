@@ -3,8 +3,8 @@
 	"type": "module",
 	"license": "MIT",
 	"exports": {
-		"import": "./built/index.js",
-		"types": "./src/index.ts"
+		"types": "./built/index.d.ts",
+		"import": "./built/index.js"
 	},
 	"scripts": {
 		"build": "tsdown",
