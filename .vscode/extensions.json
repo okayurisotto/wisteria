@@ -1,9 +1,7 @@
 {
 	"recommendations": [
+		"biomejs.biome",
 		"editorconfig.editorconfig",
 		"Vue.volar",
-		"Vue.vscode-typescript-vue-plugin",
-		"Orta.vscode-jest",
-		"mrmlnc.vscode-json5"
 	]
 }
