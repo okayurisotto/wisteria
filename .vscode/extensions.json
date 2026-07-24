@@ -3,5 +3,6 @@
 		"biomejs.biome",
 		"editorconfig.editorconfig",
 		"Vue.volar",
+		"oxc.oxc-vscode",
 	]
 }
