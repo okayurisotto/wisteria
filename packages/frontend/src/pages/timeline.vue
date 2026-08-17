@@ -12,7 +12,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<MkPullToRefresh :refresher="reloadTimeline">
 			<div ref="timeline" :class="$style.timeline">
 				<div ref="timelineTopMarker"></div>
-				<MkNote :class="$style.timelineItem" v-for="note of notes" :key="note.id" :note="note" :withHardMute="true"/>
+				<MkNote :class="$style.timelineItem" v-for="note of filteredNotes" :key="note.id" :note="note" :withHardMute="true"/>
 				<div ref="timelineBottomMarker" :class="$style.timelineBottomMarker"></div>
 			</div>
 		</MkPullToRefresh>
@@ -42,11 +42,53 @@ definePageMetadata(() => ({
 
 const notes = ref<MisskeyJS.entities.Note[]>([]);
 const queue = ref<MisskeyJS.entities.Note[]>([]);
+const filteredNotes = computed(() => filterNotes(notes.value));
 const oldestNoteId = computed(() => notes.value[notes.value.length - 1]?.id);
 const isTop = ref(true);
 const timeline = useTemplateRef('timeline');
 const timelineTopMarker = useTemplateRef('timelineTopMarker');
 const timelineBottomMarker = useTemplateRef('timelineBottomMarker');
+
+const sleep = (ms: number) => {
+	return new Promise<void>((resolve) => {
+		setTimeout(() => {
+			resolve();
+		}, ms);
+	});
+};
+
+const filterNotes = (notes: MisskeyJS.entities.Note[]): MisskeyJS.entities.Note[] => {
+	return notes.filter((note) => !checkMute(note, $i?.hardMutedWords));
+};
+
+/**
+ * 指定された数以上のノートを取得しようとする。
+ */
+const fetchNotes = async (min: number, untilId?: string | null | undefined) => {
+	const notes: MisskeyJS.entities.Note[] = [];
+	let oldestNoteId = untilId ?? undefined;
+	let filteredNoteCount = 0;
+
+	let first = true;
+
+	while (filteredNoteCount < min) {
+		if (first) {
+			first = false;
+		} else {
+			await sleep(100);
+		}
+
+		const fetchedNotes = await misskeyApi('notes/timeline', { limit: 10, untilId: oldestNoteId });
+
+		if (fetchedNotes.length === 0) break;
+
+		notes.push(...fetchedNotes);
+		filteredNoteCount += filterNotes(fetchedNotes).length;
+		oldestNoteId = fetchedNotes[fetchedNotes.length - 1]?.id;
+	}
+
+	return notes;
+};
 
 const isScrollContainer = (e: Element): boolean => {
 	const style = getComputedStyle(e);
@@ -73,8 +115,7 @@ const scrollToTop = (): void => {
 };
 
 const reloadTimeline = async () => {
-	notes.value = (await misskeyApi('notes/timeline', { limit: 10 }))
-		.filter((note) => !checkMute(note, $i?.hardMutedWords));
+	notes.value = await fetchNotes(10);
 };
 
 let stream: MisskeyJS.Stream;
@@ -120,8 +161,7 @@ useIntersectionObserver([timelineTopMarker, timelineBottomMarker], async (entrie
 		if (entry.target === timelineBottomMarker.value) {
 			if (entry.isIntersecting) {
 				if (oldestNoteId.value !== undefined) {
-					const prevNotes = (await misskeyApi('notes/timeline', { limit: 10, untilId: oldestNoteId.value }))
-						.filter((note) => !checkMute(note, $i?.hardMutedWords));
+					const prevNotes = await fetchNotes(10, oldestNoteId.value);
 					notes.value = [...notes.value, ...prevNotes];
 				}
 			}
@@ -130,8 +170,7 @@ useIntersectionObserver([timelineTopMarker, timelineBottomMarker], async (entrie
 });
 
 onMounted(async () => {
-	notes.value = (await misskeyApi('notes/timeline', { limit: 10 }))
-		.filter((note) => !checkMute(note, $i?.hardMutedWords));
+	notes.value = await fetchNotes(10);
 
 	stream = useStream();
 
@@ -147,12 +186,12 @@ onMounted(async () => {
 
 	connection.on('note', (note) => {
 		const hardMuted = checkMute(note, $i?.hardMutedWords);
-		if (hardMuted) return;
-
-		if ($i?.id === note.userId) {
-			playMisskeySfx('noteMy');
-		} else {
-			playMisskeySfx('note');
+		if (!hardMuted) {
+			if ($i?.id === note.userId) {
+				playMisskeySfx('noteMy');
+			} else {
+				playMisskeySfx('note');
+			}
 		}
 
 		if (isTop.value) {
