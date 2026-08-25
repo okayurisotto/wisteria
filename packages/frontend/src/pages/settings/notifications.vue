@@ -104,7 +104,7 @@ function onChangeSendReadMessage(v: boolean) {
 		endpoint: pushRegistrationInServer.value.endpoint,
 		sendReadMessage: v,
 	}).then(res => {
-		if (!allowButton.value)	return;
+		if (!allowButton.value) return;
 		allowButton.value.pushRegistrationInServer = res;
 	});
 }
