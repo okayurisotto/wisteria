@@ -53,6 +53,11 @@ const props = defineProps<{
 	gap: 0.5em;
 }
 
+.name,
+.acct {
+	min-width: 4em;
+}
+
 .name {
 	display: block;
 	font-size: 1em;
@@ -71,6 +76,8 @@ const props = defineProps<{
 
 .acct {
 	display: block;
+	flex-basis: 0;
+	flex-grow: 1;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
