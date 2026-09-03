@@ -12,6 +12,7 @@
 		"watch": "tsdown --watch"
 	},
 	"devDependencies": {
+		"@types/node": "24.10.13",
 		"tsdown": "0.22.7"
 	}
 }
