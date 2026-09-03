@@ -45,7 +45,7 @@
 	"devDependencies": {
 		"@misskey-dev/summaly": "5.2.5",
 		"@types/estree": "1.0.8",
-		"@types/node": "24.10.13",
+		"@types/node": "26.4.0",
 		"@types/punycode": "2.1.4",
 		"@types/sanitize-html": "2.13.0",
 		"@types/tinycolor2": "1.4.6",

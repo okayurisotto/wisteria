@@ -16,7 +16,7 @@
 		"watch": "tsdown --watch"
 	},
 	"devDependencies": {
-		"@types/node": "24.10.13",
+		"@types/node": "26.4.0",
 		"@types/random-seed": "0.3.5",
 		"tsdown": "0.22.7",
 		"typescript": "6.0.3"

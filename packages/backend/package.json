@@ -113,7 +113,7 @@
 		"@types/fluent-ffmpeg": "2.1.28",
 		"@types/jsonld": "1.5.15",
 		"@types/mime-types": "3.0.1",
-		"@types/node": "24.10.13",
+		"@types/node": "26.4.0",
 		"@types/pg": "8.18.0",
 		"@types/pug": "2.0.10",
 		"@types/punycode": "2.1.4",

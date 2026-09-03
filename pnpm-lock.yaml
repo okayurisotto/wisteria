@@ -289,8 +289,8 @@ importers:
         specifier: 3.0.1
         version: 3.0.1
       '@types/node':
-        specifier: 24.10.13
-        version: 24.10.13
+        specifier: 26.4.0
+        version: 26.4.0
       '@types/pg':
         specifier: 8.18.0
         version: 8.18.0
@@ -483,8 +483,8 @@ importers:
         specifier: 1.0.8
         version: 1.0.8
       '@types/node':
-        specifier: 24.10.13
-        version: 24.10.13
+        specifier: 26.4.0
+        version: 26.4.0
       '@types/punycode':
         specifier: 2.1.4
         version: 2.1.4
@@ -496,7 +496,7 @@ importers:
         version: 1.4.6
       '@vitejs/plugin-vue':
         specifier: 6.0.4
-        version: 6.0.4(vite@7.3.5(@types/node@24.10.13)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))(vue@3.5.28(typescript@6.0.3))
+        version: 6.0.4(vite@7.3.5(@types/node@26.4.0)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))(vue@3.5.28(typescript@6.0.3))
       '@vue/runtime-core':
         specifier: 3.5.30
         version: 3.5.30
@@ -523,10 +523,10 @@ importers:
         version: 6.0.3
       vite:
         specifier: 7.3.5
-        version: 7.3.5(@types/node@24.10.13)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)
+        version: 7.3.5(@types/node@26.4.0)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)
       vitest:
         specifier: 4.1.9
-        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@24.10.13)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@7.3.5(@types/node@24.10.13)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
+        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@7.3.5(@types/node@26.4.0)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
       vue-component-type-helpers:
         specifier: 3.2.5
         version: 3.2.5
@@ -544,8 +544,8 @@ importers:
         version: 4.1.0
     devDependencies:
       '@types/node':
-        specifier: 24.10.13
-        version: 24.10.13
+        specifier: 26.4.0
+        version: 26.4.0
       tsdown:
         specifier: 0.22.7
         version: 0.22.7(@volar/typescript@2.4.28(typescript@6.0.3))(typescript@6.0.3)(vue-tsc@3.2.5(typescript@6.0.3))
@@ -560,8 +560,8 @@ importers:
         version: 1.18.0
     devDependencies:
       '@types/node':
-        specifier: 24.10.13
-        version: 24.10.13
+        specifier: 26.4.0
+        version: 26.4.0
       '@types/sshpk':
         specifier: 1.17.4
         version: 1.17.4
@@ -570,7 +570,7 @@ importers:
         version: 0.22.7(@volar/typescript@2.4.28(typescript@6.0.3))(typescript@6.0.3)(vue-tsc@3.2.5(typescript@6.0.3))
       vitest:
         specifier: 4.1.9
-        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@24.10.13)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@8.1.0(@types/node@24.10.13)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
+        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@8.1.0(@types/node@26.4.0)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
 
   packages/identicon-generator:
     dependencies:
@@ -582,8 +582,8 @@ importers:
         version: 0.3.0
     devDependencies:
       '@types/node':
-        specifier: 24.10.13
-        version: 24.10.13
+        specifier: 26.4.0
+        version: 26.4.0
       '@types/random-seed':
         specifier: 0.3.5
         version: 0.3.5
@@ -597,8 +597,8 @@ importers:
   packages/locales:
     devDependencies:
       '@types/node':
-        specifier: 24.10.13
-        version: 24.10.13
+        specifier: 26.4.0
+        version: 26.4.0
       tsdown:
         specifier: 0.22.7
         version: 0.22.7(@volar/typescript@2.4.28(typescript@6.0.3))(typescript@6.0.3)(vue-tsc@3.2.5(typescript@6.0.3))
@@ -613,8 +613,8 @@ importers:
         version: 4.4.0
     devDependencies:
       '@types/node':
-        specifier: 24.10.13
-        version: 24.10.13
+        specifier: 26.4.0
+        version: 26.4.0
       openapi-typescript:
         specifier: 6.7.6
         version: 6.7.6
@@ -628,8 +628,8 @@ importers:
   packages/parcom:
     devDependencies:
       '@types/node':
-        specifier: 24.10.13
-        version: 24.10.13
+        specifier: 26.4.0
+        version: 26.4.0
       tsdown:
         specifier: 0.22.7
         version: 0.22.7(@volar/typescript@2.4.28(typescript@6.0.3))(typescript@6.0.3)(vue-tsc@3.2.5(typescript@6.0.3))
@@ -638,7 +638,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: 4.1.9
-        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@24.10.13)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@8.1.0(@types/node@24.10.13)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
+        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@8.1.0(@types/node@26.4.0)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
 
   packages/redis-lock:
     dependencies:
@@ -647,8 +647,8 @@ importers:
         version: 5.3.2(supports-color@9.4.0)
     devDependencies:
       '@types/node':
-        specifier: 24.10.13
-        version: 24.10.13
+        specifier: 26.4.0
+        version: 26.4.0
       tsdown:
         specifier: 0.22.7
         version: 0.22.7(@volar/typescript@2.4.28(typescript@6.0.3))(typescript@6.0.3)(vue-tsc@3.2.5(typescript@6.0.3))
@@ -657,7 +657,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: 4.1.9
-        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@24.10.13)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@8.1.0(@types/node@24.10.13)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
+        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@8.1.0(@types/node@26.4.0)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
 
   packages/sw:
     dependencies:
@@ -669,8 +669,8 @@ importers:
         version: link:../misskey-js
     devDependencies:
       '@types/node':
-        specifier: 24.10.13
-        version: 24.10.13
+        specifier: 26.4.0
+        version: 26.4.0
       '@types/serviceworker':
         specifier: 0.0.191
         version: 0.0.191
@@ -691,14 +691,14 @@ importers:
         version: 4.3.6
     devDependencies:
       '@types/node':
-        specifier: 24.10.13
-        version: 24.10.13
+        specifier: 26.4.0
+        version: 26.4.0
       tsdown:
         specifier: 0.22.7
         version: 0.22.7(@volar/typescript@2.4.28(typescript@6.0.3))(typescript@6.0.3)(vue-tsc@3.2.5(typescript@6.0.3))
       vitest:
         specifier: 4.1.9
-        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@24.10.13)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@8.1.0(@types/node@24.10.13)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
+        version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@8.1.0(@types/node@26.4.0)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
 
 packages:
 
@@ -2347,8 +2347,8 @@ packages:
   '@types/mime-types@3.0.1':
     resolution: {integrity: sha512-xRMsfuQbnRq1Ef+C+RKaENOxXX87Ygl38W1vDfPHRku02TgQr+Qd8iivLtAMcR0KF5/29xlnFihkTlbqFrGOVQ==}
 
-  '@types/node@24.10.13':
-    resolution: {integrity: sha512-oH72nZRfDv9lADUBSo104Aq7gPHpQZc4BTx38r9xf9pg5LfP6EzSyH2n7qFmmxRQXh7YlUXODcYsg6PuTDSxGg==}
+  '@types/node@26.4.0':
+    resolution: {integrity: sha512-faiGnoIrLH/V8cibOMEAZ8pMw6oXqSukl29ra4mN8GdaB2ZewzeaLj+INpV5N+Z1eKWzY+IzaIZH2EIR6YZRNQ==}
 
   '@types/pg@8.18.0':
     resolution: {integrity: sha512-gT+oueVQkqnj6ajGJXblFR4iavIXWsGAFCk3dP4Kki5+a9R4NMt0JARdk6s8cUKcfUoqP5dAtDSLU8xYUTFV+Q==}
@@ -5206,8 +5206,8 @@ packages:
   unconfig-core@7.5.0:
     resolution: {integrity: sha512-Su3FauozOGP44ZmKdHy2oE6LPjk51M/TRRjHv2HNCWiDvfvCoxC2lno6jevMA91MYAdCdwP05QnWdWpSbncX/w==}
 
-  undici-types@7.16.0:
-    resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
+  undici-types@8.3.0:
+    resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==}
 
   undici@5.29.0:
     resolution: {integrity: sha512-raqeBD6NQK4SkWhQzeYKd1KmIG6dllBOTt55Rmkt4HtI9mwdWtJljnrXjAFUBLTSN67HWrOIZ3EPF4kjUw80Bg==}
@@ -7083,7 +7083,7 @@ snapshots:
 
   '@types/accepts@1.3.7':
     dependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
 
   '@types/archiver@7.0.0':
     dependencies:
@@ -7091,7 +7091,7 @@ snapshots:
 
   '@types/asn1@0.2.4':
     dependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
 
   '@types/chai@5.2.3':
     dependencies:
@@ -7110,7 +7110,7 @@ snapshots:
 
   '@types/fluent-ffmpeg@2.1.28':
     dependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
 
   '@types/hast@3.0.5':
     dependencies:
@@ -7120,7 +7120,7 @@ snapshots:
 
   '@types/ignore-walk@4.0.3':
     dependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
 
   '@types/jsonld@1.5.15': {}
 
@@ -7130,13 +7130,13 @@ snapshots:
 
   '@types/mime-types@3.0.1': {}
 
-  '@types/node@24.10.13':
+  '@types/node@26.4.0':
     dependencies:
-      undici-types: 7.16.0
+      undici-types: 8.3.0
 
   '@types/pg@8.18.0':
     dependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
       pg-protocol: 1.16.0
       pg-types: 2.2.0
 
@@ -7146,7 +7146,7 @@ snapshots:
 
   '@types/qrcode@1.5.6':
     dependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
 
   '@types/random-seed@0.3.5': {}
 
@@ -7154,7 +7154,7 @@ snapshots:
 
   '@types/readdir-glob@1.1.5':
     dependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
 
   '@types/rename@1.0.7': {}
 
@@ -7167,7 +7167,7 @@ snapshots:
   '@types/sshpk@1.17.4':
     dependencies:
       '@types/asn1': 0.2.4
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
 
   '@types/tinycolor2@1.4.6': {}
 
@@ -7177,26 +7177,26 @@ snapshots:
 
   '@types/vary@1.1.3':
     dependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
 
   '@types/web-bluetooth@0.0.21': {}
 
   '@types/web-push@3.6.4':
     dependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
 
   '@types/whatwg-mimetype@3.0.2': {}
 
   '@types/ws@8.18.1':
     dependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
 
   '@ungap/structured-clone@1.3.3': {}
 
-  '@vitejs/plugin-vue@6.0.4(vite@7.3.5(@types/node@24.10.13)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))(vue@3.5.28(typescript@6.0.3))':
+  '@vitejs/plugin-vue@6.0.4(vite@7.3.5(@types/node@26.4.0)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))(vue@3.5.28(typescript@6.0.3))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-rc.2
-      vite: 7.3.5(@types/node@24.10.13)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@26.4.0)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)
       vue: 3.5.28(typescript@6.0.3)
 
   '@vitest/expect@4.1.9':
@@ -7208,21 +7208,21 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.1
 
-  '@vitest/mocker@4.1.9(vite@7.3.5(@types/node@24.10.13)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))':
+  '@vitest/mocker@4.1.9(vite@7.3.5(@types/node@26.4.0)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.9
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 7.3.5(@types/node@24.10.13)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@26.4.0)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)
 
-  '@vitest/mocker@4.1.9(vite@8.1.0(@types/node@24.10.13)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))':
+  '@vitest/mocker@4.1.9(vite@8.1.0(@types/node@26.4.0)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.9
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.1.0(@types/node@24.10.13)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)
+      vite: 8.1.0(@types/node@26.4.0)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)
 
   '@vitest/pretty-format@4.1.9':
     dependencies:
@@ -7636,7 +7636,7 @@ snapshots:
 
   buffer-image-size@0.6.4:
     dependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
 
   buffer@5.6.0:
     dependencies:
@@ -8355,7 +8355,7 @@ snapshots:
 
   happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6):
     dependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
       '@types/whatwg-mimetype': 3.0.2
       '@types/ws': 8.18.1
       buffer-image-size: 0.6.4
@@ -10057,7 +10057,7 @@ snapshots:
       '@quansync/fs': 1.0.0
       quansync: 1.0.0
 
-  undici-types@7.16.0: {}
+  undici-types@8.3.0: {}
 
   undici@5.29.0:
     dependencies:
@@ -10131,7 +10131,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vite@7.3.5(@types/node@24.10.13)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0):
+  vite@7.3.5(@types/node@26.4.0)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0):
     dependencies:
       esbuild: 0.27.7
       fdir: 6.5.0(picomatch@4.0.5)
@@ -10140,14 +10140,14 @@ snapshots:
       rollup: 4.62.4
       tinyglobby: 0.2.17
     optionalDependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
       fsevents: 2.3.3
       lightningcss: 1.32.0
       sass: 1.90.0
       terser: 5.43.1
       yaml: 2.9.0
 
-  vite@8.1.0(@types/node@24.10.13)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0):
+  vite@8.1.0(@types/node@26.4.0)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.5
@@ -10155,17 +10155,17 @@ snapshots:
       rolldown: 1.1.5
       tinyglobby: 0.2.17
     optionalDependencies:
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
       esbuild: 0.27.7
       fsevents: 2.3.3
       sass: 1.90.0
       terser: 5.43.1
       yaml: 2.9.0
 
-  vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@24.10.13)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@7.3.5(@types/node@24.10.13)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)):
+  vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@7.3.5(@types/node@26.4.0)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.9
-      '@vitest/mocker': 4.1.9(vite@7.3.5(@types/node@24.10.13)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
+      '@vitest/mocker': 4.1.9(vite@7.3.5(@types/node@26.4.0)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.9
       '@vitest/runner': 4.1.9
       '@vitest/snapshot': 4.1.9
@@ -10182,20 +10182,20 @@ snapshots:
       tinyexec: 1.3.0
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.1
-      vite: 7.3.5(@types/node@24.10.13)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@26.4.0)(lightningcss@1.32.0)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
       happy-dom: 20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6)
       jsdom: 27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - msw
 
-  vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@24.10.13)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@8.1.0(@types/node@24.10.13)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)):
+  vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(jsdom@27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6))(vite@8.1.0(@types/node@26.4.0)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.9
-      '@vitest/mocker': 4.1.9(vite@8.1.0(@types/node@24.10.13)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
+      '@vitest/mocker': 4.1.9(vite@8.1.0(@types/node@26.4.0)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.9
       '@vitest/runner': 4.1.9
       '@vitest/snapshot': 4.1.9
@@ -10212,11 +10212,11 @@ snapshots:
       tinyexec: 1.3.0
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.1
-      vite: 8.1.0(@types/node@24.10.13)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)
+      vite: 8.1.0(@types/node@26.4.0)(esbuild@0.27.7)(sass@1.90.0)(terser@5.43.1)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
-      '@types/node': 24.10.13
+      '@types/node': 26.4.0
       happy-dom: 20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6)
       jsdom: 27.0.1(bufferutil@4.0.9)(supports-color@9.4.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
