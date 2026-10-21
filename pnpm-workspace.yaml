@@ -13,3 +13,6 @@ allowBuilds:
   utf-8-validate: true
   v-code-diff: true
   vue-demi: true
+
+overrides:
+  rollup: "4.62.4"
