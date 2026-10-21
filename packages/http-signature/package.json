@@ -24,9 +24,9 @@
 		"sshpk": "1.18.0"
 	},
 	"devDependencies": {
-		"@types/node": "26.4.0",
+		"@types/node": "26.6.5",
 		"@types/sshpk": "1.17.4",
-		"tsdown": "0.22.7",
+		"tsdown": "0.23.1",
 		"vitest": "4.1.9"
 	}
 }
