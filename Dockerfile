@@ -10,7 +10,7 @@ FROM --platform=$TARGETPLATFORM node:${IMAGE_TAG} AS fetcher
 
 ENV COREPACK_INTEGRITY_KEYS=0
 
-RUN corepack enable
+RUN npm install -g pnpm
 
 WORKDIR /misskey
 
@@ -87,7 +87,7 @@ RUN \
 	&& ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists \
-	&& corepack enable
+	&& npm install -g pnpm
 
 COPY --link --from=installer /misskey /misskey
 
