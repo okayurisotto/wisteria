@@ -23,6 +23,7 @@ void Promise.all([
 
 	rm(resolve(import.meta.dirname, '../.turbo'), { recursive: true, force: true }),
 
+	rm(resolve(import.meta.dirname, '../.turbo'), { recursive: true, force: true }),
 	rm(resolve(import.meta.dirname, '../packages/backend/.turbo'), { recursive: true, force: true }),
 	rm(resolve(import.meta.dirname, '../packages/frontend/.turbo'), { recursive: true, force: true }),
 	rm(resolve(import.meta.dirname, '../packages/hono-serve-static/.turbo'), { recursive: true, force: true }),
