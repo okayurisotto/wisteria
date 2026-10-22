@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.4
 
-ARG IMAGE_TAG=26.12.1-bullseye
+ARG IMAGE_TAG=26.12.1-trixie
 
 # ----------------------------------------------------------
 # Fetch dependencies
