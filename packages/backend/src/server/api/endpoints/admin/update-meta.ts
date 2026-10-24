@@ -44,7 +44,6 @@ export const paramDef = z.object({
 	defaultDarkTheme: z.string().nullable().optional(),
 	cacheRemoteFiles: z.boolean().optional(),
 	cacheRemoteSensitiveFiles: z.boolean().optional(),
-	emailRequiredForSignup: z.boolean().optional(),
 	enableHcaptcha: z.boolean().optional(),
 	hcaptchaSiteKey: z.string().nullable().optional(),
 	hcaptchaSecretKey: z.string().nullable().optional(),

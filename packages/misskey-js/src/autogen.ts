@@ -3500,7 +3500,6 @@ export interface operations {
           "application/json": {
             cacheRemoteFiles?: boolean;
             cacheRemoteSensitiveFiles?: boolean;
-            emailRequiredForSignup?: boolean;
             enableHcaptcha?: boolean;
             hcaptchaSiteKey?: string | null;
             enableMcaptcha?: boolean;
@@ -6793,7 +6792,6 @@ export interface operations {
           defaultDarkTheme?: string | null;
           cacheRemoteFiles?: boolean;
           cacheRemoteSensitiveFiles?: boolean;
-          emailRequiredForSignup?: boolean;
           enableHcaptcha?: boolean;
           hcaptchaSiteKey?: string | null;
           hcaptchaSecretKey?: string | null;
@@ -15083,7 +15081,6 @@ export interface operations {
             disableRegistration: boolean;
             cacheRemoteFiles?: boolean;
             cacheRemoteSensitiveFiles?: boolean;
-            emailRequiredForSignup: boolean;
             enableHcaptcha: boolean;
             hcaptchaSiteKey: string | null;
             enableMcaptcha: boolean;
@@ -15125,7 +15122,6 @@ export interface operations {
               objectStorage: boolean;
               serviceWorker: boolean;
               miauth: boolean;
-              emailRequiredForSignup: boolean;
               turnstile: boolean;
               [key: string]: unknown;
             };

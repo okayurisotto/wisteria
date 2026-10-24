@@ -22,7 +22,6 @@ export const meta = {
 	res: z.object({
 		cacheRemoteFiles: z.boolean().optional(),
 		cacheRemoteSensitiveFiles: z.boolean().optional(),
-		emailRequiredForSignup: z.boolean().optional(),
 		enableHcaptcha: z.boolean().optional(),
 		hcaptchaSiteKey: z.string().nullable().optional(),
 		enableMcaptcha: z.boolean().optional(),
@@ -136,7 +135,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				impressumUrl: instance.impressumUrl,
 				privacyPolicyUrl: instance.privacyPolicyUrl,
 				disableRegistration: instance.disableRegistration,
-				emailRequiredForSignup: false,
 				enableHcaptcha: instance.enableHcaptcha,
 				hcaptchaSiteKey: instance.hcaptchaSiteKey,
 				enableMcaptcha: instance.enableMcaptcha,
