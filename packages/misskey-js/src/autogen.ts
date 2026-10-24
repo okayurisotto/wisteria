@@ -2953,7 +2953,6 @@ export interface components {
       mutedWords: string[][];
       hardMutedWords: string[][];
       mutedInstances: string[] | null;
-      emailNotificationTypes: string[];
       loggedInDays: number;
       policies: components["schemas"]["RolePolicies"];
       email?: string | null;
@@ -3856,7 +3855,6 @@ export interface operations {
             mutedWords: string[][];
             hardMutedWords: string[][];
             mutedInstances: string[] | null;
-            emailNotificationTypes: string[];
             loggedInDays: number;
             policies: components["schemas"]["RolePolicies"];
             email?: string | null;
@@ -14426,7 +14424,6 @@ export interface operations {
             test?: components["schemas"]["NotificationRecieveConfig"];
             [key: string]: unknown;
           };
-          emailNotificationTypes?: string[];
           alsoKnownAs?: string[];
           [key: string]: unknown;
         };

@@ -377,7 +377,6 @@ export class UserEntityService {
 				mutedInstances: profile.mutedInstances,
 				mutingNotificationTypes: [], // 後方互換性のため
 				notificationRecieveConfig: profile.notificationRecieveConfig,
-				emailNotificationTypes: profile.emailNotificationTypes,
 				loggedInDays: profile.loggedInDates.length,
 				policies: this.roleUserService.getUserPolicies(user.id),
 			} : {}),

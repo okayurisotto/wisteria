@@ -118,7 +118,6 @@ export const MeDetailedOnlySchema = z
 		mutedWords: z.string().array().array(),
 		hardMutedWords: z.string().array().array(),
 		mutedInstances: z.string().array().nullable(),
-		emailNotificationTypes: z.string().array(),
 		loggedInDays: z.number(),
 		policies: RolePoliciesSchema,
 		email: z.string().nullable().optional(),

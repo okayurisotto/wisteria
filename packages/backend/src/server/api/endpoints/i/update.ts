@@ -171,7 +171,6 @@ export const paramDef = z.object({
 		app: NotificationRecieveConfig,
 		test: NotificationRecieveConfig,
 	}).partial().optional(),
-	emailNotificationTypes: z.string().array().optional(),
 	alsoKnownAs: z.string().array().max(10).refine(v => new Set(v).size === v.length).optional(),
 });
 
@@ -272,7 +271,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				profileUpdates.alwaysMarkNsfw = ps.alwaysMarkNsfw;
 			}
 			if (typeof ps.autoSensitive === 'boolean') profileUpdates.autoSensitive = ps.autoSensitive;
-			if (ps.emailNotificationTypes !== undefined) profileUpdates.emailNotificationTypes = ps.emailNotificationTypes;
 
 			if (ps.avatarId) {
 				const avatar = await this.driveFilesRepository.findOneBy({ id: ps.avatarId });
