@@ -182,9 +182,6 @@ const routes: RouteDef[] = [{
 		component: page(() => import('@/pages/_empty_.vue')),
 	}],
 }, {
-	path: parsePath('/signup-complete/:code'),
-	component: page(() => import('@/pages/signup-complete.vue')),
-}, {
 	path: parsePath('/about'),
 	component: page(() => import('@/pages/about.vue')),
 	hash: 'initialTab',

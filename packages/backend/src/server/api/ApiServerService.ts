@@ -92,10 +92,6 @@ export class ApiServerService {
 			return await this.signinApiService.signin(c);
 		});
 
-		hono.post('/signup-pending', bodyLimit({ maxSize: 1024 * 1024 }), async (c) => {
-			return await this.signupApiService.signupPending(c);
-		});
-
 		hono.get('/v1/instance/peers', async (c) => {
 			const instances = await this.instancesRepository.find({
 				select: ['host'],

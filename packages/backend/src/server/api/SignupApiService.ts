@@ -5,14 +5,11 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
-import type { RegistrationTicketsRepository, UserPendingsRepository, UserProfilesRepository, MiRegistrationTicket } from '@/models/_.js';
+import type { RegistrationTicketsRepository, MiRegistrationTicket } from '@/models/_.js';
 import { MetaService } from '@/core/MetaService.js';
 import { CaptchaService } from '@/core/CaptchaService.js';
-import { IdService } from '@/core/IdService.js';
 import { SignupService } from '@/core/SignupService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import type { MiLocalUser } from '@/models/User.js';
-import { SigninService } from './SigninService.js';
 import { envOption } from '@/env.js';
 import type { Context } from 'hono';
 import { z } from 'zod';
@@ -20,21 +17,13 @@ import { z } from 'zod';
 @Injectable()
 export class SignupApiService {
 	constructor(
-		@Inject(DI.userProfilesRepository)
-		private readonly userProfilesRepository: UserProfilesRepository,
-
-		@Inject(DI.userPendingsRepository)
-		private readonly userPendingsRepository: UserPendingsRepository,
-
 		@Inject(DI.registrationTicketsRepository)
 		private readonly registrationTicketsRepository: RegistrationTicketsRepository,
 
 		private readonly userEntityService: UserEntityService,
-		private readonly idService: IdService,
 		private readonly metaService: MetaService,
 		private readonly captchaService: CaptchaService,
 		private readonly signupService: SignupService,
-		private readonly signinService: SigninService,
 	) {}
 
 	public async signup(c: Context): Promise<Response> {
@@ -134,49 +123,6 @@ export class SignupApiService {
 				...res,
 				token: secret,
 			});
-		} catch (err) {
-			return c.text(typeof err === 'string' ? err : 'UNKNOWN_ERROR', 400);
-		}
-	}
-
-	public async signupPending(c: Context): Promise<Response> {
-		const body = z.object({ code: z.string() }).safeParse(await c.req.json()).data;
-		if (body === undefined) return c.text('UNKNOWN_ERROR', 400);
-
-		try {
-			const pendingUser = await this.userPendingsRepository.findOneByOrFail({ code: body.code });
-
-			if (this.idService.parse(pendingUser.id).date.getTime() + (1000 * 60 * 30) < Date.now()) {
-				return c.text('EXPIRED', 400);
-			}
-
-			const { account } = await this.signupService.signup({
-				username: pendingUser.username,
-				passwordHash: pendingUser.password,
-			});
-
-			await this.userPendingsRepository.delete({
-				id: pendingUser.id,
-			});
-
-			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: account.id });
-
-			await this.userProfilesRepository.update({ userId: profile.userId }, {
-				email: pendingUser.email,
-				emailVerified: true,
-				emailVerifyCode: null,
-			});
-
-			const ticket = await this.registrationTicketsRepository.findOneBy({ pendingUserId: pendingUser.id });
-			if (ticket) {
-				await this.registrationTicketsRepository.update(ticket.id, {
-					usedBy: account,
-					usedById: account.id,
-					pendingUserId: null,
-				});
-			}
-
-			return this.signinService.signin(c, account as MiLocalUser);
 		} catch (err) {
 			return c.text(typeof err === 'string' ? err : 'UNKNOWN_ERROR', 400);
 		}
