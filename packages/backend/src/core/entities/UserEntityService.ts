@@ -383,8 +383,6 @@ export class UserEntityService {
 
 			...(opts.includeSecrets
 				? {
-						email: profile.email,
-						emailVerified: profile.emailVerified,
 						securityKeysList: profile.twoFactorEnabled
 							? this.userSecurityKeysRepository.find({
 								where: {

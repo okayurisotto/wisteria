@@ -39,10 +39,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #key>{{ i18n.ts.lastActiveDate }}</template>
 						<template #value><span class="_monospace"><MkTime :time="info.lastActiveDate" :mode="'detail'"/></span></template>
 					</MkKeyValue>
-					<MkKeyValue v-if="info" oneline>
-						<template #key>{{ i18n.ts.email }}</template>
-						<template #value><span class="_monospace">{{ info.email }}</span></template>
-					</MkKeyValue>
 				</div>
 
 				<MkTextarea v-model="moderationNote" manualSave>

@@ -2955,8 +2955,6 @@ export interface components {
       mutedInstances: string[] | null;
       loggedInDays: number;
       policies: components["schemas"]["RolePolicies"];
-      email?: string | null;
-      emailVerified?: boolean | null;
       securityKeysList?: {
           id: components["schemas"]["Id"];
           name: string;
@@ -3849,8 +3847,6 @@ export interface operations {
             mutedInstances: string[] | null;
             loggedInDays: number;
             policies: components["schemas"]["RolePolicies"];
-            email?: string | null;
-            emailVerified?: boolean | null;
             securityKeysList?: {
                 id: components["schemas"]["Id"];
                 name: string;
@@ -6501,8 +6497,6 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            email?: string | null;
-            emailVerified?: boolean;
             autoAcceptFollowed?: boolean;
             noCrawle?: boolean;
             alwaysMarkNsfw?: boolean;

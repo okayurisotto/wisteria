@@ -120,8 +120,6 @@ export const MeDetailedOnlySchema = z
 		mutedInstances: z.string().array().nullable(),
 		loggedInDays: z.number(),
 		policies: RolePoliciesSchema,
-		email: z.string().nullable().optional(),
-		emailVerified: z.boolean().nullable().optional(),
 		securityKeysList: z
 			.object({
 				id: IdSchema,

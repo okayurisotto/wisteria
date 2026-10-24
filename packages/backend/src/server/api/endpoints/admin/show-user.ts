@@ -24,8 +24,6 @@ export const meta = {
 	kind: 'read:admin:show-user',
 
 	res: z.object({
-		email: z.string().nullable(),
-		emailVerified: z.boolean(),
 		autoAcceptFollowed: z.boolean(),
 		noCrawle: z.boolean(),
 		alwaysMarkNsfw: z.boolean(),
@@ -110,8 +108,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			const roles = await this.roleUserService.getUserRoles(user.id);
 
 			return {
-				email: profile.email,
-				emailVerified: profile.emailVerified,
 				autoAcceptFollowed: profile.autoAcceptFollowed,
 				noCrawle: profile.noCrawle,
 				alwaysMarkNsfw: profile.alwaysMarkNsfw,
