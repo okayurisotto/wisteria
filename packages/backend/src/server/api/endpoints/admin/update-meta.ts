@@ -68,7 +68,6 @@ export const paramDef = z.object({
 	summalyProxy: z.string().nullable().optional(),
 	deeplAuthKey: z.string().nullable().optional(),
 	deeplIsPro: z.boolean().optional(),
-	email: z.string().nullable().optional(),
 	enableServiceWorker: z.boolean().optional(),
 	swPublicKey: z.string().nullable().optional(),
 	swPrivateKey: z.string().nullable().optional(),
@@ -295,10 +294,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 			if (ps.summalyProxy !== undefined) {
 				set.summalyProxy = ps.summalyProxy;
-			}
-
-			if (ps.email !== undefined) {
-				set.email = ps.email;
 			}
 
 			if (ps.enableServiceWorker !== undefined) {

@@ -3535,7 +3535,6 @@ export interface operations {
             setSensitiveFlagAutomatically?: boolean;
             enableSensitiveMediaDetectionForVideos?: boolean;
             proxyAccountId?: components["schemas"]["Id"];
-            email?: string | null;
             swPrivateKey?: string | null;
             useObjectStorage?: boolean;
             objectStorageBaseUrl?: string | null;
@@ -6804,7 +6803,6 @@ export interface operations {
           summalyProxy?: string | null;
           deeplAuthKey?: string | null;
           deeplIsPro?: boolean;
-          email?: string | null;
           enableServiceWorker?: boolean;
           swPublicKey?: string | null;
           swPrivateKey?: string | null;
