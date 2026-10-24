@@ -37,21 +37,27 @@ export const installedDarkThemes = computed<Theme[]>(() => installedThemes.value
 
 export const instanceLightTheme = computed<Theme | undefined>(() => {
 	try {
-		return instance.defaultLightTheme !== null
+		return instance.defaultLightTheme != null
 			? parseThemeCode(instance.defaultLightTheme)
 			: undefined;
-	} catch {
-		console.log('!!!', instance.defaultLightTheme);
+	} catch (error) {
+		console.error('Failed to initialize instanceLightTheme', {
+			theme: instance.defaultLightTheme,
+			error,
+		});
 		return undefined;
 	}
 });
 export const instanceDarkTheme = computed<Theme | undefined>(() => {
 	try {
-		return instance.defaultDarkTheme !== null
+		return instance.defaultDarkTheme != null
 			? parseThemeCode(instance.defaultDarkTheme)
 			: undefined;
-	} catch {
-		console.log('!!!', instance.defaultDarkTheme);
+	} catch (error) {
+		console.error('Failed to initialize instanceDarkTheme', {
+			theme: instance.defaultDarkTheme,
+			error,
+		});
 		return undefined;
 	}
 });
