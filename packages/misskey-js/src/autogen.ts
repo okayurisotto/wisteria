@@ -3551,8 +3551,6 @@ export interface operations {
             objectStorageUseProxy?: boolean;
             objectStorageSetPublicRead?: boolean;
             enableIpLogging?: boolean;
-            enableChartsForRemoteUser?: boolean;
-            enableChartsForFederatedInstances?: boolean;
             enableIdenticonGeneration?: boolean;
             manifestJsonOverride?: string;
             policies?: {
@@ -6831,8 +6829,6 @@ export interface operations {
           objectStorageSetPublicRead?: boolean;
           objectStorageS3ForcePathStyle?: boolean;
           enableIpLogging?: boolean;
-          enableChartsForRemoteUser?: boolean;
-          enableChartsForFederatedInstances?: boolean;
           enableIdenticonGeneration?: boolean;
           serverRules?: string[];
           preservedUsernames?: string[];

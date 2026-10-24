@@ -33,21 +33,15 @@ import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkSwitch from '@/components/MkSwitch.vue';
 
 const enableIdenticonGeneration = ref<boolean>(false);
-const enableChartsForRemoteUser = ref<boolean>(false);
-const enableChartsForFederatedInstances = ref<boolean>(false);
 
 async function init() {
 	const meta = await misskeyApi('admin/meta');
 	enableIdenticonGeneration.value = meta.enableIdenticonGeneration;
-	enableChartsForRemoteUser.value = meta.enableChartsForRemoteUser;
-	enableChartsForFederatedInstances.value = meta.enableChartsForFederatedInstances;
 }
 
 function save() {
 	os.apiWithDialog('admin/update-meta', {
 		enableIdenticonGeneration: enableIdenticonGeneration.value,
-		enableChartsForRemoteUser: enableChartsForRemoteUser.value,
-		enableChartsForFederatedInstances: enableChartsForFederatedInstances.value,
 	}).then(() => {
 		fetchInstance();
 	});

@@ -92,8 +92,6 @@ export const paramDef = z.object({
 	objectStorageSetPublicRead: z.boolean().optional(),
 	objectStorageS3ForcePathStyle: z.boolean().optional(),
 	enableIpLogging: z.boolean().optional(),
-	enableChartsForRemoteUser: z.boolean().optional(),
-	enableChartsForFederatedInstances: z.boolean().optional(),
 	enableIdenticonGeneration: z.boolean().optional(),
 	serverRules: z.string().array().optional(),
 	preservedUsernames: z.string().array().optional(),
@@ -402,14 +400,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 			if (ps.enableIpLogging !== undefined) {
 				set.enableIpLogging = ps.enableIpLogging;
-			}
-
-			if (ps.enableChartsForRemoteUser !== undefined) {
-				set.enableChartsForRemoteUser = ps.enableChartsForRemoteUser;
-			}
-
-			if (ps.enableChartsForFederatedInstances !== undefined) {
-				set.enableChartsForFederatedInstances = ps.enableChartsForFederatedInstances;
 			}
 
 			if (ps.enableIdenticonGeneration !== undefined) {
