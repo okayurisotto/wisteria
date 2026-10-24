@@ -66,7 +66,6 @@ export const meta = {
 			dayOfWeek: z.number().int(),
 		}).array(),
 		requireSetup: z.boolean().optional(),
-		enableEmail: z.boolean(),
 		enableServiceWorker: z.boolean(),
 		translatorAvailable: z.boolean(),
 		proxyAccountName: z.string().nullable().optional(),
@@ -155,7 +154,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 					? JSON.stringify(JSON5.parse(instance.defaultDarkTheme))
 					: null,
 				ads: [],
-				enableEmail: false,
 				enableServiceWorker: instance.enableServiceWorker,
 
 				translatorAvailable: instance.deeplAuthKey != null,

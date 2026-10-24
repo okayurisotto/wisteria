@@ -99,7 +99,6 @@ export class NodeinfoServerService {
 				enableHcaptcha: meta.enableHcaptcha,
 				enableRecaptcha: meta.enableRecaptcha,
 				maxNoteTextLength: MAX_NOTE_TEXT_LENGTH,
-				enableEmail: false,
 				enableServiceWorker: meta.enableServiceWorker,
 				proxyAccountName: proxyAccount ? proxyAccount.username : null,
 				themeColor: meta.themeColor ?? '#86b300',

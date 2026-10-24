@@ -68,7 +68,6 @@ export const paramDef = z.object({
 	summalyProxy: z.string().nullable().optional(),
 	deeplAuthKey: z.string().nullable().optional(),
 	deeplIsPro: z.boolean().optional(),
-	enableEmail: z.boolean().optional(),
 	email: z.string().nullable().optional(),
 	enableServiceWorker: z.boolean().optional(),
 	swPublicKey: z.string().nullable().optional(),

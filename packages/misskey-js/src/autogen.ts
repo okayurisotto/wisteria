@@ -3517,7 +3517,6 @@ export interface operations {
             iconUrl?: string | null;
             app192IconUrl?: string | null;
             app512IconUrl?: string | null;
-            enableEmail?: boolean;
             enableServiceWorker?: boolean;
             translatorAvailable?: boolean;
             silencedHosts?: string[];
@@ -6805,7 +6804,6 @@ export interface operations {
           summalyProxy?: string | null;
           deeplAuthKey?: string | null;
           deeplIsPro?: boolean;
-          enableEmail?: boolean;
           email?: string | null;
           enableServiceWorker?: boolean;
           swPublicKey?: string | null;
@@ -15088,7 +15086,6 @@ export interface operations {
                 [key: string]: unknown;
               }[];
             requireSetup?: boolean;
-            enableEmail: boolean;
             enableServiceWorker: boolean;
             translatorAvailable: boolean;
             proxyAccountName?: string | null;
