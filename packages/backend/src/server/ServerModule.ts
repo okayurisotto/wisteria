@@ -41,7 +41,6 @@ import { ActivityPubInboxServerService } from './ActivityPubInboxServerService.j
 import { EmojiRedirectServerService } from './EmojiRedirectServerService.js';
 import { AvatarRedirectServerService } from './AvatarRedirectServerService.js';
 import { IdenticonServerService } from './IdenticonServerService.js';
-import { EmailVerificationServerService } from './EmailVerificationServerService.js';
 import { StaticAssetsServerService } from './StaticAssetsServerService.js';
 import { UserFeedServerService } from './UserFeedServerService.js';
 import { EmojiServerService } from './EmojiServerService.js';
@@ -89,7 +88,6 @@ import { MetricsServerService } from './MetricsServerService.js';
 		EmojiRedirectServerService,
 		AvatarRedirectServerService,
 		IdenticonServerService,
-		EmailVerificationServerService,
 		StaticAssetsServerService,
 		UserFeedServerService,
 		EmojiServerService,

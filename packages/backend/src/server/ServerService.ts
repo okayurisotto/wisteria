@@ -23,7 +23,6 @@ import { ActivityPubInboxServerService } from './ActivityPubInboxServerService.j
 import { EmojiRedirectServerService } from './EmojiRedirectServerService.js';
 import { AvatarRedirectServerService } from './AvatarRedirectServerService.js';
 import { IdenticonServerService } from './IdenticonServerService.js';
-import { EmailVerificationServerService } from './EmailVerificationServerService.js';
 import { StaticAssetsServerService } from './StaticAssetsServerService.js';
 import { UserFeedServerService } from './UserFeedServerService.js';
 import { EmojiServerService } from './EmojiServerService.js';
@@ -52,7 +51,6 @@ export class ServerService implements OnApplicationShutdown {
 		private readonly emojiRedirectServerService: EmojiRedirectServerService,
 		private readonly avatarRedirectServerService: AvatarRedirectServerService,
 		private readonly identiconServerService: IdenticonServerService,
-		private readonly emailVerificationServerService: EmailVerificationServerService,
 		private readonly staticAssetsServerService: StaticAssetsServerService,
 		private readonly userFeedServerService: UserFeedServerService,
 		private readonly emojiServerService: EmojiServerService,
@@ -83,7 +81,6 @@ export class ServerService implements OnApplicationShutdown {
 		hono.route('/metrics', this.metricsServerService.createServer());
 		hono.route('/nodeinfo', this.nodeinfoServerService.createServer());
 		hono.route('/proxy', this.fileProxyServerService.createServer());
-		hono.route('/verify-email', this.emailVerificationServerService.createServer());
 
 		hono.route('/', this.openApiServerService.createServer());
 		hono.route('/', this.activityPubInboxServerService.createServer());
