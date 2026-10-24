@@ -98,17 +98,10 @@ export const paramDef = z.object({
 	objectStorageSetPublicRead: z.boolean().optional(),
 	objectStorageS3ForcePathStyle: z.boolean().optional(),
 	enableIpLogging: z.boolean().optional(),
-	enableActiveEmailValidation: z.boolean().optional(),
-	enableVerifymailApi: z.boolean().optional(),
-	verifymailAuthKey: z.string().nullable().optional(),
-	enableTruemailApi: z.boolean().optional(),
-	truemailInstance: z.string().nullable().optional(),
-	truemailAuthKey: z.string().nullable().optional(),
 	enableChartsForRemoteUser: z.boolean().optional(),
 	enableChartsForFederatedInstances: z.boolean().optional(),
 	enableIdenticonGeneration: z.boolean().optional(),
 	serverRules: z.string().array().optional(),
-	bannedEmailDomains: z.string().array().optional(),
 	preservedUsernames: z.string().array().optional(),
 	manifestJsonOverride: z.string().optional(),
 	silencedHosts: z.string().array().nullable().optional(),
@@ -437,42 +430,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				set.enableIpLogging = ps.enableIpLogging;
 			}
 
-			if (ps.enableActiveEmailValidation !== undefined) {
-				set.enableActiveEmailValidation = ps.enableActiveEmailValidation;
-			}
-
-			if (ps.enableVerifymailApi !== undefined) {
-				set.enableVerifymailApi = ps.enableVerifymailApi;
-			}
-
-			if (ps.verifymailAuthKey !== undefined) {
-				if (ps.verifymailAuthKey === '') {
-					set.verifymailAuthKey = null;
-				} else {
-					set.verifymailAuthKey = ps.verifymailAuthKey;
-				}
-			}
-
-			if (ps.enableTruemailApi !== undefined) {
-				set.enableTruemailApi = ps.enableTruemailApi;
-			}
-
-			if (ps.truemailInstance !== undefined) {
-				if (ps.truemailInstance === '') {
-					set.truemailInstance = null;
-				} else {
-					set.truemailInstance = ps.truemailInstance;
-				}
-			}
-
-			if (ps.truemailAuthKey !== undefined) {
-				if (ps.truemailAuthKey === '') {
-					set.truemailAuthKey = null;
-				} else {
-					set.truemailAuthKey = ps.truemailAuthKey;
-				}
-			}
-
 			if (ps.enableChartsForRemoteUser !== undefined) {
 				set.enableChartsForRemoteUser = ps.enableChartsForRemoteUser;
 			}
@@ -495,10 +452,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 			if (ps.manifestJsonOverride !== undefined) {
 				set.manifestJsonOverride = ps.manifestJsonOverride;
-			}
-
-			if (ps.bannedEmailDomains !== undefined) {
-				set.bannedEmailDomains = ps.bannedEmailDomains;
 			}
 
 			const before = await this.metaService.fetch();

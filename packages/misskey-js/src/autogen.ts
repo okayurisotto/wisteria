@@ -3529,7 +3529,6 @@ export interface operations {
             blockedHosts?: string[];
             sensitiveWords?: string[];
             prohibitedWords?: string[];
-            bannedEmailDomains?: string[];
             preservedUsernames?: string[];
             hcaptchaSecretKey?: string | null;
             mcaptchaSecretKey?: string | null;
@@ -3560,12 +3559,6 @@ export interface operations {
             objectStorageUseProxy?: boolean;
             objectStorageSetPublicRead?: boolean;
             enableIpLogging?: boolean;
-            enableActiveEmailValidation?: boolean;
-            enableVerifymailApi?: boolean;
-            verifymailAuthKey?: string | null;
-            enableTruemailApi?: boolean;
-            truemailInstance?: string | null;
-            truemailAuthKey?: string | null;
             enableChartsForRemoteUser?: boolean;
             enableChartsForFederatedInstances?: boolean;
             enableIdenticonGeneration?: boolean;
@@ -6856,17 +6849,10 @@ export interface operations {
           objectStorageSetPublicRead?: boolean;
           objectStorageS3ForcePathStyle?: boolean;
           enableIpLogging?: boolean;
-          enableActiveEmailValidation?: boolean;
-          enableVerifymailApi?: boolean;
-          verifymailAuthKey?: string | null;
-          enableTruemailApi?: boolean;
-          truemailInstance?: string | null;
-          truemailAuthKey?: string | null;
           enableChartsForRemoteUser?: boolean;
           enableChartsForFederatedInstances?: boolean;
           enableIdenticonGeneration?: boolean;
           serverRules?: string[];
-          bannedEmailDomains?: string[];
           preservedUsernames?: string[];
           manifestJsonOverride?: string;
           silencedHosts?: string[] | null;

@@ -22,49 +22,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</MkFolder>
 
 				<MkFolder>
-					<template #label>Active Email Validation</template>
-					<template v-if="enableActiveEmailValidation" #suffix>Enabled</template>
-					<template v-else #suffix>Disabled</template>
-
-					<div class="_gaps_m">
-						<span>{{ i18n.ts.activeEmailValidationDescription }}</span>
-						<MkSwitch v-model="enableActiveEmailValidation">
-							<template #label>Enable</template>
-						</MkSwitch>
-						<MkSwitch v-model="enableVerifymailApi">
-							<template #label>Use Verifymail.io API</template>
-						</MkSwitch>
-						<MkInput v-model="verifymailAuthKey">
-							<template #prefix><i class="ti ti-key"></i></template>
-							<template #label>Verifymail.io API Auth Key</template>
-						</MkInput>
-						<MkSwitch v-model="enableTruemailApi">
-							<template #label>Use TrueMail API</template>
-						</MkSwitch>
-						<MkInput v-model="truemailInstance">
-							<template #prefix><i class="ti ti-key"></i></template>
-							<template #label>TrueMail API Instance</template>
-						</MkInput>
-						<MkInput v-model="truemailAuthKey">
-							<template #prefix><i class="ti ti-key"></i></template>
-							<template #label>TrueMail API Auth Key</template>
-						</MkInput>
-						<MkButton primary @click="save"><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton>
-					</div>
-				</MkFolder>
-
-				<MkFolder>
-					<template #label>Banned Email Domains</template>
-
-					<div class="_gaps_m">
-						<MkTextarea v-model="bannedEmailDomains">
-							<template #label>Banned Email Domains List</template>
-						</MkTextarea>
-						<MkButton primary @click="save"><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton>
-					</div>
-				</MkFolder>
-
-				<MkFolder>
 					<template #label>Log IP address</template>
 					<template v-if="enableIpLogging" #suffix>Enabled</template>
 					<template v-else #suffix>Disabled</template>
@@ -103,7 +60,6 @@ import MkSwitch from '@/components/MkSwitch.vue';
 import FormSuspense from '@/components/form/suspense.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkButton from '@/components/MkButton.vue';
-import MkTextarea from '@/components/MkTextarea.vue';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { fetchInstance } from '@/instance.js';
@@ -120,13 +76,6 @@ const sensitiveMediaDetectionSensitivity = ref<number>(0);
 const setSensitiveFlagAutomatically = ref<boolean>(false);
 const enableSensitiveMediaDetectionForVideos = ref<boolean>(false);
 const enableIpLogging = ref<boolean>(false);
-const enableActiveEmailValidation = ref<boolean>(false);
-const enableVerifymailApi = ref<boolean>(false);
-const verifymailAuthKey = ref<string | null>(null);
-const enableTruemailApi = ref<boolean>(false);
-const truemailInstance = ref<string | null>(null);
-const truemailAuthKey = ref<string | null>(null);
-const bannedEmailDomains = ref<string>('');
 
 async function init() {
 	const meta = await misskeyApi('admin/meta');
@@ -145,13 +94,6 @@ async function init() {
 	setSensitiveFlagAutomatically.value = meta.setSensitiveFlagAutomatically;
 	enableSensitiveMediaDetectionForVideos.value = meta.enableSensitiveMediaDetectionForVideos;
 	enableIpLogging.value = meta.enableIpLogging;
-	enableActiveEmailValidation.value = meta.enableActiveEmailValidation;
-	enableVerifymailApi.value = meta.enableVerifymailApi;
-	verifymailAuthKey.value = meta.verifymailAuthKey;
-	enableTruemailApi.value = meta.enableTruemailApi;
-	truemailInstance.value = meta.truemailInstance;
-	truemailAuthKey.value = meta.truemailAuthKey;
-	bannedEmailDomains.value = meta.bannedEmailDomains?.join('\n') || "";
 }
 
 function save() {
@@ -168,13 +110,6 @@ function save() {
 		setSensitiveFlagAutomatically: setSensitiveFlagAutomatically.value,
 		enableSensitiveMediaDetectionForVideos: enableSensitiveMediaDetectionForVideos.value,
 		enableIpLogging: enableIpLogging.value,
-		enableActiveEmailValidation: enableActiveEmailValidation.value,
-		enableVerifymailApi: enableVerifymailApi.value,
-		verifymailAuthKey: verifymailAuthKey.value,
-		enableTruemailApi: enableTruemailApi.value,
-		truemailInstance: truemailInstance.value,
-		truemailAuthKey: truemailAuthKey.value,
-		bannedEmailDomains: bannedEmailDomains.value.split('\n'),
 	}).then(() => {
 		fetchInstance();
 	});
