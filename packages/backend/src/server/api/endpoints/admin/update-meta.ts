@@ -57,10 +57,6 @@ export const paramDef = z.object({
 	enableTurnstile: z.boolean().optional(),
 	turnstileSiteKey: z.string().nullable().optional(),
 	turnstileSecretKey: z.string().nullable().optional(),
-	sensitiveMediaDetection: z.enum(['none', 'all', 'local', 'remote']).optional(),
-	sensitiveMediaDetectionSensitivity: z.enum(['medium', 'low', 'high', 'veryLow', 'veryHigh']).optional(),
-	setSensitiveFlagAutomatically: z.boolean().optional(),
-	enableSensitiveMediaDetectionForVideos: z.boolean().optional(),
 	proxyAccountId: IdSchema.nullable().optional(),
 	maintainerName: z.string().nullable().optional(),
 	maintainerEmail: z.string().nullable().optional(),
@@ -258,22 +254,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 			if (ps.turnstileSecretKey !== undefined) {
 				set.turnstileSecretKey = ps.turnstileSecretKey;
-			}
-
-			if (ps.sensitiveMediaDetection !== undefined) {
-				set.sensitiveMediaDetection = ps.sensitiveMediaDetection;
-			}
-
-			if (ps.sensitiveMediaDetectionSensitivity !== undefined) {
-				set.sensitiveMediaDetectionSensitivity = ps.sensitiveMediaDetectionSensitivity;
-			}
-
-			if (ps.setSensitiveFlagAutomatically !== undefined) {
-				set.setSensitiveFlagAutomatically = ps.setSensitiveFlagAutomatically;
-			}
-
-			if (ps.enableSensitiveMediaDetectionForVideos !== undefined) {
-				set.enableSensitiveMediaDetectionForVideos = ps.enableSensitiveMediaDetectionForVideos;
 			}
 
 			if (ps.proxyAccountId !== undefined) {

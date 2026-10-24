@@ -3530,10 +3530,6 @@ export interface operations {
             mcaptchaSecretKey?: string | null;
             recaptchaSecretKey?: string | null;
             turnstileSecretKey?: string | null;
-            sensitiveMediaDetection?: string;
-            sensitiveMediaDetectionSensitivity?: string;
-            setSensitiveFlagAutomatically?: boolean;
-            enableSensitiveMediaDetectionForVideos?: boolean;
             proxyAccountId?: components["schemas"]["Id"];
             swPrivateKey?: string | null;
             useObjectStorage?: boolean;
@@ -6790,12 +6786,6 @@ export interface operations {
           enableTurnstile?: boolean;
           turnstileSiteKey?: string | null;
           turnstileSecretKey?: string | null;
-          /** @enum {string} */
-          sensitiveMediaDetection?: "none" | "all" | "local" | "remote";
-          /** @enum {string} */
-          sensitiveMediaDetectionSensitivity?: "medium" | "low" | "high" | "veryLow" | "veryHigh";
-          setSensitiveFlagAutomatically?: boolean;
-          enableSensitiveMediaDetectionForVideos?: boolean;
           proxyAccountId?: components["schemas"]["Id"];
           maintainerName?: string | null;
           maintainerEmail?: string | null;

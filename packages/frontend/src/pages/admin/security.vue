@@ -71,10 +71,6 @@ const enableHcaptcha = ref<boolean>(false);
 const enableMcaptcha = ref<boolean>(false);
 const enableRecaptcha = ref<boolean>(false);
 const enableTurnstile = ref<boolean>(false);
-const sensitiveMediaDetection = ref<string>('none');
-const sensitiveMediaDetectionSensitivity = ref<number>(0);
-const setSensitiveFlagAutomatically = ref<boolean>(false);
-const enableSensitiveMediaDetectionForVideos = ref<boolean>(false);
 const enableIpLogging = ref<boolean>(false);
 
 async function init() {
@@ -84,31 +80,12 @@ async function init() {
 	enableMcaptcha.value = meta.enableMcaptcha;
 	enableRecaptcha.value = meta.enableRecaptcha;
 	enableTurnstile.value = meta.enableTurnstile;
-	sensitiveMediaDetection.value = meta.sensitiveMediaDetection;
-	sensitiveMediaDetectionSensitivity.value =
-		meta.sensitiveMediaDetectionSensitivity === 'veryLow' ? 0 :
-		meta.sensitiveMediaDetectionSensitivity === 'low' ? 1 :
-		meta.sensitiveMediaDetectionSensitivity === 'medium' ? 2 :
-		meta.sensitiveMediaDetectionSensitivity === 'high' ? 3 :
-		meta.sensitiveMediaDetectionSensitivity === 'veryHigh' ? 4 : 0;
-	setSensitiveFlagAutomatically.value = meta.setSensitiveFlagAutomatically;
-	enableSensitiveMediaDetectionForVideos.value = meta.enableSensitiveMediaDetectionForVideos;
 	enableIpLogging.value = meta.enableIpLogging;
 }
 
 function save() {
 	os.apiWithDialog('admin/update-meta', {
 		summalyProxy: summalyProxy.value,
-		sensitiveMediaDetection: sensitiveMediaDetection.value,
-		sensitiveMediaDetectionSensitivity:
-			sensitiveMediaDetectionSensitivity.value === 0 ? 'veryLow' :
-			sensitiveMediaDetectionSensitivity.value === 1 ? 'low' :
-			sensitiveMediaDetectionSensitivity.value === 2 ? 'medium' :
-			sensitiveMediaDetectionSensitivity.value === 3 ? 'high' :
-			sensitiveMediaDetectionSensitivity.value === 4 ? 'veryHigh' :
-			0,
-		setSensitiveFlagAutomatically: setSensitiveFlagAutomatically.value,
-		enableSensitiveMediaDetectionForVideos: enableSensitiveMediaDetectionForVideos.value,
 		enableIpLogging: enableIpLogging.value,
 	}).then(() => {
 		fetchInstance();
