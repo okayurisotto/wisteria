@@ -35,7 +35,7 @@ import MkInfo from '@/components/MkInfo.vue';
 import { instance } from '@/instance.js';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
-import { lookupUser, lookupUserByEmail } from '@/scripts/lookup-user.js';
+import { lookupUser } from '@/scripts/lookup-user.js';
 import { type PageMetadata, definePageMetadata, provideMetadataReceiver, provideReactiveMetadata } from '@/scripts/page-metadata.js';
 import { useRouter } from '@/router/supplier.js';
 
@@ -264,12 +264,6 @@ function lookup(ev: MouseEvent) {
 		icon: 'ti ti-user',
 		action: () => {
 			lookupUser();
-		},
-	}, {
-		text: `${i18n.ts.user} (${i18n.ts.email})`,
-		icon: 'ti ti-user',
-		action: () => {
-			lookupUserByEmail();
 		},
 	}, {
 		text: i18n.ts.note,

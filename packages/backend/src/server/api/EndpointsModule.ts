@@ -10,7 +10,6 @@ import * as ep___admin_meta from './endpoints/admin/meta.js';
 import * as ep___admin_abuseUserReports from './endpoints/admin/abuse-user-reports.js';
 import * as ep___admin_accounts_create from './endpoints/admin/accounts/create.js';
 import * as ep___admin_accounts_delete from './endpoints/admin/accounts/delete.js';
-import * as ep___admin_accounts_findByEmail from './endpoints/admin/accounts/find-by-email.js';
 import * as ep___admin_avatarDecorations_create from './endpoints/admin/avatar-decorations/create.js';
 import * as ep___admin_avatarDecorations_delete from './endpoints/admin/avatar-decorations/delete.js';
 import * as ep___admin_avatarDecorations_list from './endpoints/admin/avatar-decorations/list.js';
@@ -293,7 +292,6 @@ const $admin_meta: Provider = { provide: 'ep:admin/meta', useClass: ep___admin_m
 const $admin_abuseUserReports: Provider = { provide: 'ep:admin/abuse-user-reports', useClass: ep___admin_abuseUserReports.default };
 const $admin_accounts_create: Provider = { provide: 'ep:admin/accounts/create', useClass: ep___admin_accounts_create.default };
 const $admin_accounts_delete: Provider = { provide: 'ep:admin/accounts/delete', useClass: ep___admin_accounts_delete.default };
-const $admin_accounts_findByEmail: Provider = { provide: 'ep:admin/accounts/find-by-email', useClass: ep___admin_accounts_findByEmail.default };
 const $admin_avatarDecorations_create: Provider = { provide: 'ep:admin/avatar-decorations/create', useClass: ep___admin_avatarDecorations_create.default };
 const $admin_avatarDecorations_delete: Provider = { provide: 'ep:admin/avatar-decorations/delete', useClass: ep___admin_avatarDecorations_delete.default };
 const $admin_avatarDecorations_list: Provider = { provide: 'ep:admin/avatar-decorations/list', useClass: ep___admin_avatarDecorations_list.default };
@@ -580,7 +578,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$admin_abuseUserReports,
 		$admin_accounts_create,
 		$admin_accounts_delete,
-		$admin_accounts_findByEmail,
 		$admin_avatarDecorations_create,
 		$admin_avatarDecorations_delete,
 		$admin_avatarDecorations_list,
@@ -861,7 +858,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$admin_abuseUserReports,
 		$admin_accounts_create,
 		$admin_accounts_delete,
-		$admin_accounts_findByEmail,
 		$admin_avatarDecorations_create,
 		$admin_avatarDecorations_delete,
 		$admin_avatarDecorations_list,

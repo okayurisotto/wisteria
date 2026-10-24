@@ -41,15 +41,6 @@ export interface paths {
      */
     post: operations["admin/accounts/delete"];
   };
-  "/admin/accounts/find-by-email": {
-    /**
-     * admin/accounts/find-by-email
-     * @description No description provided.
-     *
-     * **Credential required**: *Yes* / **Permission**: *read:admin:account*
-     */
-    post: operations["admin/accounts/find-by-email"];
-  };
   "/admin/avatar-decorations/create": {
     /**
      * admin/avatar-decorations/create
@@ -3949,60 +3940,6 @@ export interface operations {
       /** @description OK (without any results) */
       204: {
         content: never;
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  /**
-   * admin/accounts/find-by-email
-   * @description No description provided.
-   *
-   * **Credential required**: *Yes* / **Permission**: *read:admin:account*
-   */
-  "admin/accounts/find-by-email": {
-    requestBody: {
-      content: {
-        "application/json": {
-          email: string;
-          [key: string]: unknown;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (with results) */
-      200: {
-        content: {
-          "application/json": components["schemas"]["UserDetailedNotMe"];
-        };
       };
       /** @description Client error */
       400: {
