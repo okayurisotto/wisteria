@@ -3537,11 +3537,6 @@ export interface operations {
             enableSensitiveMediaDetectionForVideos?: boolean;
             proxyAccountId?: components["schemas"]["Id"];
             email?: string | null;
-            smtpSecure?: boolean;
-            smtpHost?: string | null;
-            smtpPort?: number | null;
-            smtpUser?: string | null;
-            smtpPass?: string | null;
             swPrivateKey?: string | null;
             useObjectStorage?: boolean;
             objectStorageBaseUrl?: string | null;
@@ -6814,11 +6809,6 @@ export interface operations {
           deeplIsPro?: boolean;
           enableEmail?: boolean;
           email?: string | null;
-          smtpSecure?: boolean;
-          smtpHost?: string | null;
-          smtpPort?: number | null;
-          smtpUser?: string | null;
-          smtpPass?: string | null;
           enableServiceWorker?: boolean;
           swPublicKey?: string | null;
           swPrivateKey?: string | null;

@@ -70,11 +70,6 @@ export const paramDef = z.object({
 	deeplIsPro: z.boolean().optional(),
 	enableEmail: z.boolean().optional(),
 	email: z.string().nullable().optional(),
-	smtpSecure: z.boolean().optional(),
-	smtpHost: z.string().nullable().optional(),
-	smtpPort: z.number().int().nullable().optional(),
-	smtpUser: z.string().nullable().optional(),
-	smtpPass: z.string().nullable().optional(),
 	enableServiceWorker: z.boolean().optional(),
 	swPublicKey: z.string().nullable().optional(),
 	swPrivateKey: z.string().nullable().optional(),
@@ -307,26 +302,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 
 			if (ps.email !== undefined) {
 				set.email = ps.email;
-			}
-
-			if (ps.smtpSecure !== undefined) {
-				set.smtpSecure = ps.smtpSecure;
-			}
-
-			if (ps.smtpHost !== undefined) {
-				set.smtpHost = ps.smtpHost;
-			}
-
-			if (ps.smtpPort !== undefined) {
-				set.smtpPort = ps.smtpPort;
-			}
-
-			if (ps.smtpUser !== undefined) {
-				set.smtpUser = ps.smtpUser;
-			}
-
-			if (ps.smtpPass !== undefined) {
-				set.smtpPass = ps.smtpPass;
 			}
 
 			if (ps.enableServiceWorker !== undefined) {
