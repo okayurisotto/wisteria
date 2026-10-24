@@ -32,7 +32,6 @@ export const meta = {
 		autoSensitive: z.boolean(),
 		carefulBot: z.boolean(),
 		injectFeaturedNote: z.boolean(),
-		receiveAnnouncementEmail: z.boolean(),
 		mutedWords: z.union([z.string(), z.string().array()]).array(),
 		mutedInstances: z.string().array(),
 		notificationRecieveConfig: z.object({
@@ -119,7 +118,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 				autoSensitive: profile.autoSensitive,
 				carefulBot: profile.carefulBot,
 				injectFeaturedNote: profile.injectFeaturedNote,
-				receiveAnnouncementEmail: profile.receiveAnnouncementEmail,
 				mutedWords: profile.mutedWords,
 				mutedInstances: profile.mutedInstances,
 				notificationRecieveConfig: profile.notificationRecieveConfig,

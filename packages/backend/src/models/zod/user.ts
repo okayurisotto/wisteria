@@ -97,7 +97,6 @@ export const MeDetailedOnlySchema = z
 		isModerator: z.boolean().nullable(),
 		isAdmin: z.boolean().nullable(),
 		injectFeaturedNote: z.boolean(),
-		receiveAnnouncementEmail: z.boolean(),
 		alwaysMarkNsfw: z.boolean(),
 		autoSensitive: z.boolean(),
 		carefulBot: z.boolean(),

@@ -348,7 +348,6 @@ export class UserEntityService {
 				isModerator: isModerator,
 				isAdmin: isAdmin,
 				injectFeaturedNote: profile.injectFeaturedNote,
-				receiveAnnouncementEmail: profile.receiveAnnouncementEmail,
 				alwaysMarkNsfw: profile.alwaysMarkNsfw,
 				autoSensitive: profile.autoSensitive,
 				carefulBot: profile.carefulBot,

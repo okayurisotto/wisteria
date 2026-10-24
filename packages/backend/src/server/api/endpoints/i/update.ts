@@ -148,7 +148,6 @@ export const paramDef = z.object({
 	isBot: z.boolean().optional(),
 	isCat: z.boolean().optional(),
 	injectFeaturedNote: z.boolean().optional(),
-	receiveAnnouncementEmail: z.boolean().optional(),
 	alwaysMarkNsfw: z.boolean().optional(),
 	autoSensitive: z.boolean().optional(),
 	followingVisibility: z.enum(['public', 'followers', 'private']).optional(),
@@ -268,7 +267,6 @@ export default class extends AbstractEndpoint<typeof meta, typeof paramDef> {
 			if (typeof ps.noCrawle === 'boolean') profileUpdates.noCrawle = ps.noCrawle;
 			if (typeof ps.isCat === 'boolean') updates.isCat = ps.isCat;
 			if (typeof ps.injectFeaturedNote === 'boolean') profileUpdates.injectFeaturedNote = ps.injectFeaturedNote;
-			if (typeof ps.receiveAnnouncementEmail === 'boolean') profileUpdates.receiveAnnouncementEmail = ps.receiveAnnouncementEmail;
 			if (typeof ps.alwaysMarkNsfw === 'boolean') {
 				if ((await roleUserService.getUserPolicies(user.id)).alwaysMarkNsfw) throw new ApiError(meta.errors.restrictedByRole);
 				profileUpdates.alwaysMarkNsfw = ps.alwaysMarkNsfw;

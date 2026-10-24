@@ -2931,7 +2931,6 @@ export interface components {
       isModerator: boolean | null;
       isAdmin: boolean | null;
       injectFeaturedNote: boolean;
-      receiveAnnouncementEmail: boolean;
       alwaysMarkNsfw: boolean;
       autoSensitive: boolean;
       carefulBot: boolean;
@@ -3835,7 +3834,6 @@ export interface operations {
             isModerator: boolean | null;
             isAdmin: boolean | null;
             injectFeaturedNote: boolean;
-            receiveAnnouncementEmail: boolean;
             alwaysMarkNsfw: boolean;
             autoSensitive: boolean;
             carefulBot: boolean;
@@ -6521,7 +6519,6 @@ export interface operations {
             autoSensitive?: boolean;
             carefulBot?: boolean;
             injectFeaturedNote?: boolean;
-            receiveAnnouncementEmail?: boolean;
             mutedWords?: (string | string[])[];
             mutedInstances?: string[];
             notificationRecieveConfig?: {
@@ -14403,7 +14400,6 @@ export interface operations {
           isBot?: boolean;
           isCat?: boolean;
           injectFeaturedNote?: boolean;
-          receiveAnnouncementEmail?: boolean;
           alwaysMarkNsfw?: boolean;
           autoSensitive?: boolean;
           /** @enum {string} */
