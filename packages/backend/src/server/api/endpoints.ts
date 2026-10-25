@@ -140,7 +140,6 @@ import * as ep___getAvatarDecorations from './endpoints/get-avatar-decorations.j
 import * as ep___hashtags_list from './endpoints/hashtags/list.js';
 import * as ep___hashtags_search from './endpoints/hashtags/search.js';
 import * as ep___hashtags_show from './endpoints/hashtags/show.js';
-import * as ep___hashtags_trend from './endpoints/hashtags/trend.js';
 import * as ep___hashtags_users from './endpoints/hashtags/users.js';
 import * as ep___i from './endpoints/i.js';
 import * as ep___i_2fa_done from './endpoints/i/2fa/done.js';
@@ -419,7 +418,6 @@ const eps = [
 	['hashtags/list', ep___hashtags_list],
 	['hashtags/search', ep___hashtags_search],
 	['hashtags/show', ep___hashtags_show],
-	['hashtags/trend', ep___hashtags_trend],
 	['hashtags/users', ep___hashtags_users],
 	['i', ep___i],
 	['i/2fa/done', ep___i_2fa_done],

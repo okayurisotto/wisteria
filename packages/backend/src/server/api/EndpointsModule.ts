@@ -140,7 +140,6 @@ import * as ep___getAvatarDecorations from './endpoints/get-avatar-decorations.j
 import * as ep___hashtags_list from './endpoints/hashtags/list.js';
 import * as ep___hashtags_search from './endpoints/hashtags/search.js';
 import * as ep___hashtags_show from './endpoints/hashtags/show.js';
-import * as ep___hashtags_trend from './endpoints/hashtags/trend.js';
 import * as ep___hashtags_users from './endpoints/hashtags/users.js';
 import * as ep___i from './endpoints/i.js';
 import * as ep___i_2fa_done from './endpoints/i/2fa/done.js';
@@ -419,7 +418,6 @@ const $getAvatarDecorations: Provider = { provide: 'ep:get-avatar-decorations', 
 const $hashtags_list: Provider = { provide: 'ep:hashtags/list', useClass: ep___hashtags_list.default };
 const $hashtags_search: Provider = { provide: 'ep:hashtags/search', useClass: ep___hashtags_search.default };
 const $hashtags_show: Provider = { provide: 'ep:hashtags/show', useClass: ep___hashtags_show.default };
-const $hashtags_trend: Provider = { provide: 'ep:hashtags/trend', useClass: ep___hashtags_trend.default };
 const $hashtags_users: Provider = { provide: 'ep:hashtags/users', useClass: ep___hashtags_users.default };
 const $i: Provider = { provide: 'ep:i', useClass: ep___i.default };
 const $i_2fa_done: Provider = { provide: 'ep:i/2fa/done', useClass: ep___i_2fa_done.default };
@@ -702,7 +700,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$hashtags_list,
 		$hashtags_search,
 		$hashtags_show,
-		$hashtags_trend,
 		$hashtags_users,
 		$i,
 		$i_2fa_done,
@@ -979,7 +976,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$hashtags_list,
 		$hashtags_search,
 		$hashtags_show,
-		$hashtags_trend,
 		$hashtags_users,
 		$i,
 		$i_2fa_done,
