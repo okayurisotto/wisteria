@@ -67,7 +67,6 @@ import { AntennaEntityService } from './entities/AntennaEntityService.js';
 import { AppEntityService } from './entities/AppEntityService.js';
 import { AuthSessionEntityService } from './entities/AuthSessionEntityService.js';
 import { BlockingEntityService } from './entities/BlockingEntityService.js';
-import { ChannelEntityService } from './entities/ChannelEntityService.js';
 import { ClipEntityService } from './entities/ClipEntityService.js';
 import { DriveFileEntityService } from './entities/DriveFileEntityService.js';
 import { DriveFolderEntityService } from './entities/DriveFolderEntityService.js';
@@ -211,7 +210,6 @@ const $NotificationCreateService: Provider = { provide: 'NotificationCreateServi
 		AppEntityService,
 		AuthSessionEntityService,
 		BlockingEntityService,
-		ChannelEntityService,
 		ClipEntityService,
 		DriveFileEntityService,
 		DriveFilePublicUrlGetService,
@@ -340,7 +338,6 @@ const $NotificationCreateService: Provider = { provide: 'NotificationCreateServi
 		AppEntityService,
 		AuthSessionEntityService,
 		BlockingEntityService,
-		ChannelEntityService,
 		ClipEntityService,
 		DriveFileEntityService,
 		DriveFilePublicUrlGetService,

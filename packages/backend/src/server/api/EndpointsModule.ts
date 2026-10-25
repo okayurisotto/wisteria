@@ -87,9 +87,6 @@ import * as ep___auth_session_userkey from './endpoints/auth/session/userkey.js'
 import * as ep___blocking_create from './endpoints/blocking/create.js';
 import * as ep___blocking_delete from './endpoints/blocking/delete.js';
 import * as ep___blocking_list from './endpoints/blocking/list.js';
-import * as ep___channels_show from './endpoints/channels/show.js';
-import * as ep___channels_timeline from './endpoints/channels/timeline.js';
-import * as ep___channels_update from './endpoints/channels/update.js';
 import * as ep___clips_addNote from './endpoints/clips/add-note.js';
 import * as ep___clips_removeNote from './endpoints/clips/remove-note.js';
 import * as ep___clips_create from './endpoints/clips/create.js';
@@ -369,9 +366,6 @@ const $auth_session_userkey: Provider = { provide: 'ep:auth/session/userkey', us
 const $blocking_create: Provider = { provide: 'ep:blocking/create', useClass: ep___blocking_create.default };
 const $blocking_delete: Provider = { provide: 'ep:blocking/delete', useClass: ep___blocking_delete.default };
 const $blocking_list: Provider = { provide: 'ep:blocking/list', useClass: ep___blocking_list.default };
-const $channels_show: Provider = { provide: 'ep:channels/show', useClass: ep___channels_show.default };
-const $channels_timeline: Provider = { provide: 'ep:channels/timeline', useClass: ep___channels_timeline.default };
-const $channels_update: Provider = { provide: 'ep:channels/update', useClass: ep___channels_update.default };
 const $clips_addNote: Provider = { provide: 'ep:clips/add-note', useClass: ep___clips_addNote.default };
 const $clips_removeNote: Provider = { provide: 'ep:clips/remove-note', useClass: ep___clips_removeNote.default };
 const $clips_create: Provider = { provide: 'ep:clips/create', useClass: ep___clips_create.default };
@@ -655,9 +649,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$blocking_create,
 		$blocking_delete,
 		$blocking_list,
-		$channels_show,
-		$channels_timeline,
-		$channels_update,
 		$clips_addNote,
 		$clips_removeNote,
 		$clips_create,
@@ -935,9 +926,6 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$blocking_create,
 		$blocking_delete,
 		$blocking_list,
-		$channels_show,
-		$channels_timeline,
-		$channels_update,
 		$clips_addNote,
 		$clips_removeNote,
 		$clips_create,

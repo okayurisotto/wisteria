@@ -87,9 +87,6 @@ import * as ep___auth_session_userkey from './endpoints/auth/session/userkey.js'
 import * as ep___blocking_create from './endpoints/blocking/create.js';
 import * as ep___blocking_delete from './endpoints/blocking/delete.js';
 import * as ep___blocking_list from './endpoints/blocking/list.js';
-import * as ep___channels_show from './endpoints/channels/show.js';
-import * as ep___channels_timeline from './endpoints/channels/timeline.js';
-import * as ep___channels_update from './endpoints/channels/update.js';
 import * as ep___clips_addNote from './endpoints/clips/add-note.js';
 import * as ep___clips_removeNote from './endpoints/clips/remove-note.js';
 import * as ep___clips_create from './endpoints/clips/create.js';
@@ -369,9 +366,6 @@ const eps = [
 	['blocking/create', ep___blocking_create],
 	['blocking/delete', ep___blocking_delete],
 	['blocking/list', ep___blocking_list],
-	['channels/show', ep___channels_show],
-	['channels/timeline', ep___channels_timeline],
-	['channels/update', ep___channels_update],
 	['clips/add-note', ep___clips_addNote],
 	['clips/remove-note', ep___clips_removeNote],
 	['clips/create', ep___clips_create],
