@@ -140,15 +140,6 @@ export async function mainBoot() {
 			updateAccount({ hasUnreadSpecifiedNotes: false });
 		});
 
-		main.on('readAllAntennas', () => {
-			updateAccount({ hasUnreadAntenna: false });
-		});
-
-		main.on('unreadAntenna', () => {
-			updateAccount({ hasUnreadAntenna: true });
-			sound.playMisskeySfx('antenna');
-		});
-
 		// トークンが再生成されたとき
 		// このままではMisskeyが利用できないので強制的にサインアウトさせる
 		main.on('myTokenRegenerated', () => {

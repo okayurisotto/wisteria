@@ -110,7 +110,6 @@ export const MeDetailedOnlySchema = z
 		hasUnreadMentions: z.boolean(),
 		hasUnreadAnnouncement: z.boolean(),
 		unreadAnnouncements: AnnouncementSchema.array(),
-		hasUnreadAntenna: z.boolean(),
 		hasUnreadNotification: z.boolean(),
 		hasPendingReceivedFollowRequest: z.boolean(),
 		unreadNotificationsCount: z.number(),

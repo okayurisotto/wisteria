@@ -2945,7 +2945,6 @@ export interface components {
       hasUnreadMentions: boolean;
       hasUnreadAnnouncement: boolean;
       unreadAnnouncements: components["schemas"]["Announcement"][];
-      hasUnreadAntenna: boolean;
       hasUnreadNotification: boolean;
       hasPendingReceivedFollowRequest: boolean;
       unreadNotificationsCount: number;
@@ -3823,7 +3822,6 @@ export interface operations {
             hasUnreadMentions: boolean;
             hasUnreadAnnouncement: boolean;
             unreadAnnouncements: components["schemas"]["Announcement"][];
-            hasUnreadAntenna: boolean;
             hasUnreadNotification: boolean;
             hasPendingReceivedFollowRequest: boolean;
             unreadNotificationsCount: number;

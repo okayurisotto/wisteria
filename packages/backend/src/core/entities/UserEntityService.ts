@@ -367,7 +367,6 @@ export class UserEntityService {
 				}).then(count => count > 0),
 				hasUnreadAnnouncement: false,
 				unreadAnnouncements: [],
-				hasUnreadAntenna: false,
 				hasUnreadNotification: notificationsInfo?.hasUnread, // 後方互換性のため
 				hasPendingReceivedFollowRequest: this.getHasPendingReceivedFollowRequest(user.id),
 				unreadNotificationsCount: notificationsInfo?.unreadCount,
