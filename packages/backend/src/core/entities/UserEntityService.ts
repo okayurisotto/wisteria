@@ -368,7 +368,6 @@ export class UserEntityService {
 				hasUnreadAnnouncement: false,
 				unreadAnnouncements: [],
 				hasUnreadAntenna: false,
-				hasUnreadChannel: false, // 後方互換性のため
 				hasUnreadNotification: notificationsInfo?.hasUnread, // 後方互換性のため
 				hasPendingReceivedFollowRequest: this.getHasPendingReceivedFollowRequest(user.id),
 				unreadNotificationsCount: notificationsInfo?.unreadCount,
