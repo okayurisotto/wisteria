@@ -8,7 +8,6 @@ import { NoteSchema } from './note.js';
 import { PageSchema } from './page.js';
 import { RoleLiteSchema, RolePoliciesSchema } from './role.js';
 import { IdSchema } from './IdSchema.js';
-import { AnnouncementSchema } from './announcement.js';
 import { UserLiteSchema } from './user-lite.js';
 
 export const LocalUsernameSchema = z.string().regex(/^\w{1,20}$/);
@@ -108,8 +107,6 @@ export const MeDetailedOnlySchema = z
 		hideOnlineStatus: z.boolean(),
 		hasUnreadSpecifiedNotes: z.boolean(),
 		hasUnreadMentions: z.boolean(),
-		hasUnreadAnnouncement: z.boolean(),
-		unreadAnnouncements: AnnouncementSchema.array(),
 		hasUnreadNotification: z.boolean(),
 		hasPendingReceivedFollowRequest: z.boolean(),
 		unreadNotificationsCount: z.number(),

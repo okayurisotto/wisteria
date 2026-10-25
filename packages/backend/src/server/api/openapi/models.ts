@@ -1,5 +1,4 @@
 import type { z } from 'zod';
-import { AnnouncementSchema } from '@/models/zod/announcement.js';
 import { AntennaSchema } from '@/models/zod/antenna.js';
 import { AppSchema } from '@/models/zod/app.js';
 import { BirthdaySchema, DescriptionSchema, LocationSchema, MeDetailedSchema, NameSchema, NotificationRecieveConfig, LocalUsernameSchema, PasswordSchema } from '@/models/zod/user.js';
@@ -32,7 +31,6 @@ import { UserLiteSchema } from '@/models/zod/user-lite.js';
 import { UserSchema } from '@/models/zod/user.js';
 
 export const models = [
-	{ key: 'Announcement', schema: AnnouncementSchema },
 	{ key: 'Antenna', schema: AntennaSchema },
 	{ key: 'App', schema: AppSchema },
 	{ key: 'Birthday', schema: BirthdaySchema },

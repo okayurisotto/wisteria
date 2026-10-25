@@ -2636,22 +2636,6 @@ export interface components {
         id: string;
       };
     };
-    Announcement: {
-      id: components["schemas"]["Id"];
-      createdAt: string;
-      updatedAt: string | null;
-      text: string;
-      title: string;
-      imageUrl: string | null;
-      /** @enum {string} */
-      icon: "info" | "warning" | "error" | "success";
-      /** @enum {string} */
-      display: "dialog" | "normal" | "banner";
-      needConfirmationToRead: boolean;
-      silence: boolean;
-      forYou: boolean;
-      isRead?: boolean;
-    };
     Antenna: {
       id: components["schemas"]["Id"];
       createdAt: string;
@@ -2943,8 +2927,6 @@ export interface components {
       hideOnlineStatus: boolean;
       hasUnreadSpecifiedNotes: boolean;
       hasUnreadMentions: boolean;
-      hasUnreadAnnouncement: boolean;
-      unreadAnnouncements: components["schemas"]["Announcement"][];
       hasUnreadNotification: boolean;
       hasPendingReceivedFollowRequest: boolean;
       unreadNotificationsCount: number;
@@ -3820,8 +3802,6 @@ export interface operations {
             hideOnlineStatus: boolean;
             hasUnreadSpecifiedNotes: boolean;
             hasUnreadMentions: boolean;
-            hasUnreadAnnouncement: boolean;
-            unreadAnnouncements: components["schemas"]["Announcement"][];
             hasUnreadNotification: boolean;
             hasPendingReceivedFollowRequest: boolean;
             unreadNotificationsCount: number;
