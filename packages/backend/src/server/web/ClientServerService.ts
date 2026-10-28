@@ -21,6 +21,7 @@ import { PUG_DIR } from '@/path.js';
 import { Hono, type MiddlewareHandler } from 'hono';
 import path from 'node:path';
 import { UserLiteEntityService } from '@/core/entities/UserLiteEntityService.js';
+import { getCookie } from 'hono/cookie';
 
 declare module 'hono' {
 	interface ContextRenderer {
@@ -120,7 +121,7 @@ export class ClientServerService {
 			return await this.urlPreviewService.handle(c);
 		});
 
-		// #region SSR (for crawlers)
+		// #region SSR
 
 		// User
 		hono.get('/:user/:sub?', noIframe, usePug, async (c, next) => {
@@ -144,6 +145,28 @@ export class ClientServerService {
 				await next();
 				return;
 			}
+
+			//#region リモートのコンテンツにつき非ログインユーザーからのアクセスはリモートへリダイレクトする。
+
+			const isUnknownVisitor = getCookie(c, 'token') === undefined;
+			const isRemoteContent = user.uri !== null;
+
+			if (isUnknownVisitor && isRemoteContent) {
+				const redirectLocation = await this.userProfilesRepository.findOneOrFail({
+					where: { userId: user.id },
+					select: ['url'],
+				}).then((userProfile) => userProfile.url);
+
+				// 念の為
+				if (redirectLocation === null) {
+					await next();
+					return;
+				}
+
+				return c.redirect(redirectLocation);
+			}
+
+			//#endregion
 
 			c.header('Cache-Control', 'public, max-age=15');
 
@@ -181,6 +204,18 @@ export class ClientServerService {
 				await next();
 				return;
 			}
+
+			//#region リモートのコンテンツにつき非ログインユーザーからのアクセスはリモートへリダイレクトする。
+
+			const isUnknownVisitor = getCookie(c, 'token') !== undefined;
+			const redirectLocation = note.uri;
+			const isRemoteContent = redirectLocation !== null;
+
+			if (!isUnknownVisitor && isRemoteContent) {
+				return c.redirect(redirectLocation);
+			}
+
+			//#endregion
 
 			c.header('Cache-Control', 'public, max-age=15');
 
