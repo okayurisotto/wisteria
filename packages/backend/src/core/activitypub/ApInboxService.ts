@@ -26,7 +26,7 @@ import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { QueueService } from '@/core/QueueService.js';
 import type { UsersRepository, NotesRepository, FollowingsRepository, AbuseUserReportsRepository, FollowRequestsRepository } from '@/models/_.js';
 import type { MiRemoteUser } from '@/models/User.js';
-import { getApHrefNullable, getApId, getApIds, getApType, isAccept, isActor, isAdd, isAnnounce, isBlock, isCollection, isCollectionOrOrderedCollection, isCreate, isDelete, isFlag, isFollow, isLike, isMove, isPost, isReject, isRemove, isTombstone, isUndo, isUpdate, validActor, validPost } from './type.js';
+import { getApHrefNullable, getApId, getApIds, getApType, isAccept, isActor, isAdd, isAnnounce, isBlock, isCollection, isCollectionOrOrderedCollection, isCreate, isDelete, isFlag, isFollow, isLike, isMove, isPost, isReject, isRemove, isTombstone, isUndo, isUpdate, VALID_ACTOR, VALID_POST } from './type.js';
 import { ApNoteService } from './models/ApNoteService.js';
 import { ApLoggerService } from './ApLoggerService.js';
 import { ApDbResolverService } from './ApDbResolverService.js';
@@ -442,9 +442,9 @@ export class ApInboxService {
 			formerType = 'Note';
 		}
 
-		if (validPost.includes(formerType)) {
+		if (VALID_POST.includes(formerType)) {
 			return await this.deleteNote(actor, uri);
-		} else if (validActor.includes(formerType)) {
+		} else if (VALID_ACTOR.includes(formerType)) {
 			return await this.deleteActor(actor, uri);
 		} else {
 			return `Unknown type ${formerType}`;
