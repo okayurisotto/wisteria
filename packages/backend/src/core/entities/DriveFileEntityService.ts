@@ -13,7 +13,6 @@ import type { MiUser } from '@/models/User.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import { deepClone } from '@/misc/clone.js';
 import { isMimeImage } from '@/misc/is-mime-image.js';
-import { isNotNull } from '@/misc/is-not-null.js';
 import { IdService } from '@/core/IdService.js';
 import { VideoProcessingService } from '@/core/VideoProcessingService.js';
 import { DriveFolderEntityService } from './DriveFolderEntityService.js';
@@ -178,7 +177,7 @@ export class DriveFileEntityService {
 		options?: PackOptions,
 	): Promise<z.infer<typeof DriveFileSchema>[]> {
 		const items = await Promise.all(files.map(f => this.packNullable(f, options)));
-		return items.filter((x): x is z.infer<typeof DriveFileSchema> => x != null);
+		return items.filter((x) => x != null);
 	}
 
 	public async packManyByIdsMap(
@@ -201,6 +200,6 @@ export class DriveFileEntityService {
 	): Promise<z.infer<typeof DriveFileSchema>[]> {
 		if (fileIds.length === 0) return [];
 		const filesMap = await this.packManyByIdsMap(fileIds, options);
-		return fileIds.map(id => filesMap.get(id)).filter(isNotNull);
+		return fileIds.map(id => filesMap.get(id)).filter((x) => x != null);
 	}
 }
