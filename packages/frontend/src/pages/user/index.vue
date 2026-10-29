@@ -10,9 +10,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div v-if="user">
 			<MkHorizontalSwipe v-model:tab="tab" :tabs="headerTabs">
 				<XHome v-if="tab === 'home'" key="home" :user="user"/>
-				<MkSpacer v-else-if="tab === 'notes'" key="notes" :contentMax="800" style="padding-top: 0">
-					<XTimeline :user="user"/>
-				</MkSpacer>
 				<XReactions v-else-if="tab === 'reactions'" key="reactions" :user="user"/>
 				<XClips v-else-if="tab === 'clips'" key="clips" :user="user"/>
 				<XLists v-else-if="tab === 'lists'" key="lists" :user="user"/>
@@ -36,7 +33,6 @@ import { $i } from '@/account.js';
 import MkHorizontalSwipe from '@/components/MkHorizontalSwipe.vue';
 
 const XHome = defineAsyncComponent(() => import('./home.vue'));
-const XTimeline = defineAsyncComponent(() => import('./index.timeline.vue'));
 const XReactions = defineAsyncComponent(() => import('./reactions.vue'));
 const XClips = defineAsyncComponent(() => import('./clips.vue'));
 const XLists = defineAsyncComponent(() => import('./lists.vue'));
@@ -44,7 +40,7 @@ const XRaw = defineAsyncComponent(() => import('./raw.vue'));
 
 const props = withDefaults(defineProps<{
 	acct: string;
-	page?: string;
+	page?: 'home' | 'reactions' | 'clips' | 'lists' | 'raw';
 }>(), {
 	page: 'home',
 });
@@ -52,7 +48,7 @@ const props = withDefaults(defineProps<{
 const tab = ref(props.page);
 
 const user = ref<null | Misskey.entities.UserDetailed>(null);
-const error = ref<any>(null);
+const error = ref<unknown>(null);
 
 function fetchUser(): void {
 	if (props.acct == null) return;
@@ -76,8 +72,9 @@ const headerTabs = computed(() => {
 
 	return [
 		{ key: 'home', title: i18n.ts.overview, icon: 'ti ti-home' },
-		{ key: 'notes', title: i18n.ts.notes, icon: 'ti ti-pencil' },
-		...(isReactionsVisible ? [{ key: 'reactions', title: i18n.ts.reaction, icon: 'ti ti-mood-happy' }] : []),
+		...(isReactionsVisible ? [
+			{ key: 'reactions', title: i18n.ts.reaction, icon: 'ti ti-mood-happy' },
+		] : []),
 		...(isLocalUser ? [
 			{ key: 'clips', title: i18n.ts.clips, icon: 'ti ti-paperclip' },
 			{ key: 'lists', title: i18n.ts.lists, icon: 'ti ti-list' },
