@@ -23,7 +23,6 @@ import { MfmService } from '@/core/MfmService.js';
 import type { MiUserKeypair } from '@/models/UserKeypair.js';
 import type { UsersRepository, UserProfilesRepository, NotesRepository, DriveFilesRepository, PollsRepository } from '@/models/_.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
-import { isNotNull } from '@/misc/is-not-null.js';
 import { IdService } from '@/core/IdService.js';
 import { LdSignatureService } from './LdSignatureService.js';
 import { ApMfmService } from './ApMfmService.js';
@@ -296,7 +295,7 @@ export class ApRendererService {
 		const getPromisedFiles = async (ids: string[]): Promise<MiDriveFile[]> => {
 			if (ids.length === 0) return [];
 			const items = await this.driveFilesRepository.findBy({ id: In(ids) });
-			return ids.map(id => items.find(item => item.id === id)).filter((item): item is MiDriveFile => item != null);
+			return ids.map(id => items.find(item => item.id === id)).filter((item) => item != null);
 		};
 
 		let inReplyTo;
@@ -676,7 +675,7 @@ export class ApRendererService {
 		if (names.length === 0) return [];
 
 		const allEmojis = await this.customEmojiService.fetch();
-		const emojis = names.map(name => allEmojis.get(name)).filter(isNotNull);
+		const emojis = names.map(name => allEmojis.get(name)).filter((x) => x !== undefined);
 
 		return emojis;
 	}

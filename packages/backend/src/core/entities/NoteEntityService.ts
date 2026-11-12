@@ -10,7 +10,6 @@ import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiNote } from '@/models/Note.js';
 import type { UsersRepository, NotesRepository, FollowingsRepository, PollsRepository, PollVotesRepository, NoteReactionsRepository, ChannelsRepository } from '@/models/_.js';
-import { isNotNull } from '@/misc/is-not-null.js';
 import { DebounceLoader } from '@/misc/loader.js';
 import { IdService } from '@/core/IdService.js';
 import { DriveFileEntityService } from './DriveFileEntityService.js';
@@ -261,7 +260,7 @@ export class NoteEntityService {
 				packedFiles.set(k, v);
 			}
 		}
-		return fileIds.map(id => packedFiles.get(id)).filter(isNotNull);
+		return fileIds.map(id => packedFiles.get(id)).filter((x) => x != null);
 	}
 
 	public async pack(
@@ -440,7 +439,7 @@ export class NoteEntityService {
 		}
 
 		// TODO: 本当は renote とか reply がないのに renoteId とか replyId があったらここで解決しておく
-		const fileIds = notes.map(n => [n.fileIds, n.renote?.fileIds, n.reply?.fileIds]).flat(2).filter(isNotNull);
+		const fileIds = notes.map(n => [n.fileIds, n.renote?.fileIds, n.reply?.fileIds]).flat(2).filter((x) => x != null);
 		const packedFiles = fileIds.length > 0 ? await this.driveFileEntityService.packManyByIdsMap(fileIds) : new Map();
 
 		return await Promise.all(notes.map(n => this.pack(n, me, {

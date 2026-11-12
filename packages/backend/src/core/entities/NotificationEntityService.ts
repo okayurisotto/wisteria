@@ -10,7 +10,6 @@ import type { FollowRequestsRepository, NotesRepository, MiUser, UsersRepository
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { MiNotification } from '@/models/Notification.js';
 import type { MiNote } from '@/models/Note.js';
-import { isNotNull } from '@/misc/is-not-null.js';
 import { notificationTypes } from '@/types.js';
 import { RoleEntityService } from './RoleEntityService.js';
 import { NoteEntityService } from './NoteEntityService.js';
@@ -101,7 +100,7 @@ export class NotificationEntityService {
 
 		let validNotifications = notifications;
 
-		const noteIds = validNotifications.map(x => 'noteId' in x ? x.noteId : null).filter(isNotNull);
+		const noteIds = validNotifications.map(x => 'noteId' in x ? x.noteId : null).filter((x) => x != null);
 		const notes = noteIds.length > 0
 			? await this.notesRepository.find({
 				where: { id: In(noteIds) },
@@ -115,7 +114,7 @@ export class NotificationEntityService {
 
 		validNotifications = validNotifications.filter(x => !('noteId' in x) || packedNotes.has(x.noteId));
 
-		const userIds = validNotifications.map(x => 'notifierId' in x ? x.notifierId : null).filter(isNotNull);
+		const userIds = validNotifications.map(x => 'notifierId' in x ? x.notifierId : null).filter((x) => x != null);
 		const users = userIds.length > 0
 			? await this.usersRepository.find({
 				where: { id: In(userIds) },
