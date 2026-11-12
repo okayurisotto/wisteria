@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkSpacer :contentMax="narrow ? 800 : 1100">
+<MkSpacer :contentMax="800">
 	<div ref="rootEl" class="ftskorzw" :class="{ wide: !narrow }" style="container-type: inline-size;">
 		<div class="main _gaps">
 			<div class="profile _gaps">
@@ -121,28 +121,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div v-if="user.pinnedNotes.length > 0" class="_gaps">
 					<MkNote v-for="note in user.pinnedNotes" :key="note.id" class="note _panel" :note="note" :pinned="true"/>
 				</div>
-				<MkInfo v-else-if="$i && $i.id === user.id">{{ i18n.ts.userPagePinTip }}</MkInfo>
-				<template v-if="narrow">
-					<MkLazy>
-						<XFiles :key="user.id" :user="user"/>
-					</MkLazy>
-				</template>
-				<div v-if="!disableNotes">
-					<MkLazy>
 						<XTimeline :user="user"/>
-					</MkLazy>
-				</div>
 			</div>
-		</div>
-		<div v-if="!narrow" class="sub _gaps" style="container-type: inline-size;">
-			<XFiles :key="user.id" :user="user"/>
 		</div>
 	</div>
 </MkSpacer>
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, computed, onMounted, nextTick, watch, ref } from 'vue';
+import { computed, onMounted, nextTick, watch, ref, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkNote from '@/components/MkNote.vue';
 import MkFollowButton from '@/components/MkFollowButton.vue';
@@ -150,7 +137,7 @@ import MkAccountMoved from '@/components/MkAccountMoved.vue';
 import MkRemoteCaution from '@/components/MkRemoteCaution.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
 import MkOmit from '@/components/MkOmit.vue';
-import MkInfo from '@/components/MkInfo.vue';
+import XTimeline from './index.timeline.vue';
 import MkButton from '@/components/MkButton.vue';
 import { getUserMenu } from '@/scripts/get-user-menu.js';
 import number from '@/filters/number.js';
@@ -163,30 +150,26 @@ import { misskeyApi } from '@/scripts/misskey-api.js';
 import { isFollowingVisibleForMe, isFollowersVisibleForMe } from '@/scripts/isFfVisibleForMe.js';
 import { useRouter } from '@/router/supplier.js';
 
-function calcAge(birthdate: string): number {
-	const date = new Date(birthdate);
-	const now = new Date();
+const calcAge = (birthdate: string | null | undefined, now?: Date | null | undefined): number | null => {
+	if (birthdate == null) return null;
 
-	let yearDiff = now.getFullYear() - date.getFullYear();
+	const date = new Date(birthdate);
+	now ??= new Date();
+
+	const yearDiff = now.getFullYear() - date.getFullYear();
 	const monthDiff = now.getMonth() - date.getMonth();
 	const pastDate = now.getDate() < date.getDate();
 
 	if (monthDiff < 0 || (monthDiff === 0 && pastDate)) {
-		yearDiff--;
+		return yearDiff - 1;
+	} else {
+		return yearDiff;
 	}
-
-	return yearDiff;
-}
-
-const XFiles = defineAsyncComponent(() => import('./index.files.vue'));
-const XTimeline = defineAsyncComponent(() => import('./index.timeline.vue'));
+};
 
 const props = withDefaults(defineProps<{
 	user: Misskey.entities.UserDetailed;
-	/** Test only; MkNotes currently causes problems in vitest */
-	disableNotes: boolean;
 }>(), {
-	disableNotes: false,
 });
 
 const router = useRouter();
@@ -215,31 +198,31 @@ const age = computed(() => {
 	return calcAge(props.user.birthday);
 });
 
-function menu(ev: MouseEvent) {
+const menu = (ev: MouseEvent) => {
 	const { menu, cleanup } = getUserMenu(user.value, router);
 	os.popupMenu(menu, ev.currentTarget ?? ev.target).finally(cleanup);
-}
+};
 
-function showMemoTextarea() {
+const showMemoTextarea = () => {
 	isEditingMemo.value = true;
 	nextTick(() => {
 		memoTextareaEl.value?.focus();
 	});
-}
+};
 
-function adjustMemoTextarea() {
+const adjustMemoTextarea = () => {
 	if (!memoTextareaEl.value) return;
 	memoTextareaEl.value.style.height = '0px';
 	memoTextareaEl.value.style.height = `${memoTextareaEl.value.scrollHeight}px`;
-}
+};
 
-async function updateMemo() {
+const updateMemo = async () => {
 	await misskeyApi('users/update-memo', {
 		memo: memoDraft.value,
 		userId: props.user.id,
 	});
 	isEditingMemo.value = false;
-}
+};
 
 watch([props.user], () => {
 	memoDraft.value = props.user.memo;
@@ -256,7 +239,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .ftskorzw {
-
 	> .main {
 
 		> .punished {
