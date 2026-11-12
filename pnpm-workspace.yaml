@@ -16,3 +16,9 @@ allowBuilds:
 
 overrides:
   rollup: "4.62.4"
+
+  "@babel/parser": "7.29.12"
+  # https://github.com/babel/babel/pull/18588
+  # `7.29.12`→`7.29.13`でデグレ
+  # `7.29.14`でデグレ解消済み
+  # minimumReleaseAgeの消化待ち
