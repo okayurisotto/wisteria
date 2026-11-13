@@ -374,9 +374,6 @@ importers:
       rxjs:
         specifier: 7.8.2
         version: 7.8.2
-      sanitize-html:
-        specifier: 2.13.1
-        version: 2.13.1
       secure-json-parse:
         specifier: 4.0.0
         version: 4.0.0
@@ -404,9 +401,6 @@ importers:
       ulid:
         specifier: 3.0.2
         version: 3.0.2
-      vary:
-        specifier: 1.1.2
-        version: 1.1.2
       web-push:
         specifier: 3.6.7
         version: 3.6.7(supports-color@9.4.0)
@@ -471,18 +465,12 @@ importers:
       '@types/rename':
         specifier: 1.0.7
         version: 1.0.7
-      '@types/sanitize-html':
-        specifier: 2.13.0
-        version: 2.13.0
       '@types/tinycolor2':
         specifier: 1.4.6
         version: 1.4.6
       '@types/tmp':
         specifier: 0.2.6
         version: 0.2.6
-      '@types/vary':
-        specifier: 1.1.3
-        version: 1.1.3
       '@types/web-push':
         specifier: 3.6.4
         version: 3.6.4
@@ -2482,9 +2470,6 @@ packages:
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
-
-  '@types/vary@1.1.3':
-    resolution: {integrity: sha512-XJT8/ZQCL7NUut9QDLf6l24JfAEl7bnNdgxfj50cHIpEPRJLHHDDFOAq6i+GsEmeFfH7NamhBE4c4Thtb2egWg==}
 
   '@types/web-bluetooth@0.0.21':
     resolution: {integrity: sha512-oIQLCGWtcFZy2JW77j9k8nHzAOpqMHLQejDA48XXMWH6tjCQHz5RCFz1bzsmROyL6PUm+LLnUiI4BCn221inxA==}
@@ -5135,10 +5120,6 @@ packages:
       '@vue/composition-api':
         optional: true
 
-  vary@1.1.2:
-    resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
-    engines: {node: '>= 0.8'}
-
   verkit@0.5.0:
     resolution: {integrity: sha512-u4J1hr6Y+C/hit34GwL3eIcUf3wngT8TlYUjK7tk0jxydKLAq3sYvifjdTDA6U3KCKRcQCQDGf/srjxfZF3l7g==}
     engines: {node: '>=18.12.0'}
@@ -6876,10 +6857,6 @@ snapshots:
   '@types/tmp@0.2.6': {}
 
   '@types/unist@3.0.3': {}
-
-  '@types/vary@1.1.3':
-    dependencies:
-      '@types/node': 26.6.5
 
   '@types/web-bluetooth@0.0.21': {}
 
@@ -9590,8 +9567,6 @@ snapshots:
       highlight.js: 11.12.0
       vue: 3.5.28(typescript@6.0.3)
       vue-demi: 0.13.11(vue@3.5.28(typescript@6.0.3))
-
-  vary@1.1.2: {}
 
   verkit@0.5.0: {}
 
