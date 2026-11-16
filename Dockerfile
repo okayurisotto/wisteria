@@ -8,8 +8,6 @@ ARG IMAGE_TAG=26.13.1-trixie
 
 FROM --platform=$TARGETPLATFORM node:${IMAGE_TAG} AS fetcher
 
-ENV COREPACK_INTEGRITY_KEYS=0
-
 RUN npm install -g pnpm
 
 WORKDIR /misskey
@@ -26,11 +24,9 @@ FROM --platform=$TARGETPLATFORM fetcher AS builder
 
 RUN pnpm fetch
 
-COPY --link . ./
+COPY . ./
 
 RUN pnpm install --offline --frozen-lockfile
-
-RUN git submodule update --init
 
 ENV NODE_ENV=production
 
@@ -42,36 +38,20 @@ RUN pnpm build
 
 FROM --platform=$TARGETPLATFORM fetcher AS installer
 
-COPY --link ./healthcheck.sh                            ./healthcheck.sh
-COPY --link ./packages/backend/assets                   ./packages/backend/assets
-COPY --link ./packages/backend/migration                ./packages/backend/migration
-COPY --link ./packages/backend/ormconfig.js             ./packages/backend/ormconfig.js
-COPY --link ./packages/backend/package.json             ./packages/backend/package.json
-COPY --link ./packages/frontend/assets                  ./packages/frontend/assets
-COPY --link ./packages/frontend/package.json            ./packages/frontend/package.json
-COPY --link ./packages/hono-serve-static/package.json   ./packages/hono-serve-static/package.json
-COPY --link ./packages/http-signature/package.json      ./packages/http-signature/package.json
-COPY --link ./packages/identicon-generator/package.json ./packages/identicon-generator/package.json
-COPY --link ./packages/locales/package.json             ./packages/locales/package.json
-COPY --link ./packages/misskey-js/package.json          ./packages/misskey-js/package.json
-COPY --link ./packages/parcom/package.json              ./packages/parcom/package.json
-COPY --link ./packages/redis-lock/package.json          ./packages/redis-lock/package.json
-COPY --link ./packages/sw/package.json                  ./packages/sw/package.json
-COPY --link ./packages/zod2spec/package.json            ./packages/zod2spec/package.json
+COPY --parents \
+	./healthcheck.sh \
+	./packages/*/package.json \
+	./packages/backend/assets \
+	./packages/backend/migration \
+	./packages/backend/ormconfig.js \
+	./packages/frontend/assets \
+	.
 
 RUN pnpm install --prod --offline --frozen-lockfile
 
-COPY --link --from=builder /misskey/packages/backend/built             ./packages/backend/built
-COPY --link --from=builder /misskey/packages/frontend/built            ./packages/frontend/built
-COPY --link --from=builder /misskey/packages/hono-serve-static/built   ./packages/hono-serve-static/built
-COPY --link --from=builder /misskey/packages/http-signature/built      ./packages/http-signature/built
-COPY --link --from=builder /misskey/packages/identicon-generator/built ./packages/identicon-generator/built
-COPY --link --from=builder /misskey/packages/locales/built             ./packages/locales/built
-COPY --link --from=builder /misskey/packages/misskey-js/built          ./packages/misskey-js/built
-COPY --link --from=builder /misskey/packages/parcom/built              ./packages/parcom/built
-COPY --link --from=builder /misskey/packages/redis-lock/built          ./packages/redis-lock/built
-COPY --link --from=builder /misskey/packages/sw/built                  ./packages/sw/built
-COPY --link --from=builder /misskey/packages/zod2spec/built            ./packages/zod2spec/built
+COPY --parents --from=builder \
+	/misskey/./packages/*/built \
+	.
 
 # ----------------------------------------------------------
 # Build a image
@@ -79,17 +59,15 @@ COPY --link --from=builder /misskey/packages/zod2spec/built            ./package
 
 FROM --platform=$TARGETPLATFORM node:${IMAGE_TAG}-slim AS runner
 
-ENV COREPACK_INTEGRITY_KEYS=0
-
 RUN \
 	apt-get update \
-	&& apt-get install -y --no-install-recommends ffmpeg tini libjemalloc2 \
+	&& apt-get install -y --no-install-recommends ffmpeg libjemalloc2 \
 	&& ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists \
 	&& npm install -g pnpm
 
-COPY --link --from=installer /misskey /misskey
+COPY --from=installer /misskey /misskey
 
 WORKDIR /misskey
 
@@ -98,5 +76,4 @@ ENV NODE_ENV=production
 
 HEALTHCHECK --interval=5s --retries=20 CMD ["/bin/bash", "/misskey/healthcheck.sh"]
 
-ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["pnpm", "run", "migrateandstart"]
