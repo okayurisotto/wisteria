@@ -1,13 +1,20 @@
-/.dockerignore
-/Dockerfile
+.dockerignore
+Dockerfile
+compose.yaml
+compose.*.yaml
 
-.turbo/
-/misskey-assets/
-built-test/
-built/
-node_modules/
+.git/
+.gitattributes
+.github/
+.gitignore
 
-/.config/
-/db/
-/files/
-/redis/
+.vscode/
+
+**/.turbo/
+**/built/
+**/node_modules/
+
+.config/
+db/
+files/
+redis/

@@ -30,8 +30,6 @@ COPY --link . ./
 
 RUN pnpm install --offline --frozen-lockfile
 
-RUN git submodule update --init
-
 ENV NODE_ENV=production
 
 RUN pnpm build
