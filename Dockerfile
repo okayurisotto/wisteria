@@ -8,8 +8,6 @@ ARG IMAGE_TAG=26.13.1-trixie
 
 FROM --platform=$TARGETPLATFORM node:${IMAGE_TAG} AS fetcher
 
-ENV COREPACK_INTEGRITY_KEYS=0
-
 RUN npm install -g pnpm
 
 WORKDIR /misskey
@@ -76,8 +74,6 @@ COPY --link --from=builder /misskey/packages/zod2spec/built            ./package
 # ----------------------------------------------------------
 
 FROM --platform=$TARGETPLATFORM node:${IMAGE_TAG}-slim AS runner
-
-ENV COREPACK_INTEGRITY_KEYS=0
 
 RUN \
 	apt-get update \
