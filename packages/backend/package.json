@@ -95,6 +95,7 @@
 		"tmp": "0.2.7",
 		"typeorm": "0.3.28",
 		"ulid": "3.0.2",
+		"vite-manifest": "workspace:*",
 		"web-push": "3.6.7",
 		"ws": "8.19.0",
 		"xev": "3.0.2",

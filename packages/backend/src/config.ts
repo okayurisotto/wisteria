@@ -6,19 +6,13 @@
 import * as fs from 'node:fs';
 import * as yaml from 'js-yaml';
 import type { RedisOptions } from 'ioredis';
+import { parseManifest, getFrontendData } from 'vite-manifest';
 import { z } from 'zod';
 import { PACKAGE_JSON_FILE, FRONTEND_MANIFEST_FILE, CONFIG_FILE } from './path.js';
 import { envOption } from './env.js';
 
 const metaSchema = z.object({
 	version: z.string(),
-});
-
-const frontendManifestSchema = z.object({
-	'src/_boot_.ts': z.object({
-		file: z.string(),
-		css: z.string().array().optional(),
-	}),
 });
 
 const redisConfigSchema = z.object({
@@ -110,9 +104,12 @@ export const loadConfig = () => {
 	const meta = metaSchema.parse(JSON.parse(fs.readFileSync(PACKAGE_JSON_FILE, 'utf-8')));
 
 	const clientManifestExists = fs.existsSync(FRONTEND_MANIFEST_FILE);
-	const clientManifest = clientManifestExists
-		? frontendManifestSchema.parse(JSON.parse(fs.readFileSync(FRONTEND_MANIFEST_FILE, 'utf-8')))
-		: { 'src/_boot_.ts': { file: 'src/_boot_.ts' } };
+	const frontendData = getFrontendData(
+		clientManifestExists
+			? parseManifest(JSON.parse(fs.readFileSync(FRONTEND_MANIFEST_FILE, 'utf-8')))
+			: { 'src/_boot_.ts': { file: 'src/_boot_.ts' } },
+		'src/_boot_.ts',
+	);
 
 	const config = configSchema.parse(yaml.load(fs.readFileSync(CONFIG_FILE, 'utf-8')));
 
@@ -174,7 +171,7 @@ export const loadConfig = () => {
 		externalMediaProxyEnabled: externalMediaProxy !== null && externalMediaProxy !== internalMediaProxy,
 		videoThumbnailGenerator: config.videoThumbnailGenerator ?? null,
 		userAgent: `Misskey/${version} (${config.url})`,
-		clientEntry: clientManifest['src/_boot_.ts'],
+		frontendData,
 		perUserNotificationsMaxCount: config.perUserNotificationsMaxCount,
 		deactivateAntennaThreshold: config.deactivateAntennaThreshold,
 		pidFile: config.pidFile,

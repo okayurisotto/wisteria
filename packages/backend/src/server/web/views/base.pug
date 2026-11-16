@@ -1,7 +1,7 @@
 block vars
 
 block loadClientEntry
-	- const clientEntry = config.clientEntry;
+	- const frontendData = config.frontendData;
 
 doctype html
 
@@ -26,11 +26,15 @@ html
 		link(rel='prefetch' href=notFoundImageUrl)
 		//- https://github.com/misskey-dev/misskey/issues/9842
 		link(rel='stylesheet' href='/assets/tabler-icons/tabler-icons.min.css?v2.44.0')
-		script(type='module' src=`/vite/${clientEntry.file}`)
 
-		if Array.isArray(clientEntry.css)
-			each href in clientEntry.css
-				link(rel='stylesheet' href=`/vite/${href}`)
+		each stylesheet in frontendData.stylesheets
+			link(rel='stylesheet' href=`/vite/${stylesheet}`)
+
+		each module in frontendData.modules
+			script(type='module' src=`/vite/${module}`)
+
+		each preloadModule in frontendData.preloadModules
+			link(rel='modulepreload' href=`/vite/${preloadModule}`)
 
 		title
 			block title
