@@ -104,6 +104,7 @@ backend
     -> parcom
   -> identicon-generator
   -> misskey-js
+	-> vite-manifest
   -> zod2spec
 frontend
   -> locales
@@ -125,6 +126,8 @@ sw
 `misskey-js`は、Wisteriaが提供するHTTP / WebSocket APIを扱うためのSDKです。HTTP APIの型定義は`backend`の出力するOpenAPIスキーマから生成されます。
 
 `parcom`は、正規表現を便利に使えるようにするためのライブラリで、簡易的なパーサコンビネータのようなものです。
+
+`vite-manifest`は、Viteによってビルドされたフロントエンドを`backend`に統合するために使われているライブラリです。
 
 `zod2spec`は、`backend`にてZod（バリデーションライブラリ）からOpenAPIスキーマを生成するためのライブラリです。
 

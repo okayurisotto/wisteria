@@ -1,0 +1,13 @@
+import { defineConfig } from 'tsdown';
+
+export default defineConfig({
+	tsconfig: 'tsconfig.app.json',
+	entry: ['./src/index.ts'],
+	format: 'esm',
+	minify: true,
+	outDir: 'built',
+	fixedExtension: false,
+	deps: {
+		neverBundle: "vite",
+	},
+});
