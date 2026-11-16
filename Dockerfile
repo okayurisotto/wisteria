@@ -24,7 +24,7 @@ FROM --platform=$TARGETPLATFORM fetcher AS builder
 
 RUN pnpm fetch
 
-COPY --link . ./
+COPY . ./
 
 RUN pnpm install --offline --frozen-lockfile
 
@@ -38,36 +38,20 @@ RUN pnpm build
 
 FROM --platform=$TARGETPLATFORM fetcher AS installer
 
-COPY --link ./healthcheck.sh                            ./healthcheck.sh
-COPY --link ./packages/backend/assets                   ./packages/backend/assets
-COPY --link ./packages/backend/migration                ./packages/backend/migration
-COPY --link ./packages/backend/ormconfig.js             ./packages/backend/ormconfig.js
-COPY --link ./packages/backend/package.json             ./packages/backend/package.json
-COPY --link ./packages/frontend/assets                  ./packages/frontend/assets
-COPY --link ./packages/frontend/package.json            ./packages/frontend/package.json
-COPY --link ./packages/hono-serve-static/package.json   ./packages/hono-serve-static/package.json
-COPY --link ./packages/http-signature/package.json      ./packages/http-signature/package.json
-COPY --link ./packages/identicon-generator/package.json ./packages/identicon-generator/package.json
-COPY --link ./packages/locales/package.json             ./packages/locales/package.json
-COPY --link ./packages/misskey-js/package.json          ./packages/misskey-js/package.json
-COPY --link ./packages/parcom/package.json              ./packages/parcom/package.json
-COPY --link ./packages/redis-lock/package.json          ./packages/redis-lock/package.json
-COPY --link ./packages/sw/package.json                  ./packages/sw/package.json
-COPY --link ./packages/zod2spec/package.json            ./packages/zod2spec/package.json
+COPY --parents \
+	./healthcheck.sh \
+	./packages/*/package.json \
+	./packages/backend/assets \
+	./packages/backend/migration \
+	./packages/backend/ormconfig.js \
+	./packages/frontend/assets \
+	.
 
 RUN pnpm install --prod --offline --frozen-lockfile
 
-COPY --link --from=builder /misskey/packages/backend/built             ./packages/backend/built
-COPY --link --from=builder /misskey/packages/frontend/built            ./packages/frontend/built
-COPY --link --from=builder /misskey/packages/hono-serve-static/built   ./packages/hono-serve-static/built
-COPY --link --from=builder /misskey/packages/http-signature/built      ./packages/http-signature/built
-COPY --link --from=builder /misskey/packages/identicon-generator/built ./packages/identicon-generator/built
-COPY --link --from=builder /misskey/packages/locales/built             ./packages/locales/built
-COPY --link --from=builder /misskey/packages/misskey-js/built          ./packages/misskey-js/built
-COPY --link --from=builder /misskey/packages/parcom/built              ./packages/parcom/built
-COPY --link --from=builder /misskey/packages/redis-lock/built          ./packages/redis-lock/built
-COPY --link --from=builder /misskey/packages/sw/built                  ./packages/sw/built
-COPY --link --from=builder /misskey/packages/zod2spec/built            ./packages/zod2spec/built
+COPY --parents --from=builder \
+	/misskey/./packages/*/built \
+	.
 
 # ----------------------------------------------------------
 # Build a image
@@ -83,7 +67,7 @@ RUN \
 	&& rm -rf /var/lib/apt/lists \
 	&& npm install -g pnpm
 
-COPY --link --from=installer /misskey /misskey
+COPY --from=installer /misskey /misskey
 
 WORKDIR /misskey
 
