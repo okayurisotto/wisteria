@@ -1,0 +1,25 @@
+{
+	"name": "vite-manifest",
+	"type": "module",
+	"license": "MIT",
+	"scripts": {
+		"build": "tsdown",
+		"test": "vitest run",
+		"typecheck:app": "tsc --project tsconfig.app.json",
+		"typecheck:dev": "tsc --project tsconfig.dev.json",
+		"watch": "tsdown --watch"
+	},
+	"exports": {
+		"types": "./built/index.d.ts",
+		"import": "./built/index.js"
+	},
+	"devDependencies": {
+		"@types/node": "26.6.5",
+		"tsdown": "0.23.1",
+		"vite": "7.3.5",
+		"vitest": "4.1.9"
+	},
+	"dependencies": {
+		"zod": "4.3.6"
+	}
+}
