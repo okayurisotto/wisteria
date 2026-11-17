@@ -1,0 +1,154 @@
+doctype html
+
+html
+
+	head
+		meta(charset='utf-8')
+		meta(name='viewport' content='width=device-width, initial-scale=1')
+		meta(name='application-name' content='Wisteria')
+		meta(name='referrer' content='origin')
+
+		title
+			block title
+				= 'An error has occurred... | Wisteria'
+
+		style.
+			* {
+				font-family: BIZ UDGothic, Roboto, HelveticaNeue, Arial, sans-serif;
+			}
+
+			#misskey_app,
+			#splash {
+				display: none !important;
+			}
+
+			body,
+			html {
+				background-color: #222;
+				color: #dfddcc;
+				justify-content: center;
+				margin: auto;
+				padding: 10px;
+				text-align: center;
+			}
+
+			button {
+				border-radius: 999px;
+				padding: 0px 12px 0px 12px;
+				border: none;
+				cursor: pointer;
+				margin-bottom: 12px;
+			}
+
+			.button-big {
+				background: linear-gradient(90deg, rgb(134, 179, 0), rgb(74, 179, 0));
+				line-height: 50px;
+			}
+
+			.button-big:hover {
+				background: rgb(153, 204, 0);
+			}
+
+			.button-small {
+				background: #444;
+				line-height: 40px;
+			}
+
+			.button-small:hover {
+				background: #555;
+			}
+
+			.button-label-big {
+				color: #222;
+				font-weight: bold;
+				font-size: 20px;
+				padding: 12px;
+			}
+
+			.button-label-small {
+				color: rgb(153, 204, 0);
+				font-size: 16px;
+				padding: 12px;
+			}
+
+			a {
+				color: rgb(134, 179, 0);
+				text-decoration: none;
+			}
+
+			p,
+			li {
+				font-size: 16px;
+			}
+
+			.dont-worry,
+			#msg {
+				font-size: 18px;
+			}
+
+			.icon-warning {
+				color: #dec340;
+				height: 4rem;
+				padding-top: 2rem;
+			}
+
+			h1 {
+				font-size: 32px;
+			}
+
+			code {
+				display: block;
+				font-family: Fira, FiraCode, monospace;
+				background: #333;
+				padding: 0.5rem 1rem;
+				max-width: 40rem;
+				border-radius: 10px;
+				justify-content: center;
+				margin: auto;
+				white-space: pre-wrap;
+				word-break: break-word;
+			}
+
+			summary {
+				cursor: pointer;
+			}
+
+			summary > * {
+				display: inline;
+				white-space: pre-wrap;
+			}
+
+			@media screen and (max-width: 500px) {
+				details {
+					width: 50%;
+				}
+			}
+
+body
+	svg.icon-warning(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 24 24", stroke-width="2", stroke="currentColor", fill="none", stroke-linecap="round", stroke-linejoin="round")
+		path(stroke="none", d="M0 0h24v24H0z", fill="none")
+		path(d="M12 9v2m0 4v.01")
+		path(d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75")
+
+	h1 An error has occurred!
+
+	button.button-big(onclick="location.reload();")
+		span.button-label-big Refresh
+
+	p.dont-worry Don't worry, it's (probably) not your fault.
+
+	p If reloading after a period of time does not resolve the problem, contact the server administrator with the following ERROR ID.
+
+	div#errors
+		code.
+			ERROR CODE: #{code}
+			ERROR ID: #{id}
+
+	p You may also try the following options:
+
+	p Update your os and browser.
+	p Disable an adblocker.
+
+	a(href="/flush")
+		button.button-small
+			span.button-label-small Clear preferences and cache
