@@ -11,10 +11,10 @@
 		"build": "node ./scripts/build.mjs",
 		"build-misskey-js-with-types": "turbo build && pnpm --filter backend generate-api-json && pnpm --filter misskey-js generate && turbo build",
 		"test-vite-manifest-with-actual-manifest": "turbo build && mv packages/frontend/built/manifest.json packages/vite-manifest/test/manifest.json && pnpm --filter vite-manifest test",
-		"start": "node ./packages/backend/built/boot/entry.js",
+		"start": "node ./scripts/start.mjs",
 		"migrate": "pnpm --filter backend migrate",
 		"revert": "pnpm --filter backend revert",
-		"migrateandstart": "pnpm migrate && pnpm start",
+		"migrateandstart": "node ./scripts/start.mjs --migration",
 		"clean": "node ./scripts/clean.mjs"
 	},
 	"devDependencies": {

@@ -40,6 +40,7 @@ FROM --platform=$TARGETPLATFORM fetcher AS installer
 
 COPY --parents \
 	./healthcheck.sh \
+	./scripts \
 	./packages/*/package.json \
 	./packages/backend/assets \
 	./packages/backend/migration \
@@ -76,4 +77,4 @@ ENV NODE_ENV=production
 
 HEALTHCHECK --interval=5s --retries=20 CMD ["/bin/bash", "/misskey/healthcheck.sh"]
 
-CMD ["pnpm", "run", "migrateandstart"]
+CMD ["node", "./scripts/start.mjs", "--migration"]
