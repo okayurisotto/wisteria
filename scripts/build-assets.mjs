@@ -3,65 +3,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
-import cssnano from 'cssnano';
-import postcss from 'postcss';
 import { loadConfig } from '../packages/backend/built/config.js';
 import { build as buildTarball } from './tarball.mjs';
 
-const root = path.join(import.meta.dirname, '..');
-
-async function copyBackendViews() {
-	await fs.cp(
-		path.join(root, './packages/backend/src/server/web/views'),
-		path.join(root, './packages/backend/built/server/web/views'),
-		{ recursive: true },
-	);
-}
-
-async function copyBackendAssets() {
-	await fs.cp(
-		path.join(root, './packages/backend/src/server/assets'),
-		path.join(root, './packages/backend/built/server/assets'),
-		{ recursive: true },
-	);
-}
-
-async function buildBackendStyle() {
-	await fs.mkdir(
-		path.join(root, './packages/backend/built/server/web'),
-		{ recursive: true },
-	);
-
-	for (const file of [
-		path.join(root, './packages/backend/src/server/web/error.css'),
-	]) {
-		const source = await fs.readFile(file, { encoding: 'utf-8' });
-		const { css } = await postcss([cssnano({ zindex: false })]).process(source, { from: undefined });
-		await fs.writeFile(
-			path.join(root, './packages/backend/built/server/web/', path.basename(file)),
-			css,
-		);
-	}
-}
-
 async function build() {
-	await Promise.all([
-		copyBackendViews(),
-		copyBackendAssets(),
-		buildBackendStyle(),
-		(async () => {
-			try {
-				const config = loadConfig();
-				if (config?.publishTarballInsteadOfProvideRepositoryUrl) {
-					await buildTarball();
-				}
-			} catch {
-				// Dockerfileからのビルドなどでは設定ファイルが提供されていないためエラーになる
-			}
-		})(),
-	]);
+	try {
+		const config = loadConfig();
+		if (config?.publishTarballInsteadOfProvideRepositoryUrl) {
+			await buildTarball();
+		}
+	} catch {
+		// Dockerfileからのビルドなどでは設定ファイルが提供されていないためエラーになる
+	}
 }
 
 await build();

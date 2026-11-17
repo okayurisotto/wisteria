@@ -60,11 +60,11 @@ export const DATABASE_MIGRATION_FILES = path.join(BACKEND_DIR, 'migration/*.js')
 /** `/packages/backend/built/server/assets` */
 export const ASSETS_DIR = path.join(BACKEND_DIR, 'built/server/assets');
 
-/** `/packages/backend/built/server/assets/dummy.png` */
-export const DUMMY_PNG_FILE = path.join(ASSETS_DIR, 'dummy.png');
+/** `/packages/backend/assets/dummy.png` */
+export const DUMMY_PNG_FILE = path.join(STATIC_ASSETS_DIR, 'dummy.png');
 
-/** `/packages/backend/built/server/web/views` */
-export const PUG_DIR = path.join(BACKEND_DIR, 'built/server/web/views');
+/** `/packages/backend/assets/views` */
+export const PUG_DIR = path.join(STATIC_ASSETS_DIR, 'views');
 
 /** `/packages/backend/node_modules/@discordapp/twemoji/dist/svg` */
 export const TWEMOJI_DIR = path.join(BACKEND_DIR, 'node_modules/@discordapp/twemoji/dist/svg');
