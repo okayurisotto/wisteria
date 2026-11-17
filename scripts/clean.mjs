@@ -1,40 +1,45 @@
-/*
- * SPDX-FileCopyrightText: syuilo and misskey-project
- * SPDX-License-Identifier: AGPL-3.0-only
+// @ts-check
+
+import path from 'node:path';
+import fs from 'node:fs/promises';
+
+/**
+ * @param {string} relpath
+ * @returns {Promise<void>}
  */
+const cleanup = async (relpath) => {
+	const abspath = path.join(import.meta.dirname, '..', relpath);
+	await fs.rm(abspath, { recursive: true, force: true });
+};
 
-import { resolve } from 'node:path';
-import { rm } from 'node:fs/promises';
+await Promise.all([
+	cleanup('built'),
 
-void Promise.all([
-	rm(resolve(import.meta.dirname, '../built'), { recursive: true, force: true }),
+	cleanup('packages/backend/built'),
+	cleanup('packages/frontend/built'),
+	cleanup('packages/hono-serve-static/built'),
+	cleanup('packages/http-signature/built'),
+	cleanup('packages/identicon-generator/built'),
+	cleanup('packages/locales/built'),
+	cleanup('packages/misskey-js/built'),
+	cleanup('packages/parcom/built'),
+	cleanup('packages/redis-lock/built'),
+	cleanup('packages/sw/built'),
+	cleanup('packages/vite-manifest/built'),
+	cleanup('packages/zod2spec/built'),
 
-	rm(resolve(import.meta.dirname, '../packages/backend/built'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/frontend/built'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/hono-serve-static/built'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/http-signature/built'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/identicon-generator/built'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/locales/built'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/misskey-js/built'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/parcom/built'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/redis-lock/built'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/sw/built'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/vite-manifest/built'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/zod2spec/built'), { recursive: true, force: true }),
+	cleanup('.turbo'),
 
-	rm(resolve(import.meta.dirname, '../.turbo'), { recursive: true, force: true }),
-
-	rm(resolve(import.meta.dirname, '../.turbo'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/backend/.turbo'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/frontend/.turbo'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/hono-serve-static/.turbo'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/http-signature/.turbo'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/identicon-generator/.turbo'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/locales/.turbo'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/misskey-js/.turbo'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/parcom/.turbo'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/redis-lock/.turbo'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/sw/.turbo'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/vite-manifest/.turbo'), { recursive: true, force: true }),
-	rm(resolve(import.meta.dirname, '../packages/zod2spec/.turbo'), { recursive: true, force: true }),
+	cleanup('packages/backend/.turbo'),
+	cleanup('packages/frontend/.turbo'),
+	cleanup('packages/hono-serve-static/.turbo'),
+	cleanup('packages/http-signature/.turbo'),
+	cleanup('packages/identicon-generator/.turbo'),
+	cleanup('packages/locales/.turbo'),
+	cleanup('packages/misskey-js/.turbo'),
+	cleanup('packages/parcom/.turbo'),
+	cleanup('packages/redis-lock/.turbo'),
+	cleanup('packages/sw/.turbo'),
+	cleanup('packages/vite-manifest/.turbo'),
+	cleanup('packages/zod2spec/.turbo'),
 ]);
