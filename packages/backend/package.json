@@ -14,7 +14,7 @@
 		"watch": "tsdown --watch"
 	},
 	"optionalDependencies": {
-		"bufferutil": "4.0.9",
+		"bufferutil": "4.2.0",
 		"slacc-android-arm-eabi": "0.0.10",
 		"slacc-android-arm64": "0.0.10",
 		"slacc-darwin-arm64": "0.0.10",
