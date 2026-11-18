@@ -15,7 +15,7 @@
 		"@mcaptcha/vanilla-glue": "0.1.0-alpha-3",
 		"@misskey-dev/browser-image-resizer": "2024.1.0",
 		"@tabler/icons-webfont": "2.44.0",
-		"@vueuse/core": "14.3.0",
+		"@vueuse/core": "15.0.0",
 		"broadcast-channel": "7.1.0",
 		"chart.js": "4.4.9",
 		"chartjs-adapter-date-fns": "3.0.0",
