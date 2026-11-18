@@ -11,10 +11,10 @@ import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { intersperse } from '@/misc/prelude/array.js';
 import type { IMentionedRemoteUsers } from '@/models/Note.js';
-import * as TreeAdapter from '../../node_modules/parse5/dist/tree-adapters/default.js';
+import type * as TreeAdapter from '../../node_modules/parse5/dist/tree-adapters/default.js';
 import type * as mfm from 'mfm-js';
 
-const treeAdapter = TreeAdapter.defaultTreeAdapter;
+const treeAdapter = parse5.defaultTreeAdapter;
 
 const urlRegex = /^https?:\/\/[\w/:%#@$&?!()[\]~.,=+-]+/;
 const urlRegexFull = /^https?:\/\/[\w/:%#@$&?!()[\]~.,=+-]+$/;
