@@ -2,7 +2,7 @@
 	"name": "locales",
 	"type": "module",
 	"exports": {
-		"types": "./built/index.d.ts",
+		"types": "./src/index.ts",
 		"import": "./built/index.js"
 	},
 	"scripts": {
