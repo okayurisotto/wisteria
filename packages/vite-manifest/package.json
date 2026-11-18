@@ -14,10 +14,10 @@
 		"import": "./built/index.js"
 	},
 	"devDependencies": {
-		"@types/node": "26.6.5",
+		"@types/node": "26.6.6",
 		"tsdown": "0.23.7",
-		"vite": "7.3.5",
-		"vitest": "4.1.9"
+		"vite": "7.3.8",
+		"vitest": "4.1.12"
 	},
 	"dependencies": {
 		"zod": "4.3.6"

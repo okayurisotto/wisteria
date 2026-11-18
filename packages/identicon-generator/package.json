@@ -16,13 +16,13 @@
 		"watch": "tsdown --watch"
 	},
 	"devDependencies": {
-		"@types/node": "26.6.5",
+		"@types/node": "26.6.6",
 		"@types/random-seed": "0.3.5",
 		"tsdown": "0.23.7",
 		"typescript": "6.0.3"
 	},
 	"dependencies": {
-		"@napi-rs/canvas": "0.1.97",
+		"@napi-rs/canvas": "1.1.0",
 		"random-seed": "0.3.0"
 	}
 }

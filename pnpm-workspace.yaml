@@ -15,8 +15,6 @@ allowBuilds:
   vue-demi: true
 
 overrides:
-  rollup: "4.62.4"
-
   "@babel/parser": "7.29.12"
   # https://github.com/babel/babel/pull/18588
   # `7.29.12`→`7.29.13`でデグレ
