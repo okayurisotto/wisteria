@@ -113,7 +113,7 @@
 		"@types/jsonld": "1.5.15",
 		"@types/mime-types": "3.0.1",
 		"@types/node": "26.6.6",
-		"@types/pg": "8.18.0",
+		"@types/pg": "8.23.1",
 		"@types/pug": "2.0.10",
 		"@types/punycode": "2.1.4",
 		"@types/qrcode": "1.5.6",
