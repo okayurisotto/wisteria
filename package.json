@@ -18,15 +18,15 @@
 		"clean": "node ./scripts/clean.mjs"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.9",
+		"@biomejs/biome": "2.4.16",
 		"@tsconfig/node-lts": "24.0.1",
 		"@tsconfig/strictest": "2.0.8",
-		"cssnano": "7.1.2",
+		"cssnano": "7.1.9",
 		"oxlint": "1.88.0",
-		"postcss": "8.5.6",
-		"tar": "7.5.20",
+		"postcss": "8.5.32",
+		"tar": "7.5.22",
 		"tinyglobby": "0.2.17",
-		"turbo": "2.11.8",
+		"turbo": "2.11.10",
 		"typescript": "6.0.3"
 	}
 }
