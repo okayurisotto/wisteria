@@ -70,7 +70,7 @@
 		"mfm-js": "0.24.0",
 		"mime-types": "3.0.2",
 		"misskey-js": "workspace:*",
-		"nanoid": "5.1.16",
+		"nanoid": "6.0.2",
 		"node-fetch": "3.3.2",
 		"otpauth": "9.2.4",
 		"parse5": "7.1.2",
