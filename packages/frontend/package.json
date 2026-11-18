@@ -22,7 +22,7 @@
 		"chartjs-chart-matrix": "2.0.1",
 		"chartjs-plugin-gradient": "0.6.5",
 		"chartjs-plugin-zoom": "2.0.1",
-		"date-fns": "4.1.0",
+		"date-fns": "4.4.0",
 		"eventemitter3": "5.0.4",
 		"idb-keyval": "6.2.6",
 		"insert-text-at-cursor": "0.3.0",
