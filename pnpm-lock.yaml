@@ -426,8 +426,8 @@ importers:
         specifier: 9.0.1
         version: 9.0.1
       '@twemoji/parser':
-        specifier: 16.0.0
-        version: 16.0.0
+        specifier: 17.0.2
+        version: 17.0.2
       '@types/accepts':
         specifier: 1.3.7
         version: 1.3.7
@@ -2445,9 +2445,6 @@ packages:
 
   '@twemoji/parser@15.0.0':
     resolution: {integrity: sha512-lh9515BNsvKSNvyUqbj5yFu83iIDQ77SwVcsN/SnEGawczhsKU6qWuogewN1GweTi5Imo5ToQ9s+nNTf97IXvg==}
-
-  '@twemoji/parser@16.0.0':
-    resolution: {integrity: sha512-jmuIjkp3OIaEemwMy3sArBwZSuZkRqmueGwRe2Zk4cFzbUJISFBJSZLDUUBNIgq3c+nY49ideYN2OiII6JUqwA==}
 
   '@twemoji/parser@17.0.2':
     resolution: {integrity: sha512-X/P7pHsGOxnrupQYUVetIeuxBGgffFu8CLwoPMMjH9CWmQvlXiCpbTW/BXxMOCWXQojgHdmgdvm6IsCqAQ5nxA==}
@@ -6596,8 +6593,6 @@ snapshots:
     optional: true
 
   '@twemoji/parser@15.0.0': {}
-
-  '@twemoji/parser@16.0.0': {}
 
   '@twemoji/parser@17.0.2': {}
 
