@@ -26,7 +26,7 @@ const buildApp = async (options) => {
 
 /**
  * @param {{
- *   config: import('../packages/backend/built/config.js').Config;
+ *   config: import('../packages/backend/src/config.js').Config;
  *   rootDir: string;
  *   tarFile: string;
  * }} options
@@ -87,6 +87,7 @@ const main = async () => {
 
 	const { loadConfig } = await import(configModule);
 
+	/** @type {import('../packages/backend/src/config.js').Config | null} */
 	let config = null;
 	try {
 		config = loadConfig();

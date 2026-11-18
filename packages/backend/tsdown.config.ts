@@ -17,4 +17,5 @@ export default defineConfig({
 	minify: true,
 	fixedExtension: false,
 	tsconfig: 'tsconfig.app.json',
+	dts: false,
 });
