@@ -13,6 +13,6 @@
 	},
 	"devDependencies": {
 		"@types/node": "26.6.5",
-		"tsdown": "0.23.1"
+		"tsdown": "0.23.7"
 	}
 }

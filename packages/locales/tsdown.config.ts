@@ -85,14 +85,19 @@ export const languages: Record<string, string> = {
 };
 
 export default defineConfig({
-	tsconfig: "tsconfig.app.json",
-	entry: ['./src/index.ts'],
+	platform: 'neutral',
+
+	entry: [
+		'src/index.ts',
+	],
+	outDir: 'built',
+
 	format: 'esm',
 	minify: true,
-	outDir: 'built',
+	fixedExtension: false,
+	tsconfig: 'tsconfig.app.json',
+	dts: false,
 	define: {
 		_LANGUAGES_: JSON.stringify(languages), // バンドルサイズ削減のため
 	},
-	fixedExtension: false,
-	dts: false,
 });

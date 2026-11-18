@@ -14,7 +14,7 @@
 	"devDependencies": {
 		"@types/node": "26.6.5",
 		"@types/serviceworker": "0.0.191",
-		"tsdown": "0.23.1",
+		"tsdown": "0.23.7",
 		"typescript": "6.0.3"
 	},
 	"type": "module"
