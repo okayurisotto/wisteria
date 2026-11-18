@@ -281,8 +281,8 @@ importers:
         specifier: 14.1.0
         version: 14.1.0
       happy-dom:
-        specifier: 20.10.6
-        version: 20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6)
+        specifier: 21.0.4
+        version: 21.0.4(bufferutil@4.0.9)(utf-8-validate@6.0.6)
       hono:
         specifier: 4.13.17
         version: 4.13.17
@@ -665,8 +665,8 @@ importers:
         specifier: 3.0.3
         version: 3.0.3
       happy-dom:
-        specifier: 20.10.6
-        version: 20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6)
+        specifier: 21.0.4
+        version: 21.0.4(bufferutil@4.0.9)(utf-8-validate@6.0.6)
       js-yaml:
         specifier: 5.1.0
         version: 5.1.0
@@ -681,7 +681,7 @@ importers:
         version: 7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1)
       vitest:
         specifier: 4.1.12
-        version: 4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1))
+        version: 4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@21.0.4(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1))
       vue-component-type-helpers:
         specifier: 3.2.9
         version: 3.2.9
@@ -725,7 +725,7 @@ importers:
         version: 0.23.7(@volar/typescript@2.4.28(typescript@6.0.3))(@vue/language-core@3.2.9)(typescript@6.0.3)(vue-tsc@3.2.9(typescript@6.0.3))
       vitest:
         specifier: 4.1.12
-        version: 4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1))
+        version: 4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@21.0.4(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1))
 
   packages/identicon-generator:
     dependencies:
@@ -793,7 +793,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: 4.1.12
-        version: 4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1))
+        version: 4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@21.0.4(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1))
 
   packages/redis-lock:
     dependencies:
@@ -812,7 +812,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: 4.1.12
-        version: 4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1))
+        version: 4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@21.0.4(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1))
 
   packages/sw:
     dependencies:
@@ -853,7 +853,7 @@ importers:
         version: 7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1)
       vitest:
         specifier: 4.1.12
-        version: 4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1))
+        version: 4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@21.0.4(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1))
 
   packages/zod2spec:
     dependencies:
@@ -872,7 +872,7 @@ importers:
         version: 0.23.7(@volar/typescript@2.4.28(typescript@6.0.3))(@vue/language-core@3.2.9)(typescript@6.0.3)(vue-tsc@3.2.9(typescript@6.0.3))
       vitest:
         specifier: 4.1.12
-        version: 4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1))
+        version: 4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@21.0.4(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1))
 
 packages:
 
@@ -3620,8 +3620,8 @@ packages:
     resolution: {integrity: sha512-tSQXBXS/MWQOn/RKckawJ61vvsDpCom87JgxiYdGwHdOa0ht0vzUWDlfioofFCRU0L+6NGDt6XzbgoJvZkMeRQ==}
     engines: {node: '>=0.8.0'}
 
-  happy-dom@20.10.6:
-    resolution: {integrity: sha512-6QD0ilzDDt93tX44y8tbmZdAcdTRYDhUP+Asgi6pC8Pp5IA3cvaZGyoVN/EGtlq9ziT65iPuBBn3ASLr6hCgVw==}
+  happy-dom@21.0.4:
+    resolution: {integrity: sha512-tFm+GaLBgo6o0awHnvHaNoraVo27qJ+2tZEtZ+cIa08hXbeitrxAJajLI05hsUy/2/YTKcUjQYzHe5mCcraLBw==}
     engines: {node: '>=20.0.0'}
 
   has-property-descriptors@1.0.2:
@@ -7904,7 +7904,7 @@ snapshots:
 
   hammerjs@2.0.8: {}
 
-  happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6):
+  happy-dom@21.0.4(bufferutil@4.0.9)(utf-8-validate@6.0.6):
     dependencies:
       '@types/node': 26.6.6
       '@types/whatwg-mimetype': 3.0.2
@@ -9390,7 +9390,7 @@ snapshots:
       sass: 1.90.0
       yaml: 2.9.1
 
-  vitest@4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1)):
+  vitest@4.1.12(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(happy-dom@21.0.4(bufferutil@4.0.9)(utf-8-validate@6.0.6))(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1)):
     dependencies:
       '@vitest/expect': 4.1.12
       '@vitest/mocker': 4.1.12(vite@7.3.8(@types/node@26.6.6)(sass@1.90.0)(yaml@2.9.1))
@@ -9415,7 +9415,7 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.10.0
       '@types/node': 26.6.6
-      happy-dom: 20.10.6(bufferutil@4.0.9)(utf-8-validate@6.0.6)
+      happy-dom: 21.0.4(bufferutil@4.0.9)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - msw
 
