@@ -33,7 +33,7 @@
 	"dependencies": {
 		"@aws-sdk/client-s3": "3.1002.0",
 		"@aws-sdk/lib-storage": "3.1002.0",
-		"@discordapp/twemoji": "16.0.1",
+		"@discordapp/twemoji": "17.0.3",
 		"@hono/node-server": "2.1.6",
 		"@misskey-dev/sharp-read-bmp": "2.0.0",
 		"@misskey-dev/summaly": "5.2.5",
