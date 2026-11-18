@@ -1,19 +1,20 @@
 import { defineConfig } from 'tsdown';
 
 export default defineConfig({
-	tsconfig: "tsconfig.app.json",
+	platform: 'node',
+	nodeProtocol: false,
+
 	entry: [
-		'./src/**/*.test.ts',
-		'./src/boot/entry.ts',
-		'./src/config.ts',
-		'./src/postgres.ts',
-		'./src/server/api/openapi/gen-spec.ts',
+		'src/**/*.test.ts',
+		'src/boot/entry.ts',
+		'src/config.ts',
+		'src/postgres.ts',
+		'src/server/api/openapi/gen-spec.ts',
 	],
-	deps: {
-		neverBundle: ['@mapbox/node-pre-gyp', /^node:/],
-	},
-	format: 'esm',
 	outDir: 'built',
-	removeNodeProtocol: false,
+
+	format: 'esm',
+	minify: true,
 	fixedExtension: false,
+	tsconfig: 'tsconfig.app.json',
 });

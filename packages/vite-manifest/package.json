@@ -15,7 +15,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "26.6.5",
-		"tsdown": "0.23.1",
+		"tsdown": "0.23.7",
 		"vite": "7.3.5",
 		"vitest": "4.1.9"
 	},

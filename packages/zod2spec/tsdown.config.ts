@@ -1,9 +1,15 @@
 import { defineConfig } from 'tsdown';
 
 export default defineConfig({
-	tsconfig: "tsconfig.app.json",
-	entry: ['./src/index.ts'],
-	format: 'esm',
+	platform: 'neutral',
+
+	entry: [
+		'src/index.ts',
+	],
 	outDir: 'built',
+
+	format: 'esm',
+	minify: true,
 	fixedExtension: false,
+	tsconfig: 'tsconfig.app.json',
 });
