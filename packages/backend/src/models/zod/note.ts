@@ -84,7 +84,7 @@ const NoteSchemaBase = z.object({
 	myReaction: z.string().nullable().optional(),
 	emojis: z.record(z.string(), z.string()).optional(),
 	reactionEmojis: z.record(z.string(), z.string()),
-	reactions: z.record(z.string(), z.string()),
+	reactions: z.record(z.string(), z.number()),
 });
 
 type NoteSchemaType = z.infer<typeof NoteSchemaBase> & {

@@ -2973,7 +2973,7 @@ export interface components {
         [key: string]: string;
       };
       reactions: {
-        [key: string]: string;
+        [key: string]: number;
       };
       reply?: unknown;
       renote?: unknown;
