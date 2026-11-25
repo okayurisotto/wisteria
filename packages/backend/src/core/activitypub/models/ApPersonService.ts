@@ -491,7 +491,11 @@ export class ApPersonService implements OnModuleInit {
 		// 該当ユーザーが既にフォロワーになっていた場合はFollowingもアップデートする
 		await this.followingsRepository.update(
 			{ followerId: exist.id },
-			{ followerSharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox },
+			{
+				// `undefined`だとTypeORMが更新値から除外し、空オブジェクトupdateしようとして`UpdateValuesMissingError`になる。
+				// `?? null`で正しく空値として扱うことで回避する。
+				followerSharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox ?? null,
+			},
 		);
 
 		await this.updateFeatured(exist.id, resolver).catch((err: unknown) => {
