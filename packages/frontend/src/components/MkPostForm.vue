@@ -884,8 +884,8 @@ defineExpose({
 	flex-direction: column;
 
 	&.modal {
-		width: 100%;
-		max-width: 520px;
+		inline-size: 600px;
+		max-inline-size: 100dvw;
 	}
 }
 
@@ -1012,9 +1012,7 @@ defineExpose({
 
 .preview {
 	padding: 16px 20px 0 20px;
-	min-height: 75px;
-	max-height: 150px;
-	overflow: auto;
+	min-block-size: 75px;
 }
 
 .targetNote {
@@ -1097,13 +1095,11 @@ defineExpose({
 }
 
 .text {
-	max-width: 100%;
-	min-width: 100%;
-	width: 100%;
-	min-height: 90px;
-	height: 100%;
-	resize: vertical;
+	block-size: 100%;
 	field-sizing: content;
+	inline-size: 100%;
+	min-block-size: 5em;
+	resize: vertical;
 }
 
 .textCount {

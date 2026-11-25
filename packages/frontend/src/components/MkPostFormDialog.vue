@@ -53,7 +53,6 @@ function onModalClosed() {
 
 <style lang="scss" module>
 .form {
-	max-height: 100%;
 	margin: 0 auto auto auto;
 }
 </style>
