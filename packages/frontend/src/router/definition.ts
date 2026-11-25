@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { type App, type AsyncComponentLoader, defineAsyncComponent, provide } from 'vue';
+import { type App, type AsyncComponentLoader, type Component, defineAsyncComponent } from 'vue';
 import type { ParsedPath, RouteDef } from '@/nirax.js';
 import { type IRouter, Router } from '@/nirax.js';
 import { $i, iAmModerator } from '@/account.js';
@@ -42,7 +42,7 @@ const parsePath = (path_: `/${string}`): ParsedPath => {
 	return parsed;
 };
 
-const page = (loader: AsyncComponentLoader<any>) => defineAsyncComponent({
+const page = (loader: AsyncComponentLoader<Component>) => defineAsyncComponent({
 	loader: loader,
 	loadingComponent: MkLoading,
 	errorComponent: MkError,
@@ -429,7 +429,9 @@ const routes: RouteDef[] = [{
 }, {
 	name: 'index',
 	path: parsePath('/'),
-	component: $i ? page(() => import('@/pages/timeline.vue')) : page(() => import('@/pages/welcome.vue')),
+	component: $i
+		? page(() => import('@/pages/timeline.vue'))
+		: page(() => import('@/pages/welcome.vue')),
 	globalCacheKey: 'index',
 }, {
 	// テスト用リダイレクト設定。ログイン中ユーザのプロフィールにリダイレクトする
